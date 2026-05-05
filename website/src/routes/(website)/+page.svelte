@@ -1,6 +1,6 @@
 <script>
   import Icon from "@iconify/svelte";
-  import imgTheFool from "$lib/assets/web-the-fool.jpg?enhanced&w=9999";
+  import imgTheFool from "$lib/assets/web-the-fool.jpg";
 </script>
 
 
@@ -30,12 +30,10 @@
   >
     <div class="max-w-md text-center">
       <h1 class="lg:text-5xl text-3xl font-bold text-primary filter drop-shadow-[0_0_10px_#c47f0a] w-full block md:text-left">
-        Lord of the Mysteries
+        Got Dropped into a Ghost Story, Still Gotta Work
       </h1>
       <p class="py-6 lg:text-2xl text-lg lg:w-full md:w-4/5 w-full brightness-95 md:text-left">
-        “The Fool that doesn’t belong to this era, <br>
-        the mysterious ruler above the gray fog; <br>
-        the King of Yellow and Black who wields good luck…”
+        “...Am I happy, you ask?" <br> "Please, just let me go home. I’m begging you.”
       </p>
     </div>
 

@@ -1,8 +1,9 @@
 <script>
 // [IMG_IMPORT]
 import css from "../../../../reader.css?url"
-import { readerState } from "$lib/reader.svelte.ts";
+import { readerState } from "$lib/reader.svelte";
 // [METADATA]
+export let ch_meta;
 readerState.ch_meta = ch_meta;
 </script>
 
