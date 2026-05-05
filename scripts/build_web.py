@@ -8,16 +8,21 @@ from pathlib import Path
 import frontmatter
 
 # --- CONFIGURATION ---
+# Get the absolute path to the directory where build_web.py is located
+SCRIPT_DIR = Path(__file__).parent.resolve()
 
-# Where your .webp images are physically located on your machine for sizing
-IMG_STORAGE_DIR = Path("website/static/assets/images")
+# Root of the repository (one level up from scripts)
+REPO_ROOT = SCRIPT_DIR.parent
+
+# Where your .webp images are physically located
+IMG_STORAGE_DIR = REPO_ROOT / "website/static/assets/images"
 
 # The URL path the browser will use to fetch images
 IMG_PUBLIC_PREFIX = "/assets/images"
 
-TEMPLATE_PATH = Path("website/src/lib/reader/template.svelte")
-META_OUTPUT_PATH = Path("website/src/lib/meta.json")
-OUTPUT_ROOT = Path("website/src/routes/(reader)/read/")
+TEMPLATE_PATH = REPO_ROOT / "website/src/lib/reader/template.svelte"
+META_OUTPUT_PATH = REPO_ROOT / "website/src/lib/meta.json"
+OUTPUT_ROOT = REPO_ROOT / "website/src/routes/(reader)/read/"
 
 MAX_CONCURRENT_TASKS = 75
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
@@ -160,9 +165,9 @@ async def convert_chapter(
 
 async def main():
     paths = [
-        "./chapters/lotm/webnovel/",
-        "./chapters/lotm/oldtl/",
-        "./chapters/coi/webnovel/",
+        "../chapters/gsgw/goblintl/",
+        "../chapters/gsgw/mtl/",
+        "../chapters/temp/goblintl/",
     ]
 
     gh_group("Initialization")

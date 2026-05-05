@@ -8,27 +8,27 @@
 
   const bookConfigs = {
     lotm: {
-      title: "Lord of the Mysteries",
-      author: "Cuttlefish That Loves Diving",
-      synopsis: `With the rising tide of steam power and machinery, who can come close to being a Beyonder? Shrouded in the fog of history and darkness, who or what is the lurking evil that murmurs into our ears? \n\n Waking up to be faced with a string of mysteries, Zhou Mingrui finds himself reincarnated as Klein Moretti in an alternate Victorian era world where he sees a world filled with machinery, cannons, dreadnoughts, airships, difference machines, as well as Potions, Divination, Hexes, Tarot Cards, Sealed Artifacts…\n\nThe Light continues to shine but mystery has never gone far. Follow Klein as he finds himself entangled with the Churches of the world—both orthodox and unorthodox—while he slowly develops newfound powers thanks to the Beyonder potions.\n\nLike the corresponding tarot card, The Fool, which is numbered 0—a number of unlimited potential—this is the legend of "The Fool."`,
+      title: "Got Dropped into a Ghost Story, Still Gotta Work",
+      author: "Baek Deoksoo",
+      synopsis: `placeholder`,
       title_accent: "text-default",
       button_primary: "btn-accent",
       button_secondary: "btn-info",
       cover: imgLotmCover,
       external_link:
-        "https://www.webnovel.com/book/lord-of-mysteries_11022733006234505",
+        "https://page.kakao.com/content/65171279",
     },
     coi: {
-      title: "Circle of Inevitability",
-      author: "Cuttlefish That Loves Diving",
+      title: "placeholder",
+      author: "Dark Exploration Record Fanatics",
       synopsis:
-        "Nature is unkind: It treats all things impartially. Circle of Inevitability is the second book of the Mysteries Series, sequel to the Lord of Mysteries.",
+        "placeholder description",
       title_accent: "text-primary",
       button_primary: "btn-secondary",
       button_secondary: "btn-primary",
       cover: imgCoiCover,
       external_link:
-        "https://www.webnovel.com/book/lord-of-mysteries-2-circle-of-inevitability_25759730405792805",
+        "https://page.kakao.com/content/65171279",
     },
   };
 

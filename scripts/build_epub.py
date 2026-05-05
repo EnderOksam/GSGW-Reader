@@ -6,9 +6,9 @@ import datetime
 from collections import defaultdict
 
 paths = [
-    "./chapters/lotm/webnovel/",
-    "./chapters/lotm/oldtl/",
-    "./chapters/coi/webnovel/",
+    "../chapters/gsgw/goblintl/",
+    "../chapters/gsgw/mtl/",
+    "../chapters/temp/tempfolder/",
 ]
 os.makedirs("./epub", exist_ok=True)
 today = datetime.date.today().strftime("%B %d, %Y")
