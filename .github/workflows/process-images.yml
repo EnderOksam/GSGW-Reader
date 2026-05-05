@@ -1,0 +1,39 @@
+name: Image Optimizer
+
+on:
+  push:
+    paths:
+      - 'images/**' 
+  workflow_dispatch: 
+
+jobs:
+  optimize:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install ImageMagick
+        run: choco install imagemagick --no-progress
+
+      - name: Run Optimizer Script
+        run: python scripts/optimize_images.py
+        env:
+          PYTHONUTF8: 1
+          PYTHONIOENCODING: utf-8
+
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: auto-optimize images to webp [skip ci]"
+          file_pattern: 'images/**'

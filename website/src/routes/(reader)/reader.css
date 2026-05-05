@@ -1,0 +1,64 @@
+img {
+  border-radius: 0.5em;
+  max-height: 85vh;
+  width: auto;
+  margin: auto;
+}
+
+figcaption {
+  font-size: medium;
+  margin-top: 0.5em;
+  text-align: center;
+}
+img.hidden-caption + figcaption {
+  display: none;
+}
+.hidden-caption + figcaption {
+  display: none;
+}
+figure:has(.hidden-caption) figcaption {
+  display: none;
+}
+h1,
+h2,
+h3 {
+  text-align: center;
+  position: relative;
+  padding-bottom: 0.5em;
+  margin-bottom: 1.5em;
+  font-variant: small-caps;
+}
+
+h1::after,
+h2::after,
+h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30%;
+  height: 3px;
+  background-color: currentColor;
+  border-radius: 2px;
+}
+
+hr {
+  border: none;
+  border-top: 0.1em solid currentColor;
+  overflow: visible;
+  text-align: center;
+  height: 0;
+  margin: 2rem 0;
+}
+
+hr::after {
+  content: "✟";
+  display: inline-block;
+  position: relative;
+  top: -1em;
+  padding: 0 10px;
+  background: var(--color-base-200);
+  border-radius: 1em;
+  font-size: 1.5rem;
+}
