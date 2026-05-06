@@ -1,6 +1,6 @@
 <script>
-  import imgLOTM from "$lib/assets/web-lotm-cover.jpg?enhanced&w=9999";
-  import imgCOI from "$lib/assets/web-coi-cover.jpg?enhanced&w=9999";
+  import imgLOTM from "$lib/assets/web-lotm-cover.jpg";
+  import imgCOI from "$lib/assets/web-coi-cover.jpg";
 </script>
 
 
