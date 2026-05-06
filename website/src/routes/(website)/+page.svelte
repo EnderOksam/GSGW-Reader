@@ -18,7 +18,6 @@
   let isTransitioned = $state(false);
   let showTransitionBG = $state(false);
   
-  // Initialize with a random index immediately
   let currentIndex = $state(Math.floor(Math.random() * cardImages.length));
 
   const ROTATION_TIME = 10000;
@@ -48,6 +47,14 @@
     sessionStorage.setItem("navigated_to_book", "true");
   }
 </script>
+
+<!-- Test Debug Button: Triggers 404 by navigating to a non-existent route -->
+<a 
+  href="/error-test-trigger" 
+  class="fixed top-4 left-4 z-50 opacity-0 hover:opacity-20 transition-opacity text-white cursor-default"
+>
+  #
+</a>
 
 <!-- Background Layer -->
 <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
