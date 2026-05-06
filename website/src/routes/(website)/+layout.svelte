@@ -4,7 +4,9 @@
   import "../../app.css";
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
-  import imgMeta from "$lib/assets/web-the-fool.jpg?url";
+  
+  // 1. Changed this to import one of your existing cards for the metadata
+  import imgMeta from "$lib/assets/card.jpg?url";
 
   let { children } = $props();
 
@@ -17,6 +19,7 @@
       goto("/");
     }
   }
+  
   $effect(() => {
     const _ = page.url.href;
     document.documentElement.setAttribute("data-theme", "sunset");
@@ -48,7 +51,6 @@
 
 <div class="fixed inset-0 -z-10 overflow-hidden">
   <enhanced:img src={imgBG} alt="" class="w-full h-full object-cover" />
-
   <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
 </div>
 
@@ -63,6 +65,5 @@
     </button>
   </div>
 {/if}
-
 
 {@render children()}

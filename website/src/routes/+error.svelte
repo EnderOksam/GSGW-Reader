@@ -1,5 +1,5 @@
 <script>
-  import imgBG from "$lib/assets/web-bg.jpg?enhanced&w=9999";
+  const imgBG = "$lib/assets/web-bg.jpg?enhanced&w=9999";
   import "../app.css";
 </script>
 
