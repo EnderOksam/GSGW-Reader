@@ -17,7 +17,9 @@
 
   let isTransitioned = $state(false);
   let showTransitionBG = $state(false);
-  let currentIndex = $state(0);
+  
+  // Initialize with a random index immediately
+  let currentIndex = $state(Math.floor(Math.random() * cardImages.length));
 
   const ROTATION_TIME = 10000;
 
@@ -89,7 +91,7 @@
       rel="noopener noreferrer" 
       class="text-xs text-white/40 hover:text-white/70 transition-colors"
     >
-      (Background and Cards made by @nokdock4 on twitter)
+      Background and Cards made by @nokdock4 on twitter
     </a>
   </div>
 
