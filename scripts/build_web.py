@@ -3,9 +3,9 @@ import re
 import asyncio
 import json
 import shutil
-import imagesize
 from pathlib import Path
 import frontmatter
+import imagesize
 
 # --- CONFIGURATION ---
 # Resolves the absolute path of the script for reliable file referencing
@@ -34,19 +34,6 @@ MAX_CONCURRENT_TASKS = 75
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
 
 completed_count = 0
-
-# --- LOGGING HELPERS ---
-# Formats output for GitHub Actions log visibility
-
-def gh_log(message):
-    print(message)
-
-def gh_group(title):
-    print(f"::group::{title}")
-
-def gh_endgroup():
-    print("::endgroup::")
-
 
 # --- CORE LOGIC ---
 
@@ -91,20 +78,17 @@ def process_html_images(html_content):
         if local_file_path.exists():
             try:
                 w, h = imagesize.get(local_file_path)
-                width_attr = f' width={w}'
-                height_attr = f' height={h}'
+                width_attr = f' width="{w}"'
+                height_attr = f' height="{h}"'
             except:
                 pass 
-        else:
-            gh_log(f"::warning::Image not found at expected path: {local_file_path}")
 
-        # Swaps the old src with the new path and injects dimension attributes
-        new_tag = re.sub(r'src=["\'].*?["\']', f'src="{new_src}"', full_tag)
-
-        if "/>" in new_tag:
-            new_tag = new_tag.replace("/>", f"{width_attr}{height_attr} />")
-        else:
-            new_tag = new_tag.replace(">", f"{width_attr}{height_attr}>")
+        tag_clean = re.sub(r'\s+(width|height)=["\']?.*?["\']?', '', full_tag)
+        tag_clean = re.sub(r'src=["\'].*?["\']', f'src="{new_src}"', tag_clean)
+        
+        if "/>" in tag_clean:
+            return tag_clean.replace("/>", f"{width_attr}{height_attr} />")
+        return tag_clean.replace(">", f"{width_attr}{height_attr}>")
 
         return new_tag
 
@@ -119,153 +103,97 @@ async def convert_chapter(
     Converts a single Markdown chapter to a Svelte page using Pandoc.
     """
     global completed_count
-
     async with semaphore:
         # Runs Pandoc as an external process to convert Markdown to HTML
         process = await asyncio.create_subprocess_exec(
-            "pandoc",
-            "-f", "markdown",
-            "-t", "html",
-            stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
+            "pandoc", "-f", "markdown", "-t", "html",
+            stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
         )
-
         stdout, stderr = await process.communicate(input=post_content.encode("utf-8"))
 
-        if stderr:
-            gh_log(f"Pandoc Error for {post_meta.get('title', 'Unknown')}: {stderr.decode()}")
-
-        html_content = stdout.decode("utf-8")
-
-        # Updates image tags within the newly generated HTML
+        html_content = stdout.decode("utf-8").strip()
+        
+        # Clean up malformed tags that crash the Svelte compiler
+        html_content = html_content.replace("<<", "<")
         html_content = process_html_images(html_content)
 
-        # Injects the HTML content into the designated placeholder in the template
-        final_svelte_content = template_str.replace("<!-- [DATA] -->", html_content)
-
-        # Embeds the YAML metadata as a JSON object into the Svelte script block
-        final_svelte_content = final_svelte_content.replace(
-            "// [METADATA]", f"let ch_meta = {json.dumps(post_meta)}"
+        # 1. Inject Metadata into the JS block
+        final_content = re.sub(
+            r'let ch_meta\s*=\s*null;', 
+            f"let ch_meta = {json.dumps(post_meta)};", 
+            template_str
+        )
+        
+        # 2. Escape backticks and interpolation to keep the JS string valid
+        safe_html = html_content.replace("`", "\\`").replace("${", "\\${")
+        
+        # 3. Inject HTML Data into the JS variable to avoid direct markup parsing
+        final_content = re.sub(
+            r'let html_content\s*=\s*["\'].*?["\'];', 
+            f"let html_content = `{safe_html}`;", 
+            final_content
         )
 
-        # Removes unused import placeholders
-        final_svelte_content = final_svelte_content.replace("// [IMG_IMPORT]", "")
-
-        # Writes the final .svelte file to the route directory
         with open(output_file, "w", encoding="utf-8") as f:
-            f.write(final_svelte_content)
+            f.write(final_content)
 
-        # Simple progress tracking for the console
         completed_count += 1
         if completed_count % 50 == 0 or completed_count == total_tasks:
-            gh_log(f"Progress: [{completed_count}/{total_tasks}]")
-
+            print(f"Progress: [{completed_count}/{total_tasks}]")
 
 async def main():
-    """
-    Main entry point: Indexes all markdown files and kicks off the conversion process.
-    """
-    paths = [
-        "../chapters/gsgw/goblintl/",
-        "../chapters/gsgw/mtl/",
-        "../chapters/temp/goblintl/",
-    ]
-
-    gh_group("Initialization")
-
-    # Ensures the template file exists before starting
+    paths = ["../chapters/gsgw/goblintl/", "../chapters/gsgw/mtl/", "../chapters/temp/goblintl/"]
+    
     if not TEMPLATE_PATH.exists():
-        gh_log(f"::error::Template not found at {TEMPLATE_PATH}")
-        exit(1)
+        print(f"Error: Template not found at {TEMPLATE_PATH}")
+        return
 
     with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
         template_str = f.read()
 
-    # Clears the old build files to ensure a fresh output
     if OUTPUT_ROOT.exists():
         shutil.rmtree(OUTPUT_ROOT)
-        gh_log("Cleaned previous output directory.")
 
-    tasks_data = []
-    meta_map = {}
+    tasks_data, meta_map = [], {}
 
-    gh_endgroup()
-
-    gh_group("Indexing Chapters")
-
-    for path in paths:
-        if not os.path.exists(path):
-            gh_log(f"Skipping: {path} (Not found)")
+    for p in paths:
+        path = (SCRIPT_DIR / p).resolve()
+        if not path.exists() or not (path / "0000.md").exists():
             continue
 
-        # Looks for the 0000.md master file which contains book-level metadata
-        master_path = os.path.join(path, "0000.md")
-        if not os.path.exists(master_path):
-            gh_log(f"Skipping: {path} (0000.md missing)")
-            continue
+        master = frontmatter.load(path / "0000.md")
+        bookID = master.get("metaBook", "gsgw")
+        bookTL = master.get("metaTl", "goblintl").lower()
+        
+        if bookID not in meta_map: meta_map[bookID] = {}
+        if bookTL not in meta_map[bookID]: meta_map[bookID][bookTL] = []
 
-        # Loads the book ID and translation type (e.g., MTL vs Human)
-        masterMD = frontmatter.load(master_path)
-        bookID, bookTL = masterMD["metaBook"], masterMD["metaTl"].lower()
-
-        if bookID not in meta_map:
-            meta_map[bookID] = {}
-        if bookTL not in meta_map[bookID]:
-            meta_map[bookID][bookTL] = []
-
-        # Indexes all .md files in the folder (excluding the master file)
-        files = [f for f in os.listdir(path) if f.endswith(".md") and f != "0000.md"]
-        gh_log(f"Found {len(files)} chapters for {bookID} ({bookTL})")
-
+        files = sorted([f for f in os.listdir(path) if f.endswith(".md") and f != "0000.md"])
         for file in files:
-            post = frontmatter.load(os.path.join(path, file))
+            post = frontmatter.load(path / file)
             slug = post.metadata.get("slug")
-    
-            # Cleans up Markdown headers (downshifts nested headers)
-            post.content = re.sub(r"^#(#+)", r"\1", post.content, flags=re.MULTILINE)
+            if not slug: continue
 
-            if not slug:
-                continue
-
-            # Adds chapter metadata to the global map for the search/index file
             meta_map[bookID][bookTL].append(post.metadata)
+            out_dir = OUTPUT_ROOT / str(bookID) / str(bookTL) / str(slug)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            tasks_data.append({
+                "content": post.content, 
+                "meta": post.metadata, 
+                "dest": out_dir / "+page.svelte"
+            })
 
-            # Creates the nested directory structure: /read/book-name/translation-type/slug/
-            output_dir = OUTPUT_ROOT / str(bookID) / str(bookTL) / str(slug)
-            output_dir.mkdir(parents=True, exist_ok=True)
-
-            # Prepares the data bundle for the conversion function
-            tasks_data.append(
-                {
-                    "content": post.content,
-                    "meta": post.metadata,
-                    "dest": output_dir / "+page.svelte",
-                }
-            )
-
-    # Writes the meta.json file which the website uses for the Table of Contents
     with open(META_OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(meta_map, f, indent=2)
 
-    gh_endgroup()
-
-    total = len(tasks_data)
-    gh_group(f"Processing {total} Chapters")
-
-    # Creates a list of coroutines for all chapters
-    tasks = [
-        convert_chapter(td["content"], td["meta"], td["dest"], total, template_str)
-        for td in tasks_data
-    ]
-
-    # Executes all conversion tasks concurrently
-    await asyncio.gather(*tasks)
-
-    gh_endgroup()
-    gh_log("Build Complete.")
-
+    if tasks_data:
+        await asyncio.gather(*[
+            convert_chapter(td["content"], td["meta"], td["dest"], len(tasks_data), template_str) 
+            for td in tasks_data
+        ])
+        print("Build Complete.")
+    else:
+        print("No chapters found to process.")
 
 if __name__ == "__main__":
-    # Start the async event loop
     asyncio.run(main())

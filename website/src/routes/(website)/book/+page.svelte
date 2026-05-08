@@ -24,29 +24,20 @@
   });
 </script>
 
-<!-- Background Layer: Handles the cross-fade between two images -->
 <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-  <!-- Base image (visible immediately) -->
   <enhanced:img 
     src={imgBG_Source} 
     alt="" 
-    class="absolute inset-0 w-full h-full object-cover" 
-  />
-  
-  <!-- Overlay image (fades in over the base) -->
-  <enhanced:img 
+    class="absolute inset-0 w-full h-full object-cover object-top" 
+  /> <enhanced:img 
     src={imgBG_Target} 
     alt="" 
-    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 {isTransitioned ? 'opacity-100' : 'opacity-0'}" 
-  />
-  
-  <!-- Global dark overlay and blur -->
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
+    class="absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-1000 {isTransitioned ? 'opacity-100' : 'opacity-0'}" 
+  /> <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
 </div>
 
 <main class="relative z-10 min-h-dvh flex flex-col items-center justify-center gap-10 p-8 md:flex-row md:justify-evenly">
   
-  <!-- Card: Ghost Story Project -->
   <a class="hover-3d static flex flex-col items-center" href="./gsgw" data-sveltekit-preload-data>
     <figure class="md:w-80 w-60 rounded-2xl cursor-pointer">
       <enhanced:img
@@ -59,11 +50,9 @@
     <span class="mt-4 w-full text-center text-md font-bold uppercase tracking-wider text-primary">
       Got Dropped in a Ghost Story, <br> Still gotta work
     </span>
-    <!-- Spacer divs for 3D hover effect logic -->
     <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
   </a>
 
-  <!-- Card: Placeholder Project -->
   <a class="hover-3d relative cursor-pointer flex flex-col items-center" href="./temp" data-sveltekit-preload-data>
     <figure class="md:w-80 w-60 rounded-2xl">
       <enhanced:img
@@ -76,7 +65,6 @@
     <span class="mt-4 w-full text-center text-md font-bold uppercase tracking-wider text-secondary">
       Unofficial Dark Exploration <br> Records (coming soon..)
     </span>
-    <!-- Spacer divs for 3D hover effect logic -->
     <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
   </a>
 </main>

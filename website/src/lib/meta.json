@@ -1,38 +1,23 @@
 {
   "gsgw": {
-    "webnovel": [
+    "goblintl": [
       {
+        "title": "Synopsis",
         "category": "Volume 1",
         "discussion": 1,
         "index": 1,
         "section": "vol1",
-        "slug": 1,
-        "title": "Synopsis"
-      }
-    ]
-  },
-  "lotm": {
-    "oldtl": [
+        "slug": "synopsis"
+      },
       {
-        "category": "Volume 1",
+        "title": "Orientation",
+        "category": "Part 1",
         "discussion": 1,
         "index": 1,
-        "section": "vol1",
-        "slug": 1,
-        "title": "Crimson"
+        "section": "Part 1",
+        "slug": "Chapter 1"
       }
-    ]
-  },
-  "coi": {
-    "webnovel": [
-      {
-        "category": "Volume 1",
-        "discussion": 1470,
-        "index": 1,
-        "section": "vol1",
-        "slug": 1,
-        "title": "Foreigners"
-      }
-    ]
+    ],
+    "mtl": []
   }
 }

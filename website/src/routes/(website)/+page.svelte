@@ -11,9 +11,8 @@
   import card3 from "$lib/assets/card3.jpg";
   import card4 from "$lib/assets/card4.jpg";
   import card5 from "$lib/assets/card5.jpg";
-  import card6 from "$lib/assets/card6.jpg";
 
-  const cardImages = [card1, card2, card3, card4, card5, card6];
+  const cardImages = [card1, card2, card3, card4, card5,];
 
   // Visual state management
   let isTransitioned = $state(false);
@@ -52,7 +51,6 @@
   }
 </script>
 
-<!-- Hidden link for testing 404 behavior -->
 <a 
   href="/error-test-trigger" 
   class="fixed top-4 left-4 z-50 opacity-0 hover:opacity-20 transition-opacity text-white cursor-default"
@@ -60,12 +58,11 @@
   #
 </a>
 
-<!-- Background Layer: Cross-fades between two images based on navigation state -->
 <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
   <enhanced:img 
     src={imgBG_TransitionSource} 
     alt="" 
-    class="absolute inset-0 w-full h-full object-cover {showTransitionBG ? 'opacity-100' : 'opacity-0'}" 
+    class="absolute inset-0 w-full h-full object-cover object-top {showTransitionBG ? 'opacity-100' : 'opacity-0'}" 
   />
   
   <enhanced:img 
@@ -79,7 +76,6 @@
 
 <main class="relative z-10 flex min-h-dvh flex-col items-center justify-center gap-10 p-8 md:flex-row md:justify-around text-white">
   
-  <!-- Showcase Section: Character Card Slideshow -->
   <div class="flex flex-col items-center gap-4">
     <div class="hover-3d relative">
       <figure class="max-w-100 rounded-2xl shadow-2xl overflow-hidden bg-black relative aspect-[2/3] w-[30vh] md:w-[50vh]">
@@ -93,11 +89,9 @@
           />
         {/key}
       </figure>
-      <!-- Spacer divs for 3D hover logic -->
       <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
     </div>
 
-    <!-- Artist Credit Link -->
     <a 
       href="https://twitter.com/nokdock4" 
       target="_blank" 
@@ -108,7 +102,6 @@
     </a>
   </div>
 
-  <!-- Content Section: Book Title, Synopsis, and Actions -->
   <div class="flex flex-col items-center md:items-start">
     <div class="max-w-md text-center">
       <h1 class="lg:text-5xl text-3xl font-bold text-primary filter drop-shadow-[0_0_10px_#c47f0a] w-full block md:text-left">

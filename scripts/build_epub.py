@@ -4,126 +4,133 @@ import subprocess
 import frontmatter
 import datetime
 from collections import defaultdict
+from pathlib import Path
 
-# --- CONFIGURATION & SETUP ---
-# List of source directories containing the raw markdown chapters
+# --- CONFIGURATION ---
+SCRIPT_DIR = Path(__file__).parent.resolve()
+REPO_ROOT = SCRIPT_DIR.parent
+
+# Absolute path to CSS (Fixes Pandoc "does not exist" error)
+CSS_PATH = SCRIPT_DIR / "epub.css"
+
+# Path to your actual images folder
+IMG_ROOT = REPO_ROOT / "images"
+
+# Paths to process
 paths = [
     "../chapters/gsgw/goblintl/",
     "../chapters/gsgw/mtl/",
     "../chapters/temp/tempfolder/",
 ]
 
-# Ensure the output directory for finished Ebooks exists
-os.makedirs("./epub", exist_ok=True)
+# Ensure output directory exists
+OUTPUT_DIR = SCRIPT_DIR / "epub"
+OUTPUT_DIR.mkdir(exist_ok=True)
 
-# Generate a formatted date string for the title page/metadata
 today = datetime.date.today().strftime("%B %d, %Y")
 
-# Iterate through each book/translation path defined above
-for path in paths:
+for rel_path in paths:
+    # Convert relative path to absolute
+    path = str((SCRIPT_DIR / rel_path).resolve()) + os.sep
+    
+    if not os.path.exists(path):
+        print(f"Skipping: {path} (Not found)")
+        continue
+
     print(f"{'='*100}\n\n{'-'*10} Starting build for: {path} {'-'*10}")
     
-    # Identify all chapter files (ignoring the 0000.md master metadata file)
     files = [f for f in os.listdir(path) if f.endswith(".md") and f != "0000.md"]
     chapters = defaultdict(list)
 
-    # --- STEP 1: INDEXING ---
-    # Read each markdown file and group them by their "section" (e.g., Vol 1, Vol 2)
     for file in files:
-        post = frontmatter.load(path + file)
+        post = frontmatter.load(os.path.join(path, file))
         metadata = post.metadata
         content = post.content
-        # Combine content and metadata into a list categorized by section
         chapters[metadata["section"]].append({**metadata, "content": content})
 
     print(f"{'-'*5}> Indexed {len(files)} files across {len(chapters)} sections.")
     
-    # Load the master metadata file which acts as the book's backbone/template
-    masterMD = frontmatter.load(path + "0000.md")
-    # Replace the date placeholder in the master template
+    master_file = os.path.join(path, "0000.md")
+    if not os.path.exists(master_file):
+        print(f"Error: 0000.md missing in {path}")
+        continue
+        
+    masterMD = frontmatter.load(master_file)
     masterMD.content = masterMD.content.replace("{{DATE}}", today)
 
-    # --- STEP 2: CONTENT ASSEMBLY ---
     print(f"{'-'*5}> Replacing Sections")
     for section in chapters:
-        # Sort chapters within the section based on their index number
         chapters[section].sort(key=lambda x: int(x["index"]))
         print(f"Processing section: {section} ({len(chapters[section])} chapters)")
-        
-        section_content = ""
-        for chapter in chapters[section]:
-            # Clean up whitespace and append a horizontal rule and social links to each chapter
-            text = chapter["content"].strip()
-            section_content += f"""{text}
+        content = ""
+        for chapter_data in chapters[section]:
+            ch_text = chapter_data["content"].strip()
+            content += f"""{ch_text}
 
 ___
-- [Read Comments](https://github.com/Bittu5134/LOTM-Reader/discussions/{chapter["discussion"]})
+- [Read Comments](https://github.com/Bittu5134/LOTM-Reader/discussions/{chapter_data.get("discussion", "")})
 - [Discord](https://discord.gg/XmzJVsyuTQ)
 
 """
 
-        # Extract book info for filenames and metadata
         bookTitle = masterMD["title"][0]["text"]
         bookID = masterMD["metaBook"]
         bookTL = masterMD["metaTl"]
-        
-        # Inject the compiled section content into the master template's placeholder tag
-        masterMD.content = masterMD.content.replace(f"<!-- [{section}] -->", section_content)
+        masterMD.content = masterMD.content.replace(f"", content)
 
-    # --- STEP 3: EPUB GENERATION ---
     print(f"{'-'*5}> Producing Epubs")
 
-    # Generate two versions: "Default" (Modern) and "Legacy" (For older E-readers/Kindles)
     for build_type in ["Default", "Legacy"]:
-        # Setup specific formats and folders based on the build type
+        # Match images to the actual folder structure you provided
         if build_type == "Default":
-            img_folder = "./images_default"
             img_format = ".webp"
-            epub_version = "epub3"  # Modern standard
+            epub_version = "epub3"
         else:
-            img_folder = "./images_legacy"
-            img_format = ".jpg"     # Better compatibility for older devices
-            epub_version = "epub2"  # Legacy standard
+            img_format = ".jpg"
+            epub_version = "epub2"
 
-        # Prepare the final string content without mutating the original master object
         current_content = masterMD.content
         current_content = current_content.replace("{{TYPE}}", build_type)
-        current_content = current_content.replace("../../../images", img_folder)
-
-        # Update all image extensions in the text to match the build type (e.g., .webp -> .jpg)
+        
+        # Logic to swap relative image paths in text to absolute paths for Pandoc
+        current_content = current_content.replace("../../../images", str(IMG_ROOT.as_posix()))
         current_content = re.sub(r"\.(jpe?g|png|webp)", img_format, current_content)
 
-        # Define file paths for the final EPUB and a temporary markdown file for Pandoc
         epub_filename = f"{bookTitle} - {bookTL} [{build_type}].epub"
         md_filename = f"{bookID}_{bookTL}_{build_type}.md"
 
-        epub_path = os.path.join("./epub", epub_filename)
-        md_path = os.path.join("./epub", md_filename)
+        epub_path = OUTPUT_DIR / epub_filename
+        md_path = OUTPUT_DIR / md_filename
 
-        # Save the fully assembled text to a temporary markdown file
         temp_post = frontmatter.Post(current_content, **masterMD.metadata)
         with open(md_path, "w", encoding="utf-8") as f:
             f.write(frontmatter.dumps(temp_post))
 
-        print(f"\nConverting to {build_type} ({epub_version}) using {img_folder}...")
+        print(f"\nConverting to {build_type} ({epub_version})...")
 
-        # --- STEP 4: PANDOC EXECUTION ---
-        # Construct the command line arguments for Pandoc to handle the heavy lifting
+        cover_path = IMG_ROOT / bookID / f"cover{img_format}"
+
         cmd = [
             "pandoc",
-            md_path,
-            "-o", epub_path,
+            str(md_path),
+            "-o", str(epub_path),
             f"--to={epub_version}",
-            "--css", "./scripts/epub.css", # Styling for the Ebook
-            "--toc",                      # Generate Table of Contents
+            "--css", str(CSS_PATH),
+            "--toc",
             "--toc-depth=3",
-            "--split-level=2",            # Defines how the book is split into files internally
-            f"--epub-cover-image={img_folder}/{bookID}/cover{img_format}",
+            "--split-level=2",
             "--epub-title-page=false",
         ]
 
-        # Execute Pandoc and check for success
-        subprocess.run(cmd, check=True)
-        print(f"Done! {build_type} EPUB available at: {epub_path}")
+        if cover_path.exists():
+            cmd.append(f"--epub-cover-image={str(cover_path)}")
+        else:
+            print(f"::warning:: Cover image not found at {cover_path}")
+
+        try:
+            subprocess.run(cmd, check=True)
+            print(f"Done! {build_type} EPUB available at: {epub_path}")
+        except subprocess.CalledProcessError as e:
+            print(f"Pandoc failed for {build_type}: {e}")
 
     print("")
