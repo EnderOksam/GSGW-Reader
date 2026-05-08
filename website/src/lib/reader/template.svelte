@@ -1,89 +1,225 @@
-<script>
+<script lang="ts">
+
   import css from "../../../../reader.css?url";
+
   import { readerState } from "$lib/reader.svelte";
+
   import { untrack } from 'svelte';
 
-  // These variables are the targets for build_web.py's regex replacement.
-  // DO NOT change the formatting of these two lines.
-  let ch_meta = null; 
-  let html_content = ""; 
+
+
+  let ch_meta = null;
+
+  let html_content = "";
+
+
 
   $effect(() => {
+
     if (ch_meta) {
+
       untrack(() => {
+
         readerState.ch_meta = ch_meta;
+
       });
+
     }
+
   });
+
 </script>
 
+
+
 <svelte:head>
+
   <link rel="stylesheet" href={css}>
+
 </svelte:head>
 
-<article class="reader-container">
+
+
+<article
+
+  class="reader-container"
+
+  style="text-align: {(readerState as any).textAlign || 'left'}"
+
+>
+
   {@html html_content}
+
 </article>
 
+
+
 <style>
-  /* 1. Main Page Layout */
+
+  :root {
+
+    --reader-text: #e0e0e0;
+
+    --window-bg: #2d2d2d;
+
+    --window-bar-bg: #4a4a4a;
+
+    --window-border: #1a1a1a;
+
+    --window-text: #f8f9fa;
+
+  }
+
+
+
   .reader-container {
-    text-align: center; /* General text is centered for the "novel" look */
+
     max-width: 800px;
+
     margin: 0 auto;
+
     padding: 2rem;
-    line-height: 1.8;
-    color: #1a1a1a;
+
+    line-height: 1.6;
+
+    color: var(--reader-text);
+
     font-family: 'Inter', system-ui, sans-serif;
+
   }
 
-  /* 2. Global styling for Markdown-injected paragraphs */
-  .reader-container :global(p) {
-    margin-bottom: 1.5rem;
-  }
 
-  /* 3. Global styling for default horizontal rules */
-  .reader-container :global(hr) {
-    margin: 2.5rem auto;
-    width: 50%;
-    border: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    opacity: 0.6;
-  }
 
-  /* 4. THE WIKI/SYSTEM WINDOW 
-     Triggered by ::: {.wiki-window} in Markdown */
+  /* --- THE COMPUTER WINDOW --- */
+
   .reader-container :global(.wiki-window) {
+
     margin: 3rem auto;
-    padding: 2rem;
-    background-color: #ffffff; /* Contrast against page background */
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    text-align: left; /* Wikis and reports are easier to read left-aligned */
+
+    background-color: var(--window-bg);
+
+    border: 2px solid var(--window-border);
+
+    border-radius: 6px;
+
+    overflow: hidden;
+
     max-width: 90%;
+
+    position: relative;
+
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 0;
+
+    text-align: center;
+
   }
 
-  /* Resetting HRs inside the Wiki Window to be full-width and darker */
-  .reader-container :global(.wiki-window hr) {
-    width: 100%;
-    margin: 1rem 0;
-    border-top: 1px solid #e5e7eb;
-    opacity: 1;
+
+
+  /* Title Bar: Icons only, pinned far right */
+
+  .reader-container :global(.wiki-window::before) {
+
+    content: "_ □ X";
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    background: var(--window-bar-bg);
+
+    color: #ffffff;
+
+    padding: 8px 16px;
+
+    font-family: monospace;
+
+    font-size: 18px;
+
+    letter-spacing: 8px;
+
+    border-bottom: 2px solid var(--window-border);
+
   }
 
-  /* Styling bold titles inside the window */
-  .reader-container :global(.wiki-window strong) {
-    display: block;
-    font-size: 1.15rem;
-    color: #000;
-    margin-bottom: 0.5rem;
-  }
 
-  /* Adjusting font for the Wiki Window to look more "official" */
+
+  /* Standard window text */
+
   .reader-container :global(.wiki-window p) {
-    font-size: 0.95rem;
-    color: #374151;
-    margin-bottom: 0.75rem;
+
+    color: var(--window-text) !important;
+
+    font-family: 'Courier New', Courier, monospace;
+
+    margin: 1.2rem 2rem;
+
+    font-size: 1.3rem;
+
+    line-height: 1.5;
+
+    text-align: center;
+
   }
+
+
+
+  /* Bolded text inside the window is now Red */
+
+  .reader-container :global(.wiki-window strong),
+
+  .reader-container :global(.wiki-window b) {
+
+    color: #ff4d4d !important; /* Vibrant Red */
+
+    font-family: 'Courier New', Courier, monospace;
+
+    font-weight: 700;
+
+    font-size: 1.4rem; /* Slightly larger to emphasize bold */
+
+  }
+
+
+
+  /* Title highlights (specifically for bracketed headers) */
+
+  .reader-container :global(.wiki-window p strong:first-child) {
+
+    display: block;
+
+    margin-top: 1rem;
+
+    margin-bottom: 1rem;
+
+  }
+
+
+
+  .reader-container :global(.wiki-window p:last-child) {
+
+    margin-bottom: 2rem;
+
+  }
+
+
+
+  .reader-container :global(.wiki-window hr) {
+
+    width: 60%;
+
+    margin: 1.5rem auto;
+
+    border: 0;
+
+    border-top: 2px solid #555;
+
+  }
+
 </style>
