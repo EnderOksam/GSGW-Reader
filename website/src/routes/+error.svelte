@@ -1,28 +1,23 @@
 <script>
-  const imgBG = "$lib/assets/web-bg.jpg?enhanced&w=9999";
+  // Import images and transition utilities
   import braun1 from "$lib/assets/braun.png";
   import braun2 from "$lib/assets/braun2.png";
   import { fade } from "svelte/transition";
   import "../app.css";
 
+  // Reactive state for the image toggle
   let isToggled = $state(false);
+
+  // Background image constant
+  const imgBG = "$lib/assets/web-bg.jpg?enhanced&w=9999";
 </script>
 
-<div in:fade={{ duration: 1000 }} class="relative min-h-dvh w-full overflow-hidden">
-  <!-- Background -->
-  <div class="fixed inset-0 -z-10">
-    <enhanced:img 
-      src={imgBG} 
-      alt="" 
-      class="w-full h-full object-cover" 
-    />
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
-  </div>
-
-  <main class="relative flex min-h-dvh items-center justify-center px-6 py-12">
+<!-- Main container with relative positioning for background layering -->
+<div class="relative overflow-hidden">
+  <main class="relative z-10 flex min-h-dvh items-center justify-center px-6 py-12">
     <div class="max-w-5xl w-full flex flex-col md:flex-row items-center justify-between gap-12">
       
-      <!-- Left Content -->
+      <!-- Left Content: Text and Navigation -->
       <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-8">
         <div class="space-y-4">
           <h2 class="font-serif text-4xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl">
@@ -47,21 +42,31 @@
         </div>
       </div>
 
-      <!-- Right Content -->
+      <!-- Right Content: Interactive Character Toggle -->
       <div class="flex flex-col items-center justify-center shrink-0">
         <button 
           onclick={() => isToggled = !isToggled}
-          class="hover-animate relative block size-56 md:size-72 lg:size-80 transition-transform active:scale-95 outline-hidden cursor-pointer"
+          class="hover-animate relative block size-56 md:size-72 lg:size-80 transition-transform active:scale-95 outline-none cursor-pointer"
         >
-          <img 
-            src={isToggled ? braun2 : braun1} 
-            alt="" 
-            class="h-full w-full object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.7)]"
-          />
+          {#if isToggled}
+            <img 
+              in:fade={{ duration: 200 }}
+              src={braun2} 
+              alt="Braun secondary" 
+              class="h-full w-full object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.7)]"
+            />
+          {:else}
+            <img 
+              in:fade={{ duration: 200 }}
+              src={braun1} 
+              alt="Braun primary" 
+              class="h-full w-full object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.7)]"
+            />
+          {/if}
         </button>
         
         <span class="mt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-white/20 italic">
-          # placeholder
+          # status_normal
         </span>
       </div>
 
@@ -70,6 +75,7 @@
 </div>
 
 <style>
+  /* Custom floating and tilting animation */
   .hover-animate {
     animation: hoverRotate 5s ease-in-out infinite;
   }

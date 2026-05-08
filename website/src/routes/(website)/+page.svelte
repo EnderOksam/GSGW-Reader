@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
   import Icon from "@iconify/svelte";
@@ -15,18 +15,20 @@
 
   const cardImages = [card1, card2, card3, card4, card5, card6];
 
+  // Visual state management
   let isTransitioned = $state(false);
   let showTransitionBG = $state(false);
-  
   let currentIndex = $state(Math.floor(Math.random() * cardImages.length));
 
   const ROTATION_TIME = 10000;
 
+  // Cycles to the next character card
   function cycleCard() {
     currentIndex = (currentIndex + 1) % cardImages.length;
   }
 
   onMount(() => {
+    // Logic to handle the background fade-in when returning from another page
     const comingBack = sessionStorage.getItem("navigated_to_book");
 
     if (comingBack === "true") {
@@ -39,16 +41,18 @@
       isTransitioned = true;
     }
 
+    // Set up the automatic card rotation
     const interval = setInterval(cycleCard, ROTATION_TIME);
     return () => clearInterval(interval);
   });
 
+  // Track navigation to trigger transition effects on return
   function handleNavigation() {
     sessionStorage.setItem("navigated_to_book", "true");
   }
 </script>
 
-<!-- Test Debug Button: Triggers 404 by navigating to a non-existent route -->
+<!-- Hidden link for testing 404 behavior -->
 <a 
   href="/error-test-trigger" 
   class="fixed top-4 left-4 z-50 opacity-0 hover:opacity-20 transition-opacity text-white cursor-default"
@@ -56,7 +60,7 @@
   #
 </a>
 
-<!-- Background Layer -->
+<!-- Background Layer: Cross-fades between two images based on navigation state -->
 <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
   <enhanced:img 
     src={imgBG_TransitionSource} 
@@ -74,6 +78,8 @@
 </div>
 
 <main class="relative z-10 flex min-h-dvh flex-col items-center justify-center gap-10 p-8 md:flex-row md:justify-around text-white">
+  
+  <!-- Showcase Section: Character Card Slideshow -->
   <div class="flex flex-col items-center gap-4">
     <div class="hover-3d relative">
       <figure class="max-w-100 rounded-2xl shadow-2xl overflow-hidden bg-black relative aspect-[2/3] w-[30vh] md:w-[50vh]">
@@ -87,11 +93,11 @@
           />
         {/key}
       </figure>
-      <!-- 3D Effect Decoration -->
+      <!-- Spacer divs for 3D hover logic -->
       <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
     </div>
 
-    <!-- Artist Credit -->
+    <!-- Artist Credit Link -->
     <a 
       href="https://twitter.com/nokdock4" 
       target="_blank" 
@@ -102,6 +108,7 @@
     </a>
   </div>
 
+  <!-- Content Section: Book Title, Synopsis, and Actions -->
   <div class="flex flex-col items-center md:items-start">
     <div class="max-w-md text-center">
       <h1 class="lg:text-5xl text-3xl font-bold text-primary filter drop-shadow-[0_0_10px_#c47f0a] w-full block md:text-left">

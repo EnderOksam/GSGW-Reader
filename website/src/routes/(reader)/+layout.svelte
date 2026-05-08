@@ -12,7 +12,7 @@
   import InfoBanner from "$lib/reader/InfoBanner.svelte";
 
   // Data
-  import { readerState } from "$lib/reader.svelte.ts";
+  import { readerState } from "$lib/reader.svelte";
   import bookData from "$lib/meta.json";
 
   let { children } = $props();
@@ -132,7 +132,7 @@
 
   // 3. Get Total Chapters for the current TL
   const totalChapters = $derived(
-    bookData[bookSlug][currentTL].length
+  (bookData as any)[bookSlug][currentTL].length
   );
 
 

@@ -1,18 +1,13 @@
 <script lang="ts">
-  /**
-   * Imports: Svelte 5 runes-based logic and SvelteKit modules
-   */
-  import { page } from "$app/state"; // SvelteKit page state for URL params
+  import { page } from "$app/state"; 
   import { onMount } from "svelte";
   import Icon from "@iconify/svelte";
   import imgLotmCover from "$lib/assets/web-lotm-cover.jpg";
   import imgtempCover from "$lib/assets/web-coi-cover.jpg";
-  import book_meta from "$lib/meta.json"; // Local JSON containing chapter data
+  import book_meta from "$lib/meta.json";
 
-  /**
-   * --- Type Definitions ---
-   * Fixes: "implicitly has any type" and "indexing" errors
-   */
+  // --- Types ---
+
   interface Chapter {
     title: string;
     slug: string | number;
@@ -42,9 +37,9 @@
     };
   }
 
-  /**
-   * Static configuration for available books
-   */
+  // --- Data & State ---
+
+  // Static info for book landing pages
   const bookConfigs: Record<string, BookConfig> = {
     gsgw: {
       title: "Got Dropped into a Ghost Story, Still Gotta Work",
@@ -68,33 +63,27 @@
     },
   };
 
-  // Cast metadata to allow dynamic string indexing
   const meta = book_meta as BookMetadata;
 
-  /**
-   * --- Reactive Logic (Svelte 5 Runes) ---
-   */
+  // Reactively track the current book based on URL
   const bookSlug = $derived(page.params.book || "gsgw");
   const book = $derived(bookConfigs[bookSlug] || bookConfigs["gsgw"]);
 
-  // Component State
+  // User interface state
   let searchQuery = $state("");
   let selectedTL = $state("saltgoblintl");
   let isReversed = $state(false);
-  let continueData = $state<ReadingHistory | null>(null); // Typed to fix 'never' error
+  let continueData = $state<ReadingHistory | null>(null);
 
-  // References to HTML <dialog> elements
+  // References for popup modals
   let synopsisModal: HTMLDialogElement;
   let tlSelectionModal: HTMLDialogElement;
 
-  // Derives available translations and chapter lists
+  // Lists available translations and chapters for the current book
   const availableTLs = $derived(Object.keys(meta[bookSlug] || {}));
   const chapters = $derived(meta[bookSlug]?.[selectedTL] || []);
 
-  /**
-   * Filtered chapter list
-   * Updates automatically when searchQuery, isReversed, or chapters change
-   */
+  // Returns chapters matching search query and chosen sort order
   const filteredChapters = $derived(() => {
     const list = chapters.filter(
       (ch: Chapter) =>
@@ -104,9 +93,7 @@
     return isReversed ? [...list].reverse() : list;
   });
 
-  /**
-   * --- Lifecycle & Handlers ---
-   */
+  // Load bookmark from browser storage on page load
   onMount(() => {
     const stored = localStorage.getItem("lastRead");
     if (stored) {
@@ -121,6 +108,7 @@
     }
   });
 
+  // If no history exists, open translation choice modal before starting
   function handleReadClick(e: MouseEvent) {
     if (continueData) return;
     e.preventDefault();
@@ -131,18 +119,13 @@
 <svelte:head>
   <title>{book.title}</title>
   <meta name="description" content={book.synopsis} />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="GSGW-Reader" />
-  <meta property="og:description" content={book.synopsis} />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={book.title} />
-  <meta name="twitter:description" content={book.synopsis} />
 </svelte:head>
 
 <main class="flex md:flex-row flex-col min-h-screen">
-  <!-- Sidebar: Book Cover, Metadata, and Primary Actions -->
+  <!-- Left Side: Book Info & Actions -->
   <aside class="md:h-dvh md:w-[35vw] w-screen bg-base-200/50 md:sticky md:top-0 flex flex-col items-center border-b md:border-b-0 md:border-r border-base-300">
     <div class="w-full flex flex-col items-center p-6 md:p-8">
+      <!-- Cover Image -->
       <div class="relative group mb-6">
         <div class="absolute -inset-1 bg-current opacity-10 blur-xl rounded-2xl transition-opacity group-hover:opacity-20"></div>
         <enhanced:img
@@ -152,6 +135,7 @@
         />
       </div>
 
+      <!-- Title & Author -->
       <div class="text-center space-y-1">
         <h1 class="text-2xl md:text-3xl font-black leading-tight {book.title_accent}">
           {book.title}
@@ -162,7 +146,7 @@
       </div>
     </div>
 
-    <!-- Reading Action Buttons -->
+    <!-- Main Buttons: Continue/Start and Download -->
     <div class="w-full px-6 flex gap-2 mb-8">
       <a
         href={continueData
@@ -186,8 +170,9 @@
       </a>
     </div>
 
-    <!-- Synopsis View -->
+    <!-- Description Area -->
     <div class="grow w-full px-6 md:px-8 pb-8 overflow-hidden">
+      <!-- Scrollable text for Desktop -->
       <div class="hidden md:block h-full">
         <div class="h-full overflow-y-auto pr-2 custom-scrollbar">
           <p class="text-sm leading-relaxed text-justify opacity-80 whitespace-pre-line">
@@ -196,6 +181,7 @@
         </div>
       </div>
 
+      <!-- Compact button for Mobile (opens popup) -->
       <button
         class="md:hidden btn btn-ghost btn-sm w-full h-auto py-3 bg-base-300/30"
         onclick={() => synopsisModal.showModal()}
@@ -207,7 +193,7 @@
     </div>
   </aside>
 
-  <!-- Modals -->
+  <!-- Modal: Full Synopsis -->
   <dialog bind:this={synopsisModal} class="modal modal-bottom sm:modal-middle">
     <div class="modal-box bg-base-200">
       <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button></form>
@@ -219,6 +205,7 @@
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
   </dialog>
 
+  <!-- Modal: Select Translation Source -->
   <dialog bind:this={tlSelectionModal} class="modal modal-bottom sm:modal-middle">
     <div class="modal-box bg-base-100">
       <div class="flex justify-between items-center mb-6">
@@ -229,6 +216,7 @@
         <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost">✕</button></form>
       </div>
 
+      <!-- Static links for specific books (hardcoded logic) -->
       <div class="flex flex-col gap-3">
         {#if bookSlug === "lotm"}
           <a href="../../read/lotm/goblintl/1" class="btn btn-outline btn-lg justify-between h-auto py-4 group" onclick={() => tlSelectionModal.close()}>
@@ -257,14 +245,16 @@
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
   </dialog>
 
-  <!-- Chapter List Section -->
+  <!-- Right Side: Search and Chapter Grid -->
   <div class="md:w-[65vw] w-screen min-h-dvh bg-base-100/50 backdrop-blur-sm">
+    <!-- Filter Bar (Sticky) -->
     <div class="w-full flex flex-row items-center gap-2 p-4 sticky top-0 backdrop-blur-md z-10 bg-base-100/30 border-b border-white/5">
       <label class="input input-bordered flex items-center gap-2 grow">
         <Icon icon="material-symbols:search-rounded" class="size-6 opacity-50" />
         <input type="search" bind:value={searchQuery} placeholder="Search title or number..." class="grow" />
       </label>
 
+      <!-- Toggle sort direction -->
       <button
         class="btn btn-square btn-bordered btn-soft {book.button_primary}"
         onclick={() => (isReversed = !isReversed)}
@@ -276,6 +266,7 @@
         />
       </button>
 
+      <!-- Change Translation Source -->
       <select class="select select-bordered" bind:value={selectedTL}>
         {#each availableTLs as tl}
           <option value={tl}>{tl.toUpperCase()}</option>
@@ -283,6 +274,7 @@
       </select>
     </div>
 
+    <!-- Grid of Chapter Buttons -->
     <div class="w-full grid grid-cols-1 gap-2 p-4">
       {#if filteredChapters().length > 0}
         {#each filteredChapters() as ch}
@@ -302,6 +294,7 @@
           </a>
         {/each}
       {:else}
+        <!-- Empty search state -->
         <div class="flex flex-col items-center justify-center py-20 opacity-30">
           <Icon icon="tabler:ghost" class="size-20" />
           <p class="text-xl font-bold">No chapters found</p>
