@@ -32,13 +32,20 @@ Here's a handy table to quickly find the tag you need:
 
 | Tag | What It's For | Example |
 |-----|---------------|---------|
-|'+- & -+'  | Windows for Der Logs | `+- Tamra Express Disaster -+` |
-|| Cover image | `<cover>[cover.jpg][Cover Image]` |
-|| System messages | `<!>[Skill activated!]` |
-|| System window | `+\n[Title]\nContent\n+` |
-|| Constellation speech | `<@>[The stars are watching you]` |
-|| Outer god speech | `<#>【The void whispers】` |
-|| Quotes | `<&>「Quote text」` |
-|| Notes for readers | `<?>Translation note here` |
-|| Images | `<img>[image.jpg][Alt text]` |
-|| Section break | `\n***\n` |
+| `+-` & `-+`  | Info/record window | `+- Title -+` |
+| `%%text%%` | Shaking text (whole block) | `%%scary%%` |
+| `%~text~%` | Shaking text (per letter) | `%~scary~%` |
+| `#rtextr#` | Bold red text | `#rimportantr#` |
+| `@ll@text@ll@` | Monospace, bold, left | `@ll@note@ll@` |
+| `@rr@text@rr@` | Monospace, bold, right | `@rr@source@rr@` |
+| `***` | Section break | `***` |
+
+### Window Metadata
+
+The first line inside a `+- ... -+` window is treated as metadata (smaller, muted, right-aligned).  
+Put `\*` or `\**` before the first bold/italic text to cancel this:
+
+| Style | Markdown |
+|-------|----------|
+| With metadata line | `+-\nDark Exploration Records / Ghost Story\n...-+` |
+| Without metadata (bold title) | `+-\n\**[Title]**\n...-+` |

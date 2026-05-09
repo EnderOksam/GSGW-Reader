@@ -58,13 +58,13 @@
 
     --reader-text: #e0e0e0;
 
-    --window-bg: #2d2d2d;
+    --window-bg: #1e1e2e;
 
-    --window-bar-bg: #4a4a4a;
-
-    --window-border: #1a1a1a;
+    --window-border: #3a3a5c;
 
     --window-text: #f8f9fa;
+
+    --window-accent: #ff4d00;
 
   }
 
@@ -82,87 +82,78 @@
 
     color: var(--reader-text);
 
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--chapter-font, 'Inter', system-ui, sans-serif);
 
   }
 
 
 
-  /* --- THE COMPUTER WINDOW --- */
+  /* --- RECORD WINDOW --- */
 
   .reader-container :global(.wiki-window) {
 
-    margin: 3rem auto;
+    margin: 2.5rem auto;
 
-    background-color: var(--window-bg);
+    background: var(--window-bg);
 
-    border: 2px solid var(--window-border);
+    border: 1px solid var(--window-border);
 
-    border-radius: 6px;
+    border-radius: 8px;
 
-    overflow: hidden;
-
-    max-width: 90%;
+    max-width: 88%;
 
     position: relative;
 
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 
-    display: flex;
+    padding: 1.5rem 2rem 1rem;
 
-    flex-direction: column;
-
-    padding: 0;
-
-    text-align: center;
+    text-align: left;
 
   }
 
 
 
-  /* Title Bar: Icons only, pinned far right */
-
-  .reader-container :global(.wiki-window::before) {
-
+  .reader-container :global(.wiki-window)::before {
     content: "_ □ X";
-
     display: flex;
-
     justify-content: flex-end;
-
-    background: var(--window-bar-bg);
-
+    background: var(--window-border);
     color: #ffffff;
-
-    padding: 8px 16px;
-
+    padding: 6px 14px;
     font-family: monospace;
-
-    font-size: 18px;
-
-    letter-spacing: 8px;
-
-    border-bottom: 2px solid var(--window-border);
-
+    font-size: 16px;
+    letter-spacing: 6px;
+    margin: -1.5rem -2rem 1rem;
+    border-bottom: 1px solid var(--window-border);
+    border-radius: 8px 8px 0 0;
   }
 
 
-
-  /* Standard window text */
 
   .reader-container :global(.wiki-window p) {
 
     color: var(--window-text) !important;
 
-    font-family: 'Courier New', Courier, monospace;
+    margin: 0.8rem 0;
 
-    margin: 1.2rem 2rem;
+    font-size: 1rem;
 
-    font-size: 1.3rem;
+    line-height: 1.6;
 
-    line-height: 1.5;
+    text-align: left;
 
-    text-align: center;
+  }
+
+  .reader-container :global(.wiki-window:not(.no-meta) p:first-of-type) {
+
+    font-size: 0.8rem;
+
+    opacity: 0.6;
+
+    text-align: right;
+
+    margin-bottom: 0.3rem;
 
   }
 
@@ -174,33 +165,37 @@
 
     color: inherit;
 
-    font-family: 'Courier New', Courier, monospace;
-
     font-weight: 700;
 
-    font-size: 1.4rem;
+    font-size: 1rem;
 
   }
 
 
 
-  /* Title highlights (specifically for bracketed headers) */
+  .reader-container :global(.wiki-window p strong:only-child),
 
-  .reader-container :global(.wiki-window p strong:first-child) {
+  .reader-container :global(.wiki-window p strong:first-child):not(b strong) {
 
     display: block;
 
-    margin-top: 1rem;
+    font-size: 1.25rem;
 
-    margin-bottom: 1rem;
+    margin: 1rem 0 0.8rem;
 
   }
 
 
 
-  .reader-container :global(.wiki-window p:last-child) {
+  .reader-container :global(.wiki-window p:last-of-type) {
 
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
+
+  }
+
+  .reader-container :global(.wiki-window p:empty) {
+
+    display: none;
 
   }
 

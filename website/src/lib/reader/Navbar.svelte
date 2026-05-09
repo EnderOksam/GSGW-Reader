@@ -10,7 +10,7 @@
 
   // --- Props ---
   // Using Svelte 5 $props for reactive input
-  let { prefs, bookSlug, bookData, navState = $bindable() } = $props();
+  let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, totalChapters = 0 } = $props();
 
   // --- State ---
   // Store dialog references in a reactive object for element binding
@@ -90,6 +90,23 @@
       </a>
     </div>
 
+    <!-- Previous Chapter -->
+    <div class="tooltip tooltip-bottom" data-tip="Previous (P)">
+      {#if currentChapter > 0}
+        <a
+          href="/read/{bookSlug}/{navState.selectedTL}/{currentChapter - 1}"
+          class="btn btn-ghost btn-sm btn-square rounded-btn"
+          aria-label="Previous Chapter"
+        >
+          <Icon icon="mage:previous" class="size-5" />
+        </a>
+      {:else}
+        <button class="btn btn-ghost btn-sm btn-square rounded-btn opacity-30" disabled aria-label="No previous chapter">
+          <Icon icon="mage:previous" class="size-5" />
+        </button>
+      {/if}
+    </div>
+
     <!-- Scroll to Comments -->
     <div class="tooltip tooltip-bottom" data-tip="Comments (C)">
       <button
@@ -99,6 +116,24 @@
       >
         <Icon icon="iconamoon:comment" class="size-6" />
       </button>
+    </div>
+
+    <!-- Next Chapter -->
+    <div class="tooltip tooltip-bottom" data-tip="Next (N)">
+      {#if currentChapter < totalChapters - 1}
+        <a
+          href="/read/{bookSlug}/{navState.selectedTL}/{currentChapter + 1}"
+          class="btn btn-ghost btn-sm btn-square rounded-btn"
+          aria-label="Next Chapter"
+          data-sveltekit-preload-data="viewport"
+        >
+          <Icon icon="mage:next" class="size-5" />
+        </a>
+      {:else}
+        <button class="btn btn-ghost btn-sm btn-square rounded-btn opacity-30" disabled aria-label="No next chapter">
+          <Icon icon="mage:next" class="size-5" />
+        </button>
+      {/if}
     </div>
 
     <!-- Table of Contents Toggle -->

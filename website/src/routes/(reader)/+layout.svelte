@@ -259,7 +259,7 @@
     --card-bg-opacity: {prefs.config.solidBackground ? 1 : 0};
   "
 >
-  <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState />
+  <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {totalChapters} />
 
   <main class="mx-auto my-3 max-w-4xl w-full px-6 py-12 md:px-12 z-0 relative">
     <div

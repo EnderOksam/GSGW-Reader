@@ -1,13 +1,12 @@
 import os
 import re
-import asyncio
 import json
+import subprocess
 import shutil
 from pathlib import Path
 import frontmatter
 import imagesize
 
-# --- CONFIGURATION ---
 SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_ROOT = SCRIPT_DIR.parent
 IMG_STORAGE_DIR = REPO_ROOT / "website/static/assets/images"
@@ -16,31 +15,19 @@ TEMPLATE_PATH = REPO_ROOT / "website/src/lib/reader/template.svelte"
 META_OUTPUT_PATH = REPO_ROOT / "website/src/lib/meta.json"
 OUTPUT_ROOT = REPO_ROOT / "website/src/routes/(reader)/read/"
 
-MAX_CONCURRENT_TASKS = 75
-semaphore = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
-
-completed_count = 0
-
-# --- CORE LOGIC ---
 
 def process_html_images(html_content):
-    """
-    Scans HTML for <img> tags, updates paths to .webp, and adds width/height attributes.
-    """
     def replacer(match):
         full_tag = match.group(0)
         src_match = re.search(r'src="([^"]+)"', full_tag)
         if not src_match:
             return full_tag
-        
         original_src = src_match.group(1)
         image_filename = Path(original_src).name
         webp_filename = Path(image_filename).with_suffix(".webp")
         local_image_path = IMG_STORAGE_DIR / webp_filename
-
         new_src = f"{IMG_PUBLIC_PREFIX}/{webp_filename}"
         new_tag = full_tag.replace(original_src, new_src)
-
         if local_image_path.exists():
             try:
                 width, height = imagesize.get(local_image_path)
@@ -48,20 +35,25 @@ def process_html_images(html_content):
                     new_tag = new_tag.replace('<img', f'<img width="{width}" height="{height}"')
             except:
                 pass
-        
         return new_tag
-
     return re.sub(r'<img [^>]+>', replacer, html_content)
 
-async def convert_chapter(content):
-    """
-    Converts raw Markdown content to HTML using Pandoc, 
-    with pre-processing for the Wiki Window syntax.
-    """
-    # PRE-PROCESS: Convert %%text%% into shaking text span
+
+def convert_chapter(content):
     content = re.sub(r'%%(.*?)%%', r'<span class="shake">\1</span>', content)
 
-    # PRE-PROCESS: Convert {style="..."} blocks into Pandoc fenced divs
+    def shake_char_replacer(match):
+        text = match.group(1)
+        return ''.join(
+            f'<span class="shake" style="animation-delay:-{(i * 0.05) % 0.5:.2f}s">{c}</span>'
+            if c != ' ' else ' '
+            for i, c in enumerate(text)
+        )
+    content = re.sub(r'%~(.*?)~%', shake_char_replacer, content)
+    content = re.sub(r'@ll@(.*?)@ll@', r'<span class="mono mono-left">\1</span>', content)
+    content = re.sub(r'@rr@(.*?)@rr@', r'<span class="mono mono-right">\1</span>', content)
+    content = re.sub(r'#r(.*?)r#', r'<span class="text-red">\1</span>', content)
+
     style_pattern = r'^[ \t]*\{style="([^"]*)"\}\s*$'
     lines = content.split('\n')
     result = []
@@ -84,67 +76,53 @@ async def convert_chapter(content):
             i += 1
     content = '\n'.join(result)
 
-    # PRE-PROCESS: Automatically wrap +--- text ---+ in a wiki-window div
-    # This regex looks for lines starting with +--- and ending with ---+
-    content = re.sub(
-        r'\+[-+]+\n(.*?)\n[-+]+\+', 
-        r'\n::: {.wiki-window}\n\1\n:::\n', 
-        content, 
-        flags=re.DOTALL
+    def escape_markdown_except_bold(text):
+        text = re.sub(r'(?<!\\)\[', r'\\[', text)
+        text = re.sub(r'(?<!\\)\]', r'\\]', text)
+        text = re.sub(r'(?<!\\)\(', r'\\(', text)
+        text = re.sub(r'(?<!\\)\)', r'\\)', text)
+        text = re.sub(r'(?<!\\)_', r'\\_', text)
+        text = re.sub(r'(?m)^(?<!\\):(?=\s)', r'\\:', text)
+        text = re.sub(r'(?m)^(?<!\\)#(?=\s)', r'\\#', text)
+        text = re.sub(r'(?m)^(?<!\\)>(?=\s)', r'\\>', text)
+        return text
+
+    def wiki_window_replacer(match):
+        inner = match.group(1)
+        no_meta = False
+        if inner.lstrip().startswith('\\*'):
+            idx = inner.find('\\')
+            inner = inner[:idx] + inner[idx+1:]
+            no_meta = True
+        inner = escape_markdown_except_bold(inner)
+        if no_meta:
+            return f'\n::: {{.wiki-window .no-meta}}\n{inner}\n:::\n'
+        return f'\n::: {{.wiki-window}}\n{inner}\n:::\n'
+    content = re.sub(r'\+[-+]+\n(.*?)\n[-+]+\+', wiki_window_replacer, content, flags=re.DOTALL)
+
+    proc = subprocess.run(
+        ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],
+        input=content.encode("utf-8"),
+        capture_output=True,
+        timeout=120
     )
+    if proc.returncode != 0:
+        print(f"Pandoc error: {proc.stderr.decode().strip()}")
+        return f"<p>Error converting content: {proc.stderr.decode().strip()}</p>"
+    return process_html_images(proc.stdout.decode("utf-8"))
 
-    async with semaphore:
-        cmd = [
-            "pandoc",
-            "--from", "markdown",
-            "--to", "html",
-            "--quiet"
-        ]
 
-        process = await asyncio.create_subprocess_exec(
-            *cmd,
-            stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-
-        stdout, stderr = await process.communicate(input=content.encode("utf-8"))
-
-        if process.returncode != 0:
-            print(f"Pandoc error: {stderr.decode().strip()}")
-            return f"<p>Error converting content: {stderr.decode().strip()}</p>"
-
-        html_output = stdout.decode("utf-8")
-        return process_html_images(html_output)
-
-async def process_task(task, template_str):
-    """
-    Integrates converted HTML into the Svelte template and writes to disk.
-    """
-    global completed_count
-    html_content = await convert_chapter(task["content"])
-    
-    # Move the escaping logic out of the f-string to avoid SyntaxError
+def process_task(task, template_str):
+    html_content = convert_chapter(task["content"])
     safe_html = html_content.replace("`", "\\`").replace("${", "$\\{")
-
-    # Inject metadata and content into the template string
-    output = re.sub(
-        r'let ch_meta = null;', 
-        f'let ch_meta = {json.dumps(task["meta"])};', 
-        template_str
-    )
-    
-    # Use the safe_html variable here
+    meta_json = json.dumps(task["meta"], ensure_ascii=False)
+    output = template_str.replace("let ch_meta = null;", f"let ch_meta = {meta_json};")
     output = output.replace('let html_content = "";', f'let html_content = `{safe_html}`;')
-
     with open(task["dest"], "w", encoding="utf-8") as f:
         f.write(output)
-    
-    completed_count += 1
-    if completed_count % 10 == 0:
-        print(f"Generated {completed_count} chapters...")
 
-async def main():
+
+def main():
     if not TEMPLATE_PATH.exists():
         print(f"Error: Template not found at {TEMPLATE_PATH}")
         return
@@ -152,7 +130,6 @@ async def main():
     with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
         template_str = f.read()
 
-    # Paths to scan for chapters
     paths = ["chapters/gsgw/fantl", "chapters/gsgw/mtl"]
     tasks_data = []
     meta_map = {}
@@ -165,34 +142,38 @@ async def main():
         master = frontmatter.load(path / "0000.md")
         bookID = master.get("metaBook", "gsgw")
         bookTL = master.get("metaTl", "fantl").lower()
-        
-        if bookID not in meta_map: meta_map[bookID] = {}
-        if bookTL not in meta_map[bookID]: meta_map[bookID][bookTL] = []
+        if bookID not in meta_map:
+            meta_map[bookID] = {}
+        if bookTL not in meta_map[bookID]:
+            meta_map[bookID][bookTL] = []
 
         files = sorted([f for f in os.listdir(path) if f.endswith(".md") and f != "0000.md"])
         for file in files:
             post = frontmatter.load(path / file)
             slug = post.metadata.get("slug")
-            if not slug: continue
-
+            if not slug:
+                continue
             meta_map[bookID][bookTL].append(post.metadata)
             out_dir = OUTPUT_ROOT / str(bookID) / str(bookTL) / str(slug)
             out_dir.mkdir(parents=True, exist_ok=True)
-            
             tasks_data.append({
-                "content": post.content, 
-                "meta": post.metadata, 
+                "content": post.content,
+                "meta": post.metadata,
                 "dest": out_dir / "+page.svelte"
             })
 
-    # Save the global metadata index
     with open(META_OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(meta_map, f, indent=2)
 
     if tasks_data:
-        print(f"Starting build for {len(tasks_data)} chapters...")
-        await asyncio.gather(*[process_task(t, template_str) for t in tasks_data])
+        total = len(tasks_data)
+        print(f"Starting build for {total} chapters...")
+        for idx, task in enumerate(tasks_data, 1):
+            process_task(task, template_str)
+            if idx % 10 == 0 or idx == total:
+                print(f"Generated {idx}/{total} chapters...")
         print("Build complete.")
 
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
