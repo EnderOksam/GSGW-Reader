@@ -18,7 +18,7 @@ IMG_ROOT = REPO_ROOT / "images"
 
 # Paths to process
 paths = [
-    "../chapters/gsgw/goblintl/",
+    "../chapters/gsgw/fantl/",
     "../chapters/gsgw/mtl/",
     "../chapters/temp/tempfolder/",
 ]
@@ -28,6 +28,9 @@ OUTPUT_DIR = SCRIPT_DIR / "epub"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 today = datetime.date.today().strftime("%B %d, %Y")
+
+def strip_wiki_window(text):
+    return re.sub(r'\+[-+]+\n(.*?)\n[-+]+\+', r'\1', text, flags=re.DOTALL)
 
 for rel_path in paths:
     # Convert relative path to absolute
@@ -59,12 +62,13 @@ for rel_path in paths:
     masterMD.content = masterMD.content.replace("{{DATE}}", today)
 
     print(f"{'-'*5}> Replacing Sections")
+    all_content = ""
     for section in chapters:
         chapters[section].sort(key=lambda x: int(x["index"]))
         print(f"Processing section: {section} ({len(chapters[section])} chapters)")
         content = ""
         for chapter_data in chapters[section]:
-            ch_text = chapter_data["content"].strip()
+            ch_text = strip_wiki_window(chapter_data["content"].strip())
             content += f"""{ch_text}
 
 ___
@@ -72,11 +76,12 @@ ___
 - [Discord](https://discord.gg/XmzJVsyuTQ)
 
 """
+        all_content += f"\n\n{content}"
 
-        bookTitle = masterMD["title"][0]["text"]
-        bookID = masterMD["metaBook"]
-        bookTL = masterMD["metaTl"]
-        masterMD.content = masterMD.content.replace(f"", content)
+    bookTitle = masterMD["title"][0]["text"]
+    bookID = masterMD["metaBook"]
+    bookTL = masterMD["metaTl"]
+    masterMD.content += all_content
 
     print(f"{'-'*5}> Producing Epubs")
 

@@ -1,21 +1,21 @@
 {
   "gsgw": {
-    "goblintl": [
+    "fantl": [
       {
         "title": "Synopsis",
-        "category": "Volume 1",
+        "category": "Chapter 0",
         "discussion": 1,
-        "index": 1,
-        "section": "vol1",
-        "slug": "synopsis"
+        "index": 0,
+        "section": "Chapter 0",
+        "slug": "0"
       },
       {
         "title": "Orientation",
-        "category": "Part 1",
+        "category": "Chapter 1",
         "discussion": 1,
         "index": 1,
-        "section": "Part 1",
-        "slug": "Chapter 1"
+        "section": "Chapter 1",
+        "slug": "1"
       }
     ],
     "mtl": []

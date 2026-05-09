@@ -44,8 +44,6 @@
 
   class="reader-container"
 
-  style="text-align: {(readerState as any).textAlign || 'left'}"
-
 >
 
   {@html html_content}
@@ -170,19 +168,17 @@
 
 
 
-  /* Bolded text inside the window is now Red */
-
   .reader-container :global(.wiki-window strong),
 
   .reader-container :global(.wiki-window b) {
 
-    color: #ff4d4d !important; /* Vibrant Red */
+    color: inherit;
 
     font-family: 'Courier New', Courier, monospace;
 
     font-weight: 700;
 
-    font-size: 1.4rem; /* Slightly larger to emphasize bold */
+    font-size: 1.4rem;
 
   }
 
@@ -210,16 +206,6 @@
 
 
 
-  .reader-container :global(.wiki-window hr) {
 
-    width: 60%;
-
-    margin: 1.5rem auto;
-
-    border: 0;
-
-    border-top: 2px solid #555;
-
-  }
 
 </style>

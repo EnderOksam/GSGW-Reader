@@ -51,15 +51,15 @@
       cover: imgLotmCover,
       external_link: "https://page.kakao.com/content/65171279",
     },
-    placeholder: {
-      title: "placeholder",
-      author: "Dark Exploration Record Fanatics",
-      synopsis: "placeholder description",
+    temp: {
+      title: "Unofficial Dark Exploration Records",
+      author: "Fanatics",
+      synopsis: "A collection of fan-created records exploring the darkness that lies beyond.",
       title_accent: "text-primary",
       button_primary: "btn-secondary",
       button_secondary: "btn-primary",
       cover: imgtempCover,
-      external_link: "https://page.kakao.com/content/65171279",
+      external_link: "",
     },
   };
 
@@ -71,7 +71,7 @@
 
   // User interface state
   let searchQuery = $state("");
-  let selectedTL = $state("saltgoblintl");
+  let selectedTL = $state("fantl");
   let isReversed = $state(false);
   let continueData = $state<ReadingHistory | null>(null);
 
@@ -230,15 +230,17 @@
             </div>
             <Icon icon="material-symbols:arrow-forward-rounded" class="size-6 group-hover:translate-x-1 transition-transform" />
           </a>
-        {:else if bookSlug === "temp"}
-          <a href="../../read/temp/goblintl/1" class="btn btn-outline btn-lg justify-between h-auto py-4 group" onclick={() => tlSelectionModal.close()}>
-            <div class="text-left">
-              <div class="font-bold text-base flex items-center gap-2">
-                goblintl Official <span class="badge badge-secondary badge-sm">Recommended</span>
+        {:else}
+          {#each availableTLs as tl}
+            <a href="../../read/{bookSlug}/{tl}/0" class="btn btn-outline btn-lg justify-between h-auto py-4 group" onclick={() => tlSelectionModal.close()}>
+              <div class="text-left">
+                <div class="font-bold text-base flex items-center gap-2">
+                  {tl.toUpperCase()} <span class="badge badge-secondary badge-sm">Recommended</span>
+                </div>
               </div>
-            </div>
-            <Icon icon="material-symbols:arrow-forward-rounded" class="size-6 group-hover:translate-x-1 transition-transform" />
-          </a>
+              <Icon icon="material-symbols:arrow-forward-rounded" class="size-6 group-hover:translate-x-1 transition-transform" />
+            </a>
+          {/each}
         {/if}
       </div>
     </div>

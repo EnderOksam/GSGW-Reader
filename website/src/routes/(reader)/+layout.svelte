@@ -25,7 +25,7 @@
       fontSize: 25,
       fontWeight: 450,
       lineHeight: 1.8,
-      textAlign: "justify",
+          textAlign: "left",
       hyphens: false,
       indent: false,
       navbarVisible: true,
@@ -62,7 +62,7 @@
           fontSize: 25,
           fontWeight: 450,
           lineHeight: 1.8,
-          textAlign: "justify",
+      textAlign: "left",
           hyphens: false,
           indent: false,
           navbarVisible: true,
@@ -219,19 +219,19 @@
       case "f":
         toggleFullscreen();
         break;
-      case "n":
-      case "arrowright":
-         // Check if it's the last chapter before navigating
-         if (slug < totalChapters) {
-            goto(`/read/${bookSlug}/${currentTL}/${slug + 1}`);
+       case "n":
+       case "arrowright":
+          // Check if it's the last chapter before navigating
+          if (slug < totalChapters - 1) {
+             goto(`/read/${bookSlug}/${currentTL}/${slug + 1}`);
+          }
+         break;
+       case "p":
+       case "arrowleft":
+         if (slug > 0) {
+             goto(`/read/${bookSlug}/${currentTL}/${slug - 1}`);
          }
-        break;
-      case "p":
-      case "arrowleft":
-        if (slug > 1) {
-            goto(`/read/${bookSlug}/${currentTL}/${slug - 1}`);
-        }
-        break;
+         break;
     }
   }
 </script>
@@ -275,15 +275,15 @@
 
     <div class="mt-16 flex items-center justify-between border-t border-base-content/10 pt-8">
       <a
-        href={currentChapter <= 1 
+        href={currentChapter <= 0 
             ? `/book/${bookSlug}` 
             : `/read/${bookSlug}/${navState.selectedTL}/${currentChapter - 1}`}
         class="btn btn-soft btn-sm gap-2"
-        aria-label={currentChapter <= 1 ? "Go Home" : "Previous Chapter"}
+        aria-label={currentChapter <= 0 ? "Go Home" : "Previous Chapter"}
 
       >
-        <Icon icon={currentChapter <= 1 ? "iconamoon:home-light" : "mage:previous"} class="size-5" />
-        <span class="hidden sm:inline">{currentChapter <= 1 ? "Home" : "Prev"}</span>
+        <Icon icon={currentChapter <= 0 ? "iconamoon:home-light" : "mage:previous"} class="size-5" />
+        <span class="hidden sm:inline">{currentChapter <= 0 ? "Home" : "Prev"}</span>
       </a>
 
       <span class="text-xs font-mono font-bold opacity-50 tracking-wider">
@@ -291,15 +291,15 @@
       </span>
 
       <a
-        href={currentChapter >= totalChapters
+        href={currentChapter >= totalChapters - 1
             ? `/book/${bookSlug}`
             : `/read/${bookSlug}/${navState.selectedTL}/${currentChapter + 1}`}
         class="btn btn-soft btn-sm gap-2"
-        aria-label={currentChapter >= totalChapters ? "Go Home" : "Next Chapter"}
+        aria-label={currentChapter >= totalChapters - 1 ? "Go Home" : "Next Chapter"}
         data-sveltekit-preload-data="viewport"
       >
-        <span class="hidden sm:inline">{currentChapter >= totalChapters ? "Home" : "Next"}</span>
-        <Icon icon={currentChapter >= totalChapters ? "iconamoon:home-light" : "mage:next"} class="size-5" />
+        <span class="hidden sm:inline">{currentChapter >= totalChapters - 1 ? "Home" : "Next"}</span>
+        <Icon icon={currentChapter >= totalChapters - 1 ? "iconamoon:home-light" : "mage:next"} class="size-5" />
       </a>
     </div>
   </main>

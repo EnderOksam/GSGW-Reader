@@ -2,9 +2,6 @@
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
   import Icon from "@iconify/svelte";
-  
-  import imgBG_Constant from "$lib/assets/web-bg.jpg"; 
-  import imgBG_TransitionSource from "$lib/assets/web-bg2.jpg"; 
 
   import card1 from "$lib/assets/card.jpg";
   import card2 from "$lib/assets/card2.jpg";
@@ -14,41 +11,18 @@
 
   const cardImages = [card1, card2, card3, card4, card5,];
 
-  // Visual state management
-  let isTransitioned = $state(false);
-  let showTransitionBG = $state(false);
   let currentIndex = $state(Math.floor(Math.random() * cardImages.length));
 
   const ROTATION_TIME = 10000;
 
-  // Cycles to the next character card
   function cycleCard() {
     currentIndex = (currentIndex + 1) % cardImages.length;
   }
 
   onMount(() => {
-    // Logic to handle the background fade-in when returning from another page
-    const comingBack = sessionStorage.getItem("navigated_to_book");
-
-    if (comingBack === "true") {
-      showTransitionBG = true; 
-      setTimeout(() => {
-        isTransitioned = true;
-        sessionStorage.removeItem("navigated_to_book");
-      }, 300);
-    } else {
-      isTransitioned = true;
-    }
-
-    // Set up the automatic card rotation
     const interval = setInterval(cycleCard, ROTATION_TIME);
     return () => clearInterval(interval);
   });
-
-  // Track navigation to trigger transition effects on return
-  function handleNavigation() {
-    sessionStorage.setItem("navigated_to_book", "true");
-  }
 </script>
 
 <a 
@@ -58,21 +32,7 @@
   #
 </a>
 
-<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-  <enhanced:img 
-    src={imgBG_TransitionSource} 
-    alt="" 
-    class="absolute inset-0 w-full h-full object-cover object-top {showTransitionBG ? 'opacity-100' : 'opacity-0'}" 
-  />
-  
-  <enhanced:img 
-    src={imgBG_Constant} 
-    alt="" 
-    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 {isTransitioned ? 'opacity-100' : 'opacity-0'}" 
-  />
-  
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
-</div>
+
 
 <main class="relative z-10 flex min-h-dvh flex-col items-center justify-center gap-10 p-8 md:flex-row md:justify-around text-white">
   
@@ -116,7 +76,7 @@
       <a 
         class="btn btn-lg btn-soft btn-primary" 
         href="/book" 
-        onclick={handleNavigation}
+
       >
         Read Now
       </a>

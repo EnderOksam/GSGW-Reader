@@ -58,6 +58,32 @@ async def convert_chapter(content):
     Converts raw Markdown content to HTML using Pandoc, 
     with pre-processing for the Wiki Window syntax.
     """
+    # PRE-PROCESS: Convert %%text%% into shaking text span
+    content = re.sub(r'%%(.*?)%%', r'<span class="shake">\1</span>', content)
+
+    # PRE-PROCESS: Convert {style="..."} blocks into Pandoc fenced divs
+    style_pattern = r'^[ \t]*\{style="([^"]*)"\}\s*$'
+    lines = content.split('\n')
+    result = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        m = re.match(style_pattern, line)
+        if m:
+            style = m.group(1)
+            result.append(f'::: {{style="{style}"}}')
+            i += 1
+            content_lines = []
+            while i < len(lines) and not re.match(style_pattern, lines[i]):
+                content_lines.append(lines[i])
+                i += 1
+            result.extend(content_lines)
+            result.append(':::')
+        else:
+            result.append(line)
+            i += 1
+    content = '\n'.join(result)
+
     # PRE-PROCESS: Automatically wrap +--- text ---+ in a wiki-window div
     # This regex looks for lines starting with +--- and ending with ---+
     content = re.sub(
@@ -127,7 +153,7 @@ async def main():
         template_str = f.read()
 
     # Paths to scan for chapters
-    paths = ["chapters/gsgw/goblintl", "chapters/gsgw/mtl"]
+    paths = ["chapters/gsgw/fantl", "chapters/gsgw/mtl"]
     tasks_data = []
     meta_map = {}
 
@@ -138,7 +164,7 @@ async def main():
 
         master = frontmatter.load(path / "0000.md")
         bookID = master.get("metaBook", "gsgw")
-        bookTL = master.get("metaTl", "goblintl").lower()
+        bookTL = master.get("metaTl", "fantl").lower()
         
         if bookID not in meta_map: meta_map[bookID] = {}
         if bookTL not in meta_map[bookID]: meta_map[bookID][bookTL] = []

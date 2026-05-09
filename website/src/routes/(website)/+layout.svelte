@@ -1,5 +1,5 @@
 <script lang="ts">
-  import imgBG from "$lib/assets/web-bg.jpg?enhanced";
+  import imgBG from "$lib/assets/web-bg.jpg";
   import Icon from "@iconify/svelte";
   import "../../app.css";
   import { page } from "$app/state";
