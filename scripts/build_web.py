@@ -4,13 +4,15 @@ import json
 import subprocess
 import shutil
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import frontmatter
 import imagesize
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_ROOT = SCRIPT_DIR.parent
-IMG_STORAGE_DIR = REPO_ROOT / "website/static/assets/images"
-IMG_PUBLIC_PREFIX = "/assets/images"
+IMG_STORAGE_DIR = REPO_ROOT / "website/static/assets/images/static-illustrations"
+IMG_FALLBACK_DIR = REPO_ROOT / "images/gsgw/illustrations"
+IMG_PUBLIC_PREFIX = "/assets/images/static-illustrations"
 TEMPLATE_PATH = REPO_ROOT / "website/src/lib/reader/template.svelte"
 META_OUTPUT_PATH = REPO_ROOT / "website/src/lib/meta.json"
 OUTPUT_ROOT = REPO_ROOT / "website/src/routes/(reader)/read/"
@@ -26,6 +28,7 @@ def process_html_images(html_content):
         image_filename = Path(original_src).name
         webp_filename = Path(image_filename).with_suffix(".webp")
         local_image_path = IMG_STORAGE_DIR / webp_filename
+        new_src = f"{IMG_PUBLIC_PREFIX}/{webp_filename}"
         new_src = f"{IMG_PUBLIC_PREFIX}/{webp_filename}"
         new_tag = full_tag.replace(original_src, new_src)
         if local_image_path.exists():
@@ -53,6 +56,8 @@ def convert_chapter(content):
     content = re.sub(r'@ll@(.*?)@ll@', r'<span class="mono mono-left">\1</span>', content)
     content = re.sub(r'@rr@(.*?)@rr@', r'<span class="mono mono-right">\1</span>', content)
     content = re.sub(r'#r(.*?)r#', r'<span class="text-red">\1</span>', content)
+    content = re.sub(r'#\*(.*?)\*#', r'<span class="text-large">\1</span>', content)
+    content = re.sub(r'^~~~\s*$', '<hr class="visible-hr">', content, flags=re.MULTILINE)
 
     style_pattern = r'^[ \t]*\{style="([^"]*)"\}\s*$'
     lines = content.split('\n')
@@ -100,6 +105,25 @@ def convert_chapter(content):
         return f'\n::: {{.wiki-window}}\n{inner}\n:::\n'
     content = re.sub(r'\+[-+]+\n(.*?)\n[-+]+\+', wiki_window_replacer, content, flags=re.DOTALL)
 
+    def black_window_replacer(match):
+        inner = match.group(1)
+        inner = escape_markdown_except_bold(inner)
+        return f'\n::: {{.black-window}}\n{inner}\n:::\n'
+    content = re.sub(r'\+[=]+\n(.*?)\n[=]+\+', black_window_replacer, content, flags=re.DOTALL)
+
+    def system_window_replacer(match):
+        inner = match.group(1)
+        no_dividers = False
+        if inner.lstrip().startswith('\\'):
+            idx = inner.find('\\')
+            inner = inner[:idx] + inner[idx+1:]
+            no_dividers = True
+        inner = escape_markdown_except_bold(inner)
+        if no_dividers:
+            return f'\n::: {{.system-window .no-fl-dividers}}\n{inner}\n:::\n'
+        return f'\n::: {{.system-window}}\n{inner}\n:::\n'
+    content = re.sub(r'\+[~]+\n(.*?)\n[~]+\+', system_window_replacer, content, flags=re.DOTALL)
+
     proc = subprocess.run(
         ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],
         input=content.encode("utf-8"),
@@ -122,7 +146,19 @@ def process_task(task, template_str):
         f.write(output)
 
 
+def ensure_images():
+    if IMG_FALLBACK_DIR.exists():
+        IMG_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+        for f in IMG_FALLBACK_DIR.iterdir():
+            if f.is_file():
+                dest = IMG_STORAGE_DIR / f.name
+                if not dest.exists():
+                    shutil.copy2(f, dest)
+                    print(f"  Copied {f.name} to static assets")
+
+
 def main():
+    ensure_images()
     if not TEMPLATE_PATH.exists():
         print(f"Error: Template not found at {TEMPLATE_PATH}")
         return
@@ -168,10 +204,14 @@ def main():
     if tasks_data:
         total = len(tasks_data)
         print(f"Starting build for {total} chapters...")
-        for idx, task in enumerate(tasks_data, 1):
-            process_task(task, template_str)
-            if idx % 10 == 0 or idx == total:
-                print(f"Generated {idx}/{total} chapters...")
+        workers = min(os.cpu_count() or 4, total)
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {executor.submit(process_task, task, template_str): task for task in tasks_data}
+            done = 0
+            for future in as_completed(futures):
+                done += 1
+                if done % 10 == 0 or done == total:
+                    print(f"Generated {done}/{total} chapters...")
         print("Build complete.")
 
 

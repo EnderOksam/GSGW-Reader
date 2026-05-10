@@ -32,18 +32,21 @@ Here's a handy table to quickly find the tag you need:
 
 | Tag | What It's For | Example |
 |-----|---------------|---------|
-| `+-` & `-+`  | Info/record window | `+- Title -+` |
+| `+-` & `-+`  | Info/record window | `+-\n...-+` |
+| `+~` & `~+`  | System window | `+~\n...~+` |
+| `+=` & `=+`  | screen display window (subtle CRT effect) | `+=\n...=+` |
 | `%%text%%` | Shaking text (whole block) | `%%scary%%` |
 | `%~text~%` | Shaking text (per letter) | `%~scary~%` |
 | `#rtextr#` | Bold red text | `#rimportantr#` |
+| `#*text*#` | Large bold text | `#*notice*#` |
 | `@ll@text@ll@` | Monospace, bold, left | `@ll@note@ll@` |
-| `@rr@text@rr@` | Monospace, bold, right | `@rr@source@rr@` |
-| `***` | Section break | `***` |
+| `@rr@text@rr@` | Monospace, bold, right | |`@rr@source@rr@` |
+| `~~~ or * * *` | Horizontal divider line | `~~~` or `* * *`   |
 
 ### Window Metadata
 
 The first line inside a `+- ... -+` window is treated as metadata (smaller, muted, right-aligned).  
-Put `\*` or `\**` before the first bold/italic text to cancel this:
+Put `\` or `\` before the first bold/italic text to cancel this:
 
 | Style | Markdown |
 |-------|----------|

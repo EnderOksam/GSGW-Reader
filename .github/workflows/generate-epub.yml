@@ -29,17 +29,13 @@ jobs:
       # 3. Install Python libraries used in your scripts
       - name: Install Python dependencies
         run: |
-          pip install python-frontmatter pyyaml
+          pip install python-frontmatter pyyaml Pillow
 
       # 4. Install Pandoc (Required for epub conversion)
       - name: Install Pandoc
         run: choco install pandoc --no-progress
 
-      # 5. Install ImageMagick (Required for 'magick' command)
-      - name: Install ImageMagick
-        run: choco install imagemagick --no-progress
-
-      # 6. Run your Image Manipulator Script
+      # 5. Run your Image Manipulator Script
       #    This creates ./images_default and ./images_legacy
       - name: Process Images
         run: python scripts/images_epub.py
@@ -47,14 +43,14 @@ jobs:
           PYTHONUTF8: 1
           PYTHONIOENCODING: utf-8
 
-      # 7. Run your EPUB Builder Script
+      # 6. Run your EPUB Builder Script
       #    This reads the processed images and creates .epub files in ./epub
       - name: Build EPUBs
         run: python scripts/build_epub.py
         env:
           PYTHONUTF8: 1
           PYTHONIOENCODING: utf-8
-      # 8. Generate a unique tag for the release (e.g., v2024.03.15)
+      # 7. Generate a unique tag for the release (e.g., v2024.03.15)
       - name: Generate Release Tag
         id: tag
         shell: bash

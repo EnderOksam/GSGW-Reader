@@ -23,8 +23,8 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install ImageMagick
-        run: choco install imagemagick --no-progress
+      - name: Install Python dependencies
+        run: pip install Pillow
 
       - name: Run Optimizer Script
         run: python scripts/optimize_images.py

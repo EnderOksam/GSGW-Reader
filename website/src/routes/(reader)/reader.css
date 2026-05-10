@@ -47,8 +47,13 @@ h3::after {
   border-radius: 2px;
 }
 
-hr {
-  display: none;
+hr.visible-hr {
+  display: block;
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #666, transparent);
+  margin: 2.5rem auto;
+  width: 60%;
 }
 
 @keyframes shake {
@@ -66,6 +71,11 @@ hr {
 .text-red {
   color: #ff4d00;
   font-weight: bold;
+}
+
+.text-large {
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .mono {
