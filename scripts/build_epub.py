@@ -69,6 +69,13 @@ for rel_path in paths:
         content = ""
         for chapter_data in chapters[section]:
             ch_text = strip_wiki_window(chapter_data["content"].strip())
+            ch_text = re.sub(r'_(.*?)_', r'[\1]{.underline}', ch_text)
+            ch_text = re.sub(r'~(.*?)~', r'~~\1~~', ch_text)
+            ch_text = re.sub(r'@ll@(.*?)@ll@', r'<span class="mono mono-left">\1</span>', ch_text)
+            ch_text = re.sub(r'@rr@(.*?)@rr@', r'<span class="mono mono-right">\1</span>', ch_text)
+            ch_text = re.sub(r'#y(.*?)y#', r'<span class="text-yellow">\1</span>', ch_text)
+            ch_text = re.sub(r'@l@(.*?)@l@', r'<span class="align-left">\1</span>', ch_text)
+            ch_text = re.sub(r'@r@(.*?)@r@', r'<span class="align-right">\1</span>', ch_text)
             content += f"""{ch_text}
 
 ___

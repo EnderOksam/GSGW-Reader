@@ -1,5 +1,14 @@
 .reader-container strong {
-  color: inherit;
+  font-weight: 700;
+}
+.reader-container em {
+  font-style: italic;
+}
+.reader-container .underline {
+  text-decoration: underline;
+}
+.reader-container del {
+  text-decoration: line-through;
 }
 
 img {
@@ -58,14 +67,22 @@ hr.visible-hr {
 
 @keyframes shake {
   0%, 100% { transform: translate(0, 0); }
-  25% { transform: translate(0.5px, -0.5px); }
-  50% { transform: translate(-0.5px, 0.5px); }
-  75% { transform: translate(0.5px, 0.5px); }
+  25% { transform: translate(0.2px, -0.2px); }
+  50% { transform: translate(-0.2px, 0.2px); }
+  75% { transform: translate(0.2px, 0.2px); }
+}
+@keyframes wave-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.8px); }
 }
 
 .shake {
   display: inline-block;
   animation: shake 0.5s ease-in-out infinite;
+}
+.wave-up {
+  display: inline-block;
+  animation: wave-up 0.6s ease-in-out infinite;
 }
 
 .text-red {
@@ -73,9 +90,25 @@ hr.visible-hr {
   font-weight: bold;
 }
 
+.text-blue {
+  color: #38BDF8;
+  font-weight: bold;
+}
+.text-yellow {
+  color: #fff700;
+  font-weight: bold;
+}
+
 .text-large {
   font-size: 2rem;
   font-weight: 700;
+}
+
+.text-large-centered {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
 }
 
 .mono {
@@ -88,6 +121,14 @@ hr.visible-hr {
   text-align: left;
 }
 .mono-right {
+  display: block;
+  text-align: right;
+}
+.align-left {
+  display: block;
+  text-align: left;
+}
+.align-right {
   display: block;
   text-align: right;
 }

@@ -56,8 +56,6 @@
 
   :root {
 
-    --reader-text: #e0e0e0;
-
     --window-bg: #1e1e2e;
 
     --window-border: #3a3a5c;
@@ -80,7 +78,7 @@
 
     line-height: 1.6;
 
-    color: var(--reader-text);
+    color: oklch(from var(--bc) l 0 h);
 
     font-family: var(--chapter-font, 'Inter', system-ui, sans-serif);
 

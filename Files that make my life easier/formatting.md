@@ -36,11 +36,18 @@ Here's a handy table to quickly find the tag you need:
 | `+~` & `~+`  | System window | `+~\n...~+` |
 | `+=` & `=+`  | screen display window (subtle CRT effect) | `+=\n...=+` |
 | `%%text%%` | Shaking text (whole block) | `%%scary%%` |
-| `%~text~%` | Shaking text (per letter) | `%~scary~%` |
+| `%~text~%` | Shaking text (per letter, left to right) | `%~scary~%` |
+| `%^text^%` | Wave text (per letter, right to left) | `%^scary^%` |
 | `#rtextr#` | Bold red text | `#rimportantr#` |
+| `#btextb#` | Bold blue text | `#bnoticeb#` |
+| `#ytexty#` | Bold yellow text | `#ywarningy#` |
 | `#*text*#` | Large bold text | `#*notice*#` |
+| `#><text><#` | Large bold text, centered | `#><title><#` |
 | `@ll@text@ll@` | Monospace, bold, left | `@ll@note@ll@` |
-| `@rr@text@rr@` | Monospace, bold, right | |`@rr@source@rr@` |
+| `@rr@text@rr@` | Monospace, bold, right | `@rr@source@rr@` |
+| `@l@text@l@` | Left-aligned | `@l@note@l@` |
+| `@r@text@r@` | Right-aligned | `@r@source@r@` |
+| `~text~` | Strikethrough | `~oops~` |
 | `~~~ or * * *` | Horizontal divider line | `~~~` or `* * *`   |
 
 ### Window Metadata

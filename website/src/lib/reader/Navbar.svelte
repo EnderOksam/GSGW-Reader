@@ -304,11 +304,11 @@
     </form>
     <h3 class="font-bold text-lg mb-4 text-primary">Contribute</h3>
     <div class="flex flex-col gap-3">
-      <a href="https://github.com/Bittu5134/LOTM-Reader/blob/main/contributing.md" target="_blank" class="btn btn-outline btn-primary w-full rounded-btn">
+      <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" class="btn btn-outline btn-primary w-full rounded-btn">
         <Icon icon="mdi:book-open-page-variant" class="size-5 mr-2" /> Read Guide
       </a>
       <a
-        href="https://github.com/Bittu5134/LOTM-Reader/blob/main/chapters/{bookSlug}/{navState.selectedTL}/{readerState.ch_meta.slug.toString().padStart(4, '0')}.md"
+        href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{navState.selectedTL}/{(Number(readerState.ch_meta.slug) + 1).toString().padStart(4, '0')}.md"
         target="_blank"
         class="btn btn-secondary w-full rounded-btn"
       >

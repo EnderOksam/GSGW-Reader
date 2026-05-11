@@ -53,10 +53,26 @@ def convert_chapter(content):
             for i, c in enumerate(text)
         )
     content = re.sub(r'%~(.*?)~%', shake_char_replacer, content)
+
+    def shake_char_reverser(match):
+        text = match.group(1)
+        return ''.join(
+            f'<span class="wave-up" style="animation-delay:-{((len(text) - 1 - i) * 0.05) % 0.5:.2f}s">{c}</span>'
+            if c != ' ' else ' '
+            for i, c in enumerate(text)
+        )
+    content = re.sub(r'%\^(.*?)\^%', shake_char_reverser, content)
+    content = re.sub(r'_(.*?)_', r'[\1]{.underline}', content)
+    content = re.sub(r'~(.*?)~', r'~~\1~~', content)
     content = re.sub(r'@ll@(.*?)@ll@', r'<span class="mono mono-left">\1</span>', content)
     content = re.sub(r'@rr@(.*?)@rr@', r'<span class="mono mono-right">\1</span>', content)
+    content = re.sub(r'@l@(.*?)@l@', r'<span class="align-left">\1</span>', content)
+    content = re.sub(r'@r@(.*?)@r@', r'<span class="align-right">\1</span>', content)
     content = re.sub(r'#r(.*?)r#', r'<span class="text-red">\1</span>', content)
+    content = re.sub(r'#b(.*?)b#', r'<span class="text-blue">\1</span>', content)
+    content = re.sub(r'#y(.*?)y#', r'<span class="text-yellow">\1</span>', content)
     content = re.sub(r'#\*(.*?)\*#', r'<span class="text-large">\1</span>', content)
+    content = re.sub(r'#><(.*?)><#', r'<span class="text-large-centered">\1</span>', content)
     content = re.sub(r'^~~~\s*$', '<hr class="visible-hr">', content, flags=re.MULTILINE)
 
     style_pattern = r'^[ \t]*\{style="([^"]*)"\}\s*$'
@@ -95,7 +111,7 @@ def convert_chapter(content):
     def wiki_window_replacer(match):
         inner = match.group(1)
         no_meta = False
-        if inner.lstrip().startswith('\\*'):
+        if inner.lstrip().startswith('\\'):
             idx = inner.find('\\')
             inner = inner[:idx] + inner[idx+1:]
             no_meta = True
