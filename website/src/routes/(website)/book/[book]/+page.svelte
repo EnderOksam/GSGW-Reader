@@ -5,6 +5,8 @@
   import imgLotmCover from "$lib/assets/web-lotm-cover.jpg";
   import imgtempCover from "$lib/assets/web-coi-cover.jpg";
   import book_meta from "$lib/meta.json";
+  import imgBG_Source from "$lib/assets/web-bg.jpg"; 
+  import imgBG_Target from "$lib/assets/web-bg2.jpg";
 
   // --- Types ---
 
@@ -69,6 +71,21 @@
   const bookSlug = $derived(page.params.book || "gsgw");
   const book = $derived(bookConfigs[bookSlug] || bookConfigs["gsgw"]);
 
+  // State to trigger the background fade
+  let isTransitioned = $state(false);
+
+  onMount(() => {
+    const hasFaded = sessionStorage.getItem("bg_faded_book");
+    if (hasFaded) {
+      isTransitioned = true;
+    } else {
+      setTimeout(() => {
+        isTransitioned = true;
+        sessionStorage.setItem("bg_faded_book", "true");
+      }, 100);
+    }
+  });
+
   // User interface state
   let searchQuery = $state("");
   let selectedTL = $state("fantl");
@@ -120,6 +137,18 @@
   <title>{book.title}</title>
   <meta name="description" content={book.synopsis} />
 </svelte:head>
+
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+  <enhanced:img 
+    src={imgBG_Source} 
+    alt="" 
+    class="absolute inset-0 w-full h-full object-cover object-top" 
+  /> <enhanced:img 
+    src={imgBG_Target} 
+    alt="" 
+    class="absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-1000 {isTransitioned ? 'opacity-100' : 'opacity-0'}" 
+  /> <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
+</div>
 
 <main class="flex md:flex-row flex-col min-h-screen">
   <!-- Left Side: Book Info & Actions -->
