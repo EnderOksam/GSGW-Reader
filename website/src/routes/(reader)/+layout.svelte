@@ -5,7 +5,7 @@
   import { page } from "$app/state";
   import { goto, afterNavigate } from "$app/navigation";
   import Icon from "@iconify/svelte";
-  import Giscus from "@giscus/svelte";
+
 
   // Components
   import Navbar from "$lib/reader/Navbar.svelte";
@@ -30,7 +30,6 @@
       indent: false,
       navbarVisible: true,
       navbarSticky: true,
-      showComments: true,
       showBottomBanner: true,
       solidBackground: true,
     });
@@ -67,7 +66,6 @@
           indent: false,
           navbarVisible: true,
           navbarSticky: true,
-          showComments: true,
           showBottomBanner: true,
           solidBackground: true,
         };
@@ -75,44 +73,7 @@
     }
   }
 
-  function getGiscusTheme(daisyTheme: string) {
-    const themeMapping: Record<string, string> = {
-      light: "light_tritanopia",
-      cupcake: "light_tritanopia",
-      bumblebee: "light_tritanopia",
-      emerald: "light_tritanopia",
-      corporate: "light_tritanopia",
-      valentine: "light_tritanopia",
-      garden: "light_tritanopia",
-      fantasy: "light_tritanopia",
-      cmyk: "light_tritanopia",
-      autumn: "light_tritanopia",
-      acid: "catppuccin_latte",
-      lemonade: "light_tritanopia",
-      winter: "light_tritanopia",
-      lofi: "noborder_light",
-      wireframe: "light_high_contrast",
-      pastel: "catppuccin_latte",
-      retro: "gruvbox_light",
-      coffee: "gruvbox_dark",
-      dark: "dark_dimmed",
-      black: "fro",
-      luxury: "noborder_dark",
-      business: "noborder_gray",
-      night: "cobalt",
-      dim: "dark_dimmed",
-      nord: "light_tritanopia",
-      sunset: "noborder_dark",
-      dracula: "purple_dark",
-      synthwave: "purple_dark",
-      cyberpunk: "gruvbox_light",
-      aqua: "cobalt",
-      forest: "noborder_dark",
-      halloween: "gruvbox",
-    };
 
-    return themeMapping[daisyTheme] || "dark";
-  }
 
   // --- State ---
   const prefs = new UserPreferences();
@@ -127,8 +88,10 @@
   // 2. Derive values from URL position
   const bookSlug = $derived(pathSegments[1] ?? "lotm");
   const currentTL = $derived(pathSegments[2] ?? "webnovel");
-  const currentChapter = $derived(Number(pathSegments[3]) || 1);
-  let githubID = $derived(readerState.ch_meta.discussion || 1);
+  const currentChapter = $derived(
+    pathSegments[3] !== undefined ? Number(pathSegments[3]) : 1
+  );
+
 
   // 3. Get Total Chapters for the current TL
   const totalChapters = $derived(
@@ -308,26 +271,7 @@
     <InfoBanner />
   {/if}
 
-  {#if prefs.config.showComments}
-  <div id="comments" class="sm:mx-auto mx-0 max-w-5xl sm:px-6 px-3 pb-6 scroll-mt-20">
-    <Giscus
-      id="comments"
-      repo="bittu5134/lotm-reader"
-      repoId="R_kgDORObHsw"
-      category={bookSlug.toUpperCase()}
-      categoryId={bookSlug === "LOTM"
-        ? "DIC_kwDORObHs84C2RKd"
-        : "DIC_kwDORObHs84C2RKe"}
-      mapping="number"
-      term={String(githubID)}
-      reactionsEnabled="1"
-      emitMetadata="0"
-      inputPosition="top"
-      theme={getGiscusTheme(prefs.config.theme)}
-      lang="en"
-    />
-  </div>
-  {/if}
+
 </div>
 
 <style>

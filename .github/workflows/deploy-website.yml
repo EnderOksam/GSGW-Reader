@@ -1,8 +1,8 @@
 name: Build & Deploy Website
 
 on:
-  schedule:
-    - cron: '0 0 1,15 * *'
+  push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -68,5 +68,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./website/build/ --project-name=beyonder
+          command: pages deploy website/.svelte-kit/cloudflare --project-name=gsgw
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

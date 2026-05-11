@@ -30,7 +30,7 @@
 </script>
 
 <svelte:head>
-  <title>LOTM-Reader</title>
+  <title>GSGW-Reader</title>
   <meta
     name="description"
     content="The Fool that doesn’t belong to this era, the mysterious ruler above the gray fog..."
