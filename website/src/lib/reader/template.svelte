@@ -74,7 +74,7 @@
 
     margin: 0 auto;
 
-    padding: 2rem;
+    padding: 1.25rem;
 
     line-height: 1.6;
 
@@ -82,6 +82,12 @@
 
     font-family: var(--chapter-font, 'Inter', system-ui, sans-serif);
 
+  }
+
+  @media (min-width: 640px) {
+    .reader-container {
+      padding: 2rem;
+    }
   }
 
 
@@ -98,22 +104,29 @@
 
     border-radius: 8px;
 
-    max-width: 88%;
+    max-width: 98%;
 
     position: relative;
 
     box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 
-    padding: 1.5rem 2rem 1rem;
+    padding: 1rem 1rem 0.75rem;
 
     text-align: left;
 
   }
 
+  @media (min-width: 640px) {
+    .reader-container :global(.wiki-window) {
+      max-width: 88%;
+      padding: 1.5rem 2rem 1rem;
+    }
+  }
+
 
 
   .reader-container :global(.wiki-window)::before {
-    content: "_ □ X";
+    content: "— 🗖 🗙";
     display: flex;
     justify-content: flex-end;
     background: var(--window-border);
@@ -122,9 +135,15 @@
     font-family: monospace;
     font-size: 16px;
     letter-spacing: 6px;
-    margin: -1.5rem -2rem 1rem;
+    margin: -1rem -1rem 0.75rem;
     border-bottom: 1px solid var(--window-border);
     border-radius: 8px 8px 0 0;
+  }
+
+  @media (min-width: 640px) {
+    .reader-container :global(.wiki-window)::before {
+      margin: -1.5rem -2rem 1rem;
+    }
   }
 
 
@@ -212,6 +231,7 @@
     padding: 1.5rem 2rem 1rem;
     text-align: center;
     font-weight: 700;
+    color: #ffffff;
     background-image: repeating-linear-gradient(
       0deg,
       transparent,
@@ -221,8 +241,9 @@
     );
   }
 
+  .reader-container :global(.black-window *),
   .reader-container :global(.black-window p) {
-    color: #e0e0e0 !important;
+    color: #ffffff !important;
     margin: 0.8rem 0;
     font-size: 1rem;
     line-height: 1.6;

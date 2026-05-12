@@ -18,6 +18,16 @@ img {
   margin: auto;
 }
 
+@media (max-width: 640px) {
+  img {
+    max-height: 60vh;
+  }
+  .text-large,
+  .text-large-centered {
+    font-size: 1.4rem;
+  }
+}
+
 figcaption {
   font-size: medium;
   margin-top: 0.5em;
@@ -61,7 +71,7 @@ hr.visible-hr {
   border: none;
   height: 2px;
   background: linear-gradient(90deg, transparent, #666, transparent);
-  margin: 2.5rem auto;
+  margin: 4rem auto;
   width: 60%;
 }
 

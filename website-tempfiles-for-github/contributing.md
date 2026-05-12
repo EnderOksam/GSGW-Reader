@@ -86,3 +86,4 @@ You can write the note directly inside the sentence using a caret `^` and bracke
 **How to type it:**
 ```text
 Klein looked at the potion formula^[A sequence 9 potion formula].
+```

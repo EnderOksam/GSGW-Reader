@@ -62,6 +62,7 @@ def convert_chapter(content):
             for i, c in enumerate(text)
         )
     content = re.sub(r'%\^(.*?)\^%', shake_char_reverser, content)
+    content = re.sub(r'^~~~\s*$', '<hr class="visible-hr">', content, flags=re.MULTILINE)
     content = re.sub(r'_(.*?)_', r'[\1]{.underline}', content)
     content = re.sub(r'~(.*?)~', r'~~\1~~', content)
     content = re.sub(r'@ll@(.*?)@ll@', r'<span class="mono mono-left">\1</span>', content)
@@ -73,7 +74,6 @@ def convert_chapter(content):
     content = re.sub(r'#y(.*?)y#', r'<span class="text-yellow">\1</span>', content)
     content = re.sub(r'#\*(.*?)\*#', r'<span class="text-large">\1</span>', content)
     content = re.sub(r'#><(.*?)><#', r'<span class="text-large-centered">\1</span>', content)
-    content = re.sub(r'^~~~\s*$', '<hr class="visible-hr">', content, flags=re.MULTILINE)
 
     style_pattern = r'^[ \t]*\{style="([^"]*)"\}\s*$'
     lines = content.split('\n')

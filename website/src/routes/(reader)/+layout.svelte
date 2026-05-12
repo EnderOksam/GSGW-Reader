@@ -9,7 +9,6 @@
 
   // Components
   import Navbar from "$lib/reader/Navbar.svelte";
-  import InfoBanner from "$lib/reader/InfoBanner.svelte";
 
   // Data
   import { readerState } from "$lib/reader.svelte";
@@ -30,8 +29,6 @@
       indent: false,
       navbarVisible: true,
       navbarSticky: true,
-      showBottomBanner: true,
-      solidBackground: true,
     });
 
     constructor() {
@@ -65,9 +62,8 @@
           hyphens: false,
           indent: false,
           navbarVisible: true,
-          navbarSticky: true,
-          showBottomBanner: true,
-          solidBackground: true,
+      navbarSticky: true,
+      solidBackground: true,
         };
       }
     }
@@ -224,7 +220,7 @@
 >
   <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {totalChapters} />
 
-  <main class="mx-auto my-3 max-w-4xl w-full px-6 py-12 md:px-12 z-0 relative">
+  <main class="mx-auto my-3 max-w-4xl w-full px-4 py-8 sm:px-6 md:px-12 sm:py-12 z-0 relative">
     <div
       class="absolute inset-0 bg-base-200 -z-10 rounded-box transition-opacity duration-300"
       style="opacity: var(--card-bg-opacity);"
@@ -266,10 +262,6 @@
       </a>
     </div>
   </main>
-
-  {#if prefs.config.showBottomBanner}
-    <InfoBanner />
-  {/if}
 
 
 </div>
