@@ -46,21 +46,27 @@
   <title>GSGW-Reader</title>
   <meta
     name="description"
-    content="The Fool that doesn't belong to this era, the mysterious ruler above the gray fog..."
+    content="A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.
+
+On that day, I ended up transmigrating as a character in that very fantasy world."
   />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="LOTM-Reader" />
+  <meta property="og:title" content="GSGW-Reader" />
   <meta
     property="og:description"
-    content="The Fool that doesn't belong to this era, the mysterious ruler above the gray fog; the King of Yellow and Black who wields good luck…"
+    content="A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.
+
+On that day, I ended up transmigrating as a character in that very fantasy world."
   />
   <meta property="og:image" content="http://beyonder.pages.dev{imgMeta}" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="LOTM-Reader" />
+  <meta name="twitter:title" content="GSGW-Reader" />
   <meta
     name="twitter:description"
-    content="The Fool that doesn't belong to this era, the mysterious ruler above the gray fog; the King of Yellow and Black who wields good luck…"
+    content="A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.
+
+On that day, I ended up transmigrating as a character in that very fantasy world."
   />
   <meta name="twitter:image" content="http://beyonder.pages.dev{imgMeta}" />
 </svelte:head>

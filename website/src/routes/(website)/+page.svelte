@@ -68,7 +68,7 @@
         Got Dropped into a Ghost Story, Still Gotta Work
       </h1>
       <p class="py-6 lg:text-2xl text-lg lg:w-full md:w-4/5 w-full brightness-95 md:text-left">
-        “...Am I happy, you ask?" <br> "Please, just let me go home. I’m begging you.”
+        A pop-up event for some ‘modern fantasy’ media… I loved so much that I even took a precious day off work to attend. <br> <br> On that day, I ended up transmigrating as a character in that very fantasy world.
       </p>
     </div>
 
