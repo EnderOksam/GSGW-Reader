@@ -9,7 +9,8 @@ sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 # ============================================================
 # CONFIGURATION
 # ============================================================
-SOURCE_DIR = "./images"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SOURCE_DIR = os.path.join(SCRIPT_DIR, "..", "images")
 
 
 def gh_log(msg, type="info"):

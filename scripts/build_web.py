@@ -140,6 +140,12 @@ def convert_chapter(content):
         return f'\n::: {{.system-window}}\n{inner}\n:::\n'
     content = re.sub(r'\+[~]+\n(.*?)\n[~]+\+', system_window_replacer, content, flags=re.DOTALL)
 
+    def plain_window_replacer(match):
+        inner = match.group(1)
+        inner = escape_markdown_except_bold(inner)
+        return f'\n::: {{.plain-window}}\n{inner}\n:::\n'
+    content = re.sub(r'\+\$\n(.*?)\n\$\+', plain_window_replacer, content, flags=re.DOTALL)
+
     proc = subprocess.run(
         ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],
         input=content.encode("utf-8"),

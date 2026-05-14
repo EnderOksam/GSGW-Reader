@@ -126,7 +126,7 @@
 
 
   .reader-container :global(.wiki-window)::before {
-    content: "— 🗖 🗙";
+    content: "— ▢ X";
     display: flex;
     justify-content: flex-end;
     background: var(--window-border);
@@ -211,6 +211,64 @@
   }
 
   .reader-container :global(.wiki-window p:empty) {
+
+    display: none;
+
+  }
+
+
+
+  /* --- PLAIN WINDOW (no titlebar) --- */
+
+  .reader-container :global(.plain-window) {
+
+    margin: 2.5rem auto;
+
+    background: var(--window-bg);
+
+    border: 1px solid var(--window-border);
+
+    border-radius: 8px;
+
+    max-width: 98%;
+
+    position: relative;
+
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+
+    padding: 1.5rem 2rem 1rem;
+
+    text-align: left;
+
+  }
+
+  @media (min-width: 640px) {
+    .reader-container :global(.plain-window) {
+      max-width: 88%;
+    }
+  }
+
+  .reader-container :global(.plain-window p) {
+
+    color: var(--window-text) !important;
+
+    margin: 0.8rem 0;
+
+    font-size: 1rem;
+
+    line-height: 1.6;
+
+    text-align: left;
+
+  }
+
+  .reader-container :global(.plain-window p:last-of-type) {
+
+    margin-bottom: 0.5rem;
+
+  }
+
+  .reader-container :global(.plain-window p:empty) {
 
     display: none;
 

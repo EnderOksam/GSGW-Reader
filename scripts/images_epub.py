@@ -9,9 +9,10 @@ sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 # ============================================================
 # CONFIGURATION
 # ============================================================
-SOURCE_DIR = "./images"
-WEBP_DIR = "./images_default"
-JPEG_DIR = "./images_legacy"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SOURCE_DIR = os.path.join(SCRIPT_DIR, "..", "images")
+WEBP_DIR = os.path.join(SCRIPT_DIR, "..", "images_default")
+JPEG_DIR = os.path.join(SCRIPT_DIR, "..", "images_legacy")
 
 
 def gh_log(msg, log_type="info"):

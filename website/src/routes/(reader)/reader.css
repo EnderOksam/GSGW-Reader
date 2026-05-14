@@ -88,10 +88,18 @@ hr.visible-hr {
 
 .shake {
   display: inline-block;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  font-weight: 700;
   animation: shake 0.5s ease-in-out infinite;
 }
 .wave-up {
   display: inline-block;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  font-weight: 700;
   animation: wave-up 0.6s ease-in-out infinite;
 }
 
