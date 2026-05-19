@@ -81,7 +81,7 @@
 <!-- --- Navbar View --- -->
 {#if prefs.config.navbarVisible}
   <nav
-    class="flex w-full items-center justify-start sm:justify-center gap-2 sm:gap-5 bg-base-100 border-b border-base-content/10 p-3 z-50 {prefs.config.navbarSticky ? 'sticky top-0' : 'relative'}"
+    class="flex w-full items-center justify-center gap-2 sm:gap-5 bg-base-100 border-b border-base-content/10 p-3 z-50 {prefs.config.navbarSticky ? 'sticky top-0' : 'relative'}"
   >
     <!-- Home Link -->
     <div class="tooltip tooltip-bottom" data-tip="Home (H)">

@@ -28,6 +28,10 @@
 
   });
 
+
+
+
+
 </script>
 
 
@@ -60,7 +64,7 @@
 
     --window-border: #3a3a5c;
 
-    --window-text: #f8f9fa;
+    --window-text: #ffffff;
 
     --window-accent: #ff4d00;
 
@@ -110,7 +114,7 @@
 
     box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 
-    padding: 1rem 1rem 0.75rem;
+    padding: 1em 1em 0.75em;
 
     text-align: left;
 
@@ -119,7 +123,7 @@
   @media (min-width: 640px) {
     .reader-container :global(.wiki-window) {
       max-width: 88%;
-      padding: 1.5rem 2rem 1rem;
+      padding: 1.5em 2em 1em;
     }
   }
 
@@ -131,18 +135,18 @@
     justify-content: flex-end;
     background: var(--window-border);
     color: #ffffff;
-    padding: 6px 14px;
+    padding: 0.375em 0.875em;
     font-family: monospace;
-    font-size: 16px;
-    letter-spacing: 6px;
-    margin: -1rem -1rem 0.75rem;
+    font-size: 1em;
+    letter-spacing: 0.375em;
+    margin: -1em -1em 0.75em;
     border-bottom: 1px solid var(--window-border);
     border-radius: 8px 8px 0 0;
   }
 
   @media (min-width: 640px) {
     .reader-container :global(.wiki-window)::before {
-      margin: -1.5rem -2rem 1rem;
+      margin: -1.5em -2em 1em;
     }
   }
 
@@ -152,9 +156,7 @@
 
     color: var(--window-text) !important;
 
-    margin: 0.8rem 0;
-
-    font-size: 1rem;
+    margin: 0.8em 0;
 
     line-height: 1.6;
 
@@ -164,13 +166,13 @@
 
   .reader-container :global(.wiki-window:not(.no-meta) p:first-of-type) {
 
-    font-size: 0.8rem;
+    font-size: 0.8em;
 
     opacity: 0.6;
 
     text-align: right;
 
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.3em;
 
   }
 
@@ -184,8 +186,6 @@
 
     font-weight: 700;
 
-    font-size: 1rem;
-
   }
 
 
@@ -196,9 +196,9 @@
 
     display: block;
 
-    font-size: 1.25rem;
+    font-size: 1.25em;
 
-    margin: 1rem 0 0.8rem;
+    margin: 1em 0 0.8em;
 
   }
 
@@ -206,14 +206,91 @@
 
   .reader-container :global(.wiki-window p:last-of-type) {
 
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5em;
 
   }
 
   .reader-container :global(.wiki-window p:empty) {
-
     display: none;
+  }
 
+
+
+  /* --- RECORD WINDOW (greyish-blue) --- */
+
+  .reader-container :global(.record-window) {
+    margin: 2.5rem auto;
+    background: #1d2350;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    max-width: 98%;
+    position: relative;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    padding: 1em 1em 0.75em;
+    text-align: left;
+  }
+
+  @media (min-width: 640px) {
+    .reader-container :global(.record-window) {
+      max-width: 88%;
+      padding: 1.5em 2em 1em;
+    }
+  }
+
+  .reader-container :global(.record-window)::before {
+    content: "— ▢ X";
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(0,0,0,0.25);
+    color: #ffffff;
+    padding: 0.375em 0.875em;
+    font-family: monospace;
+    font-size: 1em;
+    letter-spacing: 0.375em;
+    margin: -1em -1em 0.75em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px 8px 0 0;
+  }
+
+  @media (min-width: 640px) {
+    .reader-container :global(.record-window)::before {
+      margin: -1.5em -2em 1em;
+    }
+  }
+
+  .reader-container :global(.record-window p) {
+    color: #ffffff !important;
+    margin: 0.8em 0;
+    line-height: 1.6;
+    text-align: left;
+  }
+
+  .reader-container :global(.record-window:not(.no-meta) p:first-of-type) {
+    font-size: 0.8em;
+    opacity: 0.6;
+    text-align: right;
+    margin-bottom: 0.3em;
+  }
+
+  .reader-container :global(.record-window strong),
+  .reader-container :global(.record-window b) {
+    color: inherit;
+    font-weight: 700;
+  }
+
+  .reader-container :global(.record-window p strong:only-child),
+  .reader-container :global(.record-window p strong:first-child):not(b strong) {
+    display: block;
+    font-size: 1.25em;
+    margin: 1em 0 0.8em;
+  }
+
+  .reader-container :global(.record-window p:last-of-type) {
+    margin-bottom: 0.5em;
+  }
+
+  .reader-container :global(.record-window p:empty) {
+    display: none;
   }
 
 
@@ -236,7 +313,7 @@
 
     box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 
-    padding: 1.5rem 2rem 1rem;
+    padding: 1.5em 2em 1em;
 
     text-align: left;
 
@@ -252,9 +329,7 @@
 
     color: var(--window-text) !important;
 
-    margin: 0.8rem 0;
-
-    font-size: 1rem;
+    margin: 0.8em 0;
 
     line-height: 1.6;
 
@@ -264,14 +339,181 @@
 
   .reader-container :global(.plain-window p:last-of-type) {
 
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5em;
 
   }
 
   .reader-container :global(.plain-window p:empty) {
-
     display: none;
+  }
 
+
+
+  /* --- &$ WINDOW (greyish-blue, no titlebar) --- */
+
+  .reader-container :global(.followup-window) {
+    margin: 2.5rem auto;
+    background: #1d2350;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    max-width: 98%;
+    position: relative;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    padding: 1.5em 2em 1em;
+    text-align: left;
+  }
+
+  @media (min-width: 640px) {
+    .reader-container :global(.followup-window) {
+      max-width: 88%;
+    }
+  }
+
+  .reader-container :global(.followup-window p) {
+    color: #ffffff !important;
+    margin: 0.8em 0;
+    line-height: 1.6;
+    text-align: left;
+  }
+
+  .reader-container :global(.followup-window p:last-of-type) {
+    margin-bottom: 0.5em;
+  }
+
+  .reader-container :global(.followup-window p:empty) {
+    display: none;
+  }
+
+
+
+  /* --- NOTE WINDOW (pale yellow notepad) --- */
+
+  .reader-container :global(.note-window) {
+    margin: 2.5rem auto;
+    background: #fefce8;
+    border: 1px solid #e6dec0;
+    border-radius: 4px;
+    max-width: 98%;
+    position: relative;
+    box-shadow:
+      -4px 4px 0 #d4c060,
+      0 4px 24px rgba(0,0,0,0.12);
+    padding: 1em 1.25em 0.75em;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  @media (min-width: 640px) {
+    .reader-container :global(.note-window) {
+      max-width: 88%;
+      padding: 1.25em 1.75em 1em;
+    }
+  }
+
+  .reader-container :global(.note-window)::before {
+    content: "";
+    display: block;
+    background: #edd44d;
+    height: 0.875em;
+    margin: -1em -1.25em 0.75em;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 640px) {
+    .reader-container :global(.note-window)::before {
+      margin: -1.25em -1.75em 0.75em;
+    }
+  }
+
+  .reader-container :global(.note-window)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 1.6em,
+      rgba(160,160,160,0.35) 1.6em,
+      rgba(160,160,160,0.35) 1.65em
+    );
+    filter: blur(0.05em);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .reader-container :global(.note-window p) {
+    color: #000000;
+    margin: 0.8em 0;
+    line-height: 1.7;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+  }
+
+  .reader-container :global(.note-window:not(.no-meta) p:first-of-type) {
+    color: #4a6fa5;
+    font-size: 1.35em;
+    font-weight: 600;
+    text-align: left;
+    margin-bottom: 0.3em;
+  }
+
+  .reader-container :global(.note-window strong),
+  .reader-container :global(.note-window b) {
+    color: inherit;
+    font-weight: 700;
+  }
+
+  .reader-container :global(.note-window p:last-of-type) {
+    margin-bottom: 0.5em;
+  }
+
+  .reader-container :global(.note-window p:empty) {
+    display: none;
+  }
+
+
+
+  /* --- STICKY NOTE (folded corner) --- */
+
+  .reader-container :global(.sticky-window) {
+    margin: 2.5rem auto;
+    background: #fefce8;
+    border: 1px solid #e6dec0;
+    border-radius: 2px;
+    max-width: 25em;
+    min-height: 15.625em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow:
+      -3px 3px 0 #d4c060,
+      0 4px 24px rgba(0,0,0,0.12);
+    padding: 1.5em;
+    text-align: center;
+  }
+
+
+
+  .reader-container :global(.sticky-window p) {
+    color: #000000;
+    margin: 0.3em 0;
+    line-height: 1.7;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .reader-container :global(.sticky-window p:last-of-type) {
+    margin-bottom: 0;
+  }
+
+  .reader-container :global(.sticky-window p:empty) {
+    display: none;
   }
 
 
@@ -286,7 +528,7 @@
     max-width: 88%;
     position: relative;
     box-shadow: 0 0 20px rgba(0,0,0,0.6);
-    padding: 1.5rem 2rem 1rem;
+    padding: 1.5em 2em 1em;
     text-align: center;
     font-weight: 700;
     color: #ffffff;
@@ -302,8 +544,7 @@
   .reader-container :global(.black-window *),
   .reader-container :global(.black-window p) {
     color: #ffffff !important;
-    margin: 0.8rem 0;
-    font-size: 1rem;
+    margin: 0.8em 0;
     line-height: 1.6;
     text-align: center;
   }
@@ -311,12 +552,12 @@
   .reader-container :global(.black-window p strong:only-child),
   .reader-container :global(.black-window p strong:first-child) {
     display: block;
-    font-size: 1.25rem;
-    margin: 1rem 0 0.8rem;
+    font-size: 1.25em;
+    margin: 1em 0 0.8em;
   }
 
   .reader-container :global(.black-window p:last-of-type) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5em;
   }
 
   .reader-container :global(.black-window p:empty) {
@@ -335,7 +576,7 @@
     max-width: 88%;
     position: relative;
     box-shadow: 0 0 20px rgba(0,0,0,0.6);
-    padding: 1.5rem 2rem 1rem;
+    padding: 1.5em 2em 1em;
     text-align: center;
     font-weight: 700;
     transition: box-shadow 0.3s;
@@ -391,16 +632,15 @@
   }
 
   .reader-container :global(.system-window p) {
-    color: #e0e0e0 !important;
-    margin: 0.8rem 0;
-    font-size: 1rem;
+    color: #ffffff !important;
+    margin: 0.8em 0;
     line-height: 1.6;
     text-align: center;
   }
 
   .reader-container :global(.system-window:not(.no-fl-dividers) > p:first-of-type) {
-    padding: 0.75rem 0;
-    font-size: 1.25rem;
+    padding: 0.75em 0;
+    font-size: 1.25em;
     background-image:
       linear-gradient(90deg, transparent, #888, transparent),
       linear-gradient(90deg, transparent, #888, transparent);
@@ -410,12 +650,14 @@
   }
 
   .reader-container :global(.system-window p:last-of-type) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5em;
   }
 
   .reader-container :global(.system-window p:empty) {
     display: none;
   }
+
+
 
 
 

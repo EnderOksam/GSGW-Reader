@@ -5,6 +5,7 @@
   import { page } from "$app/state";
   import { goto, afterNavigate } from "$app/navigation";
   import Icon from "@iconify/svelte";
+  import Giscus from "@giscus/svelte";
 
 
   // Components
@@ -263,6 +264,22 @@
     </div>
   </main>
 
+  <div id="comments" class="mx-auto max-w-4xl px-4 pb-16">
+    <Giscus
+      repo="EnderOksam/GSGW-Reader"
+      repoId="R_kgDOSUYftA"
+      category="General"
+      categoryId="DIC_kwDOSUYftM4C9WvT"
+      mapping="pathname"
+      strict="0"
+      reactionsEnabled="1"
+      emitMetadata="0"
+      inputPosition="top"
+      theme="preferred_color_scheme"
+      lang="en"
+      loading="lazy"
+    />
+  </div>
 
 </div>
 

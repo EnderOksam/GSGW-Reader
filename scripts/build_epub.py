@@ -30,7 +30,12 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 today = datetime.date.today().strftime("%B %d, %Y")
 
 def strip_wiki_window(text):
-    return re.sub(r'\+[-+]+\n(.*?)\n[-+]+\+', r'\1', text, flags=re.DOTALL)
+    text = re.sub(r'\+[-+]+\n(.*?)\n[-+]+\+', r'\1', text, flags=re.DOTALL)
+    text = re.sub(r'&[-]+\n(.*?)\n[-]+&', r'\1', text, flags=re.DOTALL)
+    text = re.sub(r'&\$\n(.*?)\n\$&', r'\1', text, flags=re.DOTALL)
+    text = re.sub(r'![-]+\n(.*?)\n[-]+!', r'\1', text, flags=re.DOTALL)
+    text = re.sub(r'!\$\n(.*?)\n\$!', r'\1', text, flags=re.DOTALL)
+    return text
 
 for rel_path in paths:
     # Convert relative path to absolute
@@ -69,11 +74,24 @@ for rel_path in paths:
         content = ""
         for chapter_data in chapters[section]:
             ch_text = strip_wiki_window(chapter_data["content"].strip())
-            ch_text = re.sub(r'_(.*?)_', r'[\1]{.underline}', ch_text)
-            ch_text = re.sub(r'~(.*?)~', r'~~\1~~', ch_text)
+            ch_text = re.sub(r'@_@(.*?)@_@', r'<span class="glitch-subtle">\1</span>', ch_text)
+            ch_text = re.sub(r'(?<!\\)_(.*?)(?<!\\)_', r'[\1]{.underline}', ch_text)
+            ch_text = re.sub(r'(?<!\\)~(.*?)(?<!\\)~', r'~~\1~~', ch_text)
             ch_text = re.sub(r'@ll@(.*?)@ll@', r'<span class="mono mono-left">\1</span>', ch_text)
             ch_text = re.sub(r'@rr@(.*?)@rr@', r'<span class="mono mono-right">\1</span>', ch_text)
             ch_text = re.sub(r'#y(.*?)y#', r'<span class="text-yellow">\1</span>', ch_text)
+            ch_text = re.sub(r'#o(.*?)o#', r'<span class="text-orange">\1</span>', ch_text)
+            ch_text = re.sub(r'#f#(.*?)#f#', r'<span class="text-faded">\1</span>', ch_text)
+            ch_text = re.sub(r'#f>#(.*?)#f>#', r'<span class="text-fade-right">\1</span>', ch_text)
+            ch_text = re.sub(r'#f<#(.*?)#f<#', r'<span class="text-fade-left">\1</span>', ch_text)
+            ch_text = re.sub(r'#\^#(.*?)#\^#', r'<span class="text-grow">\1</span>', ch_text)
+            ch_text = re.sub(r'#v#(.*?)#v#', r'<span class="text-grow">\1</span>', ch_text)
+            ch_text = re.sub(r';r(.*?)r;', r'<span class="hl-red">\1</span>', ch_text)
+            ch_text = re.sub(r';b(.*?)b;', r'<span class="hl-blue">\1</span>', ch_text)
+            ch_text = re.sub(r';y(.*?)y;', r'<span class="hl-yellow">\1</span>', ch_text)
+            ch_text = re.sub(r';p(.*?)p;', r'<span class="hl-magenta">\1</span>', ch_text)
+            ch_text = re.sub(r';g(.*?)g;', r'<span class="hl-green">\1</span>', ch_text)
+            ch_text = re.sub(r';o(.*?)o;', r'<span class="hl-orange">\1</span>', ch_text)
             ch_text = re.sub(r'@l@(.*?)@l@', r'<span class="align-left">\1</span>', ch_text)
             ch_text = re.sub(r'@r@(.*?)@r@', r'<span class="align-right">\1</span>', ch_text)
             content += f"""{ch_text}

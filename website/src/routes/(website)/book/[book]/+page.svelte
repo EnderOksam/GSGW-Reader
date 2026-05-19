@@ -44,7 +44,15 @@
     gsgw: {
       title: "Got Dropped into a Ghost Story, Still Gotta Work",
       author: "Baek Deoksoo",
-      synopsis: `placeholder`,
+      synopsis: [
+        "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.",
+        "On that day, I ended up transmigrating as a character in that very fantasy world.",
+        "As none other than a newly hired employee at a famous large corporation!",
+        "A dream job with great benefits, an excellent salary, and even kind and competent bosses.",
+        "I'm using the information I know about the world to rise through the ranks at lightning speed!",
+        "Am I happy, you ask?",
+        "Please, just let me go home. I'm begging you.",
+      ].join("\n\n"),
       title_accent: "text-default",
       button_primary: "btn-accent",
       button_secondary: "btn-info",
@@ -175,7 +183,7 @@
       <!-- Scrollable text for Desktop -->
       <div class="hidden md:block h-full">
         <div class="h-full overflow-y-auto pr-2 custom-scrollbar">
-          <p class="text-sm leading-relaxed text-justify opacity-80 whitespace-pre-line">
+          <p class="text-sm leading-relaxed text-center opacity-80 whitespace-pre-line">
             {book.synopsis}
           </p>
         </div>
@@ -186,7 +194,7 @@
         class="md:hidden btn btn-ghost btn-sm w-full h-auto py-3 bg-base-300/30"
         onclick={() => synopsisModal.showModal()}
       >
-        <p class="line-clamp-2 text-xs italic opacity-70">
+         <p class="line-clamp-2 text-xs italic opacity-70 text-center">
           {book.synopsis}
         </p>
       </button>
@@ -199,7 +207,7 @@
       <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button></form>
       <h3 class="text-lg font-bold mb-4">Synopsis</h3>
       <div class="max-h-[60vh] overflow-y-auto">
-        <p class="text-sm leading-relaxed whitespace-pre-line opacity-90">{book.synopsis}</p>
+         <p class="text-sm leading-relaxed whitespace-pre-line opacity-90 text-center">{book.synopsis}</p>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
