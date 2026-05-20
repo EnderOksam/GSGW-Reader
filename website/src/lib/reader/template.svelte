@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import css from "../../routes/(reader)/reader.css?url";
+  import css from "../../../../reader.css?url";
 
   import { readerState } from "$lib/reader.svelte";
 
