@@ -1,3 +1,10 @@
+:root {
+  --window-text: #ffffff !important;
+  --window-bg: #1e1e2e;
+  --window-border: #3a3a5c;
+  --window-accent: #ff4d00;
+}
+
 .reader-container strong {
   font-weight: 700;
 }
@@ -364,4 +371,79 @@ hr.visible-hr {
 .align-right {
   display: block;
   text-align: right;
+}
+
+body .reader-container .wiki-window.wiki-window,
+body .reader-container .wiki-window.wiki-window p,
+body .reader-container .wiki-window.wiki-window li {
+  color: #ffffff !important;
+}
+
+body .reader-container .record-window.record-window,
+body .reader-container .record-window.record-window p,
+body .reader-container .record-window.record-window li {
+  color: #ffffff !important;
+}
+
+body .reader-container .plain-window.plain-window,
+body .reader-container .plain-window.plain-window p,
+body .reader-container .plain-window.plain-window a,
+body .reader-container .plain-window.plain-window strong,
+body .reader-container .plain-window.plain-window b,
+body .reader-container .plain-window.plain-window em,
+body .reader-container .plain-window.plain-window i,
+body .reader-container .plain-window.plain-window li,
+body .reader-container .plain-window.plain-window h1,
+body .reader-container .plain-window.plain-window h2,
+body .reader-container .plain-window.plain-window h3,
+body .reader-container .plain-window.plain-window h4,
+body .reader-container .plain-window.plain-window h5,
+body .reader-container .plain-window.plain-window h6,
+body .reader-container .plain-window.plain-window code,
+body .reader-container .plain-window.plain-window blockquote {
+  color: #ffffff !important;
+}
+
+body .reader-container .followup-window.followup-window,
+body .reader-container .followup-window.followup-window p,
+body .reader-container .followup-window.followup-window a,
+body .reader-container .followup-window.followup-window strong,
+body .reader-container .followup-window.followup-window b,
+body .reader-container .followup-window.followup-window em,
+body .reader-container .followup-window.followup-window i,
+body .reader-container .followup-window.followup-window li,
+body .reader-container .followup-window.followup-window h1,
+body .reader-container .followup-window.followup-window h2,
+body .reader-container .followup-window.followup-window h3,
+body .reader-container .followup-window.followup-window h4,
+body .reader-container .followup-window.followup-window h5,
+body .reader-container .followup-window.followup-window h6,
+body .reader-container .followup-window.followup-window code,
+body .reader-container .followup-window.followup-window blockquote {
+  color: #ffffff !important;
+}
+
+body .reader-container .system-window.system-window,
+body .reader-container .system-window.system-window p,
+body .reader-container .system-window.system-window a,
+body .reader-container .system-window.system-window strong,
+body .reader-container .system-window.system-window b,
+body .reader-container .system-window.system-window em,
+body .reader-container .system-window.system-window i,
+body .reader-container .system-window.system-window li,
+body .reader-container .system-window.system-window h1,
+body .reader-container .system-window.system-window h2,
+body .reader-container .system-window.system-window h3,
+body .reader-container .system-window.system-window h4,
+body .reader-container .system-window.system-window h5,
+body .reader-container .system-window.system-window h6,
+body .reader-container .system-window.system-window code,
+body .reader-container .system-window.system-window blockquote {
+  color: #ffffff !important;
+}
+
+body .reader-container .black-window.black-window,
+body .reader-container .black-window.black-window p,
+body .reader-container .black-window.black-window li {
+  color: #ffffff !important;
 }

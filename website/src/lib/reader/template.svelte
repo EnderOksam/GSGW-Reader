@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import css from "../../../../reader.css?url";
+  import css from "../../routes/(reader)/reader.css?url";
 
   import { readerState } from "$lib/reader.svelte";
 
@@ -64,7 +64,7 @@
 
     --window-border: #3a3a5c;
 
-    --window-text: #ffffff;
+    --window-text: #ffffff !important;
 
     --window-accent: #ff4d00;
 
@@ -117,6 +117,8 @@
     padding: 1em 1em 0.75em;
 
     text-align: left;
+
+    color: var(--window-text) !important;
 
   }
 
@@ -228,6 +230,7 @@
     box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     padding: 1em 1em 0.75em;
     text-align: left;
+    color: #ffffff !important;
   }
 
   @media (min-width: 640px) {
@@ -317,6 +320,8 @@
 
     text-align: left;
 
+    color: var(--window-text) !important;
+
   }
 
   @media (min-width: 640px) {
@@ -325,16 +330,28 @@
     }
   }
 
-  .reader-container :global(.plain-window p) {
-
+  .reader-container :global(.plain-window p),
+  .reader-container :global(.plain-window a),
+  .reader-container :global(.plain-window strong),
+  .reader-container :global(.plain-window b),
+  .reader-container :global(.plain-window em),
+  .reader-container :global(.plain-window i),
+  .reader-container :global(.plain-window li),
+  .reader-container :global(.plain-window h1),
+  .reader-container :global(.plain-window h2),
+  .reader-container :global(.plain-window h3),
+  .reader-container :global(.plain-window h4),
+  .reader-container :global(.plain-window h5),
+  .reader-container :global(.plain-window h6),
+  .reader-container :global(.plain-window code),
+  .reader-container :global(.plain-window blockquote) {
     color: var(--window-text) !important;
+  }
 
+  .reader-container :global(.plain-window p) {
     margin: 0.8em 0;
-
     line-height: 1.6;
-
     text-align: left;
-
   }
 
   .reader-container :global(.plain-window p:last-of-type) {
@@ -361,6 +378,7 @@
     box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     padding: 1.5em 2em 1em;
     text-align: left;
+    color: #ffffff !important;
   }
 
   @media (min-width: 640px) {
@@ -369,8 +387,25 @@
     }
   }
 
-  .reader-container :global(.followup-window p) {
+  .reader-container :global(.followup-window p),
+  .reader-container :global(.followup-window a),
+  .reader-container :global(.followup-window strong),
+  .reader-container :global(.followup-window b),
+  .reader-container :global(.followup-window em),
+  .reader-container :global(.followup-window i),
+  .reader-container :global(.followup-window li),
+  .reader-container :global(.followup-window h1),
+  .reader-container :global(.followup-window h2),
+  .reader-container :global(.followup-window h3),
+  .reader-container :global(.followup-window h4),
+  .reader-container :global(.followup-window h5),
+  .reader-container :global(.followup-window h6),
+  .reader-container :global(.followup-window code),
+  .reader-container :global(.followup-window blockquote) {
     color: #ffffff !important;
+  }
+
+  .reader-container :global(.followup-window p) {
     margin: 0.8em 0;
     line-height: 1.6;
     text-align: left;
@@ -531,7 +566,7 @@
     padding: 1.5em 2em 1em;
     text-align: center;
     font-weight: 700;
-    color: #ffffff;
+    color: #ffffff !important;
     background-image: repeating-linear-gradient(
       0deg,
       transparent,
@@ -580,6 +615,7 @@
     text-align: center;
     font-weight: 700;
     transition: box-shadow 0.3s;
+    color: #ffffff !important;
   }
 
   .reader-container :global(.system-window):hover {
@@ -631,8 +667,25 @@
       linear-gradient(to top, #aaa, transparent) 0 100% / 1px 20px no-repeat;
   }
 
-  .reader-container :global(.system-window p) {
+  .reader-container :global(.system-window p),
+  .reader-container :global(.system-window a),
+  .reader-container :global(.system-window strong),
+  .reader-container :global(.system-window b),
+  .reader-container :global(.system-window em),
+  .reader-container :global(.system-window i),
+  .reader-container :global(.system-window li),
+  .reader-container :global(.system-window h1),
+  .reader-container :global(.system-window h2),
+  .reader-container :global(.system-window h3),
+  .reader-container :global(.system-window h4),
+  .reader-container :global(.system-window h5),
+  .reader-container :global(.system-window h6),
+  .reader-container :global(.system-window code),
+  .reader-container :global(.system-window blockquote) {
     color: #ffffff !important;
+  }
+
+  .reader-container :global(.system-window p) {
     margin: 0.8em 0;
     line-height: 1.6;
     text-align: center;
