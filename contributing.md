@@ -81,6 +81,9 @@ To add a titlebar, put text on the first line inside the window. Put `\` before 
 | `%~text~%` | Shaking text (individual letters) |
 | `%^text^%` | Wave text (per letter, right to left) |
 | `@@text@@` | Distorted / glitch text |
+| `@_@text@_@` | Subtle glitch text |
+| `#^#text#^#` | Growing text (sizes up left to right) |
+| `#v#text#v#` | Shrinking text (sizes down left to right) |
 
 ### Colored Text
 
@@ -92,6 +95,25 @@ To add a titlebar, put text on the first line inside the window. Put `\` before 
 | `#ptextp#` | Bold magenta |
 | `#gtextg#` | Bold green |
 | `#otexto#` | Bold orange |
+
+### Highlight Colors
+
+| Tag | Color |
+|-----|-------|
+| `;rtextr;` | Red highlight |
+| `;btextb;` | Blue highlight |
+| `;ytexty;` | Yellow highlight |
+| `;ptextp;` | Magenta highlight |
+| `;gtextg;` | Green highlight |
+| `;otexto;` | Orange highlight |
+
+### Fade Effects
+
+| Tag | Effect |
+|-----|--------|
+| `#f#text#f#` | Faded text (nearly invisible, reveals on hover) |
+| `#f>#text#f>#` | Fade from left to right |
+| `#f<#text#f<#` | Fade from right to left |
 
 ### Text Size & Alignment
 

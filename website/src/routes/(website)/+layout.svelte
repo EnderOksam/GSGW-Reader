@@ -10,7 +10,9 @@
 
   let { children } = $props();
 
-  let isHomePage = $derived(page.url.pathname === "/");
+  let path = $derived(page.url.pathname.replace(/\/$/, ""));
+  let isHomePage = $derived(path === "/");
+  let isEditorPage = $derived(path === "/dev/editor");
 
   let showBg1 = $state(page.url.pathname === "/");
   let showBg2 = $state(page.url.pathname !== "/");
@@ -81,7 +83,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
 </div>
 
-{#if !isHomePage}
+{#if !isHomePage && !isEditorPage}
   <div class="fixed top-4 left-4 z-50">
     <button
       onclick={handleBack}

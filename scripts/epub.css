@@ -440,23 +440,9 @@ figcaption {
   display: inline-block;
   font-weight: 400;
   letter-spacing: 0.02em;
-}
-
-.glitch-subtle::before,
-.glitch-subtle::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.15;
-}
-
-.glitch-subtle::before {
-  transform: translateY(-1px) translateX(-0.5px);
-}
-
-.glitch-subtle::after {
-  transform: translateY(1px) translateX(0.5px);
+  text-shadow:
+    0.5px -1px 0 rgba(255,255,255,0.10),
+    -0.5px 1px 0 rgba(255,255,255,0.10);
 }
 
 .glitch-subtle .char {

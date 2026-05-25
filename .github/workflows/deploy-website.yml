@@ -30,21 +30,15 @@ jobs:
         run: |
           pip install python-frontmatter imagesize
 
-      # 4. Install Pandoc (Required by html.py)
+      # 4. Install Pandoc (Required by build_web.py)
       - name: Install Pandoc
         run: choco install pandoc --no-progress
 
-      # 5. Copy Images to Static Folder
-      - name: Sync Images to Static
-        run: |
-          mkdir website\static\assets\images -Force
-          xcopy images\* website\static\assets\images\ /E /I /Y
-        
-      # 6. Run HTML Builder Script
+      # 5. Generate Svelte Pages from Markdown
       - name: Generate Svelte Pages
         run: python scripts/build_web.py
 
-      # 7. Setup Node.js
+      # 6. Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -52,21 +46,22 @@ jobs:
           cache: 'npm'
           cache-dependency-path: website/package-lock.json
 
-      # 8. Install NPM Dependencies
+      # 7. Install NPM Dependencies
       - name: Install Node dependencies
         working-directory: ./website
         run: npm ci
 
-      # 9. Build SvelteKit Site
+      # 8. Build SvelteKit Site
       - name: Build Website
         working-directory: ./website
         run: npm run build
 
-      # 10. Deploy to Cloudflare Pages
+      # 9. Deploy to Cloudflare Pages
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy website/.svelte-kit/cloudflare --project-name=gsgw
+          workingDirectory: website
+          command: pages deploy --project-name=gsgw
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

@@ -66,7 +66,7 @@
       </a>
     </div>
 
-    <div class="hidden md:flex flex-col justify-center gap-3">
+    <div class="hidden md:flex flex-col justify-center items-center gap-3">
       <div class="tooltip" data-tip="Download">
         <a href="/download" class="btn btn-soft btn-square btn-lg btn-secondary shadow-lg">
           <Icon icon="material-symbols:download" class="size-7" />
@@ -87,13 +87,13 @@
           <Icon icon="mdi:github" class="size-7" />
         </a>
       </div>
-      <div class="tooltip" data-tip="Info">
-        <StarField>
+      <StarField>
+        <div class="tooltip" data-tip="Info">
           <a href="/info" class="btn btn-soft btn-square btn-lg btn-ghost shadow-lg info-glow">
             <Icon icon="mdi:information-outline" class="size-7" />
           </a>
-        </StarField>
-      </div>
+        </div>
+      </StarField>
     </div>
   </div>
 
@@ -137,13 +137,13 @@
           <Icon icon="mdi:github" class="size-7" />
         </a>
       </div>
-      <div class="tooltip" data-tip="Info">
-        <StarField>
+      <StarField>
+        <div class="tooltip" data-tip="Info">
           <a href="/info" class="btn btn-soft btn-square btn-lg btn-ghost shadow-lg info-glow">
             <Icon icon="mdi:information-outline" class="size-7" />
           </a>
-        </StarField>
-      </div>
+        </div>
+      </StarField>
     </div>
 
   </div>

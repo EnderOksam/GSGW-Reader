@@ -66,12 +66,12 @@ AMPERSAND_WINDOW_RE = re.compile(r"&\$\n(.*?)\n\$&", re.DOTALL)
 
 NOTE_WINDOW_RE = re.compile(r"![-]+\n(.*?)\n[-]+!", re.DOTALL)
 STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
-
+BRAUN_WINDOW_RE = re.compile(r"!\[\n(.*?)\n\]!", re.DOTALL)
 
 
 SIMPLE_REPLACEMENTS = [
     (re.compile(r"(?<!\\)_(.*?)(?<!\\)_", re.DOTALL), r"[\1]{.underline}"),
-    (re.compile(r"(?<!\\)~(.*?)(?<!\\)~", re.DOTALL), r"~~\1~~"),
+    (re.compile(r"(?<!\\)(?<!~)~(?!~)(.*?)(?<!\\)~", re.DOTALL), r"~~\1~~"),
 
     (re.compile(r"@ll@(.*?)@ll@", re.DOTALL), r'<span class="mono mono-left">\1</span>'),
     (re.compile(r"@rr@(.*?)@rr@", re.DOTALL), r'<span class="mono mono-right">\1</span>'),
@@ -234,8 +234,6 @@ def distorted_replacer(match):
 
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
 
-    text_only = re.sub(r"<[^>]+>", "", inner).replace('"', "&quot;")
-
     parts = re.split(r"(<[^>]+>)", inner)
 
     chars = []
@@ -261,8 +259,7 @@ def distorted_replacer(match):
             idx += 1
 
     return (
-        f'<span class="glitch-text" '
-        f'data-text="{text_only}">'
+        f'<span class="glitch-text">'
         f'{"".join(chars)}'
         f'</span>'
     )
@@ -274,8 +271,6 @@ def subtle_replacer(match):
 
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
 
-    text_only = re.sub(r"<[^>]+>", "", inner).replace('"', "&quot;")
-
     parts = re.split(r"(<[^>]+>)", inner)
 
     chars = []
@@ -301,8 +296,7 @@ def subtle_replacer(match):
             idx += 1
 
     return (
-        f'<span class="glitch-subtle" '
-        f'data-text="{text_only}">'
+        f'<span class="glitch-subtle">'
         f'{"".join(chars)}'
         f'</span>'
     )
@@ -419,7 +413,6 @@ def note_window_replacer(match):
 
     return make_window("note-window", inner)
 
-
 # =========================================================
 # MAIN CONVERTER
 # =========================================================
@@ -440,20 +433,24 @@ def convert_chapter(content):
 
     content = SHRINK_RE.sub(shrink_replacer, content)
 
-    # protect markdown image syntax from SIMPLE_REPLACEMENTS
+    # protect markdown image syntax and double-tilde strikethrough from SIMPLE_REPLACEMENTS
     img_placeholders = {}
-    def protect_images(text):
-        def save(m):
-            key = f"\x00IMG{len(img_placeholders)}\x00"
-            img_placeholders[key] = m.group(0)
-            return key
-        return re.sub(r'!\[.*?\]\(.*?\)', save, text)
-    content = protect_images(content)
+    def protect_patterns(text):
+        def save(key_store):
+            def save_inner(m):
+                key = f"\x00IMG{len(key_store)}\x00"
+                key_store[key] = m.group(0)
+                return key
+            return save_inner
+        text = re.sub(r'!\[.*?\]\(.*?\)', save(img_placeholders), text)
+        text = re.sub(r'~~[^~]+?~~', save(img_placeholders), text)
+        return text
+    content = protect_patterns(content)
 
     for pattern, repl in SIMPLE_REPLACEMENTS:
         content = pattern.sub(repl, content)
 
-    # restore protected images
+    # restore protected patterns
     for key, val in img_placeholders.items():
         content = content.replace(key, val)
 
@@ -489,6 +486,11 @@ def convert_chapter(content):
 
     content = STICKY_WINDOW_RE.sub(
         lambda m: make_window("sticky-window", m.group(1)),
+        content
+    )
+
+    content = BRAUN_WINDOW_RE.sub(
+        lambda m: make_window("braun-screen", m.group(1)),
         content
     )
 

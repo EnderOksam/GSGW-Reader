@@ -63,8 +63,12 @@
             <Icon icon="mdi:code-tags" class="text-accent size-5" />
             <h2 class="text-lg font-semibold">Developer Note</h2>
           </div>
-          <p class="text-sm text-base-content/80 leading-relaxed">this website was made as a personal project to learn a bit of web development, I hope you enjoy it as much as I enjoyed making it</p>
+          <p class="text-sm text-base-content/80 leading-relaxed">this website is a fork of <a href="https://beyonder.pages.dev" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">beyonder.pages.dev</a> it was made as a personal project to learn a bit of web development, I hope you enjoy it as much as I enjoyed making it</p>
           <p class="text-xs text-base-content/60 mt-2 leading-relaxed">(if there are any issues or concerns I can be contacted through discord, and if there are any suggestions or bugs they can be brought up on the discord server)</p>
+          <a href="/dev" class="btn btn-soft btn-sm btn-primary mt-4 gap-2">
+            <Icon icon="mdi:developer-board" class="size-4" />
+            Dev Tools
+          </a>
         </section>
       </div>
 

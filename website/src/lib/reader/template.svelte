@@ -530,12 +530,17 @@
       0 4px 24px rgba(0,0,0,0.12);
     padding: 1.5em;
     text-align: center;
+    color: #000000 !important;
   }
 
-
+  .reader-container :global(.sticky-window p),
+  .reader-container :global(.sticky-window a),
+  .reader-container :global(.sticky-window strong),
+  .reader-container :global(.sticky-window b) {
+    color: #000000 !important;
+  }
 
   .reader-container :global(.sticky-window p) {
-    color: #000000;
     margin: 0.3em 0;
     line-height: 1.7;
     text-align: center;
@@ -566,7 +571,11 @@
     padding: 1.5em 2em 1em;
     text-align: center;
     font-weight: 700;
+    font-size: 1.3em;
     color: #ffffff !important;
+    /* glow-original: 0 0 7px rgba(255,255,255,0.4), 0 0 14px rgba(255,255,255,0.2) */
+    text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.4);
+    transition: text-shadow 0.3s;
     background-image: repeating-linear-gradient(
       0deg,
       transparent,
@@ -576,9 +585,8 @@
     );
   }
 
-  .reader-container :global(.black-window *),
   .reader-container :global(.black-window p) {
-    color: #ffffff !important;
+    color: #ffffff;
     margin: 0.8em 0;
     line-height: 1.6;
     text-align: center;
@@ -595,10 +603,137 @@
     margin-bottom: 0.5em;
   }
 
+  .reader-container :global(.black-window):hover {
+    animation: black-window-glow 1s ease-in-out infinite alternate;
+  }
+
   .reader-container :global(.black-window p:empty) {
     display: none;
   }
 
+  @keyframes black-window-glow {
+    0% {
+      text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.4);
+    }
+    100% {
+      text-shadow: 0 0 7px rgba(255,255,255,0.4), 0 0 14px rgba(255,255,255,0.2);
+    }
+  }
+
+
+
+  /* --- BRAUN SCREEN (CRT monitor) --- */
+
+  .reader-container :global(.braun-screen) {
+    margin: 2.5rem auto;
+    background:
+      radial-gradient(ellipse at center, #050504 0%, #030302 60%, #020201 100%);
+    border: 10px solid #4f4642;
+    border-radius: 36px;
+    max-width: 90%;
+    position: relative;
+    box-shadow:
+      0 0 30px rgba(0,0,0,0.8),
+      inset 0 0 60px rgba(0,0,0,0.3);
+    padding: 6em 0.5em;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2em;
+    color: #ffffff !important;
+    text-shadow:
+      0 0 5px rgba(255, 255, 255, 0.4),
+      0 0 15px rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+    transition: text-shadow 0.2s;
+    animation: braun-idle 0.08s infinite;
+  }
+
+  .reader-container :global(.braun-screen)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 255, 255, 0.02) 2px,
+        rgba(255, 255, 255, 0.02) 4px
+      ),
+      radial-gradient(
+        ellipse at center,
+        transparent 50%,
+        rgba(0,0,0,0.5) 100%
+      );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .reader-container :global(.braun-screen)::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='0.8'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 150px 150px;
+    opacity: 0.20;
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: screen;
+    animation: braun-static 0.12s infinite steps(3);
+    transition: opacity 0.2s, animation-duration 0.2s;
+  }
+
+  @keyframes braun-static {
+    0% { background-position: 0 0; }
+    33% { background-position: -45px -25px; }
+    66% { background-position: 25px -55px; }
+    100% { background-position: -15px 35px; }
+  }
+
+  @keyframes braun-idle {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(0.1px, -0.1px); }
+  }
+
+  .reader-container :global(.braun-screen):hover {
+    text-shadow:
+      0 0 8px rgba(255, 255, 255, 0.6),
+      0 0 20px rgba(255, 255, 255, 0.25);
+    animation: braun-hover-shake 0.06s infinite;
+  }
+
+  .reader-container :global(.braun-screen):hover::before {
+    opacity: 0.50;
+    animation-duration: 0.04s;
+    animation-timing-function: steps(6);
+  }
+
+  @keyframes braun-hover-shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(0.3px, -0.2px); }
+    50% { transform: translate(-0.2px, 0.3px); }
+    75% { transform: translate(0.2px, -0.3px); }
+  }
+
+  .reader-container :global(.braun-screen p) {
+    color: #ffffff;
+    margin: 0.8em 0;
+    line-height: 1.6;
+    text-align: center;
+    position: relative;
+    z-index: 3;
+  }
+
+  .reader-container :global(.braun-screen p:last-of-type) {
+    margin-bottom: 0.5em;
+  }
+
+  .reader-container :global(.braun-screen p:empty) {
+    display: none;
+  }
 
 
   /* --- SYSTEM WINDOW (double-line) --- */

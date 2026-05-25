@@ -64,10 +64,6 @@
             />
           {/if}
         </button>
-        
-        <span class="mt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-white/20 italic">
-          # status_normal
-        </span>
       </div>
 
     </div>
