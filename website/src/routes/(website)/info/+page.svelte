@@ -4,7 +4,7 @@
 </script>
 
 <div class="flex flex-col items-center justify-center min-h-dvh p-6 md:p-12">
-  <div class="max-w-5xl w-full bg-base-300/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+  <div class="max-w-5xl w-full bg-base-300/70 border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
 
     <header class="text-center mb-10 relative z-10">
       <h1 class="text-5xl font-bold text-primary mb-3">GSGW-Reader</h1>
@@ -65,10 +65,6 @@
           </div>
           <p class="text-sm text-base-content/80 leading-relaxed">this website is a fork of <a href="https://beyonder.pages.dev" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">beyonder.pages.dev</a> it was made as a personal project to learn a bit of web development, I hope you enjoy it as much as I enjoyed making it</p>
           <p class="text-xs text-base-content/60 mt-2 leading-relaxed">(if there are any issues or concerns I can be contacted through discord, and if there are any suggestions or bugs they can be brought up on the discord server)</p>
-          <a href="/dev" class="btn btn-soft btn-sm btn-primary mt-4 gap-2">
-            <Icon icon="mdi:developer-board" class="size-4" />
-            Dev Tools
-          </a>
         </section>
       </div>
 
@@ -78,16 +74,12 @@
            class="bg-base-200/50 p-6 rounded-xl border border-white/5 block transition-transform hover:scale-[1.02]">
           <div class="flex items-center gap-2 mb-4">
             <Icon icon="mdi:book-open-page-variant" class="text-secondary size-6" />
-            <h2 class="text-xl font-semibold">Original story credits</h2>
+            <h2 class="text-xl font-semibold">Story</h2>
           </div>
           <ul class="text-sm text-base-content/80 space-y-3">
             <li class="flex items-center gap-2">
               <Icon icon="mdi:pen" class="size-4 opacity-50 shrink-0" />
               <span><b>Author:</b> Baek Deoksoo</span>
-            </li>
-            <li class="flex items-center gap-2">
-              <Icon icon="mdi:translate" class="size-4 opacity-50 shrink-0" />
-              <span><b>Translation:</b> Original Translation by SaltGoblin</span>
             </li>
           </ul>
         </a>
@@ -100,15 +92,6 @@
           <div class="flex flex-wrap gap-3">
             <div class="bg-base-300/50 px-3 py-1.5 rounded-full border border-white/5">
               <TwitterHover user="choilings" />
-            </div>
-            <div class="bg-base-300/50 px-3 py-1.5 rounded-full border border-white/5">
-              <TwitterHover user="chiiiiliii" />
-            </div>
-            <div class="bg-base-300/50 px-3 py-1.5 rounded-full border border-white/5">
-              <TwitterHover user="chachaislong" />
-            </div>
-            <div class="bg-base-300/50 px-3 py-1.5 rounded-full border border-white/5">
-              <TwitterHover user="nokdock4" />
             </div>
           </div>
         </section>
@@ -131,7 +114,15 @@
             GitHub
           </a>
         </div>
-        <p class="text-xs text-base-content/60 text-center mt-6 leading-relaxed">
+
+        <div class="flex justify-center mt-8">
+          <a href="/dev" class="btn btn-soft btn-md btn-primary gap-2">
+            <Icon icon="mdi:developer-board" class="size-5" />
+            Dev Tools
+          </a>
+        </div>
+
+        <p class="text-xs text-base-content/60 text-center mt-10 leading-relaxed">
           thank you to <TwitterHover user="dominusz" noFetch /> and <TwitterHover user="wonstryk" noFetch /> for testing early builds of the site
         </p>
       </div>

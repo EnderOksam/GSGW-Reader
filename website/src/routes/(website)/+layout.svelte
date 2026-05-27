@@ -1,34 +1,15 @@
 <script lang="ts">
-  import imgBG1 from "$lib/assets/web-bg.jpg";
-  import imgBG2 from "$lib/assets/web-bg2.jpg";
+  import AnimatedInkTexture from "$lib/AnimatedInkTexture.svelte";
   import Icon from "@iconify/svelte";
   import "../../app.css";
   import { page } from "$app/state";
-  import { goto, afterNavigate } from "$app/navigation";
-
-  import imgMeta from "$lib/assets/card.jpg?url";
+  import { goto } from "$app/navigation";
 
   let { children } = $props();
 
-  let path = $derived(page.url.pathname.replace(/\/$/, ""));
+  let path = $derived(page.url.pathname.replace(/\/$/, "") || "/");
   let isHomePage = $derived(path === "/");
-  let isEditorPage = $derived(path === "/dev/editor");
-
-  let showBg1 = $state(page.url.pathname === "/");
-  let showBg2 = $state(page.url.pathname !== "/");
-  let transitionMs = $state(0);
-
-  afterNavigate((nav) => {
-    const fromHome = nav.from?.url.pathname === "/";
-    const toHome = page.url.pathname === "/";
-
-    if (fromHome || toHome) {
-      transitionMs = 400;
-    }
-
-    showBg1 = toHome;
-    showBg2 = !toHome;
-  });
+  let isEditorPage = $derived(path === "/dev/editor" || path.startsWith("/dev/editor/"));
 
   function handleBack() {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -61,7 +42,6 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 
 On that day, I ended up transmigrating as a character in that very fantasy world."
   />
-  <meta property="og:image" content="http://beyonder.pages.dev{imgMeta}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="GSGW-Reader" />
   <meta
@@ -70,24 +50,17 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 
 On that day, I ended up transmigrating as a character in that very fantasy world."
   />
-  <meta name="twitter:image" content="http://beyonder.pages.dev{imgMeta}" />
 </svelte:head>
 
-<div class="fixed inset-0 -z-10 overflow-hidden">
-  <enhanced:img src={imgBG1} alt="" class="absolute inset-0 w-full h-full object-cover object-top will-change-opacity"
-    style="opacity: {showBg1 ? 1 : 0}; transition: opacity {transitionMs}ms;"
-  />
-  <enhanced:img src={imgBG2} alt="" class="absolute inset-0 w-full h-full object-cover object-top will-change-opacity"
-    style="opacity: {showBg2 ? 1 : 0}; transition: opacity {transitionMs}ms;"
-  />
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
-</div>
+{#if !isEditorPage}
+  <AnimatedInkTexture />
+{/if}
 
 {#if !isHomePage && !isEditorPage}
   <div class="fixed top-4 left-4 z-50">
     <button
       onclick={handleBack}
-      class="btn btn-circle btn-ghost bg-base-300/50 backdrop-blur-md hover:bg-base-300 transition-all shadow-lg"
+      class="btn btn-circle btn-ghost bg-base-300/70 hover:bg-base-300 transition-all shadow-lg"
       aria-label="Go back"
     >
       <Icon icon="material-symbols:arrow-back-rounded" class="size-6" />
@@ -96,3 +69,17 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 {/if}
 
 {@render children()}
+
+<style>
+  :global(:root) {
+    --c1: #1C3760;
+    --c2: #4682B4;
+    --c3: #FF69B4;
+    --c4: #FF4500;
+    --c5: #4B0082;
+    --c6: #C0C0C0;
+    --c7: #FFFF00;
+    --c8: #3A2E3B;
+    --c9: #E0115F;
+  }
+</style>

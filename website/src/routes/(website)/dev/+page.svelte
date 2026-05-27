@@ -3,7 +3,7 @@
 </script>
 
 <div class="flex flex-col items-center justify-center min-h-dvh p-6 md:p-12">
-  <div class="max-w-5xl w-full bg-base-300/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+  <div class="max-w-5xl w-full bg-base-300/70 border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
 
     <header class="text-center mb-10 relative z-10">
       <h1 class="text-5xl font-bold text-primary mb-3">Dev Tools</h1>

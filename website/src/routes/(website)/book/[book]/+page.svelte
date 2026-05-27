@@ -131,11 +131,11 @@
 
 <main class="flex md:flex-row flex-col min-h-screen">
   <!-- Left Side: Book Info & Actions -->
-  <aside class="md:h-dvh md:w-[35vw] w-screen bg-base-200/50 md:sticky md:top-0 flex flex-col items-center border-b md:border-b-0 md:border-r border-base-300">
+  <aside class="md:h-dvh md:w-[35vw] w-screen bg-base-200/70 md:sticky md:top-0 flex flex-col items-center border-b md:border-b-0 md:border-r border-base-300">
     <div class="w-full flex flex-col items-center p-6 md:p-8">
       <!-- Cover Image -->
       <div class="relative group mb-6">
-        <div class="absolute -inset-1 bg-current opacity-10 blur-xl rounded-2xl transition-opacity group-hover:opacity-20"></div>
+        <div class="absolute -inset-1 bg-current opacity-10 rounded-2xl transition-opacity group-hover:opacity-20"></div>
         <enhanced:img
           src={book.cover}
           alt="{book.title} cover"
@@ -256,9 +256,9 @@
   </dialog>
 
   <!-- Right Side: Search and Chapter Grid -->
-  <div class="md:w-[65vw] w-screen min-h-dvh bg-base-100/50 backdrop-blur-sm">
+  <div class="md:w-[65vw] w-screen min-h-dvh bg-base-100/75">
     <!-- Filter Bar (Sticky) -->
-    <div class="w-full flex flex-row items-center gap-2 p-4 sticky top-0 backdrop-blur-md z-10 bg-base-100/30 border-b border-white/5">
+    <div class="w-full flex flex-row items-center gap-2 p-4 sticky top-0 z-10 bg-base-100/90 border-b border-white/5">
       <label class="input input-bordered flex items-center gap-2 grow">
         <Icon icon="material-symbols:search-rounded" class="size-6 opacity-50" />
         <input type="search" bind:value={searchQuery} placeholder="Search title or number..." class="grow" />
