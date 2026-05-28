@@ -9,7 +9,7 @@
     <header class="text-center mb-10 relative z-10">
       <h1 class="text-5xl font-bold text-primary mb-3">GSGW-Reader</h1>
       <p class="text-base-content/70 italic text-base">
-        A website for reading and preserving GSGW translations and formatting.
+        A website for reading and hosting GSGW translations and formatting
       </p>
     </header>
 
@@ -85,10 +85,13 @@
         </a>
 
         <section class="bg-base-200/50 p-6 rounded-xl border border-white/5">
-          <div class="flex items-center gap-2 mb-4">
+          <div class="flex items-center gap-2 mb-2">
             <Icon icon="mdi:palette" class="text-secondary size-5" />
             <h2 class="text-lg font-semibold">Illustrations</h2>
           </div>
+          <p class="text-sm text-base-content/60 mb-4 leading-relaxed">
+            Illustrations featured on the reader are Twitter embeds completely client side, Clicking the @'s should take you to the original post.
+          </p>
           <div class="flex flex-wrap gap-3">
             <div class="bg-base-300/50 px-3 py-1.5 rounded-full border border-white/5">
               <TwitterHover user="choilings" />
@@ -116,9 +119,9 @@
         </div>
 
         <div class="flex justify-center mt-8">
-          <a href="/dev" class="btn btn-soft btn-md btn-primary gap-2">
+          <a href="/dev/editor" class="btn btn-soft btn-md btn-primary gap-2">
             <Icon icon="mdi:developer-board" class="size-5" />
-            Dev Tools
+            Editor
           </a>
         </div>
 

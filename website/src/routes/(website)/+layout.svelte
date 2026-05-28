@@ -1,5 +1,4 @@
 <script lang="ts">
-  import AnimatedInkTexture from "$lib/AnimatedInkTexture.svelte";
   import Icon from "@iconify/svelte";
   import "../../app.css";
   import { page } from "$app/state";
@@ -52,10 +51,6 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   />
 </svelte:head>
 
-{#if !isEditorPage}
-  <AnimatedInkTexture />
-{/if}
-
 {#if !isHomePage && !isEditorPage}
   <div class="fixed top-4 left-4 z-50">
     <button
@@ -81,5 +76,9 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     --c7: #FFFF00;
     --c8: #3A2E3B;
     --c9: #E0115F;
+  }
+
+  :global(body) {
+    background: #1a1a1a;
   }
 </style>

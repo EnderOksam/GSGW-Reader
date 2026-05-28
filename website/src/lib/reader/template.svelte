@@ -30,7 +30,67 @@
 
 
 
+  $effect(() => {
+    const embeds = document.querySelectorAll<HTMLElement>('.twitter-embed');
+    if (!embeds.length) return;
+    embeds.forEach(el => {
+      const user = el.dataset.user;
+      const tweetId = el.dataset.tweetId;
+      if (!user || !tweetId) return;
+      if (el.querySelector('.twitter-embed-inner')) return;
+      hydrateEmbed(el, user, tweetId);
+    });
+  });
 
+  async function hydrateEmbed(el: HTMLElement, user: string, tweetId: string) {
+    try {
+      const res = await fetch(`https://api.fxtwitter.com/${user}/status/${tweetId}`);
+      const data = await res.json();
+      if (!data?.tweet) throw new Error('no tweet data');
+
+      const t = data.tweet;
+      const author = t.author || {};
+      const name = author.name || user;
+      const tweetUrl = `https://x.com/${user}/status/${tweetId}`;
+      const photos = t.media?.photos || [];
+      const videos = t.media?.videos || [];
+      const photoIdx = el.dataset.photo;
+
+      let mediaHtml = '';
+      if (photoIdx && photos.length) {
+        const p = photos[parseInt(photoIdx, 10) - 1];
+        if (p) mediaHtml = `<img class="twitter-embed-image" src="${esc(p.url)}" alt="" loading="lazy" />`;
+      } else if (videos.length) {
+        const v = videos[0];
+        mediaHtml = `<video class="twitter-embed-video" src="${esc(v.url)}" controls playsinline preload="metadata"></video>`;
+      } else if (photos.length === 1) {
+        mediaHtml = `<img class="twitter-embed-image" src="${esc(photos[0].url)}" alt="" loading="lazy" />`;
+      } else if (photos.length > 1) {
+        mediaHtml = `<div class="twitter-embed-grid">${photos.map(p =>
+          `<img src="${esc(p.url)}" alt="" loading="lazy" />`
+        ).join('')}</div>`;
+      }
+
+      el.innerHTML = `
+        <div class="twitter-embed-inner">
+          <div class="twitter-embed-header">
+            <a class="twitter-embed-name" href="${tweetUrl}" target="_blank" rel="noopener noreferrer">${esc(name)}</a>
+            <span class="twitter-embed-user">@${user}</span>
+            <svg class="twitter-embed-x-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+          ${mediaHtml}
+        </div>
+      `;
+    } catch {
+      el.innerHTML = '<div class="twitter-embed-error">Failed to load tweet</div>';
+    }
+  }
+
+  function esc(str: string): string {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
 
 </script>
 
@@ -848,5 +908,113 @@
 
 
 
+  /* --- TWITTER EMBED --- */
+
+  .reader-container :global(.twitter-embed) {
+    margin: 2rem auto;
+    max-width: 550px;
+    transition: transform 0.15s;
+  }
+
+  .reader-container :global(.twitter-embed):hover {
+    transform: translateY(-2px);
+  }
+
+  .reader-container :global(.twitter-embed-inner) {
+    background: #16181c;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    padding: 0 0.75rem 0.75rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .reader-container :global(.twitter-embed-header) {
+    display: flex;
+    align-items: baseline;
+    gap: 0.375rem;
+    padding: 0.75rem 0 0.375rem;
+  }
+
+  .reader-container :global(.twitter-embed-name) {
+    color: #1d9bf0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 0 8px rgba(29,155,240,0.5);
+  }
+
+  .reader-container :global(.twitter-embed-name:hover) {
+    text-decoration: underline;
+    text-shadow: 0 0 12px rgba(29,155,240,0.7);
+  }
+
+  .reader-container :global(.twitter-embed-user) {
+    color: #71767b;
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+
+  .reader-container :global(.twitter-embed-x-icon) {
+    color: #71767b;
+    margin-left: auto;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .reader-container :global(.twitter-embed-image) {
+    display: block;
+    width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    margin: 0;
+    border-radius: 12px;
+  }
+
+  .reader-container :global(.twitter-embed-grid) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .reader-container :global(.twitter-embed-grid img) {
+    display: block;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .reader-container :global(.twitter-embed-grid img:first-child:nth-last-child(3)) {
+    height: 150px;
+  }
+
+  .reader-container :global(.twitter-embed-grid img:first-child:nth-last-child(3) ~ img) {
+    height: 150px;
+  }
+
+  .reader-container :global(.twitter-embed-video) {
+    display: block;
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 12px;
+  }
+
+  .reader-container :global(.twitter-embed-loading),
+  .reader-container :global(.twitter-embed-error) {
+    padding: 1.25rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #71767b;
+    background: #16181c;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
 
 </style>

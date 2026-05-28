@@ -2,12 +2,12 @@ import os
 import re
 import json
 import subprocess
-import shutil
+import imagesize
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import frontmatter
-import imagesize
+
 
 
 # =========================================================
@@ -16,11 +16,6 @@ import imagesize
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_ROOT = SCRIPT_DIR.parent
-
-IMG_STORAGE_DIR = REPO_ROOT / "website/static/assets/images/static-illustrations"
-IMG_FALLBACK_DIR = REPO_ROOT / "images/gsgw/illustrations"
-
-IMG_PUBLIC_PREFIX = "/assets/images/static-illustrations"
 
 TEMPLATE_PATH = REPO_ROOT / "website/src/lib/reader/template.svelte"
 META_OUTPUT_PATH = REPO_ROOT / "website/src/lib/meta.json"
@@ -50,6 +45,10 @@ DISTORT_RE = re.compile(r"@@([^@]+)@@", re.DOTALL)
 SUBTLEDISTORT_RE = re.compile(r"@_@(.+?)@_@", re.DOTALL)
 GROW_RE = re.compile(r"#\^#(.+?)#\^#", re.DOTALL)
 SHRINK_RE = re.compile(r"#v#(.+?)#v#", re.DOTALL)
+
+TWITTER_URL_RE = re.compile(
+    r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
+)
 
 VISIBLE_HR_RE = re.compile(r"^~~~\s*$", re.MULTILINE)
 
@@ -104,6 +103,9 @@ SIMPLE_REPLACEMENTS = [
 # =========================================================
 # IMAGE PROCESSING
 # =========================================================
+
+IMG_STORAGE_DIR = REPO_ROOT / "website/static/assets/images/static-illustrations"
+IMG_PUBLIC_PREFIX = "/assets/images/static-illustrations"
 
 def get_image_size_cached(path):
     cached = IMAGE_SIZE_CACHE.get(path)
@@ -178,6 +180,26 @@ def escape_markdown_except_bold(text):
     text = re.sub(r'(?m)^(?<!\\)>(?=\s)', r'\\>', text)
 
     return text
+
+
+# =========================================================
+# TWITTER URL PROCESSING
+# =========================================================
+
+def process_twitter_urls(content):
+    def replacer(match):
+        username = match.group(1)
+        tweet_id = match.group(2)
+        photo_idx = match.group(3)
+        attrs = f'data-user="{username}" data-tweet-id="{tweet_id}"'
+        if photo_idx:
+            attrs += f' data-photo="{photo_idx}"'
+        return (
+            f'<div class="twitter-embed" {attrs}>'
+            f'<div class="twitter-embed-loading">Loading…</div>'
+            f'</div>'
+        )
+    return TWITTER_URL_RE.sub(replacer, content)
 
 
 # =========================================================
@@ -419,6 +441,23 @@ def note_window_replacer(match):
 
 def convert_chapter(content):
 
+    content = process_twitter_urls(content)
+
+    # protect twitter-embed divs from SIMPLE_REPLACEMENTS
+    tw_placeholders = {}
+    def protect_twitter(text):
+        def save(m):
+            key = f"\x00TW{len(tw_placeholders)}\x00"
+            tw_placeholders[key] = m.group(0)
+            return key
+        return re.sub(
+            r'<div class="twitter-embed"[^>]*>.*?</div>\s*</div>',
+            save,
+            text,
+            flags=re.DOTALL
+        )
+    content = protect_twitter(content)
+
     content = SHAKE_RE.sub(r'<span class="shake">\1</span>', content)
 
     content = SHAKE_CHAR_RE.sub(shake_char_replacer, content)
@@ -452,6 +491,8 @@ def convert_chapter(content):
 
     # restore protected patterns
     for key, val in img_placeholders.items():
+        content = content.replace(key, val)
+    for key, val in tw_placeholders.items():
         content = content.replace(key, val)
 
     content = DISTORT_RE.sub(distorted_replacer, content)
@@ -547,39 +588,10 @@ def process_task(task, template_str):
 
 
 # =========================================================
-# IMAGE COPYING
-# =========================================================
-
-def ensure_images():
-
-    if not IMG_FALLBACK_DIR.exists():
-        return
-
-    IMG_STORAGE_DIR.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    for f in IMG_FALLBACK_DIR.iterdir():
-
-        if not f.is_file():
-            continue
-
-        dest = IMG_STORAGE_DIR / f.name
-
-        if dest.exists():
-            continue
-
-        shutil.copy2(f, dest)
-
-
-# =========================================================
 # MAIN
 # =========================================================
 
 def main():
-
-    ensure_images()
 
     if not TEMPLATE_PATH.exists():
         print(f"Template not found: {TEMPLATE_PATH}")

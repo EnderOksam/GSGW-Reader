@@ -8,17 +8,116 @@
   const BRANCH = "main";
   const TRANSLATIONS = ["fantl", "MTL"];
 
+  const TWITTER_EMBED_RE = /https?:\/\/(?:x|twitter)\.com\/(\w+)\/status\/(\d+)(?:\/photo\/(\d+))?[^\s<>"']*/g;
+
+  function replaceTwitterUrls(text: string): string {
+    return text.replace(TWITTER_EMBED_RE, (match, user: string, tweetId: string, photo: string | undefined) => {
+      let attrs = `data-user="${user}" data-tweet-id="${tweetId}"`;
+      if (photo) attrs += ` data-photo="${photo}"`;
+      return `<div class="twitter-embed" ${attrs}><div class="twitter-embed-loading">Loading…</div></div>`;
+    });
+  }
+
+  async function hydrateTwitterEmbeds() {
+    const embeds = document.querySelectorAll<HTMLElement>('.twitter-embed');
+    for (const el of embeds) {
+      const user = el.dataset.user;
+      const tweetId = el.dataset.tweetId;
+      if (!user || !tweetId) continue;
+      if (el.querySelector('.twitter-embed-inner')) continue;
+      try {
+        const res = await fetch(`https://api.fxtwitter.com/${user}/status/${tweetId}`);
+        const data = await res.json();
+        if (!data?.tweet) throw new Error('no tweet data');
+        const t = data.tweet;
+        const author = t.author || {};
+        const name = author.name || user;
+        const tweetUrl = `https://x.com/${user}/status/${tweetId}`;
+        const photo = el.dataset.photo;
+        const photos = t.media?.photos || [];
+        const videos = t.media?.video || null;
+        let mediaHtml = '';
+        if (photo) {
+          const img = photos[parseInt(photo) - 1];
+          if (img) mediaHtml = `<img class="twitter-embed-image" src="${img.url}" alt="" loading="lazy" />`;
+        } else if (videos) {
+          mediaHtml = `<video class="twitter-embed-video" src="${videos.url}" controls playsinline preload="metadata"></video>`;
+        } else if (photos.length === 1) {
+          mediaHtml = `<img class="twitter-embed-image" src="${photos[0].url}" alt="" loading="lazy" />`;
+        } else if (photos.length > 1) {
+          mediaHtml = `<div class="twitter-embed-grid">${photos.map(p =>
+            `<img class="twitter-embed-image" src="${p.url}" alt="" loading="lazy" />`
+          ).join('')}</div>`;
+        }
+        el.innerHTML = `
+          <div class="twitter-embed-inner">
+            <div class="twitter-embed-header">
+              <a class="twitter-embed-name" href="${tweetUrl}" target="_blank" rel="noopener noreferrer">${escHtml(name)}</a>
+              <span class="twitter-embed-user">@${user}</span>
+              <svg class="twitter-embed-x-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            ${mediaHtml}
+          </div>
+        `;
+      } catch {
+        el.innerHTML = '<div class="twitter-embed-error">Failed to load tweet</div>';
+      }
+    }
+  }
+
+  function escHtml(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   let chapters = $state<string[]>([]);
   let filtered = $state<string[]>([]);
   let titles = $state<Map<string, string>>(new Map());
   let indices = $state<Map<string, string>>(new Map());
   let search = $state("");
   let showInfo = $state(false);
+  let expandedVersion = $state<string | null>(null);
+
+  let patchNotes = [
+    {
+      version: "v0.2",
+      description: `- added caching chapter changes and scrolling positions\n- reverting to source\n- exporting single or bulk chapters`
+    },
+    {
+      version: "v0.1",
+      description: "initial release of the editor to see a live preview of how your changes would look in the reader"
+    }
+  ];
+
+  function toggleVersion(v: string) {
+    expandedVersion = expandedVersion === v ? null : v;
+  }
   let translation = $state("fantl");
   let loading = $state(true);
   let selected = $state<string | null>(null);
   let input = $state("");
   let error = $state("");
+  let dirty = $state<Set<string>>(new Set());
+
+  let cache = new Map<string, string>();
+  let originalContent = new Map<string, string>();
+
+  function saveCache() {
+    try {
+      localStorage.setItem("editor-cache", JSON.stringify(Object.fromEntries(cache)));
+    } catch {}
+  }
+
+  function loadCache() {
+    try {
+      const saved = localStorage.getItem("editor-cache");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        cache = new Map(Object.entries(parsed));
+        dirty = new Set(cache.keys());
+      }
+    } catch {}
+  }
+
   let body = $derived(preprocessMarkdown(input.replace(/^---[\s\S]*?---\n*/, "")));
   let previewHtml = $derived.by(() => {
     if (!body) return "";
@@ -173,6 +272,7 @@
 
     s = s.replace(/!\[\n(.*?)\n\]!/gs, (_, inner) => makeWindow("braun-screen", inner));
 
+    s = replaceTwitterUrls(s);
     return s;
   }
 
@@ -242,20 +342,36 @@
   }
 
   function loadSandbox() {
+    saveCurrent();
     selected = "sandbox";
     input = "";
   }
 
   async function loadChapter(file: string) {
+    saveCurrent();
     selected = file;
+    const cached = cache.get(file);
+    if (cached !== undefined) {
+      input = cached;
+      requestAnimationFrame(() => restoreScrollPositions(file));
+      return;
+    }
     try {
       const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/gsgw/${translation}/${file}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`fetch: ${res.status}`);
-      input = await res.text();
+      const text = await res.text();
+      originalContent.set(file, text);
+      input = text;
+      requestAnimationFrame(() => restoreScrollPositions(file));
     } catch (e: any) {
       input = `// error loading ${file}: ${e.message}`;
     }
+  }
+
+  function handleTranslationChange() {
+    saveCurrent();
+    loadChapterList();
   }
 
   $effect(() => {
@@ -263,7 +379,237 @@
     filtered = chapters.filter((f) => f.toLowerCase().includes(q));
   });
 
-  onMount(loadChapterList);
+  $effect(() => {
+    if (previewHtml) {
+      hydrateTwitterEmbeds();
+    }
+  });
+
+  onMount(() => { loadCache(); loadChapterList(); });
+
+  let mdScroll: HTMLElement | null = $state(null);
+  let readerScroll: HTMLElement | null = $state(null);
+  let scrollPositions = new Map<string, { md: number; reader: number }>();
+  let showExport = $state(false);
+  let showRevert = $state(false);
+  let exportBtn: HTMLElement | null = $state(null);
+  let revertBtn: HTMLElement | null = $state(null);
+
+  function toggleExport(e: MouseEvent) {
+    showExport = !showExport;
+    showRevert = false;
+    if (showExport) {
+      const handler = (ev: MouseEvent) => {
+        if (!exportBtn?.contains(ev.target as Node) && !(ev.target as HTMLElement)?.closest?.('[data-export-dropdown]')) {
+          showExport = false;
+          document.removeEventListener("click", handler);
+        }
+      };
+      requestAnimationFrame(() => document.addEventListener("click", handler));
+    }
+  }
+
+  function toggleRevert(e: MouseEvent) {
+    showRevert = !showRevert;
+    showExport = false;
+    if (showRevert) {
+      const handler = (ev: MouseEvent) => {
+        if (!revertBtn?.contains(ev.target as Node) && !(ev.target as HTMLElement)?.closest?.('[data-revert-dropdown]')) {
+          showRevert = false;
+          document.removeEventListener("click", handler);
+        }
+      };
+      requestAnimationFrame(() => document.addEventListener("click", handler));
+    }
+  }
+
+  function exportCurrentChapter() {
+    if (!selected || selected === "sandbox" || !input) return;
+    const blob = new Blob([input], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = selected;
+    a.click();
+    URL.revokeObjectURL(url);
+    showExport = false;
+  }
+
+  function exportAllEdited() {
+    const entries: { name: string; data: string }[] = [];
+    for (const file of dirty) {
+      const content = cache.get(file);
+      if (content) entries.push({ name: file, data: content });
+    }
+    if (!entries.length) return;
+    const zip = createZip(entries);
+    const blob = new Blob([zip], { type: "application/zip" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "edited-chapters.zip";
+    a.click();
+    URL.revokeObjectURL(url);
+    showExport = false;
+  }
+
+  async function revertCurrentChapter() {
+    if (!selected || selected === "sandbox") return;
+    cache.delete(selected);
+    dirty = new Set([...dirty].filter(f => f !== selected));
+    scrollPositions.delete(selected);
+    saveCache();
+    const orig = originalContent.get(selected);
+    if (orig !== undefined) {
+      input = orig;
+    } else {
+      try {
+        const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/gsgw/${translation}/${selected}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const text = await res.text();
+          originalContent.set(selected, text);
+          input = text;
+        }
+      } catch {}
+    }
+    showExport = false;
+  }
+
+  async function revertAllChapters() {
+    const wasDirty = dirty.has(selected || "");
+    cache.clear();
+    dirty = new Set();
+    scrollPositions.clear();
+    saveCache();
+    if (wasDirty && selected && selected !== "sandbox") {
+      const orig = originalContent.get(selected);
+      if (orig !== undefined) {
+        input = orig;
+      } else {
+        try {
+          const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/gsgw/${translation}/${selected}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const text = await res.text();
+            originalContent.set(selected, text);
+            input = text;
+          }
+        } catch {}
+      }
+    }
+    showExport = false;
+  }
+
+  function crc32(data: Uint8Array): number {
+    let crc = 0xffffffff;
+    for (let i = 0; i < data.length; i++) {
+      crc ^= data[i];
+      for (let j = 0; j < 8; j++) crc = crc & 1 ? (crc >>> 1) ^ 0xedb88320 : crc >>> 1;
+    }
+    return (crc ^ 0xffffffff) >>> 0;
+  }
+
+  function createZip(entries: { name: string; data: string }[]): Uint8Array {
+    const encoder = new TextEncoder();
+    const localHeaders: Uint8Array[] = [];
+    const centralEntries: Uint8Array[] = [];
+    let offset = 0;
+
+    for (const entry of entries) {
+      const nameBytes = encoder.encode(entry.name);
+      const dataBytes = encoder.encode(entry.data);
+      const crc = crc32(dataBytes);
+
+      const local = new Uint8Array(30 + nameBytes.length + dataBytes.length);
+      const dv = new DataView(local.buffer);
+      dv.setUint32(0, 0x04034b50, true); // local sig
+      dv.setUint16(4, 20, true); // version
+      dv.setUint16(6, 0, true); // flags
+      dv.setUint16(8, 0, true); // compression (stored)
+      dv.setUint16(10, 0, true); // mod time
+      dv.setUint16(12, 0, true); // mod date
+      dv.setUint32(14, crc, true);
+      dv.setUint32(18, dataBytes.length, true); // compressed size
+      dv.setUint32(22, dataBytes.length, true); // uncompressed size
+      dv.setUint16(26, nameBytes.length, true);
+      dv.setUint16(28, 0, true); // extra length
+      local.set(nameBytes, 30);
+      local.set(dataBytes, 30 + nameBytes.length);
+      localHeaders.push(local);
+
+      const central = new Uint8Array(46 + nameBytes.length);
+      const cdv = new DataView(central.buffer);
+      cdv.setUint32(0, 0x02014b50, true); // central sig
+      cdv.setUint16(4, 20, true); // version made
+      cdv.setUint16(6, 20, true); // version needed
+      cdv.setUint16(8, 0, true); // flags
+      cdv.setUint16(10, 0, true); // compression
+      cdv.setUint16(12, 0, true); // mod time
+      cdv.setUint16(14, 0, true); // mod date
+      cdv.setUint32(16, crc, true);
+      cdv.setUint32(20, dataBytes.length, true);
+      cdv.setUint32(24, dataBytes.length, true);
+      cdv.setUint16(28, nameBytes.length, true);
+      cdv.setUint16(30, 0, true); // extra length
+      cdv.setUint16(32, 0, true); // comment length
+      cdv.setUint16(34, 0, true); // disk start
+      cdv.setUint16(36, 0, true); // internal attrs
+      cdv.setUint32(38, 0, true); // external attrs
+      cdv.setUint32(42, offset, true); // local header offset
+      central.set(nameBytes, 46);
+      centralEntries.push(central);
+
+      offset += local.length;
+    }
+
+    const centralSize = centralEntries.reduce((s, e) => s + e.length, 0);
+    const centralOffset = offset;
+    const eocd = new Uint8Array(22);
+    const ecdv = new DataView(eocd.buffer);
+    ecdv.setUint32(0, 0x06054b50, true); // eocd sig
+    ecdv.setUint16(4, 0, true); // disk
+    ecdv.setUint16(6, 0, true); // central disk
+    ecdv.setUint16(8, entries.length, true); // entries on disk
+    ecdv.setUint16(10, entries.length, true); // total entries
+    ecdv.setUint32(12, centralSize, true);
+    ecdv.setUint32(16, centralOffset, true);
+    ecdv.setUint16(20, 0, true); // comment length
+
+    const result = new Uint8Array(offset + centralSize + 22);
+    let pos = 0;
+    for (const h of localHeaders) { result.set(h, pos); pos += h.length; }
+    for (const c of centralEntries) { result.set(c, pos); pos += c.length; }
+    result.set(eocd, pos);
+    return result;
+  }
+
+  function saveScrollPositions(file: string) {
+    if (!mdScroll || !readerScroll) return;
+    scrollPositions.set(file, { md: mdScroll.scrollTop, reader: readerScroll.scrollTop });
+  }
+
+  function restoreScrollPositions(file: string) {
+    const pos = scrollPositions.get(file);
+    if (mdScroll) mdScroll.scrollTop = pos?.md ?? 0;
+    if (readerScroll) readerScroll.scrollTop = pos?.reader ?? 0;
+  }
+
+  function saveCurrent() {
+    if (selected && selected !== "sandbox" && input) {
+      saveScrollPositions(selected);
+      const orig = originalContent.get(selected);
+      if (orig !== undefined && input !== orig) {
+        cache.set(selected, input);
+        dirty = new Set([...dirty, selected]);
+        saveCache();
+      } else if (orig !== undefined && input === orig && cache.has(selected)) {
+        cache.delete(selected);
+        dirty = new Set([...dirty].filter(f => f !== selected));
+        saveCache();
+      }
+    }
+  }
 </script>
 
 <svelte:head>
@@ -272,11 +618,25 @@
 
 <div class="h-dvh bg-neutral-800 flex flex-col overflow-hidden">
   <div class="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-neutral-900 shrink-0">
-    <a href="/" class="text-white/50 hover:text-white transition-colors"><Icon icon="mdi:home-outline" class="size-5" /></a>
-    <button
-      onclick={() => showInfo = true}
-      class="text-sm font-mono text-white/80 animate-pulse drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all cursor-pointer"
-    >editor v0.1</button>
+    <div class="flex items-center gap-0.5 relative">
+      <a href="/" class="text-white/50 hover:text-white transition-colors"><Icon icon="mdi:home-outline" class="size-5" /></a>
+      <button bind:this={exportBtn} onclick={toggleExport} class="text-white/50 hover:text-white transition-colors p-1"><Icon icon="mdi:export-variant" class="size-4" /></button>
+      <button bind:this={revertBtn} onclick={toggleRevert} class="text-white/50 hover:text-white transition-colors p-1"><Icon icon="mdi:undo-variant" class="size-4" /></button>
+      <span class="mx-1 w-px h-4 bg-white/10"></span>
+      <button onclick={() => showInfo = true} class="text-xs font-mono text-white/60 hover:text-white transition-colors">editor v0.2</button>
+      {#if showExport}
+        <div data-export-dropdown class="absolute top-full left-0 mt-1 bg-neutral-800 border border-white/10 rounded-lg shadow-2xl py-1 min-w-44 z-50">
+          <button onclick={exportCurrentChapter} disabled={!selected || selected === "sandbox" || !input} class="block w-full text-left text-xs px-3 py-1.5 hover:bg-white/5 text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Export current chapter</button>
+          <button onclick={exportAllEdited} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-1.5 hover:bg-white/5 text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Export all edited chapters</button>
+        </div>
+      {/if}
+      {#if showRevert}
+        <div data-revert-dropdown class="absolute top-full left-0 mt-1 bg-neutral-800 border border-white/10 rounded-lg shadow-2xl py-1 min-w-44 z-50">
+          <button onclick={revertCurrentChapter} disabled={!selected || selected === "sandbox" || !dirty.has(selected)} class="block w-full text-left text-xs px-3 py-1.5 hover:bg-white/5 text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Revert current chapter</button>
+          <button onclick={revertAllChapters} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-1.5 hover:bg-white/5 text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Revert all edited chapters</button>
+        </div>
+      {/if}
+    </div>
   </div>
 
   <div class="flex-1 flex p-4 gap-4 min-h-0">
@@ -290,7 +650,7 @@
         />
         <select
           bind:value={translation}
-          onchange={loadChapterList}
+          onchange={handleTranslationChange}
           class="bg-neutral-800 text-white/60 text-xs px-2 py-1 rounded outline-none border border-white/5"
         >
           {#each TRANSLATIONS as t}
@@ -315,8 +675,8 @@
           {#each filtered as file}
             <button
               onclick={() => loadChapter(file)}
-              title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}"
-              class="block w-full text-left text-xs px-2 py-1 rounded hover:bg-white/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-white/10 text-white' : 'text-white/50'}"
+              title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}{dirty.has(file) ? ' (modified)' : ''}"
+              class="block w-full text-left text-xs px-2 py-1 rounded hover:bg-white/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-white/10 text-white' : dirty.has(file) ? 'text-green-400' : 'text-white/50'}"
             >
               {#if indices.has(file)}
                 ch{indices.get(file)}
@@ -338,6 +698,7 @@
       </div>
       <textarea
         bind:value={input}
+        bind:this={mdScroll}
         placeholder="select a chapter to start editing..."
         class="flex-1 font-mono text-sm p-4 resize-none outline-none rounded-b-lg border-x border-b border-white/10 bg-neutral-900 text-white/90 min-h-0"
       ></textarea>
@@ -347,7 +708,7 @@
       <div class="flex items-center px-3 py-1.5 border-b border-white/10 bg-neutral-900/50 rounded-t-lg">
         <span class="text-xs text-white/40 font-mono">reader</span>
       </div>
-      <div class="flex-1 overflow-y-auto rounded-b-lg border-x border-b border-white/10 bg-neutral-900">
+      <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-lg border-x border-b border-white/10 bg-neutral-900">
         <article
           class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word"
           style="
@@ -433,7 +794,7 @@
         href="https://github.com/{REPO}/edit/{BRANCH}/chapters/gsgw/{translation}/{selected}"
         target="_blank"
         class="text-xs text-white/40 hover:text-white font-mono transition-colors"
-      >{selected}</a>
+      >(edit on github ->) {selected}</a>
     {:else}
       <span class="text-xs text-white/40 font-mono">no file</span>
     {/if}
@@ -450,8 +811,21 @@
       class="bg-neutral-800 border border-white/10 rounded-lg p-6 w-96 shadow-2xl"
       onclick={(e) => e.stopPropagation()}
     >
-      <p class="text-xs text-white/60 font-mono leading-relaxed">initial release of the editor to see a live preview of how your changes would look in the reader</p>
-      <p class="text-xs text-white/40 font-mono leading-relaxed mt-3">clicking on the filename on the bottom right should redirect to the corresponding file on github, just paste over your changes and request a push</p>
+      <h2 class="text-sm font-bold text-white/80 font-mono mb-4">Patch Notes</h2>
+      {#each patchNotes as note}
+        <div class="mb-2">
+          <button
+            onclick={() => toggleVersion(note.version)}
+            class="flex items-center gap-2 text-xs font-mono text-white/70 hover:text-white transition-colors w-full text-left"
+          >
+            <span class="text-[10px] w-3">{expandedVersion === note.version ? "▼" : "▶"}</span>
+            <span>{note.version}</span>
+          </button>
+          {#if expandedVersion === note.version}
+            <p class="text-xs text-white/50 font-mono leading-relaxed mt-1 ml-5 whitespace-pre-line">{note.description}</p>
+          {/if}
+        </div>
+      {/each}
     </div>
   </div>
 {/if}
@@ -485,6 +859,108 @@
     .reader-container {
       padding: 2rem;
     }
+  }
+
+  .reader-container :global(.twitter-embed) {
+    margin: 2rem auto;
+    max-width: 550px;
+    transition: transform 0.15s;
+  }
+
+  .reader-container :global(.twitter-embed):hover {
+    transform: translateY(-2px);
+  }
+
+  .reader-container :global(.twitter-embed-inner) {
+    background: #16181c;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    padding: 0 0.75rem 0.75rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .reader-container :global(.twitter-embed-header) {
+    display: flex;
+    align-items: baseline;
+    gap: 0.375rem;
+    padding: 0.75rem 0 0.375rem;
+  }
+
+  .reader-container :global(.twitter-embed-name) {
+    color: #1d9bf0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 0 8px rgba(29,155,240,0.5);
+  }
+
+  .reader-container :global(.twitter-embed-name:hover) {
+    text-decoration: underline;
+    text-shadow: 0 0 12px rgba(29,155,240,0.7);
+  }
+
+  .reader-container :global(.twitter-embed-user) {
+    color: #71767b;
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+
+  .reader-container :global(.twitter-embed-x-icon) {
+    color: #71767b;
+    margin-left: auto;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .reader-container :global(.twitter-embed-image) {
+    display: block;
+    width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    margin: 0;
+    border-radius: 12px;
+  }
+
+  .reader-container :global(.twitter-embed-grid) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .reader-container :global(.twitter-embed-grid img) {
+    display: block;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .reader-container :global(.twitter-embed-grid img:first-child:nth-last-child(3)) {
+    height: 150px;
+  }
+
+  .reader-container :global(.twitter-embed-grid img:first-child:nth-last-child(3) ~ img) {
+    height: 150px;
+  }
+
+  .reader-container :global(.twitter-embed-video) {
+    display: block;
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 12px;
+  }
+
+  .reader-container :global(.twitter-embed-loading),
+  .reader-container :global(.twitter-embed-error) {
+    padding: 1.25rem;
+    text-align: center;
+    font-size: 0.8rem;
   }
 
   .reader-container :global(.wiki-window) {
