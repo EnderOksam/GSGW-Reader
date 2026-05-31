@@ -664,6 +664,25 @@ def main():
                 "dest": out_dir / "+page.svelte"
             })
 
+    # Scan for CBZ files (manwha/comic chapters)
+    manwha_path = (REPO_ROOT / "chapters/manwha").resolve()
+    if manwha_path.exists():
+        cbz_files = sorted(
+            f for f in os.listdir(manwha_path)
+            if f.endswith(".cbz")
+        )
+        if cbz_files:
+            meta_map.setdefault("manwha", {})
+            meta_map["manwha"].setdefault("main", [])
+            for i, f in enumerate(cbz_files):
+                slug = str(i + 1)
+                meta_map["manwha"]["main"].append({
+                    "title": f"Chapter {slug}",
+                    "category": f"Chapter {slug}",
+                    "index": i,
+                    "slug": slug,
+                })
+
     META_OUTPUT_PATH.write_text(
         json.dumps(meta_map, indent=2),
         encoding="utf-8"

@@ -54,6 +54,11 @@
       const tweetUrl = `https://x.com/${user}/status/${tweetId}`;
       const photos = t.media?.photos || [];
       const videos = t.media?.videos || [];
+      const text = t.text || '';
+      const likes = t.likes !== undefined ? String(t.likes) : '';
+      const retweets = t.retweets !== undefined ? String(t.retweets) : '';
+      const replies = t.replies !== undefined ? String(t.replies) : '';
+      const views = t.views !== undefined ? String(t.views) : '';
       const photoIdx = el.dataset.photo;
 
       let mediaHtml = '';
@@ -71,6 +76,28 @@
         ).join('')}</div>`;
       }
 
+      const textHtml = text ? `<div class="twitter-embed-text">${esc(text)}</div>` : '';
+
+      const statsHtml = `
+<div class="twitter-embed-stats">
+  <span title="Views">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    ${esc(views)}
+  </span>
+  <span title="Replies">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    ${esc(replies)}
+  </span>
+  <span title="Reposts">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+    ${esc(retweets)}
+  </span>
+  <span title="Likes">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    ${esc(likes)}
+  </span>
+</div>`;
+
       el.innerHTML = `
         <div class="twitter-embed-inner">
           <div class="twitter-embed-header">
@@ -78,7 +105,9 @@
             <span class="twitter-embed-user">@${user}</span>
             <svg class="twitter-embed-x-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </div>
+          ${textHtml}
           ${mediaHtml}
+          ${statsHtml}
         </div>
       `;
     } catch {
@@ -1003,6 +1032,33 @@
     width: 100%;
     max-height: 85vh;
     border-radius: 12px;
+  }
+
+  .reader-container :global(.twitter-embed-text) {
+    color: #71767b;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    margin-top: 0.5rem;
+    padding: 0 0.25rem;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .reader-container :global(.twitter-embed-stats) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.25rem 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: #71767b;
+    font-size: 0.8125rem;
+  }
+
+  .reader-container :global(.twitter-embed-stats span) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
   .reader-container :global(.twitter-embed-loading),

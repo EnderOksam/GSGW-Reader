@@ -2,11 +2,13 @@
   import { onMount } from "svelte";
   import { marked } from "marked";
   import Icon from "@iconify/svelte";
+  import JSZip from "jszip";
   import readerCss from "../../../../routes/(reader)/reader.css?url";
 
   const REPO = "EnderOksam/GSGW-Reader";
   const BRANCH = "main";
-  const TRANSLATIONS = ["fantl", "MTL"];
+  const SOURCE_TRANSLATIONS = ["fantl", "MTL"];
+  const CUSTOM_TRANSLATIONS_KEY = "editor-custom-translations";
 
   const TWITTER_EMBED_RE = /https?:\/\/(?:x|twitter)\.com\/(\w+)\/status\/(\d+)(?:\/photo\/(\d+))?[^\s<>"']*/g;
 
@@ -16,6 +18,14 @@
       if (photo) attrs += ` data-photo="${photo}"`;
       return `<div class="twitter-embed" ${attrs}><div class="twitter-embed-loading">Loading…</div></div>`;
     });
+  }
+
+  function fmtNum(n: string): string {
+    const num = parseInt(n, 10);
+    if (isNaN(num)) return n;
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(num % 1_000_000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'M';
+    if (num >= 1_000) return (num / 1_000).toFixed(num % 1_000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'k';
+    return num.toLocaleString();
   }
 
   async function hydrateTwitterEmbeds() {
@@ -36,6 +46,11 @@
         const photo = el.dataset.photo;
         const photos = t.media?.photos || [];
         const videos = t.media?.video || null;
+        const text = t.text || '';
+        const likes = t.likes !== undefined ? String(t.likes) : '';
+        const retweets = t.retweets !== undefined ? String(t.retweets) : '';
+        const replies = t.replies !== undefined ? String(t.replies) : '';
+        const views = t.views !== undefined ? String(t.views) : '';
         let mediaHtml = '';
         if (photo) {
           const img = photos[parseInt(photo) - 1];
@@ -45,7 +60,7 @@
         } else if (photos.length === 1) {
           mediaHtml = `<img class="twitter-embed-image" src="${photos[0].url}" alt="" loading="lazy" />`;
         } else if (photos.length > 1) {
-          mediaHtml = `<div class="twitter-embed-grid">${photos.map(p =>
+          mediaHtml = `<div class="twitter-embed-grid">${photos.map((p: any) =>
             `<img class="twitter-embed-image" src="${p.url}" alt="" loading="lazy" />`
           ).join('')}</div>`;
         }
@@ -56,7 +71,26 @@
               <span class="twitter-embed-user">@${user}</span>
               <svg class="twitter-embed-x-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
             </div>
+            ${text ? `<p class="twitter-embed-text">${escHtml(text)}</p>` : ''}
             ${mediaHtml}
+            <div class="twitter-embed-stats">
+              <span class="twitter-embed-stat" title="Views">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                ${fmtNum(views)}
+              </span>
+              <span class="twitter-embed-stat" title="Replies">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                ${fmtNum(replies)}
+              </span>
+              <span class="twitter-embed-stat" title="Reposts">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                ${fmtNum(retweets)}
+              </span>
+              <span class="twitter-embed-stat" title="Likes">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                ${fmtNum(likes)}
+              </span>
+            </div>
           </div>
         `;
       } catch {
@@ -69,6 +103,52 @@
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  let customTranslations = $state<string[]>([]);
+
+  function loadCustomTranslations() {
+    try {
+      const saved = localStorage.getItem(CUSTOM_TRANSLATIONS_KEY);
+      if (saved) customTranslations = JSON.parse(saved);
+    } catch {}
+  }
+
+  function saveCustomTranslations() {
+    try { localStorage.setItem(CUSTOM_TRANSLATIONS_KEY, JSON.stringify(customTranslations)); } catch {}
+  }
+
+  function customStorageKey(tl: string) { return `editor-cache-custom-${tl}`; }
+
+  function loadCustomChapterList(tl: string): string[] {
+    try {
+      const data = localStorage.getItem(customStorageKey(tl));
+      if (!data) return [];
+      return Object.keys(JSON.parse(data)).sort();
+    } catch { return []; }
+  }
+
+  function loadCustomChapterContent(tl: string, file: string): string | null {
+    try {
+      const data = JSON.parse(localStorage.getItem(customStorageKey(tl)) || "{}");
+      return data[file] ?? null;
+    } catch { return null; }
+  }
+
+  function saveCustomChapter(tl: string, file: string, content: string) {
+    try {
+      const data = JSON.parse(localStorage.getItem(customStorageKey(tl)) || "{}");
+      data[file] = content;
+      localStorage.setItem(customStorageKey(tl), JSON.stringify(data));
+    } catch {}
+  }
+
+  function deleteCustomChapter(tl: string, file: string) {
+    try {
+      const data = JSON.parse(localStorage.getItem(customStorageKey(tl)) || "{}");
+      delete data[file];
+      localStorage.setItem(customStorageKey(tl), JSON.stringify(data));
+    } catch {}
+  }
+
   let chapters = $state<string[]>([]);
   let filtered = $state<string[]>([]);
   let titles = $state<Map<string, string>>(new Map());
@@ -78,6 +158,10 @@
   let expandedVersion = $state<string | null>(null);
 
   let patchNotes = [
+    {
+      version: "v0.3",
+      description: `- better ui (hopefully)\n- mobile editing\n- custom translations\n- adding/removing chapters`
+    },
     {
       version: "v0.2",
       description: `- added caching chapter changes and scrolling positions\n- reverting to source\n- exporting single or bulk chapters`
@@ -92,7 +176,9 @@
     expandedVersion = expandedVersion === v ? null : v;
   }
   let translation = $state("fantl");
+  let isSourceTranslation = $derived(SOURCE_TRANSLATIONS.includes(translation));
   let loading = $state(true);
+  let refreshing = $state(false);
   let selected = $state<string | null>(null);
   let input = $state("");
   let error = $state("");
@@ -100,6 +186,7 @@
 
   let cache = new Map<string, string>();
   let originalContent = new Map<string, string>();
+  let importRef: HTMLInputElement | undefined = $state();
 
   function saveCache() {
     try {
@@ -135,6 +222,20 @@
     }
   });
 
+  $effect(() => {
+    if (!isSourceTranslation && selected && input) {
+      const { title, index } = extractMeta(input);
+      if (titles.get(selected) !== title || indices.get(selected) !== index) {
+        const nt = new Map(titles);
+        const ni = new Map(indices);
+        if (title) nt.set(selected, title); else nt.delete(selected);
+        if (index) ni.set(selected, index); else ni.delete(selected);
+        titles = nt;
+        indices = ni;
+      }
+    }
+  });
+
   function preprocessMarkdown(text: string): string {
     let s = text.replace(/\r\n/g, "\n");
 
@@ -159,7 +260,7 @@
 
     s = s.replace(/@_@(.+?)@_@/gs, (_, inner) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-      const chars = inner.split(/(<[^>]+>)/).flatMap(part => {
+      const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
         if (part.startsWith("<") && part.endsWith(">")) return [part];
         return [...part].map(c => c === " " ? " " : `<span class="char">${c}</span>`);
       });
@@ -226,7 +327,7 @@
 
     s = s.replace(/@@([^@]+)@@/gs, (_, inner) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-      const chars = inner.split(/(<[^>]+>)/).flatMap(part => {
+      const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
         if (part.startsWith("<") && part.endsWith(">")) return [part];
         return [...part].map(c => c === " " ? " " : `<span class="char">${c}</span>`);
       });
@@ -317,21 +418,42 @@
     indices = imap;
   }
 
+  function loadCustomTitles(files: string[]) {
+    const tmap = new Map<string, string>();
+    const imap = new Map<string, string>();
+    for (const f of files) {
+      const content = loadCustomChapterContent(translation, f);
+      if (!content) continue;
+      const { title, index } = extractMeta(content);
+      if (title) tmap.set(f, title);
+      if (index) imap.set(f, index);
+    }
+    titles = tmap;
+    indices = imap;
+  }
+
   async function loadChapterList() {
     loading = true;
     error = "";
     try {
-      const url = `https://api.github.com/repos/${REPO}/contents/chapters/gsgw/${translation}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
-      const data = await res.json();
-      const files: string[] = data
-        .filter((f: any) => f.name.endsWith(".md") && f.name !== "0000.md")
-        .map((f: any) => f.name)
-        .sort();
-      chapters = files;
-      filtered = files;
-      fetchTitles(files);
+      if (isSourceTranslation) {
+        const url = `https://api.github.com/repos/${REPO}/contents/chapters/gsgw/${translation}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
+        const data = await res.json();
+        const files: string[] = data
+          .filter((f: any) => f.name.endsWith(".md") && f.name !== "0000.md")
+          .map((f: any) => f.name)
+          .sort();
+        chapters = files;
+        filtered = files;
+        fetchTitles(files);
+      } else {
+        const files = loadCustomChapterList(translation);
+        chapters = files;
+        filtered = files;
+        loadCustomTitles(files);
+      }
     } catch (e: any) {
       error = e.message;
       chapters = [];
@@ -350,6 +472,17 @@
   async function loadChapter(file: string) {
     saveCurrent();
     selected = file;
+    if (!isSourceTranslation) {
+      const content = loadCustomChapterContent(translation, file);
+      if (content !== null) {
+        originalContent.set(file, content);
+        input = content;
+        requestAnimationFrame(() => restoreScrollPositions(file));
+        return;
+      }
+      input = `// error: chapter "${file}" not found`;
+      return;
+    }
     const cached = cache.get(file);
     if (cached !== undefined) {
       input = cached;
@@ -369,9 +502,161 @@
     }
   }
 
+  let leftTab = $state<'chapters' | 'formatting'>('chapters');
+  let rightTab = $state<'editor' | 'reader'>('editor');
+  let newTranslationName = $state("");
+  let showManageTL = $state(false);
+  let renameTL: string | null = $state(null);
+  let renameTLValue = $state("");
+
   function handleTranslationChange() {
     saveCurrent();
+    if (!isSourceTranslation && !customTranslations.includes(translation)) {
+      customTranslations = [...customTranslations, translation];
+      saveCustomTranslations();
+    }
     loadChapterList();
+  }
+
+  function confirmNewTranslation() {
+    const name = newTranslationName.trim();
+    if (!name) return;
+    showManageTL = false;
+    translation = name;
+    if (!customTranslations.includes(translation)) {
+      customTranslations = [...customTranslations, translation];
+      saveCustomTranslations();
+    }
+    loadChapterList();
+  }
+
+  function startRename(tl: string) {
+    renameTL = tl;
+    renameTLValue = tl;
+  }
+
+  function confirmRename() {
+    const old = renameTL;
+    const newName = renameTLValue.trim();
+    if (!old || !newName || newName === old) { renameTL = null; return; }
+    if (SOURCE_TRANSLATIONS.includes(newName) || customTranslations.includes(newName)) {
+      renameTLValue = old;
+      renameTL = null;
+      return;
+    }
+    const data = localStorage.getItem(customStorageKey(old));
+    if (data) localStorage.setItem(customStorageKey(newName), data);
+    localStorage.removeItem(customStorageKey(old));
+    customTranslations = customTranslations.map(t => t === old ? newName : t);
+    saveCustomTranslations();
+    if (translation === old) {
+      translation = newName;
+      loadChapterList();
+    }
+    renameTL = null;
+  }
+
+  function deleteTL(tl: string) {
+    if (!confirm(`Delete "${tl}" and all its chapters?`)) return;
+    try { localStorage.removeItem(customStorageKey(tl)); } catch {}
+    customTranslations = customTranslations.filter(t => t !== tl);
+    saveCustomTranslations();
+    if (translation === tl) {
+      translation = "fantl";
+      loadChapterList();
+    }
+  }
+
+  async function refreshChapters() {
+    refreshing = true;
+    loadCache();
+    await loadChapterList();
+    refreshing = false;
+  }
+
+  function triggerImport() {
+    importRef?.click();
+  }
+
+  async function handleImportZip(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const entries: { name: string; data: string }[] = [];
+      const promises: Promise<void>[] = [];
+      zip.forEach((path, entry) => {
+        if (!entry.dir && path.endsWith(".md")) {
+          promises.push(
+            entry.async("string").then((data) => {
+              entries.push({ name: path.split("/").pop() || path, data });
+            })
+          );
+        }
+      });
+      await Promise.all(promises);
+      if (!entries.length) { alert("No .md files found in zip."); return; }
+
+      if (isSourceTranslation) {
+        for (const e of entries) {
+          cache.set(e.name, e.data);
+          originalContent.set(e.name, e.data);
+          dirty = new Set([...dirty, e.name]);
+        }
+        if (entries.some(e => !chapters.includes(e.name))) {
+          const allFiles = new Set([...chapters, ...entries.map(e => e.name)]);
+          chapters = [...allFiles].sort();
+          filtered = [...allFiles].sort();
+        }
+      } else {
+        const existing = loadCustomChapterList(translation);
+        const allFiles = new Set([...existing, ...entries.map(e => e.name)]);
+        for (const e of entries) {
+          saveCustomChapter(translation, e.name, e.data);
+        }
+        chapters = [...allFiles].sort();
+        filtered = [...allFiles].sort();
+        if (entries.length === 1) {
+          loadChapter(entries[0].name);
+        }
+      }
+      saveCache();
+    } catch (err) {
+      alert("Failed to import zip: " + (err instanceof Error ? err.message : String(err)));
+    }
+    (e.target as HTMLInputElement).value = "";
+  }
+
+  function newChapter() {
+    const nums = chapters.map(f => parseInt(f.match(/^(\d+)/)?.[1] ?? "0")).filter(n => !isNaN(n));
+    const nextNum = nums.length ? Math.max(...nums) + 1 : 1;
+    const name = String(nextNum).padStart(4, "0") + ".md";
+    if (chapters.includes(name)) { alert(`"${name}" already exists.`); return; }
+    const template = "---\ntitle: # chapter title\ncategory: # chapter number\ndiscussion: # same as chapter number\nindex: # same as chapter number\nsection: # part number\nslug: # same as chapter number\n---\n\n";
+    if (isSourceTranslation) {
+      cache.set(name, template);
+      originalContent.set(name, template);
+      dirty = new Set([...dirty, name]);
+    } else {
+      saveCustomChapter(translation, name, template);
+    }
+    chapters = [...chapters, name].sort();
+    filtered = [...filtered, name].sort();
+    input = template;
+    selected = name;
+  }
+
+  async function deleteCurrentChapter() {
+    if (!selected || selected === "sandbox") return;
+    if (isSourceTranslation) { alert("Can only delete chapters from custom translations."); return; }
+    if (!confirm(`Delete "${selected}" from "${translation}"?`)) return;
+    deleteCustomChapter(translation, selected);
+    cache.delete(selected);
+    dirty = new Set([...dirty].filter(f => f !== selected));
+    chapters = chapters.filter(f => f !== selected);
+    filtered = filtered.filter(f => f !== selected);
+    selected = null;
+    input = "";
   }
 
   $effect(() => {
@@ -385,7 +670,7 @@
     }
   });
 
-  onMount(() => { loadCache(); loadChapterList(); });
+  onMount(() => { loadCache(); loadCustomTranslations(); loadChapterList(); });
 
   let mdScroll: HTMLElement | null = $state(null);
   let readerScroll: HTMLElement | null = $state(null);
@@ -429,7 +714,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = selected;
+    a.download = `${translation}-${selected}`;
     a.click();
     URL.revokeObjectURL(url);
     showExport = false;
@@ -437,17 +722,24 @@
 
   function exportAllEdited() {
     const entries: { name: string; data: string }[] = [];
-    for (const file of dirty) {
-      const content = cache.get(file);
-      if (content) entries.push({ name: file, data: content });
+    if (isSourceTranslation) {
+      for (const file of dirty) {
+        const content = cache.get(file);
+        if (content) entries.push({ name: file, data: content });
+      }
+    } else {
+      for (const file of chapters) {
+        const content = loadCustomChapterContent(translation, file);
+        if (content) entries.push({ name: file, data: content });
+      }
     }
     if (!entries.length) return;
     const zip = createZip(entries);
-    const blob = new Blob([zip], { type: "application/zip" });
+    const blob = new Blob([zip as unknown as BlobPart], { type: "application/zip" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "edited-chapters.zip";
+    a.download = `${translation}-chapters.zip`;
     a.click();
     URL.revokeObjectURL(url);
     showExport = false;
@@ -598,6 +890,16 @@
   function saveCurrent() {
     if (selected && selected !== "sandbox" && input) {
       saveScrollPositions(selected);
+      if (!isSourceTranslation) {
+        const orig = originalContent.get(selected);
+        if (orig !== undefined && input !== orig) {
+          dirty = new Set([...dirty, selected]);
+        } else if (orig !== undefined && input === orig && dirty.has(selected)) {
+          dirty = new Set([...dirty].filter(f => f !== selected));
+        }
+        saveCustomChapter(translation, selected, input);
+        return;
+      }
       const orig = originalContent.get(selected);
       if (orig !== undefined && input !== orig) {
         cache.set(selected, input);
@@ -616,213 +918,302 @@
   <link rel="stylesheet" href={readerCss}>
 </svelte:head>
 
-<div class="h-dvh bg-neutral-800 flex flex-col overflow-hidden">
-  <div class="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-neutral-900 shrink-0">
+<div class="h-dvh bg-gradient-to-br from-neutral-800 via-neutral-800/90 to-neutral-900 flex flex-col overflow-hidden selection:bg-blue-500/30">
+  <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/5 bg-neutral-950/40 backdrop-blur-sm shrink-0 relative z-10">
     <div class="flex items-center gap-0.5 relative">
-      <a href="/" class="text-white/50 hover:text-white transition-colors"><Icon icon="mdi:home-outline" class="size-5" /></a>
-      <button bind:this={exportBtn} onclick={toggleExport} class="text-white/50 hover:text-white transition-colors p-1"><Icon icon="mdi:export-variant" class="size-4" /></button>
-      <button bind:this={revertBtn} onclick={toggleRevert} class="text-white/50 hover:text-white transition-colors p-1"><Icon icon="mdi:undo-variant" class="size-4" /></button>
-      <span class="mx-1 w-px h-4 bg-white/10"></span>
-      <button onclick={() => showInfo = true} class="text-xs font-mono text-white/60 hover:text-white transition-colors">editor v0.2</button>
+      <a href="/" class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Home"><Icon icon="mdi:home-outline" class="size-4" /></a>
+      <button bind:this={exportBtn} onclick={toggleExport} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Export"><Icon icon="mdi:export-variant" class="size-4" /></button>
+      <button onclick={triggerImport} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Import zip"><Icon icon="mdi:file-import-outline" class="size-4" /></button>
+      <input bind:this={importRef} onchange={handleImportZip} type="file" accept=".zip" class="hidden" />
+      <button bind:this={revertBtn} onclick={toggleRevert} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Revert"><Icon icon="mdi:undo-variant" class="size-4" /></button>
+      <span class="mx-0.5 w-px h-4 bg-white/5"></span>
+      <button onclick={newChapter} disabled={!translation} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5 disabled:text-white/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="New chapter"><Icon icon="mdi:plus" class="size-4" /></button>
+      <button onclick={deleteCurrentChapter} disabled={!selected || selected === "sandbox" || isSourceTranslation} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5 disabled:text-white/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Delete chapter"><Icon icon="mdi:delete-outline" class="size-4" /></button>
+      <span class="mx-0.5 w-px h-4 bg-white/5"></span>
+      <button onclick={() => { newTranslationName = ""; renameTL = null; showManageTL = true; }} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Manage translations"><Icon icon="mdi:translate" class="size-4" /></button>
+      <span class="mx-0.5 w-px h-4 bg-white/5"></span>
+      <button onclick={() => showInfo = true} class="text-[10px] font-mono text-white/40 hover:text-white transition-colors px-1.5 py-1 rounded hover:bg-white/5">v0.3</button>
       {#if showExport}
-        <div data-export-dropdown class="absolute top-full left-0 mt-1 bg-neutral-800 border border-white/10 rounded-lg shadow-2xl py-1 min-w-44 z-50">
-          <button onclick={exportCurrentChapter} disabled={!selected || selected === "sandbox" || !input} class="block w-full text-left text-xs px-3 py-1.5 hover:bg-white/5 text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Export current chapter</button>
-          <button onclick={exportAllEdited} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-1.5 hover:bg-white/5 text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Export all edited chapters</button>
+        <div data-export-dropdown class="absolute top-full left-0 mt-1.5 bg-neutral-800/95 backdrop-blur-sm border border-white/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
+          <button onclick={exportCurrentChapter} disabled={!selected || selected === "sandbox" || !input} class="block w-full text-left text-xs px-3 py-2 hover:bg-white/5 text-white/70 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Export current chapter</button>
+          <button onclick={exportAllEdited} disabled={dirty.size === 0 && isSourceTranslation} class="block w-full text-left text-xs px-3 py-2 hover:bg-white/5 text-white/70 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Export all chapters</button>
         </div>
       {/if}
       {#if showRevert}
-        <div data-revert-dropdown class="absolute top-full left-0 mt-1 bg-neutral-800 border border-white/10 rounded-lg shadow-2xl py-1 min-w-44 z-50">
-          <button onclick={revertCurrentChapter} disabled={!selected || selected === "sandbox" || !dirty.has(selected)} class="block w-full text-left text-xs px-3 py-1.5 hover:bg-white/5 text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Revert current chapter</button>
-          <button onclick={revertAllChapters} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-1.5 hover:bg-white/5 text-white/80 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Revert all edited chapters</button>
+        <div data-revert-dropdown class="absolute top-full left-0 mt-1.5 bg-neutral-800/95 backdrop-blur-sm border border-white/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
+          <button onclick={revertCurrentChapter} disabled={!selected || selected === "sandbox" || !dirty.has(selected)} class="block w-full text-left text-xs px-3 py-2 hover:bg-white/5 text-white/70 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Revert current chapter</button>
+          <button onclick={revertAllChapters} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-2 hover:bg-white/5 text-white/70 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Revert all edited chapters</button>
         </div>
       {/if}
     </div>
   </div>
 
-  <div class="flex-1 flex p-4 gap-4 min-h-0">
-    <div class="w-56 flex flex-col bg-neutral-900 rounded-lg border border-white/10 shrink-0 min-h-0">
-      <div class="flex gap-1 p-2 border-b border-white/10">
-        <input
-          type="text"
-          bind:value={search}
-          placeholder="search"
-          class="flex-1 bg-neutral-800 text-white/60 text-xs px-2 py-1 rounded outline-none border border-white/5 min-w-0"
-        />
-        <select
-          bind:value={translation}
-          onchange={handleTranslationChange}
-          class="bg-neutral-800 text-white/60 text-xs px-2 py-1 rounded outline-none border border-white/5"
-        >
-          {#each TRANSLATIONS as t}
-            <option value={t}>{t}</option>
-          {/each}
-        </select>
-      </div>
-
-      <div class="flex-1 overflow-y-auto p-1 min-h-0">
-        <button
-          onclick={loadSandbox}
-          class="block w-full text-left text-xs px-2 py-1 rounded hover:bg-white/5 transition-colors {selected === 'sandbox' ? 'bg-white/10 text-white' : 'text-white/50'}"
-        >blank chapter</button>
-        <div class="mx-2 my-1 border-t border-white/10"></div>
-        {#if loading}
-          <p class="text-xs text-white/40 text-center py-4">loading...</p>
-        {:else if error}
-          <p class="text-xs text-red-400 text-center py-4">{error}</p>
-        {:else if filtered.length === 0}
-          <p class="text-xs text-white/40 text-center py-4">none</p>
-        {:else}
-          {#each filtered as file}
-            <button
-              onclick={() => loadChapter(file)}
-              title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}{dirty.has(file) ? ' (modified)' : ''}"
-              class="block w-full text-left text-xs px-2 py-1 rounded hover:bg-white/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-white/10 text-white' : dirty.has(file) ? 'text-green-400' : 'text-white/50'}"
-            >
-              {#if indices.has(file)}
-                ch{indices.get(file)}
+  <div class="flex-1 flex p-2 lg:p-3 gap-2 lg:gap-3 min-h-0">
+    <!-- ===== MOBILE LAYOUT (< lg) ===== -->
+    <div class="flex flex-1 gap-2 lg:hidden min-h-0">
+      <!-- Left column: chapters | formatting (narrow) -->
+      <div class="w-36 shrink-0 flex flex-col min-w-0">
+        <div class="flex gap-0.5 mb-2 shrink-0">
+          <button onclick={() => leftTab = 'chapters'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'chapters' ? 'bg-white/10 text-white/70' : 'text-white/30 hover:text-white/50'}">Chapters</button>
+          <button onclick={() => leftTab = 'formatting'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'formatting' ? 'bg-white/10 text-white/70' : 'text-white/30 hover:text-white/50'}">Formatting</button>
+        </div>
+        {#if leftTab === 'chapters'}
+          <div class="flex-1 flex flex-col bg-neutral-900/80 backdrop-blur-sm rounded-xl border border-white/5 min-h-0 shadow-lg">
+            <div class="flex gap-1 p-2 border-b border-white/5">
+              <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-neutral-800/60 text-white/50 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-white/5 min-w-0 placeholder:text-white/20 transition-colors focus:border-blue-500/30 focus:text-white/70" />
+              <select bind:value={translation} onchange={handleTranslationChange} class="bg-neutral-800/60 text-white/50 text-xs px-2 py-1.5 rounded-lg outline-none border border-white/5 w-22 transition-colors focus:border-blue-500/30 focus:text-white/70">
+                <option value="fantl">fantl</option>
+                <option value="MTL">MTL</option>
+                {#each customTranslations as t}
+                  <option value={t}>{t}</option>
+                {/each}
+              </select>
+              <button onclick={refreshChapters} disabled={refreshing} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5 disabled:text-white/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
+                <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
+              </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
+              <button onclick={loadSandbox} class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors {selected === 'sandbox' ? 'bg-blue-500/10 text-blue-300' : 'text-white/40'}">blank chapter</button>
+              <div class="mx-1 my-1.5 border-t border-white/5"></div>
+              {#if loading}
+                <div class="flex items-center justify-center gap-2 py-6"><Icon icon="mdi:loading" class="size-4 text-white/30 animate-spin" /><span class="text-xs text-white/30">loading...</span></div>
+              {:else if error}
+                <p class="text-xs text-red-400/70 text-center py-6">{error}</p>
+              {:else if filtered.length === 0}
+                <p class="text-xs text-white/20 text-center py-6">none</p>
               {:else}
-                {file}
+                {#each filtered as file}
+                  <button onclick={() => loadChapter(file)} title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}{dirty.has(file) ? ' (modified)' : ''}" class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-blue-500/10 text-white' : dirty.has(file) ? 'text-green-400' : 'text-white/40'}">
+                    {#if indices.has(file)}<span class="font-medium">ch{indices.get(file)}</span>{:else}<span class="font-medium">{file.replace('.md','')}</span>{/if}
+                    {#if titles.has(file)}<span class="text-white/30 ml-1">— {titles.get(file)}</span>{/if}
+                    {#if dirty.has(file)}<span class="text-green-400/60 ml-1">●</span>{/if}
+                  </button>
+                {/each}
               {/if}
-              {#if titles.has(file)}
-                <span class="text-white/40"> - {titles.get(file)}</span>
+            </div>
+          </div>
+        {:else}
+          <div class="flex-1 flex flex-col bg-neutral-900/40 rounded-xl border border-white/5 min-h-0 overflow-y-auto scrollbar-thin">
+            <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
+              <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">formatting</span>
+            </div>
+            <table class="w-full border-collapse">
+              {#each [
+                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+              ] as opt}
+                <tr class="border-b border-white/[3%] hover:bg-white/[4%] transition-colors">
+                  <td class="px-3 py-1.5 whitespace-nowrap text-white/70 text-[10px] font-mono">{opt.syntax}</td>
+                  <td class="px-3 py-1.5 text-white/30 text-[10px]">{opt.desc}</td>
+                </tr>
+              {/each}
+            </table>
+          </div>
+        {/if}
+      </div>
+      <!-- Right column: editor | reader -->
+      <div class="flex-1 flex flex-col min-w-0">
+        <div class="flex gap-0.5 mb-2 shrink-0">
+          <button onclick={() => rightTab = 'editor'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {rightTab === 'editor' ? 'bg-white/10 text-white/70' : 'text-white/30 hover:text-white/50'}">Markdown</button>
+          <button onclick={() => rightTab = 'reader'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {rightTab === 'reader' ? 'bg-white/10 text-white/70' : 'text-white/30 hover:text-white/50'}">Reader</button>
+        </div>
+        {#if rightTab === 'editor'}
+          <div class="flex-1 flex flex-col min-h-0 min-w-0">
+            <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
+              <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">markdown</span>
+              {#if selected}
+                <span class="text-[10px] font-mono text-white/20">·</span>
+                <span class="text-[10px] font-mono text-white/25 truncate">{selected}</span>
               {/if}
-            </button>
-          {/each}
+            </div>
+            <textarea bind:value={input} bind:this={mdScroll} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-white/5 bg-neutral-900/60 text-white/80 placeholder:text-white/15 min-h-0 transition-colors focus:bg-neutral-900/80"></textarea>
+          </div>
+        {:else}
+          <div class="flex-1 flex flex-col min-h-0 min-w-0">
+            <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
+              <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">reader</span>
+              {#if selected}
+                <span class="text-[10px] font-mono text-white/20">·</span>
+                <span class="text-[10px] font-mono text-white/25">{selected}</span>
+              {/if}
+            </div>
+            <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-white/5 bg-neutral-900/60 scrollbar-thin">
+              <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; --chapter-indent: 0; --chapter-align: left; --chapter-hyphens: none;">
+                {#if previewHtml}{@html previewHtml}{/if}
+              </article>
+            </div>
+          </div>
         {/if}
       </div>
     </div>
 
-    <div class="flex-1 flex flex-col min-h-0 min-w-0">
-      <div class="flex items-center px-3 py-1.5 border-b border-white/10 bg-neutral-900/50 rounded-t-lg">
-        <span class="text-xs text-white/40 font-mono">markdown</span>
-      </div>
-      <textarea
-        bind:value={input}
-        bind:this={mdScroll}
-        placeholder="select a chapter to start editing..."
-        class="flex-1 font-mono text-sm p-4 resize-none outline-none rounded-b-lg border-x border-b border-white/10 bg-neutral-900 text-white/90 min-h-0"
-      ></textarea>
-    </div>
-
-    <div class="flex-1 flex flex-col min-h-0 min-w-0">
-      <div class="flex items-center px-3 py-1.5 border-b border-white/10 bg-neutral-900/50 rounded-t-lg">
-        <span class="text-xs text-white/40 font-mono">reader</span>
-      </div>
-      <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-lg border-x border-b border-white/10 bg-neutral-900">
-        <article
-          class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word"
-          style="
-            --chapter-font: 'Alegreya', serif;
-            --chapter-size: 18px;
-            --chapter-weight: 450;
-            --chapter-lh: 1.8;
-            --chapter-indent: 0;
-            --chapter-align: left;
-            --chapter-hyphens: none;
-          "
-        >
-          {#if previewHtml}
-            {@html previewHtml}
+    <!-- ===== DESKTOP LAYOUT (lg+) ===== -->
+    <div class="hidden lg:flex flex-1 gap-3">
+      <div class="w-56 flex flex-col bg-neutral-900/80 backdrop-blur-sm rounded-xl border border-white/5 shrink-0 min-h-0 shadow-lg">
+        <div class="flex gap-1 p-2 border-b border-white/5">
+          <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-neutral-800/60 text-white/50 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-white/5 min-w-0 placeholder:text-white/20 transition-colors focus:border-blue-500/30 focus:text-white/70" />
+          <select bind:value={translation} onchange={handleTranslationChange} class="bg-neutral-800/60 text-white/50 text-xs px-2 py-1.5 rounded-lg outline-none border border-white/5 w-22 transition-colors focus:border-blue-500/30 focus:text-white/70">
+            <option value="fantl">fantl</option>
+            <option value="MTL">MTL</option>
+            {#each customTranslations as t}
+              <option value={t}>{t}</option>
+            {/each}
+          </select>
+          <button onclick={refreshChapters} disabled={refreshing} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5 disabled:text-white/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
+            <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
+          <button onclick={loadSandbox} class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors {selected === 'sandbox' ? 'bg-blue-500/10 text-blue-300' : 'text-white/40'}">blank chapter</button>
+          <div class="mx-1 my-1.5 border-t border-white/5"></div>
+          {#if loading}
+            <div class="flex items-center justify-center gap-2 py-6"><Icon icon="mdi:loading" class="size-4 text-white/30 animate-spin" /><span class="text-xs text-white/30">loading...</span></div>
+          {:else if error}
+            <p class="text-xs text-red-400/70 text-center py-6">{error}</p>
+          {:else if filtered.length === 0}
+            <p class="text-xs text-white/20 text-center py-6">none</p>
+          {:else}
+            {#each filtered as file}
+              <button onclick={() => loadChapter(file)} title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}{dirty.has(file) ? ' (modified)' : ''}" class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-blue-500/10 text-white' : dirty.has(file) ? 'text-green-400' : 'text-white/40'}">
+                {#if indices.has(file)}<span class="font-medium">ch{indices.get(file)}</span>{:else}<span class="font-medium">{file.replace('.md','')}</span>{/if}
+                {#if titles.has(file)}<span class="text-white/30 ml-1">— {titles.get(file)}</span>{/if}
+                {#if dirty.has(file)}<span class="text-green-400/60 ml-1">●</span>{/if}
+              </button>
+            {/each}
           {/if}
-        </article>
+        </div>
       </div>
-    </div>
-
-    <div class="w-64 flex flex-col min-h-0 shrink-0">
-      <div class="flex items-center px-3 py-1.5 border-b border-white/10 bg-neutral-900/50 rounded-t-lg">
-        <span class="text-xs text-white/40 font-mono">formatting options</span>
+      <div class="flex-1 flex flex-col min-h-0 min-w-0">
+        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
+          <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">markdown</span>
+          {#if selected}
+            <span class="text-[10px] font-mono text-white/20">·</span>
+            <span class="text-[10px] font-mono text-white/25 truncate">{selected}</span>
+          {/if}
+        </div>
+        <textarea bind:value={input} bind:this={mdScroll} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-white/5 bg-neutral-900/60 text-white/80 placeholder:text-white/15 min-h-0 transition-colors focus:bg-neutral-900/80"></textarea>
       </div>
-      <div class="flex-1 overflow-y-auto rounded-b-lg border-x border-b border-white/10 bg-neutral-900/80 text-xs text-white/50 font-mono leading-relaxed">
-        <table class="w-full border-collapse">
-          {#each [
-            { syntax: "%%text%%", desc: "Shake effect (block)" },
-            { syntax: "%~text~%", desc: "Shake effect (per-char)" },
-            { syntax: "%^text^%", desc: "Wave up effect" },
-            { syntax: "@@text@@", desc: "Glitch text (heavy)" },
-            { syntax: "@_@text@_@", desc: "Glitch text (subtle)" },
-            { syntax: "#^#text#^#", desc: "Grow font size" },
-            { syntax: "#v#text#v#", desc: "Shrink font size" },
-            { syntax: "~~~", desc: "Visible horizontal rule" },
-            { syntax: "_text_", desc: "Underline" },
-            { syntax: "@ll@text@ll@", desc: "Mono left-aligned" },
-            { syntax: "@rr@text@rr@", desc: "Mono right-aligned" },
-            { syntax: "@l@text@l@", desc: "Left align" },
-            { syntax: "@r@text@r@", desc: "Right align" },
-            { syntax: "#*text*#", desc: "Large text" },
-            { syntax: "#><text><#", desc: "Large centered text" },
-            { syntax: "#rtextr#", desc: "Red text" },
-            { syntax: "#btextb#", desc: "Blue text" },
-            { syntax: "#ytexty#", desc: "Yellow text" },
-            { syntax: "#ptextp#", desc: "Magenta text" },
-            { syntax: "#gtextg#", desc: "Green text" },
-            { syntax: "#otexto#", desc: "Orange text" },
-            { syntax: "#f#text#f#", desc: "Fade out" },
-            { syntax: ";rtextr;", desc: "Red highlight" },
-            { syntax: ";btextb;", desc: "Blue highlight" },
-            { syntax: ";ytexty;", desc: "Yellow highlight" },
-            { syntax: ";ptextp;", desc: "Magenta highlight" },
-            { syntax: ";gtextg;", desc: "Green highlight" },
-            { syntax: ";otexto;", desc: "Orange highlight" },
-            { syntax: "+-text-+", desc: "Wiki window" },
-            { syntax: "+$text$+", desc: "Plain window" },
-            { syntax: "&$text$&", desc: "Followup window" },
-            { syntax: "&--text--&", desc: "Record window" },
-            { syntax: "+~text~+", desc: "System window" },
-            { syntax: "+=text=+", desc: "Black CRT window" },
-            { syntax: "!-text-!", desc: "Notepad window" },
-            { syntax: "!$text$!", desc: "Sticky note window" },
-            { syntax: "![text]!", desc: "Braun CRT monitor" },
-          ] as opt}
-            <tr
-              class="border-b border-white/5 hover:bg-white/5"
-            >
-              <td class="px-2 py-1.5 whitespace-nowrap text-white/80 text-[10px]">{opt.syntax}</td>
-              <td class="px-2 py-1.5 text-white/40">{opt.desc}</td>
-            </tr>
-          {/each}
-        </table>
+      <div class="flex-1 flex flex-col min-h-0 min-w-0">
+        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
+          <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">reader</span>
+          {#if selected}
+            <span class="text-[10px] font-mono text-white/20">·</span>
+            <span class="text-[10px] font-mono text-white/25">{selected}</span>
+          {/if}
+        </div>
+        <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-white/5 bg-neutral-900/60 scrollbar-thin">
+          <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; --chapter-indent: 0; --chapter-align: left; --chapter-hyphens: none;">
+            {#if previewHtml}{@html previewHtml}{/if}
+          </article>
+        </div>
+      </div>
+      <div class="w-64 flex flex-col bg-neutral-900/40 rounded-xl border border-white/5 shrink-0 min-h-0">
+        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
+          <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">formatting</span>
+        </div>
+        <div class="flex-1 overflow-y-auto scrollbar-thin">
+          <table class="w-full border-collapse">
+            {#each [
+              { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+            ] as opt}
+              <tr class="border-b border-white/[3%] hover:bg-white/[4%] transition-colors">
+                <td class="px-3 py-1.5 whitespace-nowrap text-white/70 text-[10px] font-mono">{opt.syntax}</td>
+                <td class="px-3 py-1.5 text-white/30 text-[10px]">{opt.desc}</td>
+              </tr>
+            {/each}
+          </table>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="flex items-center justify-between px-4 py-1.5 border-t border-white/10 bg-neutral-900 shrink-0">
-    <span class="text-xs text-white/40 font-mono">gsgw / {translation}</span>
-    {#if selected === "sandbox"}
-      <span class="text-xs text-white/40 font-mono">blank chapter</span>
-    {:else if selected}
-      <a
-        href="https://github.com/{REPO}/edit/{BRANCH}/chapters/gsgw/{translation}/{selected}"
-        target="_blank"
-        class="text-xs text-white/40 hover:text-white font-mono transition-colors"
-      >(edit on github ->) {selected}</a>
-    {:else}
-      <span class="text-xs text-white/40 font-mono">no file</span>
-    {/if}
+  <div class="flex items-center justify-between px-4 py-1.5 border-t border-white/5 bg-neutral-950/30 backdrop-blur-sm shrink-0">
+    <span class="text-[10px] font-mono text-white/25">gsgw / {translation}{#if !isSourceTranslation} <span class="text-amber-400/40">(custom)</span>{/if}</span>
+    <div class="flex items-center gap-3">
+      {#if selected === "sandbox"}
+        <span class="text-[10px] font-mono text-white/25">blank chapter</span>
+      {:else if selected}
+        {#if isSourceTranslation}
+          <a
+            href="https://github.com/{REPO}/edit/{BRANCH}/chapters/gsgw/{translation}/{selected}"
+            target="_blank"
+            class="text-[10px] font-mono text-white/30 hover:text-blue-400 transition-colors"
+          >↗ {selected}</a>
+        {:else}
+          <span class="text-[10px] font-mono text-amber-400/40">{selected}</span>
+        {/if}
+      {:else}
+        <span class="text-[10px] font-mono text-white/20">no file</span>
+      {/if}
+    </div>
   </div>
 </div>
 
+{#if showManageTL}
+  <div
+    class="fixed inset-0 z-50 flex items-start justify-center pt-24 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
+    onclick={() => showManageTL = false}
+    role="dialog"
+  >
+    <div
+      class="bg-neutral-800/80 border border-white/5 rounded-2xl p-5 w-96 shadow-2xl max-h-[65vh] flex flex-col"
+      onclick={(e) => e.stopPropagation()}
+    >
+      <h2 class="text-sm font-bold text-white/70 font-mono mb-4 tracking-wide">Manage Translations</h2>
+      <div class="flex gap-2 mb-4">
+        <input
+          bind:value={newTranslationName}
+          onkeydown={(e) => { if (e.key === "Enter") confirmNewTranslation(); }}
+          placeholder="new translation name"
+          class="flex-1 bg-neutral-800/60 text-white/70 text-xs px-3 py-2 rounded-xl outline-none border border-white/5 transition-colors focus:border-blue-500/30 placeholder:text-white/20"
+        />
+        <button onclick={confirmNewTranslation} disabled={!newTranslationName.trim()} class="btn btn-soft btn-xs btn-primary rounded-xl px-3">Add</button>
+      </div>
+      <div class="flex-1 overflow-y-auto space-y-0.5 scrollbar-thin">
+        {#each customTranslations as tl}
+          <div class="flex items-center gap-2 group px-2 py-1 rounded-xl hover:bg-white/5 transition-colors">
+            {#if renameTL === tl}
+              <input
+                bind:value={renameTLValue}
+                onkeydown={(e) => { if (e.key === "Enter") confirmRename(); if (e.key === "Escape") renameTL = null; }}
+                class="flex-1 bg-neutral-800/60 text-white/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-blue-500/40 autofocus"
+                autofocus
+              />
+              <button onclick={confirmRename} class="text-green-400/60 hover:text-green-400 transition-colors p-1" title="Save"><Icon icon="mdi:check" class="size-4" /></button>
+              <button onclick={() => renameTL = null} class="text-white/30 hover:text-white/60 transition-colors p-1" title="Cancel"><Icon icon="mdi:close" class="size-4" /></button>
+            {:else}
+              <span class="flex-1 text-xs text-white/60 font-mono truncate">{tl}</span>
+              <button onclick={() => startRename(tl)} class="text-white/20 hover:text-white/60 transition-colors p-1 opacity-0 group-hover:opacity-100" title="Rename"><Icon icon="mdi:pencil-outline" class="size-3.5" /></button>
+              <button onclick={() => deleteTL(tl)} class="text-red-400/30 hover:text-red-400 transition-colors p-1 opacity-0 group-hover:opacity-100" title="Delete"><Icon icon="mdi:delete-outline" class="size-3.5" /></button>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </div>
+  </div>
+{/if}
+
 {#if showInfo}
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
     onclick={() => showInfo = false}
     role="dialog"
   >
     <div
-      class="bg-neutral-800 border border-white/10 rounded-lg p-6 w-96 shadow-2xl"
+      class="bg-neutral-800/80 border border-white/5 rounded-2xl p-6 w-96 shadow-2xl"
       onclick={(e) => e.stopPropagation()}
     >
-      <h2 class="text-sm font-bold text-white/80 font-mono mb-4">Patch Notes</h2>
+      <h2 class="text-sm font-bold text-white/70 font-mono mb-5 tracking-wide">Patch Notes</h2>
       {#each patchNotes as note}
-        <div class="mb-2">
+        <div class="mb-3 last:mb-0">
           <button
             onclick={() => toggleVersion(note.version)}
-            class="flex items-center gap-2 text-xs font-mono text-white/70 hover:text-white transition-colors w-full text-left"
+            class="flex items-center gap-2 text-xs font-mono text-white/60 hover:text-white transition-colors w-full text-left"
           >
-            <span class="text-[10px] w-3">{expandedVersion === note.version ? "▼" : "▶"}</span>
-            <span>{note.version}</span>
+            <span class="text-[10px] w-3 text-white/30">{expandedVersion === note.version ? "▼" : "▶"}</span>
+            <span class="font-medium">{note.version}</span>
           </button>
           {#if expandedVersion === note.version}
-            <p class="text-xs text-white/50 font-mono leading-relaxed mt-1 ml-5 whitespace-pre-line">{note.description}</p>
+            <p class="text-xs text-white/40 font-mono leading-relaxed mt-1.5 ml-5 whitespace-pre-line">{note.description}</p>
           {/if}
         </div>
       {/each}
@@ -831,6 +1222,24 @@
 {/if}
 
 <style>
+  :global(.scrollbar-thin) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.08) transparent;
+  }
+  :global(.scrollbar-thin::-webkit-scrollbar) {
+    width: 4px;
+  }
+  :global(.scrollbar-thin::-webkit-scrollbar-track) {
+    background: transparent;
+  }
+  :global(.scrollbar-thin::-webkit-scrollbar-thumb) {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+  :global(.scrollbar-thin::-webkit-scrollbar-thumb:hover) {
+    background: rgba(255,255,255,0.15);
+  }
+
   .chapter-content {
     font-family: var(--chapter-font);
     font-size: var(--chapter-size);
@@ -954,6 +1363,30 @@
     width: 100%;
     max-height: 85vh;
     border-radius: 12px;
+  }
+
+  .reader-container :global(.twitter-embed-text) {
+    color: #71767b;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0.5rem 0;
+  }
+
+  .reader-container :global(.twitter-embed-stats) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: #71767b;
+    font-size: 0.75rem;
+  }
+
+  .reader-container :global(.twitter-embed-stat) {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
   .reader-container :global(.twitter-embed-loading),
