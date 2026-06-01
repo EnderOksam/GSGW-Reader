@@ -215,6 +215,7 @@
   function saveCache() {
     try {
       localStorage.setItem("editor-cache", JSON.stringify(Object.fromEntries(cache)));
+      localStorage.setItem("editor-cache-originals", JSON.stringify(Object.fromEntries(originalContent)));
     } catch {}
   }
 
@@ -225,6 +226,10 @@
         const parsed = JSON.parse(saved);
         cache = new Map(Object.entries(parsed));
         dirty = new Set(cache.keys());
+      }
+      const originals = localStorage.getItem("editor-cache-originals");
+      if (originals) {
+        originalContent = new Map(Object.entries(JSON.parse(originals)));
       }
     } catch {}
   }
@@ -934,6 +939,13 @@
         cache.delete(selected);
         dirty = new Set([...dirty].filter(f => f !== selected));
         saveCache();
+      } else if (orig === undefined && cache.has(selected)) {
+        const cached = cache.get(selected);
+        if (cached !== undefined && input !== cached) {
+          cache.set(selected, input);
+          dirty = new Set([...dirty, selected]);
+          saveCache();
+        }
       }
     }
   }
@@ -1093,14 +1105,16 @@
         </div>
         <div class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
           <table class="w-full border-collapse">
-            {#each [
-              { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
-            ] as opt}
-              <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
-                <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
-                <td class="px-3 py-1.5 text-base-content/30 text-[10px]">{opt.desc}</td>
-              </tr>
-            {/each}
+            <tbody>
+              {#each [
+                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+              ] as opt}
+                <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
+                  <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
+                  <td class="px-3 py-1.5 text-base-content/30 text-[10px]">{opt.desc}</td>
+                </tr>
+              {/each}
+            </tbody>
           </table>
         </div>
       </div>
@@ -1130,15 +1144,22 @@
 </div>
 
 {#if showMobileMenu}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="fixed inset-0 z-40 lg:hidden"
     onclick={() => showMobileMenu = false}
+    onkeydown={(e) => { if (e.key === "Escape") showMobileMenu = false; }}
     role="dialog"
+    tabindex="-1"
   >
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick={() => showMobileMenu = false}></div>
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick={() => showMobileMenu = false} role="button" tabindex="-1"></div>
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
     <div
       class="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-base-300 border-r border-base-content/10 shadow-2xl flex flex-col animate-slide-in-left"
       onclick={(e) => e.stopPropagation()}
+      role="dialog"
+      tabindex="-1"
     >
       <div class="flex items-center justify-between px-3 py-2 border-b border-base-content/10 shrink-0">
         <span class="text-[10px] font-mono text-base-content/40 font-medium uppercase tracking-wider">Menu</span>
@@ -1187,14 +1208,16 @@
         {:else}
           <div class="h-full flex flex-col bg-base-200/40 rounded-xl border border-base-content/10 overflow-y-auto scrollbar-thin">
             <table class="w-full border-collapse">
-              {#each [
-                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
-              ] as opt}
-                <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
-                  <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
-                  <td class="px-3 py-1.5 text-base-content/30 text-[10px]">{opt.desc}</td>
-                </tr>
-              {/each}
+              <tbody>
+                {#each [
+                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+                ] as opt}
+                  <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
+                    <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
+                    <td class="px-3 py-1.5 text-base-content/30 text-[10px]">{opt.desc}</td>
+                  </tr>
+                {/each}
+              </tbody>
             </table>
           </div>
         {/if}
@@ -1204,14 +1227,21 @@
 {/if}
 
 {#if showManageTL}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="fixed inset-0 z-50 flex items-start justify-center pt-24 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
     onclick={() => showManageTL = false}
+    onkeydown={(e) => { if (e.key === "Escape") showManageTL = false; }}
     role="dialog"
+    tabindex="-1"
   >
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <div
       class="bg-base-200/80 border border-base-content/10 rounded-2xl p-5 w-96 shadow-2xl max-h-[65vh] flex flex-col"
       onclick={(e) => e.stopPropagation()}
+      role="group"
+      tabindex="-1"
     >
       <h2 class="text-sm font-bold text-base-content/70 font-mono mb-4 tracking-wide">Manage Translations</h2>
       <div class="flex gap-2 mb-4">
@@ -1227,6 +1257,7 @@
         {#each customTranslations as tl}
           <div class="flex items-center gap-2 group px-2 py-1 rounded-xl hover:bg-base-content/5 transition-colors">
             {#if renameTL === tl}
+              <!-- svelte-ignore a11y_autofocus -->
               <input
                 bind:value={renameTLValue}
                 onkeydown={(e) => { if (e.key === "Enter") confirmRename(); if (e.key === "Escape") renameTL = null; }}
@@ -1248,14 +1279,21 @@
 {/if}
 
 {#if showInfo}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
     onclick={() => showInfo = false}
+    onkeydown={(e) => { if (e.key === "Escape") showInfo = false; }}
     role="dialog"
+    tabindex="-1"
   >
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <div
       class="bg-base-200/80 border border-base-content/10 rounded-2xl p-6 w-96 shadow-2xl"
       onclick={(e) => e.stopPropagation()}
+      role="group"
+      tabindex="-1"
     >
       <h2 class="text-sm font-bold text-base-content/70 font-mono mb-5 tracking-wide">Patch Notes</h2>
       {#each patchNotes as note}
