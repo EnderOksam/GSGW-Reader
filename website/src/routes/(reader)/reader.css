@@ -409,3 +409,8 @@ body .reader-container .sticky-window.sticky-window p,
 body .reader-container .sticky-window.sticky-window li {
   color: #000000 !important;
 }
+
+.wrap-break-word {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

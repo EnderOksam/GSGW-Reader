@@ -3,6 +3,8 @@
   import TwitterHover from "$lib/TwitterHover.svelte";
   import { fade } from "svelte/transition";
 
+  let contributeModal: HTMLDialogElement;
+
   let developers = $state([
     {
       name: "Ender Oksam",
@@ -15,6 +17,8 @@
       cardBorder: "#96a0a8",
       tagBg: "#6b7280",
       tagColor: "#ffffff",
+      textColor: "#1a1a1a",
+      taglineColor: "#1a1a2e",
     },
     {
       name: "Dominus",
@@ -23,10 +27,12 @@
       avatar: "/assets/dominusz-avatar.png",
       tagline: "■■",
       role: "Editor",
-      cardBg: "#374151",
-      cardBorder: "#1f2937",
-      tagBg: "#f59e0b",
-      tagColor: "#1a1a2e",
+      cardBg: "#131416",
+      cardBorder: "#0d0606",
+      tagBg: "#fb8462",
+      tagColor: "#131416",
+      textColor: "#d7d7da",
+      taglineColor: "#d7d7da",
     },
   ]);
   let currentDeveloper = $state(0);
@@ -39,11 +45,11 @@
 </script>
 
 <div class="flex flex-col items-center justify-center min-h-dvh p-6 md:p-12">
-  <div class="max-w-5xl w-full bg-base-300/70 border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+  <div class="max-w-5xl w-full bg-[#0d0d0d]/80 border border-[#fb8462]/15 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
 
     <header class="text-center mb-10 relative z-10">
-      <h1 class="text-5xl font-bold text-primary mb-3">GSGW-Reader</h1>
-      <p class="text-base-content/70 italic text-base">
+      <h1 class="text-5xl font-bold mb-3 crt-title" style="color:#fb8462">GSGW-Reader</h1>
+      <p class="text-white/50 italic text-base">
         A website for reading and editing GSGW translations and formatting
       </p>
     </header>
@@ -57,7 +63,7 @@
                  style="grid-area:1/1; border-color:{dev.cardBorder}; background:{dev.cardBg};">
 
             <div class="h-28 bg-cover bg-center"
-                 style="background-image:url({dev.banner})">
+                 style="background-image:url({dev.banner}); background-color:#0d0606;">
             </div>
 
 
@@ -73,9 +79,9 @@
 
 
               <div class="space-y-1">
-                <h2 class="text-3xl font-extrabold leading-tight flex items-center gap-2"
-                    style="color:#1a1a1a;">
-                  {dev.name}
+              <h2 class="text-3xl font-extrabold leading-tight flex items-center gap-2"
+                  style="color:{dev.textColor};">
+                {dev.name}
                   <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold px-1.5 py-0.5 rounded-full translate-y-[1px]" style="background:{dev.tagBg}; color:{dev.tagColor};">
                     <Icon icon="mdi:code-tags" class="size-3" />
                     {dev.role}
@@ -83,7 +89,7 @@
                 </h2>
 
                 <p class="text-sm opacity-70"
-                   style="color:#1a1a1a;">
+                   style="color:{dev.textColor};">
                   {dev.user}
                 </p>
               </div>
@@ -91,7 +97,7 @@
 
               <div class="mt-3">
                 <p class="text-sm font-bold"
-                   style="color:#1a1a2e;">
+                   style="color:{dev.taglineColor};">
                   {dev.tagline}
                 </p>
               </div>
@@ -110,42 +116,42 @@
         </div>
 
 
-        <section class="bg-base-200/50 p-6 rounded-xl border border-white/5 w-full max-w-[400px]">
+        <section class="bg-[#0d0d0d]/60 p-6 rounded-xl border border-[#fb8462]/10 w-full max-w-[400px]">
           <div class="flex items-center gap-2 mb-3">
-            <Icon icon="mdi:code-tags" class="text-accent size-5" />
-            <h2 class="text-lg font-semibold">Developer Note</h2>
+            <Icon icon="mdi:code-tags" class="text-[#fb8462] size-5" />
+            <h2 class="text-lg font-semibold text-white/80">Developer Note</h2>
           </div>
-          <p class="text-sm text-base-content/80 leading-relaxed">this website is a fork of <a href="https://beyonder.pages.dev" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">beyonder.pages.dev</a> it was made as a personal project to learn a bit of web development, I hope you enjoy it as much as I enjoyed making it</p>
-          <p class="text-xs text-base-content/60 mt-2 leading-relaxed">(if there are any issues or concerns I can be contacted through discord, and if there are any suggestions or bugs they can be brought up on the discord server)</p>
+          <p class="text-sm text-white/60 leading-relaxed">this website is a fork of <a href="https://beyonder.pages.dev" target="_blank" rel="noopener noreferrer" class="text-[#fb8462] hover:underline">beyonder.pages.dev</a> it was made as a personal project to learn a bit of web development, I hope you enjoy it as much as I enjoyed making it</p>
+          <p class="text-xs text-white/40 mt-2 leading-relaxed">(if there are any issues or concerns I can be contacted through discord, and if there are any suggestions or bugs they can be brought up on the discord server)</p>
         </section>
       </div>
 
 
       <div class="md:w-1/2 space-y-6">
         <a href="https://page.kakao.com/content/65171279" target="_blank" rel="noopener noreferrer"
-           class="bg-base-200/50 p-6 rounded-xl border border-white/5 block transition-transform hover:scale-[1.02]">
+           class="bg-[#0d0d0d]/60 p-6 rounded-xl border border-[#fb8462]/10 block transition-transform hover:scale-[1.02]">
           <div class="flex items-center gap-2 mb-4">
-            <Icon icon="mdi:book-open-page-variant" class="text-secondary size-6" />
-            <h2 class="text-xl font-semibold">Story</h2>
+            <Icon icon="mdi:book-open-page-variant" class="text-[#fb8462] size-6" />
+            <h2 class="text-xl font-semibold text-white/80">Story</h2>
           </div>
-          <ul class="text-sm text-base-content/80 space-y-3">
+          <ul class="text-sm text-white/60 space-y-3">
             <li class="flex items-center gap-2">
               <Icon icon="mdi:pen" class="size-4 opacity-50 shrink-0" />
-              <span><b>Author:</b> Baek Deoksoo</span>
+              <span><b class="text-white/80">Author:</b> Baek Deoksoo</span>
             </li>
           </ul>
         </a>
 
-        <section class="bg-base-200/50 p-6 rounded-xl border border-white/5">
+        <section class="bg-[#0d0d0d]/60 p-6 rounded-xl border border-[#fb8462]/10">
           <div class="flex items-center gap-2 mb-2">
-            <Icon icon="mdi:palette" class="text-secondary size-5" />
-            <h2 class="text-lg font-semibold">Illustrations</h2>
+            <Icon icon="mdi:palette" class="text-[#fb8462] size-5" />
+            <h2 class="text-lg font-semibold text-white/80">Illustrations</h2>
           </div>
-          <p class="text-sm text-base-content/60 mb-4 leading-relaxed">
+          <p class="text-sm text-white/50 mb-4 leading-relaxed">
             Illustrations featured on the reader are Twitter embeds completely client side, Clicking the @'s should take you to the original post.
           </p>
           <div class="flex flex-wrap gap-3">
-            <div class="bg-base-300/50 px-3 py-1.5 rounded-full border border-white/5">
+            <div class="bg-[#0d0d0d]/80 px-3 py-1.5 rounded-full border border-[#fb8462]/10">
               <TwitterHover user="uoongpig" />
             </div>
           </div>
@@ -156,10 +162,10 @@
             <Icon icon="material-symbols:download" class="size-5" />
             Download
           </a>
-          <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-md btn-warning shadow-lg gap-2">
+          <button onclick={() => contributeModal.showModal()} class="btn btn-soft btn-md btn-warning shadow-lg gap-2">
             <Icon icon="ri:edit-line" class="size-5" />
             Contribute
-          </a>
+          </button>
           <a href="https://discord.gg/HHnSjeGN4d" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-md btn-accent shadow-lg gap-2">
             <Icon icon="mingcute:discord-line" class="size-5" />
             Discord
@@ -170,14 +176,7 @@
           </a>
         </div>
 
-        <div class="flex justify-center mt-8">
-          <a href="/dev/editor" class="btn btn-soft btn-md btn-primary gap-2">
-            <Icon icon="mdi:developer-board" class="size-5" />
-            Editor
-          </a>
-        </div>
-
-        <p class="text-xs text-base-content/60 text-center mt-10 leading-relaxed">
+        <p class="text-xs text-white/40 text-center mt-10 leading-relaxed">
           thank you to <TwitterHover user="dominusz" noFetch /> and <TwitterHover user="wonstryk" noFetch /> for testing early builds of the site
         </p>
       </div>
@@ -186,3 +185,41 @@
 
   </div>
 </div>
+
+<dialog bind:this={contributeModal} class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-base-100 rounded-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg mb-4" style="color:#fb8462">Contribute</h3>
+    <div class="flex flex-col gap-3">
+      <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" rel="noopener noreferrer" class="btn btn-outline w-full rounded-btn gap-2" style="border-color:#fb8462; color:#fb8462;">
+        <Icon icon="mdi:book-open-page-variant" class="size-5" /> Read Guide
+      </a>
+      <a href="/dev/editor" class="btn btn-outline w-full rounded-btn gap-2" style="border-color:#fb8462; color:#fb8462;">
+        <Icon icon="material-symbols:edit-note-rounded" class="size-5" /> Editor
+      </a>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<style>
+  .crt-title {
+    text-shadow:
+      0 0 3px rgba(251, 132, 98, 0.3),
+      0 0 8px rgba(251, 132, 98, 0.1),
+      -0.5px 0 rgba(255, 0, 0, 0.1),
+      0.5px 0 rgba(0, 0, 255, 0.1);
+    animation: crt-flicker 4s infinite;
+  }
+
+  @keyframes crt-flicker {
+    0%, 100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.85; }
+    94% { opacity: 1; }
+    96% { opacity: 0.92; }
+    97% { opacity: 1; }
+  }
+</style>

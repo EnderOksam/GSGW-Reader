@@ -63,7 +63,9 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   </div>
 {/if}
 
-{@render children()}
+<div class="content">
+  {@render children()}
+</div>
 
 <style>
   :global(:root) {
@@ -79,6 +81,51 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   }
 
   :global(body) {
-    background: #1a1a1a;
+    background: #0d0d0d;
+  }
+
+  :global(body)::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.035) 2px,
+      rgba(255, 255, 255, 0.035) 4px
+    );
+    filter: blur(0.5px);
+  }
+
+  :global(body)::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    animation: crt-shift 8s steps(4) infinite;
+  }
+
+  :global {
+    @keyframes crt-shift {
+      0% { background-position: 0 0; }
+      25% { background-position: 5px 3px; }
+      50% { background-position: -3px 7px; }
+      75% { background-position: 2px -4px; }
+      100% { background-position: 0 0; }
+    }
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(0.8px);
   }
 </style>

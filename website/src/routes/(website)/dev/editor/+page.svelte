@@ -1,9 +1,29 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { browser } from "$app/environment";
   import { marked } from "marked";
   import Icon from "@iconify/svelte";
   import JSZip from "jszip";
   import readerCss from "../../../../routes/(reader)/reader.css?url";
+
+  let theme = $state("sunset");
+  let showThemeMenu = $state(false);
+  let themeBtn: HTMLButtonElement;
+
+  const THEMES = ["sunset", "light", "dark", "retro", "night", "business", "black", "dracula", "cyberpunk"];
+
+  onMount(() => {
+    const saved = localStorage.getItem("editor-theme");
+    if (saved) theme = saved;
+    document.documentElement.setAttribute("data-theme", theme);
+  });
+
+  $effect(() => {
+    if (browser) {
+      localStorage.setItem("editor-theme", theme);
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  });
 
   const REPO = "EnderOksam/GSGW-Reader";
   const BRANCH = "main";
@@ -159,8 +179,12 @@
 
   let patchNotes = [
     {
+      version: "v0.4",
+      description: "- bug fixing\n- themes\n- changed mobile editing ui to fit the smaller screen"
+    },
+    {
       version: "v0.3",
-      description: `- better ui (hopefully)\n- mobile editing\n- custom translations\n- adding/removing chapters`
+      description: "- better ui (hopefully)\n- mobile editing\n- custom translations\n- adding/removing chapters"
     },
     {
       version: "v0.2",
@@ -677,6 +701,7 @@
   let scrollPositions = new Map<string, { md: number; reader: number }>();
   let showExport = $state(false);
   let showRevert = $state(false);
+  let showMobileMenu = $state(false);
   let exportBtn: HTMLElement | null = $state(null);
   let revertBtn: HTMLElement | null = $state(null);
 
@@ -918,125 +943,81 @@
   <link rel="stylesheet" href={readerCss}>
 </svelte:head>
 
-<div class="h-dvh bg-gradient-to-br from-neutral-800 via-neutral-800/90 to-neutral-900 flex flex-col overflow-hidden selection:bg-blue-500/30">
-  <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/5 bg-neutral-950/40 backdrop-blur-sm shrink-0 relative z-10">
+<div class="h-dvh bg-base-300 flex flex-col overflow-hidden selection:bg-primary/30">
+  <div class="flex items-center justify-between px-3 py-1.5 border-b border-base-content/10 bg-base-300/50 backdrop-blur-sm shrink-0 relative z-10">
     <div class="flex items-center gap-0.5 relative">
-      <a href="/" class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Home"><Icon icon="mdi:home-outline" class="size-4" /></a>
-      <button bind:this={exportBtn} onclick={toggleExport} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Export"><Icon icon="mdi:export-variant" class="size-4" /></button>
-      <button onclick={triggerImport} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Import zip"><Icon icon="mdi:file-import-outline" class="size-4" /></button>
+      <button onclick={() => showMobileMenu = true} class="lg:hidden text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Menu"><Icon icon="mdi:menu" class="size-4" /></button>
+      <a href="/" class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-4" /></a>
+      <button bind:this={exportBtn} onclick={toggleExport} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Export"><Icon icon="mdi:export-variant" class="size-4" /></button>
+      <button onclick={triggerImport} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Import zip"><Icon icon="mdi:file-import-outline" class="size-4" /></button>
       <input bind:this={importRef} onchange={handleImportZip} type="file" accept=".zip" class="hidden" />
-      <button bind:this={revertBtn} onclick={toggleRevert} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Revert"><Icon icon="mdi:undo-variant" class="size-4" /></button>
-      <span class="mx-0.5 w-px h-4 bg-white/5"></span>
-      <button onclick={newChapter} disabled={!translation} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5 disabled:text-white/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="New chapter"><Icon icon="mdi:plus" class="size-4" /></button>
-      <button onclick={deleteCurrentChapter} disabled={!selected || selected === "sandbox" || isSourceTranslation} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5 disabled:text-white/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Delete chapter"><Icon icon="mdi:delete-outline" class="size-4" /></button>
-      <span class="mx-0.5 w-px h-4 bg-white/5"></span>
-      <button onclick={() => { newTranslationName = ""; renameTL = null; showManageTL = true; }} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5" title="Manage translations"><Icon icon="mdi:translate" class="size-4" /></button>
-      <span class="mx-0.5 w-px h-4 bg-white/5"></span>
-      <button onclick={() => showInfo = true} class="text-[10px] font-mono text-white/40 hover:text-white transition-colors px-1.5 py-1 rounded hover:bg-white/5">v0.3</button>
+      <button bind:this={revertBtn} onclick={toggleRevert} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Revert"><Icon icon="mdi:undo-variant" class="size-4" /></button>
+      <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
+      <button onclick={newChapter} disabled={!translation} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="New chapter"><Icon icon="mdi:plus" class="size-4" /></button>
+      <button onclick={deleteCurrentChapter} disabled={!selected || selected === "sandbox" || isSourceTranslation} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Delete chapter"><Icon icon="mdi:delete-outline" class="size-4" /></button>
+      <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
+      <button onclick={() => { newTranslationName = ""; renameTL = null; showManageTL = true; }} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Manage translations"><Icon icon="mdi:translate" class="size-4" /></button>
+      <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
       {#if showExport}
-        <div data-export-dropdown class="absolute top-full left-0 mt-1.5 bg-neutral-800/95 backdrop-blur-sm border border-white/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
-          <button onclick={exportCurrentChapter} disabled={!selected || selected === "sandbox" || !input} class="block w-full text-left text-xs px-3 py-2 hover:bg-white/5 text-white/70 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Export current chapter</button>
-          <button onclick={exportAllEdited} disabled={dirty.size === 0 && isSourceTranslation} class="block w-full text-left text-xs px-3 py-2 hover:bg-white/5 text-white/70 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Export all chapters</button>
+        <div data-export-dropdown class="absolute top-full left-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
+          <button onclick={exportCurrentChapter} disabled={!selected || selected === "sandbox" || !input} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export current chapter</button>
+          <button onclick={exportAllEdited} disabled={dirty.size === 0 && isSourceTranslation} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export all chapters</button>
         </div>
       {/if}
       {#if showRevert}
-        <div data-revert-dropdown class="absolute top-full left-0 mt-1.5 bg-neutral-800/95 backdrop-blur-sm border border-white/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
-          <button onclick={revertCurrentChapter} disabled={!selected || selected === "sandbox" || !dirty.has(selected)} class="block w-full text-left text-xs px-3 py-2 hover:bg-white/5 text-white/70 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Revert current chapter</button>
-          <button onclick={revertAllChapters} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-2 hover:bg-white/5 text-white/70 disabled:text-white/20 disabled:cursor-not-allowed transition-colors">Revert all edited chapters</button>
+        <div data-revert-dropdown class="absolute top-full left-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
+          <button onclick={revertCurrentChapter} disabled={!selected || selected === "sandbox" || !dirty.has(selected)} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Revert current chapter</button>
+          <button onclick={revertAllChapters} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Revert all edited chapters</button>
         </div>
       {/if}
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="relative">
+        <button bind:this={themeBtn} onclick={() => showThemeMenu = !showThemeMenu} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Theme">
+          <Icon icon="mdi:palette-outline" class="size-4" />
+        </button>
+        {#if showThemeMenu}
+          <div class="absolute top-full right-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-36 z-50 overflow-hidden">
+            {#each THEMES as t}
+              <button onclick={() => { theme = t; showThemeMenu = false; }} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/10 text-base-content/70 transition-colors {theme === t ? 'bg-primary/10 text-primary' : ''}">{t.charAt(0).toUpperCase() + t.slice(1)}</button>
+            {/each}
+          </div>
+        {/if}
+      </div>
+      <button onclick={() => showInfo = true} class="version-btn text-xs font-mono px-2 py-1 rounded">v0.4</button>
     </div>
   </div>
 
   <div class="flex-1 flex p-2 lg:p-3 gap-2 lg:gap-3 min-h-0">
     <!-- ===== MOBILE LAYOUT (< lg) ===== -->
-    <div class="flex flex-1 gap-2 lg:hidden min-h-0">
-      <!-- Left column: chapters | formatting (narrow) -->
-      <div class="w-36 shrink-0 flex flex-col min-w-0">
-        <div class="flex gap-0.5 mb-2 shrink-0">
-          <button onclick={() => leftTab = 'chapters'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'chapters' ? 'bg-white/10 text-white/70' : 'text-white/30 hover:text-white/50'}">Chapters</button>
-          <button onclick={() => leftTab = 'formatting'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'formatting' ? 'bg-white/10 text-white/70' : 'text-white/30 hover:text-white/50'}">Formatting</button>
-        </div>
-        {#if leftTab === 'chapters'}
-          <div class="flex-1 flex flex-col bg-neutral-900/80 backdrop-blur-sm rounded-xl border border-white/5 min-h-0 shadow-lg">
-            <div class="flex gap-1 p-2 border-b border-white/5">
-              <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-neutral-800/60 text-white/50 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-white/5 min-w-0 placeholder:text-white/20 transition-colors focus:border-blue-500/30 focus:text-white/70" />
-              <select bind:value={translation} onchange={handleTranslationChange} class="bg-neutral-800/60 text-white/50 text-xs px-2 py-1.5 rounded-lg outline-none border border-white/5 w-22 transition-colors focus:border-blue-500/30 focus:text-white/70">
-                <option value="fantl">fantl</option>
-                <option value="MTL">MTL</option>
-                {#each customTranslations as t}
-                  <option value={t}>{t}</option>
-                {/each}
-              </select>
-              <button onclick={refreshChapters} disabled={refreshing} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5 disabled:text-white/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
-                <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
-              </button>
-            </div>
-            <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
-              <button onclick={loadSandbox} class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors {selected === 'sandbox' ? 'bg-blue-500/10 text-blue-300' : 'text-white/40'}">blank chapter</button>
-              <div class="mx-1 my-1.5 border-t border-white/5"></div>
-              {#if loading}
-                <div class="flex items-center justify-center gap-2 py-6"><Icon icon="mdi:loading" class="size-4 text-white/30 animate-spin" /><span class="text-xs text-white/30">loading...</span></div>
-              {:else if error}
-                <p class="text-xs text-red-400/70 text-center py-6">{error}</p>
-              {:else if filtered.length === 0}
-                <p class="text-xs text-white/20 text-center py-6">none</p>
-              {:else}
-                {#each filtered as file}
-                  <button onclick={() => loadChapter(file)} title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}{dirty.has(file) ? ' (modified)' : ''}" class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-blue-500/10 text-white' : dirty.has(file) ? 'text-green-400' : 'text-white/40'}">
-                    {#if indices.has(file)}<span class="font-medium">ch{indices.get(file)}</span>{:else}<span class="font-medium">{file.replace('.md','')}</span>{/if}
-                    {#if titles.has(file)}<span class="text-white/30 ml-1">— {titles.get(file)}</span>{/if}
-                    {#if dirty.has(file)}<span class="text-green-400/60 ml-1">●</span>{/if}
-                  </button>
-                {/each}
-              {/if}
-            </div>
-          </div>
-        {:else}
-          <div class="flex-1 flex flex-col bg-neutral-900/40 rounded-xl border border-white/5 min-h-0 overflow-y-auto scrollbar-thin">
-            <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
-              <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">formatting</span>
-            </div>
-            <table class="w-full border-collapse">
-              {#each [
-                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
-              ] as opt}
-                <tr class="border-b border-white/[3%] hover:bg-white/[4%] transition-colors">
-                  <td class="px-3 py-1.5 whitespace-nowrap text-white/70 text-[10px] font-mono">{opt.syntax}</td>
-                  <td class="px-3 py-1.5 text-white/30 text-[10px]">{opt.desc}</td>
-                </tr>
-              {/each}
-            </table>
-          </div>
-        {/if}
-      </div>
-      <!-- Right column: editor | reader -->
+    <div class="flex flex-1 lg:hidden min-h-0">
+      <!-- Full-width editor | reader -->
       <div class="flex-1 flex flex-col min-w-0">
         <div class="flex gap-0.5 mb-2 shrink-0">
-          <button onclick={() => rightTab = 'editor'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {rightTab === 'editor' ? 'bg-white/10 text-white/70' : 'text-white/30 hover:text-white/50'}">Markdown</button>
-          <button onclick={() => rightTab = 'reader'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {rightTab === 'reader' ? 'bg-white/10 text-white/70' : 'text-white/30 hover:text-white/50'}">Reader</button>
+          <button onclick={() => rightTab = 'editor'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {rightTab === 'editor' ? 'bg-base-content/10 text-base-content/70' : 'text-base-content/50 hover:text-base-content/70'}">Markdown</button>
+          <button onclick={() => rightTab = 'reader'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {rightTab === 'reader' ? 'bg-base-content/10 text-base-content/70' : 'text-base-content/50 hover:text-base-content/70'}">Reader</button>
         </div>
         {#if rightTab === 'editor'}
           <div class="flex-1 flex flex-col min-h-0 min-w-0">
-            <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
-              <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">markdown</span>
+            <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+              <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">markdown</span>
               {#if selected}
-                <span class="text-[10px] font-mono text-white/20">·</span>
-                <span class="text-[10px] font-mono text-white/25 truncate">{selected}</span>
+                <span class="text-[10px] font-mono text-base-content/20">·</span>
+                <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
               {/if}
             </div>
-            <textarea bind:value={input} bind:this={mdScroll} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-white/5 bg-neutral-900/60 text-white/80 placeholder:text-white/15 min-h-0 transition-colors focus:bg-neutral-900/80"></textarea>
+            <textarea bind:value={input} bind:this={mdScroll} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80"></textarea>
           </div>
         {:else}
           <div class="flex-1 flex flex-col min-h-0 min-w-0">
-            <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
-              <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">reader</span>
+            <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+              <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">reader</span>
               {#if selected}
-                <span class="text-[10px] font-mono text-white/20">·</span>
-                <span class="text-[10px] font-mono text-white/25">{selected}</span>
+                <span class="text-[10px] font-mono text-base-content/20">·</span>
+                <span class="text-[10px] font-mono text-base-content/25">{selected}</span>
               {/if}
             </div>
-            <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-white/5 bg-neutral-900/60 scrollbar-thin">
+            <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 scrollbar-thin">
               <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; --chapter-indent: 0; --chapter-align: left; --chapter-hyphens: none;">
                 {#if previewHtml}{@html previewHtml}{/if}
               </article>
@@ -1048,76 +1029,76 @@
 
     <!-- ===== DESKTOP LAYOUT (lg+) ===== -->
     <div class="hidden lg:flex flex-1 gap-3">
-      <div class="w-56 flex flex-col bg-neutral-900/80 backdrop-blur-sm rounded-xl border border-white/5 shrink-0 min-h-0 shadow-lg">
-        <div class="flex gap-1 p-2 border-b border-white/5">
-          <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-neutral-800/60 text-white/50 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-white/5 min-w-0 placeholder:text-white/20 transition-colors focus:border-blue-500/30 focus:text-white/70" />
-          <select bind:value={translation} onchange={handleTranslationChange} class="bg-neutral-800/60 text-white/50 text-xs px-2 py-1.5 rounded-lg outline-none border border-white/5 w-22 transition-colors focus:border-blue-500/30 focus:text-white/70">
+      <div class="w-56 flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shrink-0 min-h-0 shadow-lg">
+        <div class="flex gap-1 p-2 border-b border-base-content/10">
+          <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
+          <select bind:value={translation} onchange={handleTranslationChange} class="bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 w-22 transition-colors focus:border-primary/30 focus:text-base-content/80">
             <option value="fantl">fantl</option>
             <option value="MTL">MTL</option>
             {#each customTranslations as t}
               <option value={t}>{t}</option>
             {/each}
           </select>
-          <button onclick={refreshChapters} disabled={refreshing} class="text-white/40 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5 disabled:text-white/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
+          <button onclick={refreshChapters} disabled={refreshing} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
             <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
           </button>
         </div>
         <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
-          <button onclick={loadSandbox} class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors {selected === 'sandbox' ? 'bg-blue-500/10 text-blue-300' : 'text-white/40'}">blank chapter</button>
-          <div class="mx-1 my-1.5 border-t border-white/5"></div>
+          <button onclick={loadSandbox} class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {selected === 'sandbox' ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">blank chapter</button>
+          <div class="mx-1 my-1.5 border-t border-base-content/10"></div>
           {#if loading}
-            <div class="flex items-center justify-center gap-2 py-6"><Icon icon="mdi:loading" class="size-4 text-white/30 animate-spin" /><span class="text-xs text-white/30">loading...</span></div>
+            <div class="flex items-center justify-center gap-2 py-6"><Icon icon="mdi:loading" class="size-4 text-base-content/50 animate-spin" /><span class="text-xs text-base-content/50">loading...</span></div>
           {:else if error}
-            <p class="text-xs text-red-400/70 text-center py-6">{error}</p>
+            <p class="text-xs text-error/70 text-center py-6">{error}</p>
           {:else if filtered.length === 0}
-            <p class="text-xs text-white/20 text-center py-6">none</p>
+            <p class="text-xs text-base-content/40 text-center py-6">none</p>
           {:else}
             {#each filtered as file}
-              <button onclick={() => loadChapter(file)} title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}{dirty.has(file) ? ' (modified)' : ''}" class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-blue-500/10 text-white' : dirty.has(file) ? 'text-green-400' : 'text-white/40'}">
+              <button onclick={() => loadChapter(file)} title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}{dirty.has(file) ? ' (modified)' : ''}" class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-primary/10 text-base-content' : dirty.has(file) ? 'text-success' : 'text-base-content/70'}">
                 {#if indices.has(file)}<span class="font-medium">ch{indices.get(file)}</span>{:else}<span class="font-medium">{file.replace('.md','')}</span>{/if}
-                {#if titles.has(file)}<span class="text-white/30 ml-1">— {titles.get(file)}</span>{/if}
-                {#if dirty.has(file)}<span class="text-green-400/60 ml-1">●</span>{/if}
+                {#if titles.has(file)}<span class="text-base-content/50 ml-1">— {titles.get(file)}</span>{/if}
+                {#if dirty.has(file)}<span class="text-success/60 ml-1">●</span>{/if}
               </button>
             {/each}
           {/if}
         </div>
       </div>
       <div class="flex-1 flex flex-col min-h-0 min-w-0">
-        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
-          <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">markdown</span>
+        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+          <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">markdown</span>
           {#if selected}
-            <span class="text-[10px] font-mono text-white/20">·</span>
-            <span class="text-[10px] font-mono text-white/25 truncate">{selected}</span>
+            <span class="text-[10px] font-mono text-base-content/20">·</span>
+            <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
           {/if}
         </div>
-        <textarea bind:value={input} bind:this={mdScroll} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-white/5 bg-neutral-900/60 text-white/80 placeholder:text-white/15 min-h-0 transition-colors focus:bg-neutral-900/80"></textarea>
+        <textarea bind:value={input} bind:this={mdScroll} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80"></textarea>
       </div>
       <div class="flex-1 flex flex-col min-h-0 min-w-0">
-        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
-          <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">reader</span>
+        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+          <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">reader</span>
           {#if selected}
-            <span class="text-[10px] font-mono text-white/20">·</span>
-            <span class="text-[10px] font-mono text-white/25">{selected}</span>
+            <span class="text-[10px] font-mono text-base-content/20">·</span>
+            <span class="text-[10px] font-mono text-base-content/25">{selected}</span>
           {/if}
         </div>
-        <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-white/5 bg-neutral-900/60 scrollbar-thin">
+        <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 scrollbar-thin">
           <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; --chapter-indent: 0; --chapter-align: left; --chapter-hyphens: none;">
             {#if previewHtml}{@html previewHtml}{/if}
           </article>
         </div>
       </div>
-      <div class="w-64 flex flex-col bg-neutral-900/40 rounded-xl border border-white/5 shrink-0 min-h-0">
-        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/40 backdrop-blur-sm rounded-t-xl shrink-0">
-          <span class="text-[10px] font-mono text-white/30 font-medium uppercase tracking-wider">formatting</span>
+      <div class="w-64 flex flex-col bg-base-200/40 rounded-xl border border-base-content/10 shrink-0 min-h-0">
+        <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+          <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">formatting</span>
         </div>
-        <div class="flex-1 overflow-y-auto scrollbar-thin">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">
           <table class="w-full border-collapse">
             {#each [
               { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
             ] as opt}
-              <tr class="border-b border-white/[3%] hover:bg-white/[4%] transition-colors">
-                <td class="px-3 py-1.5 whitespace-nowrap text-white/70 text-[10px] font-mono">{opt.syntax}</td>
-                <td class="px-3 py-1.5 text-white/30 text-[10px]">{opt.desc}</td>
+              <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
+                <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
+                <td class="px-3 py-1.5 text-base-content/30 text-[10px]">{opt.desc}</td>
               </tr>
             {/each}
           </table>
@@ -1126,27 +1107,101 @@
     </div>
   </div>
 
-  <div class="flex items-center justify-between px-4 py-1.5 border-t border-white/5 bg-neutral-950/30 backdrop-blur-sm shrink-0">
-    <span class="text-[10px] font-mono text-white/25">gsgw / {translation}{#if !isSourceTranslation} <span class="text-amber-400/40">(custom)</span>{/if}</span>
+  <div class="flex items-center justify-between px-4 py-1.5 border-t border-base-content/10 bg-base-300/30 backdrop-blur-sm shrink-0">
+    <span class="text-[10px] font-mono text-base-content/25">gsgw / {translation}{#if !isSourceTranslation} <span class="text-warning/40">(custom)</span>{/if}</span>
     <div class="flex items-center gap-3">
       {#if selected === "sandbox"}
-        <span class="text-[10px] font-mono text-white/25">blank chapter</span>
+        <span class="text-[10px] font-mono text-base-content/25">blank chapter</span>
       {:else if selected}
         {#if isSourceTranslation}
           <a
             href="https://github.com/{REPO}/edit/{BRANCH}/chapters/gsgw/{translation}/{selected}"
             target="_blank"
-            class="text-[10px] font-mono text-white/30 hover:text-blue-400 transition-colors"
+            class="text-[10px] font-mono text-base-content/30 hover:text-primary transition-colors"
           >↗ {selected}</a>
         {:else}
-          <span class="text-[10px] font-mono text-amber-400/40">{selected}</span>
+          <span class="text-[10px] font-mono text-warning/40">{selected}</span>
         {/if}
       {:else}
-        <span class="text-[10px] font-mono text-white/20">no file</span>
+        <span class="text-[10px] font-mono text-base-content/20">no file</span>
       {/if}
     </div>
   </div>
 </div>
+
+{#if showMobileMenu}
+  <div
+    class="fixed inset-0 z-40 lg:hidden"
+    onclick={() => showMobileMenu = false}
+    role="dialog"
+  >
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick={() => showMobileMenu = false}></div>
+    <div
+      class="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-base-300 border-r border-base-content/10 shadow-2xl flex flex-col animate-slide-in-left"
+      onclick={(e) => e.stopPropagation()}
+    >
+      <div class="flex items-center justify-between px-3 py-2 border-b border-base-content/10 shrink-0">
+        <span class="text-[10px] font-mono text-base-content/40 font-medium uppercase tracking-wider">Menu</span>
+        <button onclick={() => showMobileMenu = false} class="text-base-content/40 hover:text-base-content transition-colors p-1 rounded hover:bg-base-content/5"><Icon icon="mdi:close" class="size-4" /></button>
+      </div>
+      <div class="flex gap-0.5 px-3 pt-2 shrink-0">
+        <button onclick={() => leftTab = 'chapters'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'chapters' ? 'bg-base-content/10 text-base-content/70' : 'text-base-content/50 hover:text-base-content/70'}">Chapters</button>
+        <button onclick={() => leftTab = 'formatting'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'formatting' ? 'bg-base-content/10 text-base-content/70' : 'text-base-content/50 hover:text-base-content/70'}">Formatting</button>
+      </div>
+      <div class="flex-1 min-h-0 px-3 pb-3 pt-1.5">
+        {#if leftTab === 'chapters'}
+          <div class="h-full flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg">
+            <div class="flex gap-1 p-2 border-b border-base-content/10">
+              <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
+              <select bind:value={translation} onchange={handleTranslationChange} class="bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 w-22 transition-colors focus:border-primary/30 focus:text-base-content/80">
+                <option value="fantl">fantl</option>
+                <option value="MTL">MTL</option>
+                {#each customTranslations as t}
+                  <option value={t}>{t}</option>
+                {/each}
+              </select>
+              <button onclick={refreshChapters} disabled={refreshing} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
+                <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
+              </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
+              <button onclick={() => { loadSandbox(); showMobileMenu = false; }} class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {selected === 'sandbox' ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">blank chapter</button>
+              <div class="mx-1 my-1.5 border-t border-base-content/10"></div>
+              {#if loading}
+                <div class="flex items-center justify-center gap-2 py-6"><Icon icon="mdi:loading" class="size-4 text-base-content/50 animate-spin" /><span class="text-xs text-base-content/50">loading...</span></div>
+              {:else if error}
+                <p class="text-xs text-error/70 text-center py-6">{error}</p>
+              {:else if filtered.length === 0}
+                <p class="text-xs text-base-content/40 text-center py-6">none</p>
+              {:else}
+                {#each filtered as file}
+                  <button onclick={() => { loadChapter(file); showMobileMenu = false; }} title="{indices.has(file) ? 'ch' + indices.get(file) : file}{titles.has(file) ? ' - ' + titles.get(file) : ''}{dirty.has(file) ? ' (modified)' : ''}" class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors whitespace-nowrap overflow-hidden text-ellipsis {selected === file ? 'bg-primary/10 text-base-content' : dirty.has(file) ? 'text-success' : 'text-base-content/70'}">
+                    {#if indices.has(file)}<span class="font-medium">ch{indices.get(file)}</span>{:else}<span class="font-medium">{file.replace('.md','')}</span>{/if}
+                    {#if titles.has(file)}<span class="text-base-content/50 ml-1">— {titles.get(file)}</span>{/if}
+                    {#if dirty.has(file)}<span class="text-success/60 ml-1">●</span>{/if}
+                  </button>
+                {/each}
+              {/if}
+            </div>
+          </div>
+        {:else}
+          <div class="h-full flex flex-col bg-base-200/40 rounded-xl border border-base-content/10 overflow-y-auto scrollbar-thin">
+            <table class="w-full border-collapse">
+              {#each [
+                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+              ] as opt}
+                <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
+                  <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
+                  <td class="px-3 py-1.5 text-base-content/30 text-[10px]">{opt.desc}</td>
+                </tr>
+              {/each}
+            </table>
+          </div>
+        {/if}
+      </div>
+    </div>
+  </div>
+{/if}
 
 {#if showManageTL}
   <div
@@ -1155,35 +1210,35 @@
     role="dialog"
   >
     <div
-      class="bg-neutral-800/80 border border-white/5 rounded-2xl p-5 w-96 shadow-2xl max-h-[65vh] flex flex-col"
+      class="bg-base-200/80 border border-base-content/10 rounded-2xl p-5 w-96 shadow-2xl max-h-[65vh] flex flex-col"
       onclick={(e) => e.stopPropagation()}
     >
-      <h2 class="text-sm font-bold text-white/70 font-mono mb-4 tracking-wide">Manage Translations</h2>
+      <h2 class="text-sm font-bold text-base-content/70 font-mono mb-4 tracking-wide">Manage Translations</h2>
       <div class="flex gap-2 mb-4">
         <input
           bind:value={newTranslationName}
           onkeydown={(e) => { if (e.key === "Enter") confirmNewTranslation(); }}
           placeholder="new translation name"
-          class="flex-1 bg-neutral-800/60 text-white/70 text-xs px-3 py-2 rounded-xl outline-none border border-white/5 transition-colors focus:border-blue-500/30 placeholder:text-white/20"
+          class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-3 py-2 rounded-xl outline-none border border-base-content/10 transition-colors focus:border-primary/30 placeholder:text-base-content/20"
         />
         <button onclick={confirmNewTranslation} disabled={!newTranslationName.trim()} class="btn btn-soft btn-xs btn-primary rounded-xl px-3">Add</button>
       </div>
       <div class="flex-1 overflow-y-auto space-y-0.5 scrollbar-thin">
         {#each customTranslations as tl}
-          <div class="flex items-center gap-2 group px-2 py-1 rounded-xl hover:bg-white/5 transition-colors">
+          <div class="flex items-center gap-2 group px-2 py-1 rounded-xl hover:bg-base-content/5 transition-colors">
             {#if renameTL === tl}
               <input
                 bind:value={renameTLValue}
                 onkeydown={(e) => { if (e.key === "Enter") confirmRename(); if (e.key === "Escape") renameTL = null; }}
-                class="flex-1 bg-neutral-800/60 text-white/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-blue-500/40 autofocus"
+                class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-primary/40 autofocus"
                 autofocus
               />
-              <button onclick={confirmRename} class="text-green-400/60 hover:text-green-400 transition-colors p-1" title="Save"><Icon icon="mdi:check" class="size-4" /></button>
-              <button onclick={() => renameTL = null} class="text-white/30 hover:text-white/60 transition-colors p-1" title="Cancel"><Icon icon="mdi:close" class="size-4" /></button>
+              <button onclick={confirmRename} class="text-success/60 hover:text-success transition-colors p-1" title="Save"><Icon icon="mdi:check" class="size-4" /></button>
+              <button onclick={() => renameTL = null} class="text-base-content/30 hover:text-base-content/60 transition-colors p-1" title="Cancel"><Icon icon="mdi:close" class="size-4" /></button>
             {:else}
-              <span class="flex-1 text-xs text-white/60 font-mono truncate">{tl}</span>
-              <button onclick={() => startRename(tl)} class="text-white/20 hover:text-white/60 transition-colors p-1 opacity-0 group-hover:opacity-100" title="Rename"><Icon icon="mdi:pencil-outline" class="size-3.5" /></button>
-              <button onclick={() => deleteTL(tl)} class="text-red-400/30 hover:text-red-400 transition-colors p-1 opacity-0 group-hover:opacity-100" title="Delete"><Icon icon="mdi:delete-outline" class="size-3.5" /></button>
+              <span class="flex-1 text-xs text-base-content/60 font-mono truncate">{tl}</span>
+              <button onclick={() => startRename(tl)} class="text-base-content/20 hover:text-base-content/60 transition-colors p-1 opacity-0 group-hover:opacity-100" title="Rename"><Icon icon="mdi:pencil-outline" class="size-3.5" /></button>
+              <button onclick={() => deleteTL(tl)} class="text-error/30 hover:text-error transition-colors p-1 opacity-0 group-hover:opacity-100" title="Delete"><Icon icon="mdi:delete-outline" class="size-3.5" /></button>
             {/if}
           </div>
         {/each}
@@ -1199,21 +1254,21 @@
     role="dialog"
   >
     <div
-      class="bg-neutral-800/80 border border-white/5 rounded-2xl p-6 w-96 shadow-2xl"
+      class="bg-base-200/80 border border-base-content/10 rounded-2xl p-6 w-96 shadow-2xl"
       onclick={(e) => e.stopPropagation()}
     >
-      <h2 class="text-sm font-bold text-white/70 font-mono mb-5 tracking-wide">Patch Notes</h2>
+      <h2 class="text-sm font-bold text-base-content/70 font-mono mb-5 tracking-wide">Patch Notes</h2>
       {#each patchNotes as note}
         <div class="mb-3 last:mb-0">
           <button
             onclick={() => toggleVersion(note.version)}
-            class="flex items-center gap-2 text-xs font-mono text-white/60 hover:text-white transition-colors w-full text-left"
+            class="flex items-center gap-2 text-xs font-mono text-base-content/60 hover:text-base-content transition-colors w-full text-left"
           >
-            <span class="text-[10px] w-3 text-white/30">{expandedVersion === note.version ? "▼" : "▶"}</span>
+            <span class="text-[10px] w-3 text-base-content/30">{expandedVersion === note.version ? "▼" : "▶"}</span>
             <span class="font-medium">{note.version}</span>
           </button>
           {#if expandedVersion === note.version}
-            <p class="text-xs text-white/40 font-mono leading-relaxed mt-1.5 ml-5 whitespace-pre-line">{note.description}</p>
+            <p class="text-xs text-base-content/40 font-mono leading-relaxed mt-1.5 ml-5 whitespace-pre-line">{note.description}</p>
           {/if}
         </div>
       {/each}
@@ -1222,9 +1277,30 @@
 {/if}
 
 <style>
+  @keyframes slide-in-left {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  :global(.animate-slide-in-left) {
+    animation: slide-in-left 0.2s ease-out;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { text-shadow: 0 0 10px oklch(var(--p)/0.3), 0 0 20px oklch(var(--p)/0.1); }
+    50% { text-shadow: 0 0 18px oklch(var(--p)/0.55), 0 0 36px oklch(var(--p)/0.25); }
+  }
+  .version-btn {
+    color: oklch(var(--bc)/0.55);
+    transition: color 0.2s;
+    animation: glow-pulse 2.5s ease-in-out infinite;
+  }
+  .version-btn:hover {
+    color: oklch(var(--bc)/0.85);
+    animation: glow-pulse 0.8s ease-in-out infinite;
+  }
   :global(.scrollbar-thin) {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.08) transparent;
+    scrollbar-color: oklch(var(--bc)/0.08) transparent;
   }
   :global(.scrollbar-thin::-webkit-scrollbar) {
     width: 4px;
@@ -1233,11 +1309,11 @@
     background: transparent;
   }
   :global(.scrollbar-thin::-webkit-scrollbar-thumb) {
-    background: rgba(255,255,255,0.08);
+    background: oklch(var(--bc)/0.08);
     border-radius: 2px;
   }
   :global(.scrollbar-thin::-webkit-scrollbar-thumb:hover) {
-    background: rgba(255,255,255,0.15);
+    background: oklch(var(--bc)/0.15);
   }
 
   .chapter-content {

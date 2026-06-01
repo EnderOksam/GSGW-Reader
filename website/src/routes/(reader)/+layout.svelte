@@ -293,6 +293,8 @@
     text-align: var(--chapter-align);
     hyphens: var(--chapter-hyphens);
     font-weight: var(--chapter-weight, 400);
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .chapter-content :global(p) {

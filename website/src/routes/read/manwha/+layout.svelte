@@ -7,9 +7,8 @@
 
 <div class="min-h-screen w-full bg-base-100 text-base-content relative">
   {@render children()}
-</div>
 
-<div id="comments" class="mx-auto max-w-4xl px-4 pb-16">
+  <div id="comments" class="mx-auto max-w-4xl px-4 pb-16">
   {#key page.url.pathname}
     <Giscus
       repo="EnderOksam/GSGW-Reader"
@@ -21,9 +20,10 @@
       reactionsEnabled="1"
       emitMetadata="0"
       inputPosition="top"
-      theme="preferred_color_scheme"
+      theme="dark"
       lang="en"
       loading="eager"
     />
   {/key}
+</div>
 </div>
