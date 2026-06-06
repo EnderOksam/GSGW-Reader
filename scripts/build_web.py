@@ -732,16 +732,13 @@ def main():
                 })
 
         elif cbz_files:
-            static_dir = (
+            thumbs_dir = path / "thumbs"
+            static_thumbs_dir = (
                 REPO_ROOT
                 / "website" / "static"
                 / "chapters" / "manwha"
-                / bookTL
+                / bookTL / "thumbs"
             )
-            static_dir.mkdir(parents=True, exist_ok=True)
-
-            thumbs_dir = path / "thumbs"
-            static_thumbs_dir = static_dir / "thumbs"
 
             for i, f in enumerate(cbz_files):
                 try:
@@ -750,17 +747,11 @@ def main():
                 except ValueError:
                     slug = str(i + 1)
 
-                shutil.copy2(
-                    str(path / f),
-                    str(static_dir / f)
-                )
-
                 # Extract thumbnail (first page) — only if missing
                 thumb_path = thumbs_dir / f"{slug}.webp"
                 if not thumb_path.exists():
                     extract_thumbnail(path / f, thumb_path, 0)
 
-                # Copy thumbnail to static build dir
                 if thumb_path.exists():
                     static_thumbs_dir.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(str(thumb_path), str(static_thumbs_dir / f"{slug}.webp"))
@@ -771,38 +762,6 @@ def main():
                     "index": i,
                     "slug": slug,
                     "thumb": f"/chapters/manwha/{bookTL}/thumbs/{slug}.webp",
-                })
-
-    # Scan for root-level CBZ files (legacy "main" TL)
-    manwha_path = (REPO_ROOT / "chapters/manwha").resolve()
-    if manwha_path.exists():
-        cbz_files = sorted(
-            f for f in os.listdir(manwha_path)
-            if f.endswith(".cbz")
-        )
-        if cbz_files:
-            static_dir = (
-                REPO_ROOT
-                / "website" / "static"
-                / "chapters" / "manwha" / "main"
-            )
-            static_dir.mkdir(parents=True, exist_ok=True)
-
-            meta_map.setdefault("manwha", {})
-            meta_map["manwha"].setdefault("main", [])
-            for i, f in enumerate(cbz_files):
-                slug = str(i + 1)
-
-                shutil.copy2(
-                    str(manwha_path / f),
-                    str(static_dir / f)
-                )
-
-                meta_map["manwha"]["main"].append({
-                    "title": f"Chapter {slug}",
-                    "category": f"Chapter {slug}",
-                    "index": i,
-                    "slug": slug,
                 })
 
     META_OUTPUT_PATH.write_text(

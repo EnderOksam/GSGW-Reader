@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { browser } from "$app/environment";
+  import { browser, dev } from "$app/environment";
   import JSZip from "jszip";
   import Icon from "@iconify/svelte";
   import book_meta from "$lib/meta.json";
@@ -37,7 +37,10 @@
 
     (async () => {
       try {
-        const url = `/chapters/manwha/${encodeURIComponent(t)}/${padSlug(s)}.cbz`;
+        const repoBase = "https://raw.githubusercontent.com/EnderOksam/GSGW-Reader/main";
+        const url = dev
+          ? `/chapters/manwha/${encodeURIComponent(t)}/${padSlug(s)}.cbz`
+          : `${repoBase}/chapters/manwha/${encodeURIComponent(t)}/${padSlug(s)}.cbz`;
         const res = await fetch(url);
         if (!res.ok) throw new Error();
         const blob = await res.blob();
