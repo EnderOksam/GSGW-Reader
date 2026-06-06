@@ -2,6 +2,7 @@
   import Icon from "@iconify/svelte";
   import "../../app.css";
   import { page } from "$app/state";
+  import { browser, dev } from "$app/environment";
   import { goto } from "$app/navigation";
 
   let { children } = $props();
@@ -18,9 +19,21 @@
     }
   }
 
+  function getCachedTheme(): string {
+    if (!browser) return "sunset";
+    try {
+      const saved = localStorage.getItem("readerSettings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.theme) return parsed.theme;
+      }
+    } catch {}
+    return "sunset";
+  }
+
   $effect(() => {
     const _ = page.url.href;
-    document.documentElement.setAttribute("data-theme", "sunset");
+    document.documentElement.setAttribute("data-theme", getCachedTheme());
   });
 </script>
 
@@ -52,7 +65,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 </svelte:head>
 
 {#if !isHomePage && !isEditorPage}
-  <div class="fixed top-4 left-4 z-50">
+  <div class="fixed top-4 left-4 z-50 flex gap-2">
     <button
       onclick={handleBack}
       class="btn btn-circle btn-ghost bg-base-300/70 hover:bg-base-300 transition-all shadow-lg"

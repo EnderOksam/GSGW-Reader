@@ -1,9 +1,13 @@
 import os
 import re
 import json
+import shutil
 import subprocess
+import zipfile
 import imagesize
 from pathlib import Path
+from io import BytesIO
+from PIL import Image
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import frontmatter
@@ -588,6 +592,60 @@ def process_task(task, template_str):
 
 
 # =========================================================
+# THUMBNAIL EXTRACTION
+# =========================================================
+
+THUMB_W = 320
+THUMB_H = 240
+
+def extract_thumbnail(cbz_path, output_path, page_index=0):
+    try:
+        with zipfile.ZipFile(cbz_path, "r") as z:
+            names = sorted(
+                n for n in z.namelist()
+                if not n.endswith("/") and re.search(r'\.(png|jpg|jpeg|webp)$', n, re.I)
+            )
+            if not names:
+                return False
+            idx = page_index % len(names)
+            data = z.read(names[idx])
+            img = Image.open(BytesIO(data))
+            # Center crop to 4:3 then resize
+            if img.width / img.height > 4 / 3:
+                crop_w = int(img.height * 4 / 3)
+                crop_h = img.height
+            else:
+                crop_w = img.width
+                crop_h = int(img.width * 3 / 4)
+            left = (img.width - crop_w) // 2
+            top = (img.height - crop_h) // 2
+            img = img.crop((left, top, left + crop_w, top + crop_h))
+            img = img.resize((THUMB_W, THUMB_H), Image.LANCZOS)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            img.save(output_path, "WEBP", quality=80)
+            return True
+    except Exception as e:
+        print(f"  Thumbnail error for {cbz_path.name}: {e}")
+        return False
+
+
+def get_thumb_page_index(thumb_dir, slug):
+    idx_path = thumb_dir / f"{slug}.txt"
+    if idx_path.exists():
+        try:
+            return int(idx_path.read_text().strip())
+        except (ValueError, OSError):
+            pass
+    return 0
+
+
+def save_thumb_page_index(thumb_dir, slug, index):
+    idx_path = thumb_dir / f"{slug}.txt"
+    idx_path.parent.mkdir(parents=True, exist_ok=True)
+    idx_path.write_text(str(index))
+
+
+# =========================================================
 # MAIN
 # =========================================================
 
@@ -601,10 +659,14 @@ def main():
         encoding="utf-8"
     )
 
-    paths = [
-        "chapters/gsgw/fantl",
-        "chapters/gsgw/mtl"
-    ]
+    paths = []
+
+    for root_name in ["chapters/gsgw", "chapters/manwha"]:
+        root_path = (REPO_ROOT / root_name).resolve()
+        if root_path.exists():
+            for d in sorted(os.listdir(root_path)):
+                if (root_path / d).is_dir():
+                    paths.append(os.path.join(root_name, d))
 
     tasks_data = []
 
@@ -617,7 +679,7 @@ def main():
         if not path.exists():
             continue
 
-        master_path = path / "0000.md"
+        master_path = path / "metadata.md"
 
         if not master_path.exists():
             continue
@@ -630,41 +692,88 @@ def main():
         meta_map.setdefault(bookID, {})
         meta_map[bookID].setdefault(bookTL, [])
 
-        files = sorted(
+        md_files = sorted(
             f for f in os.listdir(path)
-            if f.endswith(".md") and f != "0000.md"
+            if f.endswith(".md") and f != "metadata.md"
+        )
+        cbz_files = sorted(
+            f for f in os.listdir(path)
+            if f.endswith(".cbz")
         )
 
-        for file in files:
+        if md_files:
+            for file in md_files:
 
-            post = frontmatter.load(path / file)
+                post = frontmatter.load(path / file)
 
-            slug = post.metadata.get("slug")
+                slug = post.metadata.get("slug")
 
-            if not slug:
-                continue
+                if not slug:
+                    continue
 
-            meta_map[bookID][bookTL].append(post.metadata)
+                meta_map[bookID][bookTL].append(post.metadata)
 
-            out_dir = (
-                OUTPUT_ROOT
-                / str(bookID)
-                / str(bookTL)
-                / str(slug)
+                out_dir = (
+                    OUTPUT_ROOT
+                    / str(bookID)
+                    / str(bookTL)
+                    / str(slug)
+                )
+
+                out_dir.mkdir(
+                    parents=True,
+                    exist_ok=True
+                )
+
+                tasks_data.append({
+                    "content": post.content,
+                    "meta": post.metadata,
+                    "dest": out_dir / "+page.svelte"
+                })
+
+        elif cbz_files:
+            static_dir = (
+                REPO_ROOT
+                / "website" / "static"
+                / "chapters" / "manwha"
+                / bookTL
             )
+            static_dir.mkdir(parents=True, exist_ok=True)
 
-            out_dir.mkdir(
-                parents=True,
-                exist_ok=True
-            )
+            thumbs_dir = path / "thumbs"
+            static_thumbs_dir = static_dir / "thumbs"
 
-            tasks_data.append({
-                "content": post.content,
-                "meta": post.metadata,
-                "dest": out_dir / "+page.svelte"
-            })
+            for i, f in enumerate(cbz_files):
+                try:
+                    stem = Path(f).stem
+                    slug = str(int(stem))
+                except ValueError:
+                    slug = str(i + 1)
 
-    # Scan for CBZ files (manwha/comic chapters)
+                shutil.copy2(
+                    str(path / f),
+                    str(static_dir / f)
+                )
+
+                # Extract thumbnail (first page) — only if missing
+                thumb_path = thumbs_dir / f"{slug}.webp"
+                if not thumb_path.exists():
+                    extract_thumbnail(path / f, thumb_path, 0)
+
+                # Copy thumbnail to static build dir
+                if thumb_path.exists():
+                    static_thumbs_dir.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(str(thumb_path), str(static_thumbs_dir / f"{slug}.webp"))
+
+                meta_map[bookID][bookTL].append({
+                    "title": f"Chapter {slug}",
+                    "category": f"Chapter {slug}",
+                    "index": i,
+                    "slug": slug,
+                    "thumb": f"/chapters/manwha/{bookTL}/thumbs/{slug}.webp",
+                })
+
+    # Scan for root-level CBZ files (legacy "main" TL)
     manwha_path = (REPO_ROOT / "chapters/manwha").resolve()
     if manwha_path.exists():
         cbz_files = sorted(
@@ -672,10 +781,23 @@ def main():
             if f.endswith(".cbz")
         )
         if cbz_files:
+            static_dir = (
+                REPO_ROOT
+                / "website" / "static"
+                / "chapters" / "manwha" / "main"
+            )
+            static_dir.mkdir(parents=True, exist_ok=True)
+
             meta_map.setdefault("manwha", {})
             meta_map["manwha"].setdefault("main", [])
             for i, f in enumerate(cbz_files):
                 slug = str(i + 1)
+
+                shutil.copy2(
+                    str(manwha_path / f),
+                    str(static_dir / f)
+                )
+
                 meta_map["manwha"]["main"].append({
                     "title": f"Chapter {slug}",
                     "category": f"Chapter {slug}",

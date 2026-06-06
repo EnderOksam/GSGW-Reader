@@ -1,19 +1,23 @@
 <script lang="ts">
   import { page } from "$app/state";
+  import { browser } from "$app/environment";
   import JSZip from "jszip";
   import Icon from "@iconify/svelte";
   import book_meta from "$lib/meta.json";
 
-  const REPO = "EnderOksam/GSGW-Reader";
-  const BRANCH = "main";
-
   let tl = $derived(page.params.tl || "main");
   let slug = $derived(page.params.slug || "1");
 
-  let images: string[] = [];
+  let images = $state<string[]>([]);
   let loaded = $state(false);
   let error = $state("");
   let showChapters = $state(false);
+  let showSettings = $state(false);
+  let imageScale = $state(browser ? parseFloat(localStorage.getItem("manwha-scale") ?? "0.7") : 0.7);
+
+  $effect(() => {
+    localStorage.setItem("manwha-scale", String(imageScale));
+  });
 
   interface Chapter { title: string; slug: string; index: number; }
   const meta = book_meta as Record<string, Record<string, Chapter[]>>;
@@ -33,7 +37,7 @@
 
     (async () => {
       try {
-        const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/manwha/${padSlug(s)}.cbz`;
+        const url = `/chapters/manwha/${encodeURIComponent(t)}/${padSlug(s)}.cbz`;
         const res = await fetch(url);
         if (!res.ok) throw new Error();
         const blob = await res.blob();
@@ -102,6 +106,28 @@
     {/if}
   </div>
 
+  <div class="max-md:hidden relative">
+    <div class="tooltip tooltip-bottom" data-tip="Image Size (S)">
+      <button onclick={() => showSettings = !showSettings} class="btn btn-ghost btn-sm btn-square rounded-btn relative z-[60]">
+        <Icon icon="material-symbols:settings-outline-rounded" class="size-5" />
+      </button>
+    </div>
+    {#if showSettings}
+      <div class="fixed inset-0 z-40" onclick={() => showSettings = false}></div>
+      <div class="absolute top-full right-0 mt-2 z-50 bg-base-100 border border-base-content/10 rounded-box shadow-2xl p-4 min-w-48" onclick={(e) => e.stopPropagation()}>
+        <div class="flex flex-col gap-3">
+          <span class="text-xs font-medium">Size: {Math.round(imageScale * 100)}%</span>
+          <input type="range" min="0.5" max="1.5" step="0.05" bind:value={imageScale} class="range range-sm" />
+          <div class="flex justify-between text-[10px] opacity-40 px-0.5">
+            <span>50%</span>
+            <span>70%</span>
+            <span>150%</span>
+          </div>
+        </div>
+      </div>
+    {/if}
+  </div>
+
   <div class="tooltip tooltip-bottom" data-tip="Comments (C)">
     <button onclick={() => document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" })} class="btn btn-ghost btn-sm btn-square rounded-btn">
       <Icon icon="iconamoon:comment" class="size-6" />
@@ -131,7 +157,7 @@
   </aside>
 {/if}
 
-<main class="mx-auto max-w-4xl w-full px-0 sm:px-6 md:px-12 z-0">
+<main class="mx-auto w-full px-0 sm:px-6 md:px-12 z-0" style="max-width: {56 * imageScale}rem">
   {#if error}
     <div class="flex items-center justify-center h-[60dvh] text-base-content/50 text-sm">{error}</div>
   {:else if !loaded}
@@ -150,8 +176,37 @@
   {/if}
 </main>
 
+<footer class="mx-auto w-full px-0 sm:px-6 md:px-12 pb-8 pt-12" style="max-width: {56 * imageScale}rem">
+  <div class="mt-16 flex items-center justify-between border-t border-base-content/10 pt-8">
+    <a
+      href={prevChapter ? `/read/manwha/${tl}/${prevChapter.slug}` : `/book/manwha`}
+      class="btn btn-soft btn-sm gap-2"
+      aria-label={prevChapter ? "Previous Chapter" : "Go Home"}
+    >
+      <Icon icon={prevChapter ? "mage:previous" : "iconamoon:home-light"} class="size-5" />
+      <span class="hidden sm:inline">{prevChapter ? "Prev" : "Home"}</span>
+    </a>
+
+    <span class="text-xs font-mono font-bold opacity-50 tracking-wider">
+      CH. {slug}
+    </span>
+
+    <a
+      href={nextChapter ? `/read/manwha/${tl}/${nextChapter.slug}` : `/book/manwha`}
+      class="btn btn-soft btn-sm gap-2"
+      aria-label={nextChapter ? "Next Chapter" : "Go Home"}
+    >
+      <span class="hidden sm:inline">{nextChapter ? "Next" : "Home"}</span>
+      <Icon icon={nextChapter ? "mage:next" : "iconamoon:home-light"} class="size-5" />
+    </a>
+  </div>
+</footer>
+
 <style>
   :global(body) {
     margin: 0;
+  }
+  main {
+    transition: max-width 0.15s ease-out;
   }
 </style>

@@ -414,3 +414,21 @@ body .reader-container .sticky-window.sticky-window li {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+[data-hide-tweet-meta="true"] .twitter-embed {
+  transform: none !important;
+}
+[data-hide-tweet-meta="true"] .twitter-embed-inner {
+  padding: 0;
+  border-radius: 12px;
+  overflow: visible;
+}
+[data-hide-tweet-meta="true"] .twitter-embed-text,
+[data-hide-tweet-meta="true"] .twitter-embed-stats {
+  display: none !important;
+}
+[data-hide-tweet-meta="true"] .twitter-embed-image,
+[data-hide-tweet-meta="true"] .twitter-embed-grid,
+[data-hide-tweet-meta="true"] .twitter-embed-video {
+  border-radius: 12px;
+}

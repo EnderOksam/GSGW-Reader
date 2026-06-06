@@ -96,6 +96,8 @@ dd {
 html {
   font-family: Georgia, serif;
   color: #1a1a1a;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 sup {
@@ -484,4 +486,94 @@ figcaption {
 
 .hl-orange {
   background: linear-gradient(to bottom, rgba(251, 130, 70, 0.55) 85%, transparent 85%);
+}
+
+/* Window boxes */
+.sticky-window {
+  margin: 1.5em auto;
+  page-break-inside: avoid;
+  max-width: 70%;
+  background: #fef9e0;
+  color: #000000 !important;
+  border: 2px solid #e6c942;
+  border-radius: 3px;
+  padding: 0.6em 1em 0.4em;
+  text-align: center;
+}
+
+.note-window {
+  margin: 1.5em auto;
+  page-break-inside: avoid;
+  max-width: 70%;
+  background: #fef9e0;
+  color: #000000 !important;
+  border: 2px solid #e6c942;
+  border-radius: 3px;
+  padding: 0.6em 1em 0.4em;
+  text-align: left;
+}
+
+.black-window {
+  margin: 1.5em auto;
+  page-break-inside: avoid;
+  max-width: 70%;
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #333333;
+  border-radius: 3px;
+  padding: 0.6em 1em 0.4em;
+  text-align: center;
+}
+
+.system-window {
+  margin: 1.5em auto;
+  page-break-inside: avoid;
+  max-width: 75%;
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 0.5em 1em;
+}
+
+.wiki-window {
+  margin: 1.5em auto;
+  page-break-inside: avoid;
+  max-width: 75%;
+}
+
+/* Underline */
+.underline { text-decoration: underline; }
+
+/* Colored text */
+.text-red { color: #cc2200; }
+.text-blue { color: #2255cc; }
+.text-yellow { color: #bb9900; }
+.text-magenta { color: #aa00aa; }
+.text-green { color: #228800; }
+.text-orange { color: #dd6600; }
+
+/* Large text */
+.text-large { font-size: 1.3em; }
+
+/* Monospace */
+.mono { font-family: Menlo, Monaco, "Courier New", Consolas, monospace; }
+.mono-left { text-align: left; display: block; }
+.mono-right { text-align: right; display: block; }
+
+/* Aligned text */
+.align-left { text-align: left; display: block; }
+.align-right { text-align: right; display: block; }
+
+/* Distorted text — shadow overlay */
+.distorted {
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3), -1px 0 1px rgba(0,0,0,0.15);
+}
+
+/* Braun dialogue */
+.braun-dialogue {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 1.2em;
+  padding: 0.5em 1em;
+  margin: 0;
+  page-break-inside: avoid;
 }

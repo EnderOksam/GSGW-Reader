@@ -216,11 +216,11 @@
 <dialog bind:this={modals.settings} class="modal sm:modal-middle modal-bottom">
   <div class="modal-box bg-base-100 rounded-box">
     <div class="flex justify-between items-center mb-6 border-b border-base-content/10 pb-4">
-      <h3 class="font-bold text-lg flex items-center gap-2 text-primary">
+      <h3 class="font-bold text-lg flex items-center gap-2 text-primary pt-0.5">
         <Icon icon="material-symbols:settings-outline-rounded" /> Settings
       </h3>
       <div class="flex gap-2">
-        <button class="btn btn-xs btn-ghost text-error rounded-btn" onclick={() => prefs.reset()}>Reset</button>
+        <button class="btn btn-sm btn-ghost text-error rounded-btn" onclick={() => prefs.reset()}>Reset</button>
         <form method="dialog">
           <button class="btn btn-sm btn-circle btn-ghost">✕</button>
         </form>
@@ -258,6 +258,12 @@
               </optgroup>
             {/each}
           </select>
+        </div>
+        <div class="form-control">
+          <label class="label cursor-pointer gap-3">
+            <span class="label-text text-xs">Minimal embeds</span>
+            <input type="checkbox" class="toggle toggle-primary toggle-xs" bind:checked={prefs.config.hideTweetMetadata} />
+          </label>
         </div>
       </div>
 

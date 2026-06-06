@@ -10,7 +10,7 @@ TARGET_DIR = "./chapters/lotm/oldtl"  # Where to copy TO
 def sync_discussion_key():
     # Get list of md files
     try:
-        files = sorted([f for f in os.listdir(SOURCE_DIR) if f.endswith(".md") and f != "0000.md"])
+        files = sorted([f for f in os.listdir(SOURCE_DIR) if f.endswith(".md") and f != "metadata.md"])
     except FileNotFoundError:
         print(f"Error: Source directory '{SOURCE_DIR}' not found.")
         return

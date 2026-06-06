@@ -60,9 +60,9 @@
   <title>GSGW-Reader</title>
 </svelte:head>
 
-<a href="#" onclick={(e) => { e.preventDefault(); showBannerAgain(); }} class="fixed top-4 left-4 z-50 text-white/5 hover:text-white/20 transition-colors text-sm font-mono no-underline" title="Show banner">
+<button onclick={() => showBannerAgain()} class="fixed top-4 left-4 z-50 text-white/5 hover:text-white/20 transition-colors text-sm font-mono" title="Show banner">
   #
-</a>
+</button>
 
 {#if showBanner}
   <div class="fixed top-0 left-0 right-0 z-50 flex items-center justify-center gap-4 bg-[#0d0d0d]/95 backdrop-blur-sm border-b border-[#fb8462]/20 px-4 py-3 text-sm text-white/80">

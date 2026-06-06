@@ -30,6 +30,7 @@
       indent: false,
       navbarVisible: true,
       navbarSticky: true,
+      hideTweetMetadata: false,
     });
 
     constructor() {
@@ -65,6 +66,7 @@
           navbarVisible: true,
       navbarSticky: true,
       solidBackground: true,
+      hideTweetMetadata: false,
         };
       }
     }
@@ -207,6 +209,7 @@
 
 <div
   bind:this={mainContainer}
+  data-hide-tweet-meta={prefs.config.hideTweetMetadata}
   class="min-h-screen w-full bg-base-100 text-base-content relative transition-colors duration-200"
   style="
     --chapter-font: {prefs.config.font}, serif; 

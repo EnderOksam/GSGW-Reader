@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { onMount } from "svelte";
+  import { dev } from "$app/environment";
   import Icon from "@iconify/svelte";
   import imgLotmCover from "$lib/assets/web-lotm-cover.jpg";
   import imgtempCover from "$lib/assets/web-coi-cover.jpg";
@@ -93,10 +94,37 @@
 
   const bookSlug = $derived(page.params.book || "gsgw");
   const book = $derived(bookConfigs[bookSlug] || bookConfigs["gsgw"]);
+  const isTemp = $derived(bookSlug === "temp");
+  const isManwha = $derived(bookSlug === "manwha");
 
   let searchQuery = $state("");
-  let selectedTL = $state("");
+  let selectedTags = $state<string[]>([]);
   let isReversed = $state(false);
+
+  const allTags = ["Daydream Inc.", "Disaster Management Bureau", "Church of the Luminous Unknown", "Exploration Record"];
+
+  const tagColors: Record<string, string> = {
+    "Daydream Inc.": "text-red-400 border-red-400/30 bg-red-400/10",
+    "Disaster Management Bureau": "text-blue-400 border-blue-400/30 bg-blue-400/10",
+    "Church of the Luminous Unknown": "text-yellow-400 border-yellow-400/30 bg-yellow-400/10",
+    "Exploration Record": "text-base-content/60 border-base-content/20 bg-base-content/5",
+  };
+
+  const tagColorsSolid: Record<string, string> = {
+    "Daydream Inc.": "bg-red-500/20 text-red-300 border-red-500/30",
+    "Disaster Management Bureau": "bg-blue-500/20 text-blue-300 border-blue-500/30",
+    "Church of the Luminous Unknown": "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+    "Exploration Record": "bg-base-content/10 text-base-content/60 border-base-content/20",
+  };
+
+  function toggleTag(tag: string) {
+    if (selectedTags.includes(tag)) {
+      selectedTags = selectedTags.filter((t) => t !== tag);
+    } else {
+      selectedTags = [...selectedTags, tag];
+    }
+  }
+  let selectedTL = $state("");
 
   $effect(() => {
     const tls = Object.keys(meta[bookSlug] || {});
@@ -123,6 +151,25 @@
 
   const isContinueChapter = (ch: Chapter) =>
     continueData?.slug === ch.slug && continueData?.tl === selectedTL;
+
+  const records = [
+    { title: "TITLE", excerpt: "short description", tags: ["Exploration Record"], img: true },
+    { title: "TITLE", excerpt: "short description", tags: ["Exploration Record"], img: true },
+    { title: "TITLE", excerpt: "short description", tags: ["Disaster Management Bureau"], img: true },
+    { title: "TITLE", excerpt: "short description", tags: ["Exploration Record"], img: true },
+    { title: "TITLE", excerpt: "short description", tags: ["Daydream Inc."], img: true },
+    { title: "TITLE", excerpt: "short description", tags: ["Church of the Luminous Unknown"], img: true },
+    { title: "TITLE", excerpt: "short description", tags: ["Exploration Record"], img: true },
+    { title: "TITLE", excerpt: "short description", tags: ["Disaster Management Bureau"], img: true },
+  ];
+
+  const filteredRecords = $derived(
+    records.filter((r) => {
+      const matchesSearch = !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTags = selectedTags.length === 0 || selectedTags.some((t) => r.tags.includes(t));
+      return matchesSearch && matchesTags;
+    }),
+  );
 
   onMount(() => {
     const stored = localStorage.getItem("lastRead");
@@ -177,45 +224,70 @@
       </div>
 
       <div class="flex items-center gap-4 mt-6 text-xs font-mono opacity-40">
-        <span class="flex items-center gap-1.5">
-          <Icon icon="material-symbols:auto-stories" class="size-3.5" />
-          {chapters.length} {chapters.length === 1 ? "chapter" : "chapters"}
-        </span>
-        {#if availableTLs.length > 1}
-          <span class="w-px h-3 bg-base-content/20"></span>
+        {#if isTemp}
           <span class="flex items-center gap-1.5">
-            <Icon icon="material-symbols:translate" class="size-3.5" />
-            {availableTLs.length} {availableTLs.length === 1 ? "translation" : "translations"}
+            <Icon icon="material-symbols:auto-stories" class="size-3.5" />
+            {records.length} {records.length === 1 ? "record" : "records"}
           </span>
+        {:else}
+          <span class="flex items-center gap-1.5">
+            <Icon icon="material-symbols:auto-stories" class="size-3.5" />
+            {chapters.length} {chapters.length === 1 ? "chapter" : "chapters"}
+          </span>
+          {#if availableTLs.length > 1}
+            <span class="w-px h-3 bg-base-content/20"></span>
+            <span class="flex items-center gap-1.5">
+              <Icon icon="material-symbols:translate" class="size-3.5" />
+              {availableTLs.length} {availableTLs.length === 1 ? "translation" : "translations"}
+            </span>
+          {/if}
         {/if}
       </div>
     </div>
 
     <div class="relative w-full px-6 md:px-8 flex gap-2 mb-5">
-      <a
-        href={continueData
-          ? `../../read/${continueData.book}/${continueData.tl}/${continueData.slug}`
-          : "#"}
-        onclick={handleReadClick}
-        class="btn {book.button_primary} grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5"
-        data-sveltekit-preload-data
-      >
-        <Icon icon={continueData ? "material-symbols:resume" : "material-symbols:menu-book-outline-rounded"} class="size-5 shrink-0" />
-        <span class="flex flex-col items-start leading-tight">
-          <span>{continueData ? "Continue" : "Start Reading"}</span>
-          {#if continueData}
-            <span class="text-[10px] font-normal opacity-70">Chapter {continueData.slug}</span>
-          {/if}
-        </span>
-      </a>
-      {#if book.external_link}
-        <a href={book.external_link} target="_blank" rel="noopener noreferrer" class="btn {book.button_secondary} shadow-lg shrink-0 h-auto min-h-[2.75rem] py-2.5 aspect-square" aria-label="Official source">
-          <Icon icon="material-symbols:open-in-new" class="size-5" />
+      {#if isTemp}
+        <a
+          href="#"
+          onclick={(e) => e.preventDefault()}
+          class="btn {book.button_primary} grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5"
+        >
+          <Icon icon="material-symbols:menu-book-outline-rounded" class="size-5 shrink-0" />
+          <span class="flex flex-col items-start leading-tight">
+            <span>Read a Record</span>
+          </span>
         </a>
+        <button
+          disabled
+          class="btn btn-ghost grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5 opacity-30 cursor-not-allowed"
+        >
+          <Icon icon="material-symbols:resume" class="size-5 shrink-0" />
+          <span class="flex flex-col items-start leading-tight">
+            <span>Continue Reading</span>
+          </span>
+        </button>
       {:else}
-        <a href="../../download" class="btn {book.button_secondary} shadow-lg shrink-0 h-auto min-h-[2.75rem] py-2.5 aspect-square" aria-label="Download">
-          <Icon icon="material-symbols:download" class="size-5" />
+        <a
+          href={continueData
+            ? `../../read/${continueData.book}/${continueData.tl}/${continueData.slug}`
+            : "#"}
+          onclick={handleReadClick}
+          class="btn {book.button_primary} grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5"
+          data-sveltekit-preload-data
+        >
+          <Icon icon={continueData ? "material-symbols:resume" : "material-symbols:menu-book-outline-rounded"} class="size-5 shrink-0" />
+          <span class="flex flex-col items-start leading-tight">
+            <span>{continueData ? "Continue" : "Start Reading"}</span>
+            {#if continueData}
+              <span class="text-[10px] font-normal opacity-70">Chapter {continueData.slug}</span>
+            {/if}
+          </span>
         </a>
+        {#if book.external_link}
+          <a href={book.external_link} target="_blank" rel="noopener noreferrer" class="btn {book.button_secondary} shadow-lg shrink-0 h-auto min-h-[2.75rem] py-2.5 aspect-square" aria-label="Official source">
+            <Icon icon="material-symbols:open-in-new" class="size-5" />
+          </a>
+        {/if}
       {/if}
     </div>
 
@@ -292,84 +364,243 @@
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
   </dialog>
 
-  <!-- Right: Chapter List -->
+  <!-- Right: Record List -->
   <div class="md:w-[65vw] w-full min-h-dvh bg-base-100/50">
-    <div class="sticky top-0 z-10 bg-base-100/80 backdrop-blur-lg border-b border-base-content/5">
-      <div class="flex items-center gap-2 p-3 md:p-4">
-        <div class="relative grow">
-          <Icon icon="material-symbols:search-rounded" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-30" />
-          <input
-            type="search"
-            bind:value={searchQuery}
-            placeholder="Search chapters..."
-            class="input input-sm input-bordered w-full pl-9 rounded-xl bg-base-200/50 focus:bg-base-200 transition-colors"
-          />
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <button
-            class="btn btn-sm btn-square rounded-xl {isReversed ? `btn-ghost text-${book.accent_color}` : 'bg-base-200/70'}"
-            onclick={() => (isReversed = !isReversed)}
-            aria-label="Toggle order"
-          >
-            <Icon
-              icon="material-symbols:sort-rounded"
-              class="size-5 transition-transform duration-300 {isReversed ? 'rotate-180' : ''}"
+    {#if isTemp}
+      <div class="p-3 md:p-4">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="relative grow">
+            <Icon icon="material-symbols:search-rounded" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-30" />
+            <input
+              type="search"
+              bind:value={searchQuery}
+              placeholder="Search by name..."
+              class="input input-sm input-bordered w-full pl-9 rounded-xl bg-base-200/50 focus:bg-base-200 transition-colors"
             />
-          </button>
-          <select class="select select-sm select-bordered rounded-xl bg-base-200/50 min-w-[5rem]" bind:value={selectedTL}>
-            {#each availableTLs as tl}
-              <option value={tl}>{tl.toUpperCase()}</option>
-            {/each}
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="p-3 md:p-4 space-y-1.5">
-      {#if filteredChapters().length > 0}
-        {#each filteredChapters() as ch}
-          {@const isCurr = isContinueChapter(ch)}
-          <a
-            href="../../read/{bookSlug}/{selectedTL}/{ch.slug}"
-            class="group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-base-200/30 hover:bg-base-200/70 border transition-all duration-200 relative overflow-hidden {isCurr ? 'border-accent/20 bg-accent/5 hover:bg-accent/10' : 'border-transparent hover:border-base-content/10'}"
-          >
-            {#if isCurr}
-              <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-accent rounded-full"></div>
-            {/if}
-            <span class="text-xs md:text-sm font-mono opacity-40 tabular-nums shrink-0 leading-none w-24 text-right mr-2 whitespace-nowrap">
-              Chapter {ch.slug}
-            </span>
-            <div class="flex flex-col min-w-0 grow">
-              <span class="text-sm md:text-base font-bold truncate transition-colors {isCurr ? 'text-accent' : ''} group-hover:text-accent flex items-center gap-2">
-                {ch.title}
-                {#if ch.category}
-                  <span class="ml-auto badge badge-xs badge-ghost font-mono tracking-wider opacity-70">
-                    {ch.category}
-                  </span>
-                {/if}
-              </span>
-              <div class="flex items-center gap-2 mt-1">
-                {#if isCurr}
-                  <span class="inline-flex items-center gap-1 text-[10px] font-mono text-accent">
-                    <Icon icon="material-symbols:resume" class="size-3" />
-                    In progress
-                  </span>
-                {/if}
-              </div>
-            </div>
-            <Icon icon="material-symbols:chevron-right-rounded" class="size-5 opacity-0 -translate-x-2 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-200 shrink-0" />
-          </a>
-        {/each}
-      {:else}
-        <div class="flex flex-col items-center justify-center py-28 opacity-25 gap-4">
-          <Icon icon="tabler:ghost" class="size-14" />
-          <div class="text-center">
-            <p class="text-lg font-bold">No chapters found</p>
-            <p class="text-sm opacity-60 mt-1">Try adjusting your search</p>
           </div>
         </div>
-      {/if}
-    </div>
+        <div class="flex flex-wrap gap-1.5 mb-4">
+          {#each allTags as tag}
+            <button
+              class="badge badge-sm gap-1 cursor-pointer transition-all border {selectedTags.includes(tag) ? tagColorsSolid[tag] : tagColors[tag]}"
+              onclick={() => toggleTag(tag)}
+            >
+              {#if selectedTags.includes(tag)}
+                <Icon icon="material-symbols:close-rounded" class="size-3" />
+              {/if}
+              {tag}
+            </button>
+          {/each}
+          {#if selectedTags.length > 0}
+            <button class="badge badge-sm cursor-pointer transition-all border text-base-content/40 border-base-content/20 hover:text-base-content/70" onclick={() => (selectedTags = [])}>
+              Clear
+            </button>
+          {/if}
+        </div>
+        <h2 class="text-sm font-bold opacity-60 uppercase tracking-widest mb-4">Records</h2>
+        {#if filteredRecords.length > 0}
+          <div class="gallery-grid">
+            {#each filteredRecords as entry}
+            <a
+              href="#"
+              onclick={(e) => e.preventDefault()}
+              class="gallery-card group relative flex flex-col rounded-xl bg-base-200/40 border border-base-content/10 overflow-hidden hover:border-base-content/30 hover:shadow-lg transition-all duration-300"
+            >
+              <div class="aspect-[16/9] w-full bg-base-300/50 flex items-center justify-center shrink-0">
+                <Icon icon="material-symbols:image-outline-rounded" class="size-8 opacity-20" />
+              </div>
+              <div class="flex flex-col gap-2 p-4 grow">
+                <h3 class="text-sm font-bold leading-snug group-hover:text-primary transition-colors">{entry.title}</h3>
+                <p class="text-xs opacity-50 leading-relaxed line-clamp-3">{entry.excerpt}</p>
+                <div class="flex flex-wrap gap-1.5 mt-auto pt-2">
+                  {#each entry.tags as tag}
+                    <span class="badge badge-xs border font-mono tracking-wider {tagColorsSolid[tag]}">{tag}</span>
+                  {/each}
+                </div>
+              </div>
+            </a>
+          {/each}
+          </div>
+        {:else}
+          <div class="flex flex-col items-center justify-center py-28 opacity-25 gap-4">
+            <Icon icon="tabler:ghost" class="size-14" />
+            <div class="text-center">
+              <p class="text-lg font-bold">No records found</p>
+              <p class="text-sm opacity-60 mt-1">Try a different tag</p>
+            </div>
+          </div>
+        {/if}
+      </div>
+    {:else if isManwha}
+      <div class="sticky top-0 z-10 bg-base-100/80 backdrop-blur-lg border-b border-base-content/5">
+        <div class="flex items-center gap-2 p-3 md:p-4">
+          <div class="relative grow">
+            <Icon icon="material-symbols:search-rounded" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-30" />
+            <input
+              type="search"
+              bind:value={searchQuery}
+              placeholder="Search chapters..."
+              class="input input-sm input-bordered w-full pl-9 rounded-xl bg-base-200/50 focus:bg-base-200 transition-colors"
+            />
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <button
+              class="btn btn-sm btn-square rounded-xl {isReversed ? 'btn-ghost text-accent' : 'bg-base-200/70'}"
+              onclick={() => (isReversed = !isReversed)}
+              aria-label="Toggle order"
+            >
+              <Icon
+                icon="material-symbols:sort-rounded"
+                class="size-5 transition-transform duration-300 {isReversed ? 'rotate-180' : ''}"
+              />
+            </button>
+            <select class="select select-sm select-bordered rounded-xl bg-base-200/50 min-w-[5rem]" bind:value={selectedTL}>
+              {#each availableTLs as tl}
+                <option value={tl}>{tl.toUpperCase()}</option>
+              {/each}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 md:p-4">
+        {#if filteredChapters().length > 0}
+          <div class="flex flex-col gap-1">
+            {#each filteredChapters() as ch}
+              {@const isCurr = isContinueChapter(ch)}
+              <a
+                href="../../read/{bookSlug}/{selectedTL}/{ch.slug}"
+                class="chapter-row group flex items-center gap-4 p-3 rounded-xl bg-base-200/30 border border-transparent hover:border-base-content/10 hover:bg-base-200/60 transition-all duration-200 {isCurr ? 'bg-accent/5 border-accent/20' : ''}"
+              >
+                <div class="relative w-32 h-24 shrink-0 rounded-lg overflow-hidden bg-base-300/60">
+                  {#if ch.thumb}
+                    <img
+                      src={ch.thumb}
+                      alt=""
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      loading="lazy"
+                    />
+                  {:else}
+                    <div class="w-full h-full flex items-center justify-center">
+                      <Icon icon="material-symbols:image-outline-rounded" class="size-6 opacity-20" />
+                    </div>
+                  {/if}
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-2xl font-bold group-hover:text-accent transition-colors truncate">
+                    {ch.title}
+                  </span>
+                </div>
+                {#if isCurr}
+                  <span class="ml-auto badge badge-xs badge-accent gap-1 shrink-0">
+                    <Icon icon="material-symbols:resume" class="size-3" />
+                    Reading
+                  </span>
+                {/if}
+                <Icon icon="material-symbols:chevron-right-rounded" class="size-5 opacity-0 -translate-x-2 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-200 shrink-0 {isCurr ? 'opacity-30' : ''}" />
+              </a>
+            {/each}
+          </div>
+        {:else}
+          <div class="flex flex-col items-center justify-center py-28 opacity-25 gap-4">
+            <Icon icon="tabler:ghost" class="size-14" />
+            <div class="text-center">
+              <p class="text-lg font-bold">No chapters found</p>
+              <p class="text-sm opacity-60 mt-1">Try adjusting your search</p>
+            </div>
+          </div>
+        {/if}
+      </div>
+    {:else}
+      <div class="sticky top-0 z-10 bg-base-100/80 backdrop-blur-lg border-b border-base-content/5">
+        <div class="flex items-center gap-2 p-3 md:p-4">
+          <div class="relative grow">
+            <Icon icon="material-symbols:search-rounded" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-30" />
+            <input
+              type="search"
+              bind:value={searchQuery}
+              placeholder="Search chapters..."
+              class="input input-sm input-bordered w-full pl-9 rounded-xl bg-base-200/50 focus:bg-base-200 transition-colors"
+            />
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <button
+              class="btn btn-sm btn-square rounded-xl {isReversed ? `btn-ghost text-${book.accent_color}` : 'bg-base-200/70'}"
+              onclick={() => (isReversed = !isReversed)}
+              aria-label="Toggle order"
+            >
+              <Icon
+                icon="material-symbols:sort-rounded"
+                class="size-5 transition-transform duration-300 {isReversed ? 'rotate-180' : ''}"
+              />
+            </button>
+            <select class="select select-sm select-bordered rounded-xl bg-base-200/50 min-w-[5rem]" bind:value={selectedTL}>
+              {#each availableTLs as tl}
+                <option value={tl}>{tl.toUpperCase()}</option>
+              {/each}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 md:p-4 space-y-1.5">
+        {#if filteredChapters().length > 0}
+          {#each filteredChapters() as ch}
+            {@const isCurr = isContinueChapter(ch)}
+            <a
+              href="../../read/{bookSlug}/{selectedTL}/{ch.slug}"
+              class="group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-base-200/30 hover:bg-base-200/70 border transition-all duration-200 relative overflow-hidden {isCurr ? 'border-accent/20 bg-accent/5 hover:bg-accent/10' : 'border-transparent hover:border-base-content/10'}"
+            >
+              {#if isCurr}
+                <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-accent rounded-full"></div>
+              {/if}
+              <span class="text-xs md:text-sm font-mono opacity-40 tabular-nums shrink-0 leading-none w-24 text-right mr-2 whitespace-nowrap">
+                Chapter {ch.slug}
+              </span>
+              <div class="flex flex-col min-w-0 grow">
+                <span class="text-sm md:text-base font-bold truncate transition-colors {isCurr ? 'text-accent' : ''} group-hover:text-accent flex items-center gap-2">
+                  {ch.title}
+                  {#if ch.category}
+                    <span class="ml-auto badge badge-xs badge-ghost font-mono tracking-wider opacity-70">
+                      {ch.category}
+                    </span>
+                  {/if}
+                </span>
+                <div class="flex items-center gap-2 mt-1">
+                  {#if isCurr}
+                    <span class="inline-flex items-center gap-1 text-[10px] font-mono text-accent">
+                      <Icon icon="material-symbols:resume" class="size-3" />
+                      In progress
+                    </span>
+                  {/if}
+                </div>
+              </div>
+              <Icon icon="material-symbols:chevron-right-rounded" class="size-5 opacity-0 -translate-x-2 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-200 shrink-0" />
+            </a>
+          {/each}
+        {:else}
+          <div class="flex flex-col items-center justify-center py-28 opacity-25 gap-4">
+            <Icon icon="tabler:ghost" class="size-14" />
+            <div class="text-center">
+              <p class="text-lg font-bold">No chapters found</p>
+              <p class="text-sm opacity-60 mt-1">Try adjusting your search</p>
+            </div>
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 </main>
+
+<style>
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.75rem;
+  }
+  .chapter-row img {
+    display: block;
+  }
+</style>

@@ -6,21 +6,29 @@
   import JSZip from "jszip";
   import readerCss from "../../../../routes/(reader)/reader.css?url";
 
-  let theme = $state("sunset");
+  function loadCachedTheme(): string {
+    if (!browser) return "sunset";
+    try {
+      const saved = localStorage.getItem("readerSettings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.theme) return parsed.theme;
+      }
+    } catch {}
+    return "sunset";
+  }
+
+  let theme = $state(loadCachedTheme());
   let showThemeMenu = $state(false);
   let themeBtn: HTMLButtonElement;
 
   const THEMES = ["sunset", "light", "dark", "retro", "night", "business", "black", "dracula", "cyberpunk"];
 
-  onMount(() => {
-    const saved = localStorage.getItem("editor-theme");
-    if (saved) theme = saved;
-    document.documentElement.setAttribute("data-theme", theme);
-  });
-
   $effect(() => {
     if (browser) {
-      localStorage.setItem("editor-theme", theme);
+      const settings = JSON.parse(localStorage.getItem("readerSettings") || "{}");
+      settings.theme = theme;
+      localStorage.setItem("readerSettings", JSON.stringify(settings));
       document.documentElement.setAttribute("data-theme", theme);
     }
   });
@@ -471,7 +479,7 @@
         if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
         const data = await res.json();
         const files: string[] = data
-          .filter((f: any) => f.name.endsWith(".md") && f.name !== "0000.md")
+          .filter((f: any) => f.name.endsWith(".md") && f.name !== "metadata.md")
           .map((f: any) => f.name)
           .sort();
         chapters = files;

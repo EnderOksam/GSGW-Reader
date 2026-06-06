@@ -1,166 +1,346 @@
 import os
 import re
+import json
 import subprocess
+import urllib.request
 import frontmatter
 import datetime
-from collections import defaultdict
+from io import BytesIO
 from pathlib import Path
+from PIL import Image
 
-# --- CONFIGURATION ---
 SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_ROOT = SCRIPT_DIR.parent
 
-# Absolute path to CSS (Fixes Pandoc "does not exist" error)
 CSS_PATH = SCRIPT_DIR / "epub.css"
-
-# Path to your actual images folder
 IMG_ROOT = REPO_ROOT / "images"
 
-# Paths to process
-paths = [
-    "../chapters/gsgw/fantl/",
-    "../chapters/gsgw/mtl/",
-    "../chapters/temp/tempfolder/",
-]
-
-# Ensure output directory exists
 OUTPUT_DIR = SCRIPT_DIR / "epub"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
+TWITTER_IMG_DIR = OUTPUT_DIR / "twitter_images"
+TWITTER_IMG_DIR.mkdir(exist_ok=True)
+
 today = datetime.date.today().strftime("%B %d, %Y")
+CHAPTERS_DIR = REPO_ROOT / "chapters" / "gsgw"
 
-def strip_wiki_window(text):
-    text = re.sub(r'\+[-+]+\n(.*?)\n[-+]+\+', r'\1', text, flags=re.DOTALL)
-    text = re.sub(r'&[-]+\n(.*?)\n[-]+&', r'\1', text, flags=re.DOTALL)
-    text = re.sub(r'&\$\n(.*?)\n\$&', r'\1', text, flags=re.DOTALL)
-    text = re.sub(r'![-]+\n(.*?)\n[-]+!', r'\1', text, flags=re.DOTALL)
-    text = re.sub(r'!\$\n(.*?)\n\$!', r'\1', text, flags=re.DOTALL)
-    return text
+TWITTER_RE = re.compile(
+    r"https?://(?:x|twitter)\.com/([A-Za-z0-9_]+)/status/(\d+)(?:/photo/(\d+))?(?:\?[^\s<>\"'\)]*)?"
+)
 
-for rel_path in paths:
-    # Convert relative path to absolute
-    path = str((SCRIPT_DIR / rel_path).resolve()) + os.sep
-    
-    if not os.path.exists(path):
-        print(f"Skipping: {path} (Not found)")
-        continue
+UA = "GSGW-Reader/1.0"
 
-    print(f"{'='*100}\n\n{'-'*10} Starting build for: {path} {'-'*10}")
-    
-    files = [f for f in os.listdir(path) if f.endswith(".md") and f != "0000.md"]
-    chapters = defaultdict(list)
 
-    for file in files:
-        post = frontmatter.load(os.path.join(path, file))
-        metadata = post.metadata
-        content = post.content
-        chapters[metadata["section"]].append({**metadata, "content": content})
+TWEET_CACHE_PATH = TWITTER_IMG_DIR / "cache.json"
 
-    print(f"{'-'*5}> Indexed {len(files)} files across {len(chapters)} sections.")
-    
-    master_file = os.path.join(path, "0000.md")
-    if not os.path.exists(master_file):
-        print(f"Error: 0000.md missing in {path}")
-        continue
-        
-    masterMD = frontmatter.load(master_file)
-    masterMD.content = masterMD.content.replace("{{DATE}}", today)
 
-    print(f"{'-'*5}> Replacing Sections")
-    all_content = ""
-    for section in chapters:
-        chapters[section].sort(key=lambda x: int(x["index"]))
-        print(f"Processing section: {section} ({len(chapters[section])} chapters)")
-        content = ""
-        for chapter_data in chapters[section]:
-            ch_text = strip_wiki_window(chapter_data["content"].strip())
-            ch_text = re.sub(r'@_@(.*?)@_@', r'<span class="glitch-subtle">\1</span>', ch_text)
-            ch_text = re.sub(r'(?<!\\)_(.*?)(?<!\\)_', r'[\1]{.underline}', ch_text)
-            ch_text = re.sub(r'(?<!\\)~(.*?)(?<!\\)~', r'~~\1~~', ch_text)
-            ch_text = re.sub(r'@ll@(.*?)@ll@', r'<span class="mono mono-left">\1</span>', ch_text)
-            ch_text = re.sub(r'@rr@(.*?)@rr@', r'<span class="mono mono-right">\1</span>', ch_text)
-            ch_text = re.sub(r'#y(.*?)y#', r'<span class="text-yellow">\1</span>', ch_text)
-            ch_text = re.sub(r'#o(.*?)o#', r'<span class="text-orange">\1</span>', ch_text)
-            ch_text = re.sub(r'#f#(.*?)#f#', r'<span class="text-faded">\1</span>', ch_text)
-            ch_text = re.sub(r'#f>#(.*?)#f>#', r'<span class="text-fade-right">\1</span>', ch_text)
-            ch_text = re.sub(r'#f<#(.*?)#f<#', r'<span class="text-fade-left">\1</span>', ch_text)
-            ch_text = re.sub(r'#\^#(.*?)#\^#', r'<span class="text-grow">\1</span>', ch_text)
-            ch_text = re.sub(r'#v#(.*?)#v#', r'<span class="text-grow">\1</span>', ch_text)
-            ch_text = re.sub(r';r(.*?)r;', r'<span class="hl-red">\1</span>', ch_text)
-            ch_text = re.sub(r';b(.*?)b;', r'<span class="hl-blue">\1</span>', ch_text)
-            ch_text = re.sub(r';y(.*?)y;', r'<span class="hl-yellow">\1</span>', ch_text)
-            ch_text = re.sub(r';p(.*?)p;', r'<span class="hl-magenta">\1</span>', ch_text)
-            ch_text = re.sub(r';g(.*?)g;', r'<span class="hl-green">\1</span>', ch_text)
-            ch_text = re.sub(r';o(.*?)o;', r'<span class="hl-orange">\1</span>', ch_text)
-            ch_text = re.sub(r'@l@(.*?)@l@', r'<span class="align-left">\1</span>', ch_text)
-            ch_text = re.sub(r'@r@(.*?)@r@', r'<span class="align-right">\1</span>', ch_text)
-            content += f"""{ch_text}
-
-___
-- [Read Comments](https://github.com/Bittu5134/LOTM-Reader/discussions/{chapter_data.get("discussion", "")})
-- [Discord](https://discord.gg/XmzJVsyuTQ)
-
-"""
-        all_content += f"\n\n{content}"
-
-    bookTitle = masterMD["title"][0]["text"]
-    bookID = masterMD["metaBook"]
-    bookTL = masterMD["metaTl"]
-    masterMD.content += all_content
-
-    print(f"{'-'*5}> Producing Epubs")
-
-    for build_type in ["Default", "Legacy"]:
-        # Match images to the actual folder structure you provided
-        if build_type == "Default":
-            img_format = ".webp"
-            epub_version = "epub3"
-        else:
-            img_format = ".jpg"
-            epub_version = "epub2"
-
-        current_content = masterMD.content
-        current_content = current_content.replace("{{TYPE}}", build_type)
-        
-        # Logic to swap relative image paths in text to absolute paths for Pandoc
-        current_content = current_content.replace("../../../images", str(IMG_ROOT.as_posix()))
-        current_content = re.sub(r"\.(jpe?g|png|webp)", img_format, current_content)
-
-        epub_filename = f"{bookTitle} - {bookTL} [{build_type}].epub"
-        md_filename = f"{bookID}_{bookTL}_{build_type}.md"
-
-        epub_path = OUTPUT_DIR / epub_filename
-        md_path = OUTPUT_DIR / md_filename
-
-        temp_post = frontmatter.Post(current_content, **masterMD.metadata)
-        with open(md_path, "w", encoding="utf-8") as f:
-            f.write(frontmatter.dumps(temp_post))
-
-        print(f"\nConverting to {build_type} ({epub_version})...")
-
-        cover_path = IMG_ROOT / bookID / f"cover{img_format}"
-
-        cmd = [
-            "pandoc",
-            str(md_path),
-            "-o", str(epub_path),
-            f"--to={epub_version}",
-            "--css", str(CSS_PATH),
-            "--toc",
-            "--toc-depth=3",
-            "--split-level=2",
-            "--epub-title-page=false",
-        ]
-
-        if cover_path.exists():
-            cmd.append(f"--epub-cover-image={str(cover_path)}")
-        else:
-            print(f"::warning:: Cover image not found at {cover_path}")
-
+def _load_tweet_cache() -> dict:
+    if TWEET_CACHE_PATH.exists():
         try:
-            subprocess.run(cmd, check=True)
-            print(f"Done! {build_type} EPUB available at: {epub_path}")
-        except subprocess.CalledProcessError as e:
-            print(f"Pandoc failed for {build_type}: {e}")
+            with open(str(TWEET_CACHE_PATH), "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
 
-    print("")
+
+def _save_tweet_cache(cache: dict) -> None:
+    with open(str(TWEET_CACHE_PATH), "w", encoding="utf-8") as f:
+        json.dump(cache, f, ensure_ascii=False)
+
+
+def resolve_twitter_images(text: str) -> str:
+    tweet_cache = _load_tweet_cache()
+
+    def _replace(m):
+        user = m.group(1)
+        tweet_id = m.group(2)
+        photo_index = int(m.group(3) or 1)
+
+        cache_key = f"{tweet_id}_{photo_index}"
+        img_webp = TWITTER_IMG_DIR / f"{cache_key}.webp"
+        img_jpg = TWITTER_IMG_DIR / f"{cache_key}.jpg"
+
+        if img_webp.exists():
+            cached = tweet_cache.get(tweet_id, {})
+            author_screen = cached.get("author_screen", user)
+            return f"![Illustration by @{author_screen} on X](twitter_images/{cache_key}.webp)"
+
+        api_url = f"https://api.fxtwitter.com/{user}/status/{tweet_id}"
+        try:
+            req = urllib.request.Request(api_url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+
+            tweet = data.get("tweet") or {}
+            author = tweet.get("author", {})
+            author_screen = author.get("screen_name", user)
+
+            tweet_cache[tweet_id] = {"author_screen": author_screen}
+
+            photos = tweet.get("media", {}).get("photos", [])
+            idx = photo_index - 1
+            if 0 <= idx < len(photos):
+                photo_url = photos[idx].get("url", "")
+                if photo_url:
+                    req_img = urllib.request.Request(
+                        photo_url, headers={"User-Agent": UA}
+                    )
+                    with urllib.request.urlopen(req_img, timeout=30) as img_resp:
+                        img_data = img_resp.read()
+                    img = Image.open(BytesIO(img_data))
+
+                    img.save(str(img_webp), "WEBP", quality=85)
+
+                    jpg_img = img.convert("RGB")
+                    jpg_img.save(str(img_jpg), "JPEG", quality=85)
+
+                    print(f"      Downloaded tweet image: {cache_key}")
+                    _save_tweet_cache(tweet_cache)
+                    return f"![Illustration by @{author_screen} on X](twitter_images/{cache_key}.webp)"
+        except Exception as e:
+            print(f"      Warning: failed to fetch tweet {tweet_id}: {e}")
+
+        return m.group(0)
+
+    return TWITTER_RE.sub(_replace, text)
+
+
+def apply_inline_formatting(s: str) -> str:
+    placeholders = {}
+    def _protect(m):
+        key = f"\x00IMG{len(placeholders)}\x00"
+        placeholders[key] = m.group(0)
+        return key
+
+    s = re.sub(r'!\[.*?\]\(.*?\)', _protect, s)
+
+    s = re.sub(r"#\*(.*?)\*#", r'<span class="text-large">\1</span>', s, flags=re.DOTALL)
+
+    s = re.sub(r"(?<!\*)\*\*\*(.+?)\*\*\*(?!\*)", r"<em><strong>\1</strong></em>", s)
+    s = re.sub(r"(?<!\*)\*\*(.+?)\*\*(?!\*)", r"<strong>\1</strong>", s)
+    s = re.sub(r"(?<!\*)\*(.+?)\*(?!\*)", r"<em>\1</em>", s)
+
+    s = re.sub(r"^~~~\s*$", '<hr class="visible-hr">', s, flags=re.MULTILINE)
+
+    s = re.sub(r"%%(.*?)%%", r"\1", s, flags=re.DOTALL)
+    s = re.sub(r"%~(.*?)~%", r"\1", s, flags=re.DOTALL)
+    s = re.sub(r"%\^(.*?)\^%", r"\1", s, flags=re.DOTALL)
+
+    s = re.sub(r"@@(.+?)@@", r'<span class="distorted">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"@_@(.+?)@_@", r'<span class="distorted">\1</span>', s, flags=re.DOTALL)
+
+    s = re.sub(r"(?<!\\)_(.+?)(?<!\\)_", r"[\1]{.underline}", s)
+    s = re.sub(r"(?<!\\)~(.+?)(?<!\\)~", r"~~\1~~", s)
+
+    s = re.sub(r"@ll@(.*?)@ll@", r'<span class="mono mono-left">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"@rr@(.*?)@rr@", r'<span class="mono mono-right">\1</span>', s, flags=re.DOTALL)
+
+    s = re.sub(r"@l@(.*?)@l@", r'<span class="align-left">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"@r@(.*?)@r@", r'<span class="align-right">\1</span>', s, flags=re.DOTALL)
+
+    s = re.sub(r"#r(.*?)r#", r'<span class="text-red">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"#b(.*?)b#", r'<span class="text-blue">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"#y(.*?)y#", r'<span class="text-yellow">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"#p(.*?)p#", r'<span class="text-magenta">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"#g(.*?)g#", r'<span class="text-green">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"#o(.*?)o#", r'<span class="text-orange">\1</span>', s, flags=re.DOTALL)
+
+    s = re.sub(r"#f#(.*?)#f#", r"\1", s, flags=re.DOTALL)
+    s = re.sub(r"#f>#(.*?)#f>#", r"\1", s, flags=re.DOTALL)
+    s = re.sub(r"#f<#(.*?)#f<#", r"\1", s, flags=re.DOTALL)
+
+    s = re.sub(r"#\^#(.*?)#\^#", r'<span class="text-grow">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r"#v#(.*?)#v#", r'<span class="text-grow">\1</span>', s, flags=re.DOTALL)
+
+    s = re.sub(r"#><(.*?)><#", r'\n\n\n\n<div style="text-align:center;font-size:1.2em">\1</div>\n\n\n\n', s, flags=re.DOTALL)
+
+    s = re.sub(r";r(.*?)r;", r'<span class="hl-red">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r";b(.*?)b;", r'<span class="hl-blue">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r";y(.*?)y;", r'<span class="hl-yellow">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r";p(.*?)p;", r'<span class="hl-magenta">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r";g(.*?)g;", r'<span class="hl-green">\1</span>', s, flags=re.DOTALL)
+    s = re.sub(r";o(.*?)o;", r'<span class="hl-orange">\1</span>', s, flags=re.DOTALL)
+
+    for key, val in placeholders.items():
+        s = s.replace(key, val)
+
+    return s
+
+
+def convert_windows(s: str) -> str:
+    def regular_window(m):
+        inner = m.group(1).strip()
+        lines = inner.split("\n")
+        first = lines[0].lstrip("\\") if lines else ""
+        rest = "\n".join(lines[1:]).strip()
+
+        parts = []
+        parts.append('<div class="wiki-window">')
+        parts.append("")
+        parts.append("---")
+        parts.append("")
+        parts.append('<div style="text-align:right">')
+        parts.append("")
+        parts.append(first)
+        parts.append("")
+        parts.append("</div>")
+        parts.append("")
+        if rest:
+            parts.append(rest)
+            parts.append("")
+        parts.append("---")
+        parts.append("")
+        parts.append("</div>")
+        return "\n".join(parts)
+
+    def follow_up_window(m):
+        inner = m.group(1).strip()
+        return f"\n\n\n\n{inner}\n\n\n\n"
+
+    def sticky_window(m):
+        inner = m.group(1).strip()
+        return f'<div class="sticky-window">\n\n{inner}\n\n</div>'
+
+    def black_window(m):
+        inner = m.group(1).strip()
+        return f'<div class="black-window">\n\n{inner}\n\n</div>'
+
+    def system_window(m):
+        inner = m.group(1).strip()
+        return f'<div class="system-window">\n\n{inner}\n\n</div>'
+
+    s = re.sub(r'\+[-+]+\n(.*?)\n[-+]+\+', regular_window, s, flags=re.DOTALL)
+    s = re.sub(r'\+[=]+\n(.*?)\n[=]+\+', black_window, s, flags=re.DOTALL)
+    s = re.sub(r'\+[~]+\n(.*?)\n[~]+\+', system_window, s, flags=re.DOTALL)
+    s = re.sub(r'\+\$\n(.*?)\n\$\+', follow_up_window, s, flags=re.DOTALL)
+    s = re.sub(r'&[-]+\n(.*?)\n[-]+&', regular_window, s, flags=re.DOTALL)
+    s = re.sub(r'&\$\n(.*?)\n\$&', follow_up_window, s, flags=re.DOTALL)
+    s = re.sub(r'![-]+\n(.*?)\n[-]+!', lambda m: f'<div class="note-window">\n\n{m.group(1).strip()}\n\n</div>', s, flags=re.DOTALL)
+    s = re.sub(r'!\$\n(.*?)\n\$!', sticky_window, s, flags=re.DOTALL)
+    s = re.sub(r'!\[\n(.*?)\n\]!', lambda m: f'\n\n<div class="braun-dialogue">\n\n[{m.group(1).strip()}]\n\n</div>\n\n', s, flags=re.DOTALL)
+    return s
+
+
+translations = sorted([d.name for d in CHAPTERS_DIR.iterdir() if d.is_dir()])
+
+print(f"Found {len(translations)} translation(s): {translations}\n")
+
+for tl_name in translations:
+    tl_path = CHAPTERS_DIR / tl_name
+
+    master_path = tl_path / "metadata.md"
+    if not master_path.exists():
+        print(f"Skipping {tl_name}: no metadata.md found")
+        continue
+
+    print(f"{'='*100}\n\nProcessing translation: {tl_name}")
+
+    master_md = frontmatter.load(str(master_path))
+    master_md.content = master_md.content.replace("{{DATE}}", today)
+
+    files = sorted([
+        f for f in os.listdir(str(tl_path))
+        if f.endswith(".md") and f != "metadata.md"
+    ])
+
+    if not files:
+        print(f"  Skipping {tl_name}: no chapter files found\n")
+        continue
+
+    print(f"  Found {len(files)} file(s)")
+
+    chapter_list = []
+    errors = 0
+    for fname in files:
+        try:
+            post = frontmatter.load(str(tl_path / fname))
+            meta = post.metadata
+            chapter_list.append({
+                "meta": meta,
+                "content": post.content,
+                "file": fname,
+            })
+        except Exception as e:
+            errors += 1
+            print(f"    Warning: could not parse {fname}: {e}")
+
+    total_ch = len(chapter_list)
+    print(f"  Parsed {total_ch} chapter(s)" +
+          (f", {errors} error(s)" if errors else ""))
+
+    chapter_list.sort(key=lambda x: int(x["meta"].get("index", x["meta"].get("slug", 0))))
+
+    all_content = ""
+    for i, ch in enumerate(chapter_list):
+        ch_text = ch["content"].strip()
+        ch_text = resolve_twitter_images(ch_text)
+        ch_text = apply_inline_formatting(ch_text)
+        ch_text = convert_windows(ch_text)
+        print(f"    [{i+1}/{total_ch}] {ch['meta'].get('title', ch['file'])}")
+        all_content += f"{ch_text}\n\n---\n\n"
+
+    title_data = master_md.metadata.get("title", [])
+    if isinstance(title_data, list) and title_data:
+        book_title = title_data[0].get("text", f"GSGW - {tl_name}")
+    else:
+        book_title = str(title_data) if title_data else f"GSGW - {tl_name}"
+
+    book_id = master_md.metadata.get("metaBook", "gsgw")
+    book_tl = master_md.metadata.get("metaTl", tl_name)
+
+    master_md.content += all_content
+
+    build_type = "Default"
+    img_format = ".webp"
+    epub_version = "epub3"
+
+    print(f"\n  Producing EPUB: {book_title}")
+
+    content = master_md.content
+    content = content.replace("{{TYPE}}", build_type)
+    content = content.replace("../../../images", "../../images")
+    content = re.sub(r"\.(jpe?g|png|webp)", img_format, content)
+
+    epub_name = f"{book_title} - {book_tl} [{build_type}].epub"
+    md_name = f"{book_id}_{book_tl}_{build_type}.md"
+
+    epub_path = OUTPUT_DIR / epub_name
+    md_path = OUTPUT_DIR / md_name
+
+    temp_post = frontmatter.Post(content, **master_md.metadata)
+    with open(str(md_path), "w", encoding="utf-8") as f:
+        f.write(frontmatter.dumps(temp_post))
+
+    print(f"    Converting ({epub_version})...")
+
+    cover_path = IMG_ROOT / book_id / f"cover{img_format}"
+
+    cmd = [
+        "pandoc",
+        str(md_path),
+        "-o", str(epub_path),
+        f"--to={epub_version}",
+        "--from=markdown-fenced_code_blocks",
+        "--css", str(CSS_PATH),
+        "--resource-path", str(OUTPUT_DIR),
+        "--resource-path", str(IMG_ROOT / "gsgw" / "illustrations"),
+        "--resource-path", str(IMG_ROOT / "gsgw"),
+        "--toc",
+        "--toc-depth=3",
+        "--split-level=1",
+        "--epub-title-page=false",
+    ]
+
+    if cover_path.exists():
+        cmd.append(f"--epub-cover-image={str(cover_path)}")
+    else:
+        print(f"    Warning: cover image not found at {cover_path}")
+
+    try:
+        subprocess.run(cmd, check=True)
+        print(f"    Done! -> {epub_path}")
+    except subprocess.CalledProcessError as e:
+        print(f"    Pandoc failed: {e}")
+
+    print()
