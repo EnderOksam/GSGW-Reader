@@ -3,7 +3,7 @@ name: Build & Release EPUBs
 on:
   schedule:
     # Run at 00:00 UTC on the 1st and 15th of every month
-    - cron: '0 0 1 * *'
+    - cron: '0 0 1,15 * *'
   workflow_dispatch:
     # Allow manual trigger via GitHub UI
 
@@ -28,12 +28,7 @@ jobs:
 
       # 3. Install Python libraries used in your scripts
       - name: Install Python dependencies
-        run: |
-          pip install python-frontmatter pyyaml Pillow
-
-      # 4. Install Pandoc (Required for epub conversion)
-      - name: Install Pandoc
-        run: choco install pandoc --no-progress
+        run: pip install Pillow
 
       # 5. Run your Image Manipulator Script
       #    This creates ./images_default and ./images_legacy

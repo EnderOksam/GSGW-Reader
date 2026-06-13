@@ -5,6 +5,124 @@
   import Icon from "@iconify/svelte";
   import JSZip from "jszip";
   import readerCss from "../../../../routes/(reader)/reader.css?url";
+  import { slide } from "svelte/transition";
+  import { tick } from "svelte";
+  import localCharacters from "$lib/reader/characters.json";
+
+  // --- IndexedDB cache for character editor ---
+  const DB_NAME = "gsgw-character-cache";
+  const DB_VERSION = 1;
+
+  function openCacheDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+      if (!browser) { reject(new Error("not browser")); return; }
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains("json")) {
+          db.createObjectStore("json", { keyPath: "folder" });
+        }
+        if (!db.objectStoreNames.contains("images")) {
+          db.createObjectStore("images", { keyPath: "key" });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function getCachedJson(folder: string): Promise<string | null> {
+    try {
+      const db = await openCacheDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("json", "readonly");
+        const store = tx.objectStore("json");
+        const req = store.get(folder);
+        req.onsuccess = () => resolve(req.result?.data ?? null);
+        req.onerror = () => reject(req.error);
+      });
+    } catch { return null; }
+  }
+
+  async function setCachedJson(folder: string, data: string): Promise<void> {
+    try {
+      const db = await openCacheDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("json", "readwrite");
+        const store = tx.objectStore("json");
+        store.put({ folder, data });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch {}
+  }
+
+  async function getCachedImage(folder: string, filename: string): Promise<Blob | null> {
+    try {
+      const db = await openCacheDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("images", "readonly");
+        const store = tx.objectStore("images");
+        const req = store.get(`${folder}/${filename}`);
+        req.onsuccess = () => resolve(req.result?.blob ?? null);
+        req.onerror = () => reject(req.error);
+      });
+    } catch { return null; }
+  }
+
+  async function setCachedImage(folder: string, filename: string, blob: Blob): Promise<void> {
+    try {
+      const db = await openCacheDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("images", "readwrite");
+        const store = tx.objectStore("images");
+        store.put({ key: `${folder}/${filename}`, blob });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch {}
+  }
+
+  async function removeCachedImage(folder: string, filename: string): Promise<void> {
+    try {
+      const db = await openCacheDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("images", "readwrite");
+        const store = tx.objectStore("images");
+        store.delete(`${folder}/${filename}`);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch {}
+  }
+
+  async function getCachedImageUrl(folder: string, filename: string): Promise<string | null> {
+    const blob = await getCachedImage(folder, filename);
+    if (!blob) return null;
+    return URL.createObjectURL(blob);
+  }
+
+  async function listCachedImageKeys(folder: string): Promise<string[]> {
+    try {
+      const db = await openCacheDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("images", "readonly");
+        const store = tx.objectStore("images");
+        const req = store.getAllKeys();
+        req.onsuccess = () => {
+          const keys: string[] = [];
+          for (const key of req.result as string[]) {
+            if (key.startsWith(folder + "/")) {
+              keys.push(key.slice(folder.length + 1));
+            }
+          }
+          resolve(keys);
+        };
+        req.onerror = () => reject(req.error);
+      });
+    } catch { return []; }
+  }
+  // --- end IndexedDB cache ---
 
   function loadCachedTheme(): string {
     if (!browser) return "sunset";
@@ -187,6 +305,10 @@
 
   let patchNotes = [
     {
+      version: "v0.5",
+      description: "- added character editor"
+    },
+    {
       version: "v0.4",
       description: "- bug fixing\n- themes\n- changed mobile editing ui to fit the smaller screen"
     },
@@ -345,6 +467,7 @@
       [/#g(.*?)g#/gs, '<span class="text-green">$1</span>'],
       [/#o(.*?)o#/gs, '<span class="text-orange">$1</span>'],
       [/#f#(.*?)#f#/gs, '<span class="text-faded">$1</span>'],
+      [/(?<!\\)-#\s*(.+?)\s*#-(?!\\)/gs, '<span class="text-sub">$1</span>'],
       [/#f>#(.*?)#f>#/gs, '<span class="text-fade-right">$1</span>'],
       [/#f<#(.*?)#f<#/gs, '<span class="text-fade-left">$1</span>'],
       [/;r(.*?)r;/gs, '<span class="hl-red">$1</span>'],
@@ -707,7 +830,7 @@
     }
   });
 
-  onMount(() => { loadCache(); loadCustomTranslations(); loadChapterList(); });
+  onMount(() => { loadCache(); loadCustomTranslations(); loadChapterList(); loadCharacters(); });
 
   let mdScroll: HTMLElement | null = $state(null);
   let readerScroll: HTMLElement | null = $state(null);
@@ -957,6 +1080,695 @@
       }
     }
   }
+
+  // --- Character editor mode ---
+  type EditorMode = "chapters" | "characters";
+  let editorMode = $state<EditorMode>((typeof localStorage !== 'undefined' ? localStorage.getItem('gsgw-editor-mode') : null) as EditorMode ?? "chapters");
+
+  $effect(() => {
+    localStorage.setItem('gsgw-editor-mode', editorMode);
+  });
+  let showModeMenu = $state(false);
+
+  interface Alt {
+    id: string;
+    name: string;
+    chapter: number | null;
+    toggleable: boolean;
+    hasManwha: boolean;
+    hasWebnovel: boolean;
+    manwhaImage: string | null;
+    webnovelImage: string | null;
+  }
+
+  interface CharacterData {
+    id: string;
+    name: string;
+    hasManwha: boolean;
+    manwhaImage: string | null;
+    webnovelImage: string | null;
+    firstAppearance: number | null;
+    birthday: string;
+    bloodType: string;
+    preferredAlt: string | null;
+    alts: Alt[];
+  }
+
+  let characters = $state<CharacterData[]>([]);
+  let charactersLoading = $state(false);
+  let charactersError = $state("");
+  let cachedCharImages = $state<Set<string>>(new Set());
+  let charFolderHasLocalEdits = $state(false);
+  let objectUrls = $state<Map<string, string>>(new Map());
+
+  // Populate object URLs for cached images when folder changes
+  $effect(() => {
+    const folder = charExplorerPath.length > 0 ? charExplorerPath[charExplorerPath.length - 1] : "";
+    if (!folder) return;
+    const imgKeys = [...cachedCharImages];
+    for (const filename of imgKeys) {
+      const key = `${folder}/${filename}`;
+      if (!objectUrls.has(key)) {
+        getCachedImage(folder, filename).then(blob => {
+          if (blob && !objectUrls.has(key)) {
+            const url = URL.createObjectURL(blob);
+            objectUrls.set(key, url);
+          }
+        });
+      }
+    }
+  });
+
+  // File explorer state
+  let charExplorerPath = $state<string[]>([]); // stack of folder names
+  let charFolderFiles = $state<string[]>([]); // files in current folder
+  let charSelectedFile = $state<string | null>(null); // selected file name
+  let charJsonInput = $state(""); // raw JSON text for editing
+  let jsonEditorRef: HTMLTextAreaElement | null = $state(null);
+  let lineNumbersEl: HTMLDivElement | null = $state(null);
+
+  let lineCount = $derived(charJsonInput ? charJsonInput.split('\n').length : 1);
+
+  function syncJsonScroll() {
+    if (lineNumbersEl && jsonEditorRef) {
+      lineNumbersEl.scrollTop = jsonEditorRef.scrollTop;
+    }
+  }
+
+  let charCardModes = $state<Record<string, string>>({}); // manwha/webnovel toggle per char
+  let charSelectedAlt = $state<string | null>(null); // selected alt id for current character
+
+  let charFolderName = $derived(charExplorerPath.length > 0 ? charExplorerPath[charExplorerPath.length - 1] : null);
+
+  async function imgErrorFallback(e: Event, filename: string) {
+    const img = e.target as HTMLImageElement;
+    if (img.dataset.fallback === 'remote') { img.style.display = 'none'; return; }
+    if (img.dataset.fallback === 'cache' && charFolderName) {
+      img.dataset.fallback = 'remote';
+      img.src = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${charFolderName}/${filename}`;
+      return;
+    }
+    img.dataset.fallback = 'cache';
+    if (charFolderName) {
+      const cached = await getCachedImage(charFolderName, filename);
+      if (cached) {
+        const key = `${charFolderName}/${filename}`;
+        if (objectUrls.has(key)) URL.revokeObjectURL(objectUrls.get(key)!);
+        const url = URL.createObjectURL(cached);
+        objectUrls.set(key, url);
+        img.src = url;
+        return;
+      }
+      img.dataset.fallback = 'remote';
+      img.src = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${charFolderName}/${filename}`;
+    }
+  }
+
+  let showCharExport = $state(false);
+  let charExportBtn: HTMLElement | null = $state(null);
+
+  let selectedIsImage = $derived(charSelectedFile ? !!charSelectedFile.match(/\.(png|jpg|jpeg|webp|avif)$/i) : false);
+
+  let charSelectedImageUrl = $derived(
+    charSelectedFile && charExplorerPath.length > 0 && selectedIsImage
+      ? cachedOrRemote(charSelectedFile)
+      : null
+  );
+
+  let selectedCharacterData = $derived(
+    charExplorerPath.length > 0
+      ? characters.find(c => c.name === charExplorerPath[charExplorerPath.length - 1]) ?? null
+      : null
+  );
+
+  let liveCharData = $derived.by(() => {
+    if (!charJsonInput) return null;
+    try {
+      const parsed = JSON.parse(charJsonInput);
+      if (parsed && typeof parsed === 'object' && parsed.id) return parsed as CharacterData;
+    } catch {}
+    return null;
+  });
+
+  let displayCharData = $derived(liveCharData ?? selectedCharacterData);
+
+  let selectedAltObj = $derived(
+    displayCharData && charSelectedAlt
+      ? displayCharData.alts.find(a => a.id === charSelectedAlt) ?? null
+      : null
+  );
+
+  let currentCharFolder = $derived(
+    charExplorerPath.length > 0 ? charExplorerPath[charExplorerPath.length - 1] : ""
+  );
+
+  function cachedOrRemote(filename: string | null): string | null {
+    if (!filename) return null;
+    if (cachedCharImages.has(filename)) {
+      const url = objectUrls.get(`${currentCharFolder}/${filename}`);
+      if (url) return url;
+    }
+    return `/characters/${filename}`;
+  }
+
+  let mainManwhaImage = $derived(cachedOrRemote(displayCharData?.manwhaImage ?? null));
+  let mainWebnovelImage = $derived(cachedOrRemote(displayCharData?.webnovelImage ?? null));
+
+  let altManwhaImage = $derived(
+    selectedAltObj?.manwhaImage ? cachedOrRemote(selectedAltObj.manwhaImage) : null
+  );
+
+  let altWebnovelImage = $derived(
+    selectedAltObj?.webnovelImage ? cachedOrRemote(selectedAltObj.webnovelImage) : null
+  );
+
+  let charJsonParseError = $state("");
+
+  $effect(() => {
+    if (charJsonInput) {
+      try {
+        JSON.parse(charJsonInput);
+        charJsonParseError = "";
+      } catch (e: any) {
+        charJsonParseError = e.message;
+      }
+    } else {
+      charJsonParseError = "";
+    }
+  });
+
+  // Auto-save JSON to cache when valid and user stops typing
+  let charJsonSaveTimer: ReturnType<typeof setTimeout> | undefined;
+  let suppressAutoSave = false;
+  $effect(() => {
+    if (charJsonInput && !charJsonParseError && charExplorerPath.length > 0 && !suppressAutoSave) {
+      clearTimeout(charJsonSaveTimer);
+      charJsonSaveTimer = setTimeout(() => {
+        const folder = charExplorerPath[charExplorerPath.length - 1];
+        setCachedJson(folder, charJsonInput);
+        charFolderHasLocalEdits = true;
+      }, 800);
+    }
+    return () => clearTimeout(charJsonSaveTimer);
+  });
+
+  async function loadCharacters() {
+    charactersLoading = true;
+    charactersError = "";
+    try {
+      const url = `https://api.github.com/repos/${REPO}/contents/images/gsgw/references`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
+      const data = await res.json();
+      const dirs: string[] = data
+        .filter((f: any) => f.type === "dir")
+        .map((f: any) => f.name);
+      const chars: CharacterData[] = [];
+      for (const dir of dirs) {
+        try {
+          const charUrl = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${dir}/character.json`;
+          const charRes = await fetch(charUrl);
+          if (charRes.ok) {
+            const charData: CharacterData = await charRes.json();
+            chars.push(charData);
+          }
+        } catch {}
+      }
+      if (chars.length === 0) throw new Error("No characters loaded");
+      characters = chars.sort((a, b) => a.name.localeCompare(b.name));
+    } catch {
+      try {
+        characters = (localCharacters as any[]).map(c => ({
+          id: c.id,
+          name: c.name,
+          hasManwha: c.hasManwha ?? false,
+          manwhaImage: c.manwhaImage ?? null,
+          webnovelImage: c.webnovelImage ?? null,
+          firstAppearance: c.firstAppearance ?? null,
+          birthday: c.birthday ?? "",
+          bloodType: c.bloodType ?? "",
+          preferredAlt: c.preferredAlt ?? null,
+          alts: c.alts ?? [],
+        }));
+        if (characters.length === 0) throw new Error("empty");
+      } catch {
+        charactersError = "Failed to load characters";
+        characters = [];
+      }
+    } finally {
+      charactersLoading = false;
+    }
+  }
+
+  function getLocalFolderFiles(name: string): string[] {
+    const char = characters.find(c => c.name === name);
+    if (!char) return [];
+    const files: string[] = ["character.json"];
+    if (char.manwhaImage) files.push(char.manwhaImage);
+    if (char.webnovelImage) files.push(char.webnovelImage);
+    for (const alt of char.alts) {
+      if (alt.manwhaImage && !files.includes(alt.manwhaImage)) files.push(alt.manwhaImage);
+      if (alt.webnovelImage && !files.includes(alt.webnovelImage)) files.push(alt.webnovelImage);
+    }
+    return files.sort();
+  }
+
+  async function enterCharFolder(name: string) {
+    charExplorerPath = [...charExplorerPath, name];
+    charSelectedFile = null;
+    charJsonInput = "";
+    charSelectedAlt = null;
+    cachedCharImages.clear();
+    // Check cached images
+    const cachedImages = await listCachedImageKeys(name);
+    for (const img of cachedImages) {
+      cachedCharImages.add(img);
+    }
+    try {
+      const url = `https://api.github.com/repos/${REPO}/contents/images/gsgw/references/${charExplorerPath.join('/')}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        charFolderFiles = data.map((f: any) => f.name).sort();
+      } else {
+        charFolderFiles = getLocalFolderFiles(name);
+      }
+    } catch {
+      charFolderFiles = getLocalFolderFiles(name);
+    }
+    // Merge in cached image filenames
+    for (const img of cachedImages) {
+      if (!charFolderFiles.includes(img)) charFolderFiles.push(img);
+    }
+    charFolderFiles.sort();
+    // Auto-select character.json
+    if (charFolderFiles.includes("character.json")) {
+      await selectCharFile("character.json");
+    }
+  }
+
+  async function saveCurrentCharJson() {
+    if (charJsonInput && charExplorerPath.length > 0) {
+      const folder = charExplorerPath[charExplorerPath.length - 1];
+      await setCachedJson(folder, charJsonInput);
+      charFolderHasLocalEdits = true;
+    }
+  }
+
+  async function backToCharList() {
+    await saveCurrentCharJson();
+    // Cleanup object URLs and cached image state
+    for (const url of objectUrls.values()) URL.revokeObjectURL(url);
+    objectUrls.clear();
+    cachedCharImages.clear();
+    charExplorerPath = [];
+    charFolderFiles = [];
+    charSelectedFile = null;
+    charJsonInput = "";
+    charFolderHasLocalEdits = false;
+  }
+
+  async function goBackOneFolder() {
+    await saveCurrentCharJson();
+    if (charExplorerPath.length <= 1) {
+      await backToCharList();
+    } else {
+      const prev = charExplorerPath.slice(0, -1);
+      charExplorerPath = prev;
+    charSelectedFile = null;
+    charJsonInput = "";
+    charSelectedAlt = null;
+      // re-list the parent
+      enterCharFolder(prev[prev.length - 1]);
+    }
+  }
+
+  async function selectCharFile(filename: string) {
+    charSelectedFile = filename;
+    if (!filename.endsWith('.json')) { charJsonInput = ""; return; }
+    if (charExplorerPath.length === 0) return;
+    const folder = charExplorerPath[charExplorerPath.length - 1];
+    // Check cache first
+    const cached = await getCachedJson(folder);
+    if (cached !== null) {
+      charJsonInput = cached;
+      charFolderHasLocalEdits = true;
+      return;
+    }
+    try {
+      const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${charExplorerPath.join('/')}/${filename}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        charJsonInput = await res.text();
+      } else {
+        // fallback: generate from local data
+        const char = characters.find(c => c.name === folder);
+        if (char) {
+          charJsonInput = JSON.stringify(char, null, 2);
+        }
+      }
+    } catch {
+      const char = characters.find(c => c.name === folder);
+      if (char) {
+        charJsonInput = JSON.stringify(char, null, 2);
+      }
+    }
+  }
+
+  let showNewCharDialog = $state(false);
+  let newCharName = $state("");
+
+  function addNewCharacter() {
+    const name = newCharName.trim();
+    if (!name) return;
+    const id = name.replace(/\s+/g, '');
+    const newChar: CharacterData = {
+      id,
+      name,
+      hasManwha: true,
+      manwhaImage: `${id}Manwha.webp`,
+      webnovelImage: `${id}Webnovel.webp`,
+      firstAppearance: null,
+      birthday: "",
+      bloodType: "",
+      preferredAlt: null,
+      alts: [],
+    };
+    characters = [...characters, newChar].sort((a, b) => a.name.localeCompare(b.name));
+    charJsonInput = JSON.stringify(newChar, null, 2);
+    showNewCharDialog = false;
+    newCharName = "";
+    // Also add to explorer path
+    enterCharFolder(name);
+  }
+
+  function deleteCharacter() {
+    if (!displayCharData) return;
+    const isSource = (localCharacters as any[]).some(c => c.id === displayCharData.id);
+    if (isSource) {
+      alert(`"${displayCharData.name}" is a source character and cannot be deleted.`);
+      return;
+    }
+    if (!confirm(`Delete "${displayCharData.name}"?`)) return;
+    characters = characters.filter(c => c.id !== displayCharData.id);
+    backToCharList();
+  }
+
+  function toggleCharExport(e: MouseEvent) {
+    showCharExport = !showCharExport;
+    if (showCharExport) {
+      const handler = (ev: MouseEvent) => {
+        if (!charExportBtn?.contains(ev.target as Node) && !(ev.target as HTMLElement)?.closest?.('[data-char-export-dropdown]')) {
+          showCharExport = false;
+          document.removeEventListener("click", handler);
+        }
+      };
+      requestAnimationFrame(() => document.addEventListener("click", handler));
+    }
+  }
+
+  async function exportCharacterZip() {
+    if (!displayCharData || charExplorerPath.length === 0) return;
+    const folder = charExplorerPath[charExplorerPath.length - 1];
+    try {
+      const zip = new JSZip();
+      const jsonContent = charJsonInput || JSON.stringify(displayCharData, null, 2);
+      zip.file("character.json", jsonContent);
+      const parsed = liveCharData || JSON.parse(jsonContent) as CharacterData;
+      const seen = new Set<string>();
+      if (parsed.manwhaImage) seen.add(parsed.manwhaImage);
+      if (parsed.webnovelImage) seen.add(parsed.webnovelImage);
+      for (const alt of (parsed.alts || [])) {
+        if (alt.manwhaImage) seen.add(alt.manwhaImage);
+        if (alt.webnovelImage) seen.add(alt.webnovelImage);
+      }
+      for (const filename of [...new Set([...seen, ...charFolderFiles.filter(f => f !== "character.json")])]) {
+        try {
+          const cached = await getCachedImage(folder, filename);
+          if (cached) { zip.file(filename, cached); continue; }
+          const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${folder}/${filename}`;
+          const res = await fetch(url);
+          if (res.ok) zip.file(filename, await res.blob());
+        } catch {}
+      }
+      const blob = await zip.generateAsync({ type: "blob" });
+      const urlObj = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlObj;
+      a.download = `${folder}.zip`;
+      a.click();
+      URL.revokeObjectURL(urlObj);
+    } catch (e: any) {
+      alert("Failed to export: " + e.message);
+    }
+  }
+
+  async function exportAllCharactersZip() {
+    const zip = new JSZip();
+    let hasAnyFiles = false;
+    for (const char of characters) {
+      const folder = char.name;
+      try {
+        let jsonContent: string | null = null;
+        const cachedJson = await getCachedJson(folder);
+        if (cachedJson) { jsonContent = cachedJson; }
+        else {
+          const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${folder}/character.json`;
+          const res = await fetch(url);
+          if (res.ok) jsonContent = await res.text();
+        }
+        if (!jsonContent) continue;
+        zip.file(`${folder}/character.json`, jsonContent);
+        hasAnyFiles = true;
+        const charData = JSON.parse(jsonContent);
+        const imageFiles: string[] = [];
+        if (charData.manwhaImage) imageFiles.push(charData.manwhaImage);
+        if (charData.webnovelImage) imageFiles.push(charData.webnovelImage);
+        for (const alt of (charData.alts || [])) {
+          if (alt.manwhaImage) imageFiles.push(alt.manwhaImage);
+          if (alt.webnovelImage) imageFiles.push(alt.webnovelImage);
+        }
+        for (const filename of [...new Set(imageFiles)]) {
+          try {
+            const cached = await getCachedImage(folder, filename);
+            if (cached) { zip.file(`${folder}/${filename}`, cached); continue; }
+            const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${folder}/${filename}`;
+            const res = await fetch(url);
+            if (res.ok) zip.file(`${folder}/${filename}`, await res.blob());
+          } catch {}
+        }
+      } catch {}
+    }
+    if (!hasAnyFiles) { alert("No characters to export."); return; }
+    const blob = await zip.generateAsync({ type: "blob" });
+    const urlObj = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = urlObj;
+    a.download = "all-characters.zip";
+    a.click();
+    URL.revokeObjectURL(urlObj);
+  }
+
+  // --- Image import / replace ---
+  let charImageImportRef: HTMLInputElement | undefined = $state();
+  let charImageReplaceTarget = $state<string | null>(null);
+  let imgLoadCount = $state(0);
+
+  function getCharImageSrc(folder: string, filename: string | null): string | null {
+    if (!filename) return null;
+    if (cachedCharImages.has(filename)) {
+      const key = `${folder}/${filename}`;
+      if (objectUrls.has(key)) return objectUrls.get(key)!;
+    }
+    return `/characters/${filename}`;
+  }
+
+  async function getCachedObjectUrl(folder: string, filename: string): Promise<string | null> {
+    const key = `${folder}/${filename}`;
+    if (objectUrls.has(key)) return objectUrls.get(key)!;
+    const blob = await getCachedImage(folder, filename);
+    if (!blob) return null;
+    const url = URL.createObjectURL(blob);
+    objectUrls.set(key, url);
+    return url;
+  }
+
+  async function replaceCharImage(filename: string) {
+    charImageReplaceTarget = filename;
+    charImageImportRef?.click();
+  }
+
+  async function handleCharImageImport(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.webp')) {
+      alert("Only .webp images are supported.");
+      (e.target as HTMLInputElement).value = "";
+      return;
+    }
+    if (charExplorerPath.length === 0) return;
+    const folder = charExplorerPath[charExplorerPath.length - 1];
+    const targetFilename = charImageReplaceTarget || file.name;
+    const blob = file;
+    await setCachedImage(folder, targetFilename, blob);
+    cachedCharImages.add(targetFilename);
+    // If it was a replace, create object URL
+    const key = `${folder}/${targetFilename}`;
+    if (objectUrls.has(key)) URL.revokeObjectURL(objectUrls.get(key)!);
+    const url = URL.createObjectURL(blob);
+    objectUrls.set(key, url);
+    // Update file list if not already there
+    if (!charFolderFiles.includes(targetFilename)) {
+      charFolderFiles = [...charFolderFiles, targetFilename].sort();
+    }
+    // If currently viewing this image, force re-render by toggling selection
+    if (charSelectedFile === targetFilename) {
+      const tmp = charSelectedFile;
+      charSelectedFile = null;
+      await tick();
+      charSelectedFile = tmp;
+    } else if (targetFilename.endsWith('.json')) {
+      // If importing a json file somehow
+    }
+    charImageReplaceTarget = null;
+    imgLoadCount++;
+    (e.target as HTMLInputElement).value = "";
+  }
+
+  async function importNewImage() {
+    charImageReplaceTarget = null;
+    charImageImportRef?.click();
+  }
+
+  async function deleteCachedImage(filename: string) {
+    if (charExplorerPath.length === 0) return;
+    const folder = charExplorerPath[charExplorerPath.length - 1];
+    await removeCachedImage(folder, filename);
+    cachedCharImages.delete(filename);
+    const key = `${folder}/${filename}`;
+    if (objectUrls.has(key)) {
+      URL.revokeObjectURL(objectUrls.get(key)!);
+      objectUrls.delete(key);
+    }
+    charFolderFiles = charFolderFiles.filter(f => f !== filename);
+    if (charSelectedFile === filename) charSelectedFile = null;
+    // Re-check if any cached items remain
+    const remaining = await listCachedImageKeys(folder);
+    const hasCachedJson = await getCachedJson(folder);
+    if (remaining.length === 0 && !hasCachedJson) charFolderHasLocalEdits = false;
+  }
+
+  async function revertCharJson() {
+    if (charExplorerPath.length === 0) return;
+    const folder = charExplorerPath[charExplorerPath.length - 1];
+    // Delete cached JSON
+    try {
+      const db = await openCacheDB();
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction("json", "readwrite");
+        const store = tx.objectStore("json");
+        store.delete(folder);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch {}
+    charFolderHasLocalEdits = false;
+    suppressAutoSave = true;
+    // Re-check if cached images remain
+    const remaining = await listCachedImageKeys(folder);
+    if (remaining.length > 0) charFolderHasLocalEdits = true;
+    // Reload the JSON from source
+    await selectCharFile("character.json");
+    suppressAutoSave = false;
+  }
+
+  async function revertCachedImage(filename: string) {
+    await deleteCachedImage(filename);
+  }
+
+  let charactersRefreshing = $state(false);
+
+  async function refreshCharacters() {
+    charactersRefreshing = true;
+    const custom = characters.filter(c => !(localCharacters as any[]).some(lc => lc.id === c.id));
+    try {
+      const url = `https://api.github.com/repos/${REPO}/contents/images/gsgw/references`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        const dirs: string[] = data.filter((f: any) => f.type === "dir").map((f: any) => f.name);
+        const chars: CharacterData[] = [];
+        for (const dir of dirs) {
+          try {
+            const charUrl = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${dir}/character.json`;
+            const charRes = await fetch(charUrl);
+            if (charRes.ok) {
+              const charData: CharacterData = await charRes.json();
+              chars.push(charData);
+            }
+          } catch {}
+        }
+        if (chars.length > 0) {
+          const merged = [...chars];
+          for (const c of custom) {
+            if (!merged.some(m => m.id === c.id)) merged.push(c);
+          }
+          characters = merged.sort((a, b) => a.name.localeCompare(b.name));
+          charactersRefreshing = false;
+          return;
+        }
+      }
+    } catch {}
+    // Fallback: re-merge local source with custom
+    const source = (localCharacters as any[]).map(c => ({
+      id: c.id, name: c.name, hasManwha: c.hasManwha ?? false,
+      manwhaImage: c.manwhaImage ?? null, webnovelImage: c.webnovelImage ?? null,
+      firstAppearance: c.firstAppearance ?? null, birthday: c.birthday ?? "",
+      bloodType: c.bloodType ?? "", preferredAlt: c.preferredAlt ?? null, alts: c.alts ?? [],
+    }));
+    const merged = [...source];
+    for (const c of custom) {
+      if (!merged.some(m => m.id === c.id)) merged.push(c);
+    }
+    characters = merged.sort((a, b) => a.name.localeCompare(b.name));
+    charactersRefreshing = false;
+  }
+
+  let charImportRef: HTMLInputElement | undefined = $state();
+  async function importCharacterZip(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const entries: { path: string; data: string }[] = [];
+      const promises: Promise<void>[] = [];
+      zip.forEach((path, entry) => {
+        if (!entry.dir) {
+          promises.push(
+            entry.async("string").then((data) => {
+              entries.push({ path: path.split("/").pop() || path, data });
+            })
+          );
+        }
+      });
+      await Promise.all(promises);
+      const jsonEntry = entries.find(e => e.path === "character.json");
+      if (!jsonEntry) { alert("No character.json found in zip."); return; }
+      const charData: CharacterData = JSON.parse(jsonEntry.data);
+      // Add or update character
+      const existing = characters.findIndex(c => c.id === charData.id);
+      if (existing >= 0) {
+        characters[existing] = charData;
+      } else {
+        characters = [...characters, charData].sort((a, b) => a.name.localeCompare(b.name));
+      }
+      enterCharFolder(charData.name);
+    } catch (err) {
+      alert("Failed to import: " + (err instanceof Error ? err.message : String(err)));
+    }
+    (e.target as HTMLInputElement).value = "";
+  }
+
 </script>
 
 <svelte:head>
@@ -966,32 +1778,88 @@
 <div class="h-dvh bg-base-300 flex flex-col overflow-hidden selection:bg-primary/30">
   <div class="flex items-center justify-between px-3 py-1.5 border-b border-base-content/10 bg-base-300/50 backdrop-blur-sm shrink-0 relative z-10">
     <div class="flex items-center gap-0.5 relative">
-      <button onclick={() => showMobileMenu = true} class="lg:hidden text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Menu"><Icon icon="mdi:menu" class="size-4" /></button>
-      <a href="/" class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-4" /></a>
-      <button bind:this={exportBtn} onclick={toggleExport} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Export"><Icon icon="mdi:export-variant" class="size-4" /></button>
-      <button onclick={triggerImport} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Import zip"><Icon icon="mdi:file-import-outline" class="size-4" /></button>
-      <input bind:this={importRef} onchange={handleImportZip} type="file" accept=".zip" class="hidden" />
-      <button bind:this={revertBtn} onclick={toggleRevert} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Revert"><Icon icon="mdi:undo-variant" class="size-4" /></button>
-      <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
-      <button onclick={newChapter} disabled={!translation} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="New chapter"><Icon icon="mdi:plus" class="size-4" /></button>
-      <button onclick={deleteCurrentChapter} disabled={!selected || selected === "sandbox" || isSourceTranslation} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Delete chapter"><Icon icon="mdi:delete-outline" class="size-4" /></button>
-      <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
-      <button onclick={() => { newTranslationName = ""; renameTL = null; showManageTL = true; }} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Manage translations"><Icon icon="mdi:translate" class="size-4" /></button>
-      <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
-      {#if showExport}
-        <div data-export-dropdown class="absolute top-full left-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
-          <button onclick={exportCurrentChapter} disabled={!selected || selected === "sandbox" || !input} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export current chapter</button>
-          <button onclick={exportAllEdited} disabled={dirty.size === 0 && isSourceTranslation} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export all chapters</button>
+      {#if editorMode === "chapters"}
+        <button onclick={() => showMobileMenu = true} class="lg:hidden text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Menu"><Icon icon="mdi:menu" class="size-4" /></button>
+        <a href="/" class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-4" /></a>
+        <button bind:this={exportBtn} onclick={toggleExport} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Export"><Icon icon="mdi:export-variant" class="size-4" /></button>
+        <button onclick={triggerImport} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Import zip"><Icon icon="mdi:file-import-outline" class="size-4" /></button>
+        <input bind:this={importRef} onchange={handleImportZip} type="file" accept=".zip" class="hidden" />
+        <button bind:this={revertBtn} onclick={toggleRevert} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Revert"><Icon icon="mdi:undo-variant" class="size-4" /></button>
+        <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
+        <button onclick={newChapter} disabled={!translation} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="New chapter"><Icon icon="mdi:plus" class="size-4" /></button>
+        <button onclick={deleteCurrentChapter} disabled={!selected || selected === "sandbox" || isSourceTranslation} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Delete chapter"><Icon icon="mdi:delete-outline" class="size-4" /></button>
+        <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
+        <button onclick={() => { newTranslationName = ""; renameTL = null; showManageTL = true; }} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Manage translations"><Icon icon="mdi:translate" class="size-4" /></button>
+        <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
+        {#if showExport}
+          <div data-export-dropdown class="absolute top-full left-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
+            <button onclick={exportCurrentChapter} disabled={!selected || selected === "sandbox" || !input} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export current chapter</button>
+            <button onclick={exportAllEdited} disabled={dirty.size === 0 && isSourceTranslation} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export all chapters</button>
+          </div>
+        {/if}
+        {#if showRevert}
+          <div data-revert-dropdown class="absolute top-full left-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
+            <button onclick={revertCurrentChapter} disabled={!selected || selected === "sandbox" || !dirty.has(selected)} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Revert current chapter</button>
+            <button onclick={revertAllChapters} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Revert all edited chapters</button>
+          </div>
+        {/if}
+      {:else}
+        <button onclick={() => showMobileMenu = true} class="lg:hidden text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Menu"><Icon icon="mdi:menu" class="size-4" /></button>
+        <a href="/" class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-4" /></a>
+        <div class="relative">
+          <button bind:this={charExportBtn} onclick={toggleCharExport} disabled={!displayCharData && characters.length === 0} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Export">
+            <Icon icon="mdi:export-variant" class="size-4" />
+          </button>
+          {#if showCharExport}
+            <div data-char-export-dropdown class="absolute top-full left-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
+              <button onclick={() => { exportCharacterZip(); showCharExport = false; }} disabled={!displayCharData} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export current character</button>
+              <button onclick={() => { exportAllCharactersZip(); showCharExport = false; }} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export all characters</button>
+            </div>
+          {/if}
         </div>
-      {/if}
-      {#if showRevert}
-        <div data-revert-dropdown class="absolute top-full left-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-44 z-50 overflow-hidden">
-          <button onclick={revertCurrentChapter} disabled={!selected || selected === "sandbox" || !dirty.has(selected)} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Revert current chapter</button>
-          <button onclick={revertAllChapters} disabled={dirty.size === 0} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/5 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Revert all edited chapters</button>
+        <button onclick={() => charImportRef?.click()} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Import character (zip)">
+          <Icon icon="mdi:file-import-outline" class="size-4" />
+        </button>
+        <input bind:this={charImportRef} onchange={importCharacterZip} type="file" accept=".zip" class="hidden" />
+        <button onclick={importNewImage} disabled={charExplorerPath.length === 0} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Import image (webp)">
+          <Icon icon="mdi:image-plus-outline" class="size-4" />
+        </button>
+        <input bind:this={charImageImportRef} onchange={handleCharImageImport} type="file" accept=".webp" class="hidden" />
+        <span class="mx-0.5 w-px h-4 bg-base-content/10"></span>
+        <div class="relative">
+          <button onclick={() => showNewCharDialog = true} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="New character"><Icon icon="mdi:plus" class="size-4" /></button>
+          {#if showNewCharDialog}
+            <div class="absolute top-full left-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl p-3 min-w-56 z-50 overflow-hidden space-y-2">
+              <span class="text-[10px] font-mono text-base-content/40 font-medium uppercase tracking-wider">new character</span>
+              <input bind:value={newCharName} onkeydown={(e) => { if (e.key === "Enter") addNewCharacter(); }} placeholder="Character name" class="w-full bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20" />
+              <div class="flex gap-1">
+                <button onclick={addNewCharacter} disabled={!newCharName.trim()} class="text-[10px] px-2 py-1 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors disabled:opacity-40">Add</button>
+                <button onclick={() => { showNewCharDialog = false; newCharName = ""; }} class="text-[10px] px-2 py-1 rounded-lg text-base-content/40 hover:text-base-content/60 transition-colors">Cancel</button>
+              </div>
+            </div>
+          {/if}
         </div>
+        <button onclick={() => { revertCharJson(); for (const img of [...cachedCharImages]) revertCachedImage(img); }} disabled={!charFolderHasLocalEdits && cachedCharImages.size === 0} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Revert all local changes">
+          <Icon icon="mdi:undo-variant" class="size-4" />
+        </button>
+        <button onclick={deleteCharacter} disabled={!displayCharData} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Delete character">
+          <Icon icon="mdi:delete-outline" class="size-4" />
+        </button>
       {/if}
     </div>
     <div class="flex items-center gap-2">
+      <div class="relative hidden lg:block">
+        <button onclick={() => showModeMenu = !showModeMenu} class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg border border-base-content/15 text-base-content/60 hover:text-base-content hover:border-base-content/30 transition-colors whitespace-nowrap">
+          <span class="capitalize">{editorMode}</span>
+          <Icon icon="mdi:chevron-down" class="size-3.5 inline-block ml-0.5" />
+        </button>
+        {#if showModeMenu}
+          <div class="absolute top-full right-0 mt-1.5 bg-base-200/95 backdrop-blur-sm border border-base-content/10 rounded-xl shadow-2xl py-1 min-w-36 z-50 overflow-hidden">
+            <button onclick={() => { editorMode = "chapters"; showModeMenu = false; }} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/10 text-base-content/70 transition-colors {editorMode === 'chapters' ? 'bg-primary/10 text-primary' : ''}">Chapters</button>
+            <button onclick={() => { editorMode = "characters"; showModeMenu = false; }} class="block w-full text-left text-xs px-3 py-2 hover:bg-base-content/10 text-base-content/70 transition-colors {editorMode === 'characters' ? 'bg-primary/10 text-primary' : ''}">Characters</button>
+          </div>
+        {/if}
+      </div>
       <div class="relative">
         <button bind:this={themeBtn} onclick={() => showThemeMenu = !showThemeMenu} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5" title="Theme">
           <Icon icon="mdi:palette-outline" class="size-4" />
@@ -1004,13 +1872,15 @@
           </div>
         {/if}
       </div>
-      <button onclick={() => showInfo = true} class="version-btn text-xs font-mono px-2 py-1 rounded">v0.4</button>
+      <button onclick={() => showInfo = true} class="version-btn text-xs font-mono px-2 py-1 rounded">v0.5</button>
     </div>
   </div>
 
   <div class="flex-1 flex p-2 lg:p-3 gap-2 lg:gap-3 min-h-0">
-    <!-- ===== MOBILE LAYOUT (< lg) ===== -->
-    <div class="flex flex-1 lg:hidden min-h-0">
+    {#key editorMode}
+      {#if editorMode === "chapters"}
+        <!-- ===== MOBILE LAYOUT (< lg) ===== -->
+    <div transition:slide class="flex flex-1 lg:hidden min-h-0">
       <!-- Full-width editor | reader -->
       <div class="flex-1 flex flex-col min-w-0">
         <div class="flex gap-0.5 mb-2 shrink-0">
@@ -1048,7 +1918,7 @@
     </div>
 
     <!-- ===== DESKTOP LAYOUT (lg+) ===== -->
-    <div class="hidden lg:flex flex-1 gap-3">
+    <div transition:slide class="hidden lg:flex flex-1 gap-3">
       <div class="w-56 flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shrink-0 min-h-0 shadow-lg">
         <div class="flex gap-1 p-2 border-b border-base-content/10">
           <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
@@ -1115,7 +1985,7 @@
           <table class="w-full border-collapse">
             <tbody>
               {#each [
-                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
               ] as opt}
                 <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                   <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -1127,27 +1997,345 @@
         </div>
       </div>
     </div>
+    {:else}
+      <!-- ===== CHARACTERS MODE ===== -->
+      <div transition:slide class="flex flex-1 lg:hidden min-h-0">
+        <div class="flex-1 flex flex-col min-h-0 min-w-0">
+          <div class="flex gap-0.5 mb-2 shrink-0">
+            <button class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg bg-base-content/10 text-base-content/70">Characters</button>
+          </div>
+          <div class="flex-1 flex flex-col min-h-0 min-w-0 rounded-xl border border-base-content/10 bg-base-300/60 overflow-hidden">
+            {#if charExplorerPath.length === 0}
+              <div class="p-2 border-b border-base-content/10 flex items-center justify-between">
+                <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">folders</span>
+                <button onclick={refreshCharacters} disabled={charactersRefreshing} class="text-base-content/40 hover:text-base-content transition-colors p-0.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Fetch source">
+                  <Icon icon={charactersRefreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {charactersRefreshing ? 'animate-spin' : ''}" />
+                </button>
+              </div>
+              <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
+                {#if charactersLoading}
+                  <div class="flex items-center justify-center py-6"><Icon icon="mdi:loading" class="size-4 text-base-content/50 animate-spin" /></div>
+                {:else if charactersError}
+                  <p class="text-xs text-error/70 text-center py-6">{charactersError}</p>
+                {:else if characters.length === 0}
+                  <p class="text-xs text-base-content/40 text-center py-6">no characters</p>
+                {:else}
+                  {#each characters as char}
+                    <button onclick={() => enterCharFolder(char.name)} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors text-base-content/70">
+                      <Icon icon="mdi:folder-outline" class="size-3.5 shrink-0" />
+                      <span class="truncate">{char.name}</span>
+                    </button>
+                  {/each}
+                {/if}
+              </div>
+            {:else}
+              <div class="p-1.5 border-b border-base-content/10 space-y-0.5">
+                <button onclick={goBackOneFolder} class="flex items-center gap-1.5 w-full text-left text-xs px-2 py-1 rounded-lg hover:bg-base-content/5 transition-colors text-base-content/50 hover:text-base-content">
+                  <Icon icon="mdi:arrow-left" class="size-3.5" />
+                  <span class="text-[10px]">..</span>
+                </button>
+              </div>
+              <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
+                {#each charFolderFiles.filter(f => f === "character.json") as f}
+                  <button onclick={() => selectCharFile(f)} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {charSelectedFile === f ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">
+                    <Icon icon="mdi:code-json" class="size-3.5 shrink-0" />
+                    <span class="truncate">{f}</span>
+                  </button>
+                {/each}
+                {#if charFolderFiles.filter(f => f !== "character.json").length > 0}
+                  <div class="mx-1 my-1.5 border-t border-base-content/10"></div>
+                  {#each charFolderFiles.filter(f => f !== "character.json") as f}
+                    <button onclick={() => selectCharFile(f)} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {charSelectedFile === f ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">
+                      <Icon icon={f.match(/\.(png|jpg|jpeg|webp|avif)$/i) ? 'mdi:image-outline' : 'mdi:file-document-outline'} class="size-3.5 shrink-0" />
+                      <span class="truncate">{f}</span>
+                    </button>
+                  {/each}
+                {/if}
+              </div>
+            {/if}
+          </div>
+        </div>
+      </div>
+      <div transition:slide class="hidden lg:flex flex-1 gap-3 min-h-0">
+        <!-- File explorer panel -->
+        <div class="w-56 flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shrink-0 min-h-0 shadow-lg">
+          <div class="p-1.5 border-b border-base-content/10 flex items-center justify-between">
+            {#if charExplorerPath.length === 0}
+              <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">folders</span>
+              <button onclick={refreshCharacters} disabled={charactersRefreshing} class="text-base-content/40 hover:text-base-content transition-colors p-0.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Fetch source">
+                <Icon icon={charactersRefreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {charactersRefreshing ? 'animate-spin' : ''}" />
+              </button>
+            {:else}
+              <div class="flex items-center gap-1">
+                <button onclick={goBackOneFolder} class="text-base-content/40 hover:text-base-content transition-colors p-0.5 rounded hover:bg-base-content/5" title="Back">
+                  <Icon icon="mdi:arrow-left" class="size-3.5" />
+                </button>
+                <span class="text-[10px] font-mono text-base-content/40 truncate">{charExplorerPath[charExplorerPath.length - 1]}/</span>
+              </div>
+            {/if}
+          </div>
+          <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
+            {#if charactersLoading}
+              <div class="flex items-center justify-center py-6"><Icon icon="mdi:loading" class="size-4 text-base-content/50 animate-spin" /></div>
+            {:else if charactersError}
+              <p class="text-xs text-error/70 text-center py-6">{charactersError}</p>
+            {:else if characters.length === 0 && charExplorerPath.length === 0}
+              <p class="text-xs text-base-content/40 text-center py-6">no characters</p>
+            {:else if charExplorerPath.length === 0}
+              {#each characters as char}
+                <button onclick={() => enterCharFolder(char.name)} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors text-base-content/70">
+                  <Icon icon="mdi:folder-outline" class="size-3.5 shrink-0" />
+                  <span class="truncate">{char.name}</span>
+                </button>
+              {/each}
+            {:else}
+              {#each charFolderFiles.filter(f => f === "character.json") as f}
+                <button onclick={() => selectCharFile(f)} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {charSelectedFile === f ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">
+                  <Icon icon="mdi:code-json" class="size-3.5 shrink-0" />
+                  <span class="truncate">{f}</span>
+                  {#if charFolderHasLocalEdits}<span class="text-success/70 text-[10px] font-mono ml-auto">●</span>{/if}
+                </button>
+              {/each}
+              {#if charFolderFiles.filter(f => f !== "character.json").length > 0}
+                <div class="mx-1 my-1.5 border-t border-base-content/10"></div>
+                {#each charFolderFiles.filter(f => f !== "character.json") as f}
+                  <button onclick={() => selectCharFile(f)} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {charSelectedFile === f ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">
+                    <Icon icon={f.match(/\.(png|jpg|jpeg|webp|avif)$/i) ? 'mdi:image-outline' : 'mdi:file-document-outline'} class="size-3.5 shrink-0" />
+                    <span class="truncate">{f}</span>
+                    {#if cachedCharImages.has(f)}<span class="text-success/70 text-[10px] font-mono ml-auto">●</span>{/if}
+                  </button>
+                {/each}
+              {/if}
+            {/if}
+          </div>
+        </div>
+        <!-- Character card + JSON editor side by side -->
+        <div class="flex-1 flex gap-3 min-h-0 min-w-0">
+          {#if displayCharData}
+            {@const charMode = charCardModes[displayCharData.id] ?? (displayCharData.manwhaImage ? "manwha" : "webnovel")}
+            <!-- Left: JSON editor or image preview -->
+            <div class="flex-1 flex flex-col min-h-0 min-w-0">
+              {#if selectedIsImage && charSelectedImageUrl}
+                <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+                  <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">image preview</span>
+                  <span class="text-[10px] font-mono text-base-content/20">·</span>
+                  <span class="text-[10px] font-mono text-base-content/25 truncate">{charSelectedFile}</span>
+                  <div class="ml-auto flex gap-0.5">
+                    <button onclick={() => replaceCharImage(charSelectedFile!)} class="text-base-content/40 hover:text-base-content transition-colors p-0.5 rounded hover:bg-base-content/5" title="Replace image">
+                      <Icon icon="mdi:camera-replace-outline" class="size-3.5" />
+                    </button>
+                    {#if cachedCharImages.has(charSelectedFile!)}
+                      <button onclick={() => revertCachedImage(charSelectedFile!)} class="text-success/50 hover:text-success transition-colors p-0.5 rounded hover:bg-base-content/5" title="Revert to source">
+                        <Icon icon="mdi:undo-variant" class="size-3.5" />
+                      </button>
+                      <button onclick={() => deleteCachedImage(charSelectedFile!)} class="text-base-content/40 hover:text-error transition-colors p-0.5 rounded hover:bg-base-content/5" title="Delete cached image">
+                        <Icon icon="mdi:delete-outline" class="size-3.5" />
+                      </button>
+                    {/if}
+                  </div>
+                </div>
+                <div class="flex-1 flex items-center justify-center rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 p-4">
+                  <img src={charSelectedImageUrl} alt={charSelectedFile} class="max-w-full max-h-full object-contain rounded-lg" onerror={(e) => { const img = e.target as HTMLImageElement; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${charExplorerPath.join('/')}/${charSelectedFile}`; } else { img.style.display = 'none'; } }} />
+                </div>
+              {:else}
+                <div class="flex items-center justify-between px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+                  <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">character.json</span>
+                  {#if liveCharData}
+                    <span class="text-[10px] font-mono text-success font-medium">✓ valid json</span>
+                  {:else if charJsonInput}
+                    <span class="text-[10px] font-mono text-error font-medium">✗ {charJsonParseError}</span>
+                  {/if}
+                </div>
+                <div class="flex-1 flex rounded-b-xl border-x border-b border-base-content/10 overflow-hidden bg-base-300/60">
+                  <div bind:this={lineNumbersEl} class="select-none text-right font-mono text-xs leading-relaxed py-3 px-2 text-base-content/20 border-r border-base-content/10 overflow-hidden shrink-0" aria-hidden="true">
+                    {#each Array(lineCount) as _, i}
+                      <span class="block">{i + 1}</span>
+                    {/each}
+                  </div>
+                  <textarea
+                    bind:this={jsonEditorRef}
+                    bind:value={charJsonInput}
+                    onscroll={syncJsonScroll}
+                    spellcheck="false"
+                    placeholder="{`{\n  \"id\": \"...\",\n  \"name\": \"...\",\n  ...\n}`}"
+                    class="flex-1 font-mono text-xs leading-relaxed p-3 resize-none outline-none bg-transparent text-base-content/70 placeholder:text-base-content/15 min-h-0"
+                  ></textarea>
+                </div>
+              {/if}
+            </div>
+            <!-- Right: character card (bigger) -->
+            <div class="w-96 flex flex-col min-h-0 min-w-0 shrink-0">
+              <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+                <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">preview</span>
+                <span class="text-[10px] font-mono text-base-content/20">·</span>
+                <span class="text-[10px] font-mono text-base-content/25 truncate">{selectedAltObj?.name ?? displayCharData.name}</span>
+              </div>
+              <div class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 scrollbar-thin">
+                <div class="rounded-xl bg-base-200/40 border border-base-content/10 overflow-hidden m-3">
+                  <div class="w-full h-80 relative bg-base-300/50 group/image">
+                    {#if displayCharData.manwhaImage || charSelectedAlt}
+                      <img
+                        src={altManwhaImage ?? mainManwhaImage}
+                        alt={selectedAltObj?.name ?? displayCharData.name}
+                        class="absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300 pointer-events-none {charMode === 'manwha' ? 'opacity-100' : 'opacity-0'}"
+                        style="object-position: center 15%;"
+                        loading="lazy"
+                        onerror={(e) => imgErrorFallback(e, selectedAltObj?.manwhaImage ?? displayCharData.manwhaImage ?? '')}
+                      />
+                      <button onclick={() => replaceCharImage(selectedAltObj?.manwhaImage ?? displayCharData.manwhaImage ?? '')} title="Replace image" class="absolute top-2 left-2 text-base-content/40 hover:text-base-content bg-base-300/80 hover:bg-base-300 backdrop-blur-sm rounded-lg p-1.5 transition-all opacity-0 group-hover/image:opacity-100 {charMode === 'manwha' ? '' : 'hidden'}">
+                        <Icon icon="mdi:camera-replace-outline" class="size-3.5" />
+                      </button>
+                    {/if}
+                    {#if displayCharData.webnovelImage || charSelectedAlt}
+                      <img
+                        src={altWebnovelImage ?? mainWebnovelImage}
+                        alt={selectedAltObj?.name ?? displayCharData.name}
+                        class="absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300 pointer-events-none {charMode === 'webnovel' || !displayCharData.manwhaImage ? 'opacity-100' : 'opacity-0'}"
+                        style="object-position: center 15%;"
+                        loading="lazy"
+                        onerror={(e) => imgErrorFallback(e, selectedAltObj?.webnovelImage ?? displayCharData.webnovelImage ?? '')}
+                      />
+                      <button onclick={() => replaceCharImage(selectedAltObj?.webnovelImage ?? displayCharData.webnovelImage ?? '')} title="Replace image" class="absolute top-2 right-2 text-base-content/40 hover:text-base-content bg-base-300/80 hover:bg-base-300 backdrop-blur-sm rounded-lg p-1.5 transition-all opacity-0 group-hover/image:opacity-100 {charMode === 'webnovel' || !displayCharData.manwhaImage ? '' : 'hidden'}">
+                        <Icon icon="mdi:camera-replace-outline" class="size-3.5" />
+                      </button>
+                    {/if}
+                    {#if !displayCharData.manwhaImage && !displayCharData.webnovelImage && !charSelectedAlt}
+                      <div class="absolute inset-0 flex items-center justify-center">
+                        <Icon icon="material-symbols:person-off-rounded" class="size-12 opacity-20" />
+                      </div>
+                    {/if}
+                  </div>
+                  <div class="p-4 pb-2">
+                    <h3 class="font-bold text-base">{selectedAltObj?.name ?? displayCharData.name}</h3>
+                  </div>
+                  <div class="px-4 pb-2">
+                    <div class="join w-full">
+                      <button
+                        class="join-item btn btn-xs flex-1 {displayCharData.manwhaImage ? (charMode === 'manwha' ? 'btn-primary' : 'btn-ghost bg-base-200') : 'btn-ghost bg-base-200 opacity-30 cursor-not-allowed'}"
+                        onclick={() => { if (displayCharData.manwhaImage) charCardModes[displayCharData.id] = 'manwha'; }}
+                      >Manwha</button>
+                      <button
+                        class="join-item btn btn-xs flex-1 {charMode === 'webnovel' ? 'btn-primary' : 'btn-ghost bg-base-200'} {!displayCharData.webnovelImage ? 'opacity-30 cursor-not-allowed line-through' : ''}"
+                        onclick={() => { if (displayCharData.webnovelImage) charCardModes[displayCharData.id] = 'webnovel'; }}
+                      >Webnovel</button>
+                    </div>
+                  </div>
+                  <div class="px-4 pt-2 pb-4 text-xs space-y-1.5 text-base-content">
+                    <div class="flex justify-between">
+                      <span class="font-medium">First Appearance</span>
+                      <span>{selectedAltObj?.chapter ? 'CH ' + selectedAltObj.chapter : displayCharData.firstAppearance ? 'CH ' + displayCharData.firstAppearance : '■■'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Blood Type</span>
+                      <span>{displayCharData.bloodType || '■■'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="font-medium">Birthday</span>
+                      <span>{displayCharData.birthday || '■■'}</span>
+                    </div>
+                  </div>
+                  {#if displayCharData.alts && displayCharData.alts.length > 0}
+                    <div class="border-t border-base-content/10">
+                      <div class="px-4 pt-3 pb-1.5">
+                        <div class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">Alts</div>
+                      </div>
+                      <div class="max-h-48 overflow-y-auto px-4 pb-3 space-y-1 scrollbar-thin">
+                        {#each displayCharData.alts as alt}
+                          <button
+                            class="block w-full text-left text-sm px-3 py-2 rounded-lg transition-colors {charSelectedAlt === alt.id ? 'bg-warning/20 text-warning border border-warning/30' : 'bg-base-300/60 text-base-content/70 border border-base-content/10 hover:border-warning/30 hover:text-base-content'}"
+                            onclick={() => charSelectedAlt = charSelectedAlt === alt.id ? null : alt.id}
+                          >{alt.name}</button>
+                        {/each}
+                      </div>
+                    </div>
+                  {/if}
+                </div>
+              </div>
+            </div>
+          {:else}
+            <!-- Left: JSON editor or image preview -->
+            <div class="flex-1 flex flex-col min-h-0 min-w-0">
+              {#if selectedIsImage && charSelectedImageUrl}
+                <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+                  <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">image preview</span>
+                  <span class="text-[10px] font-mono text-base-content/20">·</span>
+                  <span class="text-[10px] font-mono text-base-content/25 truncate">{charSelectedFile}</span>
+                  <div class="ml-auto flex gap-0.5">
+                    <button onclick={() => replaceCharImage(charSelectedFile!)} class="text-base-content/40 hover:text-base-content transition-colors p-0.5 rounded hover:bg-base-content/5" title="Replace image">
+                      <Icon icon="mdi:camera-replace-outline" class="size-3.5" />
+                    </button>
+                    {#if cachedCharImages.has(charSelectedFile!)}
+                      <button onclick={() => revertCachedImage(charSelectedFile!)} class="text-success/50 hover:text-success transition-colors p-0.5 rounded hover:bg-base-content/5" title="Revert to source">
+                        <Icon icon="mdi:undo-variant" class="size-3.5" />
+                      </button>
+                      <button onclick={() => deleteCachedImage(charSelectedFile!)} class="text-base-content/40 hover:text-error transition-colors p-0.5 rounded hover:bg-base-content/5" title="Delete cached image">
+                        <Icon icon="mdi:delete-outline" class="size-3.5" />
+                      </button>
+                    {/if}
+                  </div>
+                </div>
+                <div class="flex-1 flex items-center justify-center rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 p-4">
+                  <img src={charSelectedImageUrl} alt={charSelectedFile} class="max-w-full max-h-full object-contain rounded-lg" onerror={(e) => { const img = e.target as HTMLImageElement; if (!img.dataset.fallback) { img.dataset.fallback = '1'; img.src = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/references/${charExplorerPath.join('/')}/${charSelectedFile}`; } else { img.style.display = 'none'; } }} />
+                </div>
+              {:else}
+                <div class="flex items-center justify-between px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+                  <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">character.json</span>
+                </div>
+                <div class="flex-1 flex items-center justify-center rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60">
+                  <p class="text-xs text-base-content/40">select a character folder</p>
+                </div>
+              {/if}
+            </div>
+            <!-- Character card placeholder (right) -->
+            <div class="w-96 flex flex-col min-h-0 min-w-0 shrink-0">
+              <div class="flex items-center gap-2 px-3 py-1.5 border-b border-base-content/10 bg-base-200/40 backdrop-blur-sm rounded-t-xl shrink-0">
+                <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">preview</span>
+              </div>
+              <div class="flex-1 flex items-center justify-center rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60">
+                <p class="text-xs text-base-content/40">no character</p>
+              </div>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
+  {/key}
   </div>
 
   <div class="flex items-center justify-between px-4 py-1.5 border-t border-base-content/10 bg-base-300/30 backdrop-blur-sm shrink-0">
-    <span class="text-[10px] font-mono text-base-content/25">gsgw / {translation}{#if !isSourceTranslation} <span class="text-warning/40">(custom)</span>{/if}</span>
-    <div class="flex items-center gap-3">
-      {#if selected === "sandbox"}
-        <span class="text-[10px] font-mono text-base-content/25">blank chapter</span>
-      {:else if selected}
-        {#if isSourceTranslation}
+    {#if editorMode === "chapters"}
+      <span class="text-[10px] font-mono text-base-content/25">gsgw / {translation}{#if !isSourceTranslation} <span class="text-warning/40">(custom)</span>{/if}</span>
+      <div class="flex items-center gap-3">
+        {#if selected === "sandbox"}
+          <span class="text-[10px] font-mono text-base-content/25">blank chapter</span>
+        {:else if selected}
+          {#if isSourceTranslation}
+            <a
+              href="https://github.com/{REPO}/edit/{BRANCH}/chapters/gsgw/{translation}/{selected}"
+              target="_blank"
+              class="text-[10px] font-mono text-base-content/30 hover:text-primary transition-colors"
+            >↗ {selected}</a>
+          {:else}
+            <span class="text-[10px] font-mono text-warning/40">{selected}</span>
+          {/if}
+        {:else}
+          <span class="text-[10px] font-mono text-base-content/20">no file</span>
+        {/if}
+      </div>
+    {:else}
+      <span class="text-[10px] font-mono text-base-content/25">gsgw / characters</span>
+      <div class="flex items-center gap-3">
+        {#if charExplorerPath.length > 0}
           <a
-            href="https://github.com/{REPO}/edit/{BRANCH}/chapters/gsgw/{translation}/{selected}"
+            href="https://github.com/{REPO}/tree/{BRANCH}/images/gsgw/references/{charExplorerPath.join('/')}"
             target="_blank"
             class="text-[10px] font-mono text-base-content/30 hover:text-primary transition-colors"
-          >↗ {selected}</a>
+          >↗ {charExplorerPath[charExplorerPath.length - 1]}</a>
         {:else}
-          <span class="text-[10px] font-mono text-warning/40">{selected}</span>
+          <span class="text-[10px] font-mono text-base-content/20">no folder</span>
         {/if}
-      {:else}
-        <span class="text-[10px] font-mono text-base-content/20">no file</span>
-      {/if}
-    </div>
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -1173,12 +2361,13 @@
         <span class="text-[10px] font-mono text-base-content/40 font-medium uppercase tracking-wider">Menu</span>
         <button onclick={() => showMobileMenu = false} class="text-base-content/40 hover:text-base-content transition-colors p-1 rounded hover:bg-base-content/5"><Icon icon="mdi:close" class="size-4" /></button>
       </div>
-      <div class="flex gap-0.5 px-3 pt-2 shrink-0">
-        <button onclick={() => leftTab = 'chapters'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'chapters' ? 'bg-base-content/10 text-base-content/70' : 'text-base-content/50 hover:text-base-content/70'}">Chapters</button>
-        <button onclick={() => leftTab = 'formatting'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'formatting' ? 'bg-base-content/10 text-base-content/70' : 'text-base-content/50 hover:text-base-content/70'}">Formatting</button>
-      </div>
-      <div class="flex-1 min-h-0 px-3 pb-3 pt-1.5">
-        {#if leftTab === 'chapters'}
+      {#if editorMode === "chapters"}
+        <div class="flex gap-0.5 px-3 pt-2 shrink-0">
+          <button onclick={() => leftTab = 'chapters'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'chapters' ? 'bg-base-content/10 text-base-content/70' : 'text-base-content/50 hover:text-base-content/70'}">Chapters</button>
+          <button onclick={() => leftTab = 'formatting'} class="flex-1 text-[10px] font-mono font-medium tracking-wider py-1.5 rounded-lg transition-colors {leftTab === 'formatting' ? 'bg-base-content/10 text-base-content/70' : 'text-base-content/50 hover:text-base-content/70'}">Formatting</button>
+        </div>
+        <div class="flex-1 min-h-0 px-3 pb-3 pt-1.5">
+          {#if leftTab === 'chapters'}
           <div class="h-full flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg">
             <div class="flex gap-1 p-2 border-b border-base-content/10">
               <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
@@ -1218,7 +2407,7 @@
             <table class="w-full border-collapse">
               <tbody>
                 {#each [
-                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
                 ] as opt}
                   <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                     <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -1230,6 +2419,62 @@
           </div>
         {/if}
       </div>
+    {:else}
+      <div class="flex-1 min-h-0 px-3 pb-3 pt-3">
+        <div class="h-full flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg overflow-hidden">
+          {#if charExplorerPath.length === 0}
+            <div class="p-2 border-b border-base-content/10 flex items-center justify-between">
+              <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">folders</span>
+              <button onclick={refreshCharacters} disabled={charactersRefreshing} class="text-base-content/40 hover:text-base-content transition-colors p-0.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Fetch source">
+                <Icon icon={charactersRefreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {charactersRefreshing ? 'animate-spin' : ''}" />
+              </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
+              {#if charactersLoading}
+                <div class="flex items-center justify-center py-6"><Icon icon="mdi:loading" class="size-4 text-base-content/50 animate-spin" /></div>
+              {:else if charactersError}
+                <p class="text-xs text-error/70 text-center py-6">{charactersError}</p>
+              {:else if characters.length === 0}
+                <p class="text-xs text-base-content/40 text-center py-6">no characters</p>
+              {:else}
+                {#each characters as char}
+                  <button onclick={() => { enterCharFolder(char.name); showMobileMenu = false; }} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors text-base-content/70">
+                    <Icon icon="mdi:folder-outline" class="size-3.5 shrink-0" />
+                    <span class="truncate">{char.name}</span>
+                  </button>
+                {/each}
+              {/if}
+            </div>
+          {:else}
+            <div class="p-1.5 border-b border-base-content/10">
+              <button onclick={() => { goBackOneFolder(); }} class="flex items-center gap-1.5 w-full text-left text-xs px-2 py-1 rounded-lg hover:bg-base-content/5 transition-colors text-base-content/50 hover:text-base-content">
+                <Icon icon="mdi:arrow-left" class="size-3.5" />
+                <span class="text-[10px]">..</span>
+              </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
+              {#each charFolderFiles.filter(f => f === "character.json") as f}
+                <button onclick={() => { selectCharFile(f); showMobileMenu = false; }} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {charSelectedFile === f ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">
+                  <Icon icon="mdi:code-json" class="size-3.5 shrink-0" />
+                  <span class="truncate">{f}</span>
+                  {#if charFolderHasLocalEdits}<span class="text-success/70 text-[10px] font-mono ml-auto">●</span>{/if}
+                </button>
+              {/each}
+              {#if charFolderFiles.filter(f => f !== "character.json").length > 0}
+                <div class="mx-1 my-1.5 border-t border-base-content/10"></div>
+                {#each charFolderFiles.filter(f => f !== "character.json") as f}
+                  <button onclick={() => { selectCharFile(f); showMobileMenu = false; }} class="flex items-center gap-2 w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {charSelectedFile === f ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">
+                    <Icon icon={f.match(/\.(png|jpg|jpeg|webp|avif)$/i) ? 'mdi:image-outline' : 'mdi:file-document-outline'} class="size-3.5 shrink-0" />
+                    <span class="truncate">{f}</span>
+                    {#if cachedCharImages.has(f)}<span class="text-success/70 text-[10px] font-mono ml-auto">●</span>{/if}
+                  </button>
+                {/each}
+              {/if}
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
     </div>
   </div>
 {/if}

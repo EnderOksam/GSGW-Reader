@@ -4,6 +4,7 @@
   import { page } from "$app/state";
   import { browser, dev } from "$app/environment";
   import { goto } from "$app/navigation";
+  import bgImage from "$lib/assets/background.jpg";
 
   let { children } = $props();
 
@@ -34,6 +35,7 @@
   $effect(() => {
     const _ = page.url.href;
     document.documentElement.setAttribute("data-theme", getCachedTheme());
+    document.documentElement.style.setProperty("--bg-image", `url(${bgImage})`);
   });
 </script>
 
@@ -76,6 +78,8 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   </div>
 {/if}
 
+<div class="bg"></div>
+
 <div class="content">
   {@render children()}
 </div>
@@ -94,45 +98,34 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   }
 
   :global(body) {
-    background: #0d0d0d;
+    background: transparent;
   }
 
-  :global(body)::before {
-    content: "";
+
+
+  .bg {
     position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(255, 255, 255, 0.035) 2px,
-      rgba(255, 255, 255, 0.035) 4px
-    );
-    filter: blur(0.5px);
+    inset: -10%;
+    z-index: -1;
+    background-color: #0d0d0d;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(12px);
+    animation: swirl 30s ease-in-out infinite alternate;
+    transform-origin: center;
   }
 
-  :global(body)::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 256px 256px;
-    animation: crt-shift 8s steps(4) infinite;
-  }
-
-  :global {
-    @keyframes crt-shift {
-      0% { background-position: 0 0; }
-      25% { background-position: 5px 3px; }
-      50% { background-position: -3px 7px; }
-      75% { background-position: 2px -4px; }
-      100% { background-position: 0 0; }
+  @keyframes swirl {
+    0% {
+      transform: rotate(-0.5deg) scale(1);
+    }
+    50% {
+      transform: rotate(0.5deg) scale(1.02);
+    }
+    100% {
+      transform: rotate(-0.25deg) scale(1.03);
     }
   }
 

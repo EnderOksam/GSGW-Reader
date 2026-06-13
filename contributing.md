@@ -130,6 +130,7 @@ To add a titlebar, put text on the first line inside the window. Put `\` before 
 
 | Tag | Effect |
 |-----|--------|
+| `-# text #-` | Sub/small text |
 | `_text_` | Underline |
 | `~text~` | Strikethrough |
 | `---` or `~~~` | Scene break / horizontal divider |

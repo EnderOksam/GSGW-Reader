@@ -1,0 +1,12 @@
+{
+  "id": "EunHaje",
+  "name": "Eun Haje",
+  "hasManwha": true,
+  "manwhaImage": "EunHajeManwha.webp",
+  "webnovelImage": "EunHajeWebnovel.webp",
+  "firstAppearance": 6,
+  "birthday": "Oct 4",
+  "bloodType": "B",
+  "preferredAlt": null,
+  "alts": []
+}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { readerState } from "$lib/reader.svelte";
+  import ReferencePanel from "./ReferencePanel.svelte";
 
   // --- Types ---
   interface Chapter {
@@ -81,82 +82,85 @@
 <!-- --- Navbar View --- -->
 {#if prefs.config.navbarVisible}
   <nav
-    class="flex w-full items-center justify-center gap-2 sm:gap-5 bg-base-100 border-b border-base-content/10 p-3 z-50 {prefs.config.navbarSticky ? 'sticky top-0' : 'relative'}"
+    class="flex w-full items-center justify-center gap-2 sm:gap-5 bg-base-100 border-b border-base-content/10 p-3 z-50 relative {prefs.config.navbarSticky ? 'sticky top-0' : ''}"
   >
-    <!-- Home Link -->
-    <div class="tooltip tooltip-bottom" data-tip="Home (H)">
-      <a href="/book/{bookSlug}" class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Home">
-        <Icon icon="material-symbols:home-outline-rounded" class="size-6" />
-      </a>
-    </div>
-
-    <!-- Previous Chapter -->
-    <div class="tooltip tooltip-bottom" data-tip="Previous (P)">
-      {#if currentChapter > 0}
-        <a
-          href="/read/{bookSlug}/{navState.selectedTL}/{currentChapter - 1}"
-          class="btn btn-ghost btn-sm btn-square rounded-btn"
-          aria-label="Previous Chapter"
-        >
-          <Icon icon="mage:previous" class="size-5" />
+    <div class="flex items-center justify-center gap-2 sm:gap-5">
+      <!-- Home Link -->
+      <div class="tooltip tooltip-bottom" data-tip="Home (H)">
+        <a href="/book/{bookSlug}" class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Home">
+          <Icon icon="material-symbols:home-outline-rounded" class="size-6" />
         </a>
-      {:else}
-        <button class="btn btn-ghost btn-sm btn-square rounded-btn opacity-30" disabled aria-label="No previous chapter">
-          <Icon icon="mage:previous" class="size-5" />
-        </button>
-      {/if}
-    </div>
+      </div>
 
-    <!-- Scroll to Comments -->
-    <div class="tooltip tooltip-bottom" data-tip="Comments (C)">
-      <button
-        onclick={() => document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" })}
-        class="btn btn-ghost btn-sm btn-square rounded-btn"
-        aria-label="Comments"
-      >
-        <Icon icon="iconamoon:comment" class="size-6" />
-      </button>
-    </div>
+      <!-- Previous Chapter -->
+      <div class="tooltip tooltip-bottom" data-tip="Previous (P)">
+        {#if currentChapter > 0}
+          <a
+            href="/read/{bookSlug}/{navState.selectedTL}/{currentChapter - 1}"
+            class="btn btn-ghost btn-sm btn-square rounded-btn"
+            aria-label="Previous Chapter"
+          >
+            <Icon icon="mage:previous" class="size-5" />
+          </a>
+        {:else}
+          <button class="btn btn-ghost btn-sm btn-square rounded-btn opacity-30" disabled aria-label="No previous chapter">
+            <Icon icon="mage:previous" class="size-5" />
+          </button>
+        {/if}
+      </div>
 
-    <!-- Next Chapter -->
-    <div class="tooltip tooltip-bottom" data-tip="Next (N)">
-      {#if currentChapter < totalChapters - 1}
-        <a
-          href="/read/{bookSlug}/{navState.selectedTL}/{currentChapter + 1}"
+      <!-- Scroll to Comments -->
+      <div class="tooltip tooltip-bottom" data-tip="Comments (C)">
+        <button
+          onclick={() => document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" })}
           class="btn btn-ghost btn-sm btn-square rounded-btn"
-          aria-label="Next Chapter"
-          data-sveltekit-preload-data="viewport"
+          aria-label="Comments"
         >
-          <Icon icon="mage:next" class="size-5" />
-        </a>
-      {:else}
-        <button class="btn btn-ghost btn-sm btn-square rounded-btn opacity-30" disabled aria-label="No next chapter">
-          <Icon icon="mage:next" class="size-5" />
+          <Icon icon="iconamoon:comment" class="size-6" />
         </button>
-      {/if}
+      </div>
+
+      <!-- Next Chapter -->
+      <div class="tooltip tooltip-bottom" data-tip="Next (N)">
+        {#if currentChapter < totalChapters - 1}
+          <a
+            href="/read/{bookSlug}/{navState.selectedTL}/{currentChapter + 1}"
+            class="btn btn-ghost btn-sm btn-square rounded-btn"
+            aria-label="Next Chapter"
+            data-sveltekit-preload-data="viewport"
+          >
+            <Icon icon="mage:next" class="size-5" />
+          </a>
+        {:else}
+          <button class="btn btn-ghost btn-sm btn-square rounded-btn opacity-30" disabled aria-label="No next chapter">
+            <Icon icon="mage:next" class="size-5" />
+          </button>
+        {/if}
+      </div>
+
+      <!-- Table of Contents Toggle -->
+      <div class="tooltip tooltip-bottom" data-tip="Table of Contents (T)">
+        <button onclick={openTOC} class="btn btn-outline btn-sm rounded-btn">
+          <Icon icon="lucide:table-of-contents" class="size-5" />
+          <span class="hidden sm:inline">Contents</span>
+        </button>
+      </div>
+
+      <!-- Edit/Contribute Toggle -->
+      <div class="tooltip tooltip-bottom" data-tip="Edit (E)">
+        <button onclick={openEdit} class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Edit">
+          <Icon icon="material-symbols:edit-outline-rounded" class="size-6" />
+        </button>
+      </div>
+
+      <!-- Settings Toggle -->
+      <div class="tooltip tooltip-bottom" data-tip="Settings (S)">
+        <button onclick={openSettings} class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Settings">
+          <Icon icon="material-symbols:settings-outline-rounded" class="size-6" />
+        </button>
+      </div>
     </div>
 
-    <!-- Table of Contents Toggle -->
-    <div class="tooltip tooltip-bottom" data-tip="Table of Contents (T)">
-      <button onclick={openTOC} class="btn btn-outline btn-sm rounded-btn">
-        <Icon icon="lucide:table-of-contents" class="size-5" />
-        <span class="hidden sm:inline">Contents</span>
-      </button>
-    </div>
-
-    <!-- Edit/Contribute Toggle -->
-    <div class="tooltip tooltip-bottom" data-tip="Edit (E)">
-      <button onclick={openEdit} class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Edit">
-        <Icon icon="material-symbols:edit-outline-rounded" class="size-6" />
-      </button>
-    </div>
-
-    <!-- Settings Toggle -->
-    <div class="tooltip tooltip-bottom" data-tip="Settings (S)">
-      <button onclick={openSettings} class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Settings">
-        <Icon icon="material-symbols:settings-outline-rounded" class="size-6" />
-      </button>
-    </div>
   </nav>
 {:else}
   <!-- Mini Fab button when navbar is hidden -->
@@ -167,6 +171,9 @@
     <Icon icon="material-symbols:menu-rounded" class="size-6" />
   </button>
 {/if}
+
+<!-- --- World Setting Side Panel (GSGW only) --- -->
+<ReferencePanel {currentChapter} />
 
 <!-- --- Modal: Table of Contents --- -->
 <dialog bind:this={modals.chapter} class="modal modal-bottom sm:modal-middle">
@@ -324,3 +331,5 @@
   </div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
 </dialog>
+<style>
+</style>

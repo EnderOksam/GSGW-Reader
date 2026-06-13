@@ -8,4 +8,5 @@ export const readerState = $state({
     discussion: 0,
     description: ""
   },
+  refPanelOpen: false,
 });

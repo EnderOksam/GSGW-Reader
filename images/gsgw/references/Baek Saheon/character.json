@@ -1,0 +1,22 @@
+{
+  "id": "BaekSaheon",
+  "name": "Baek Saheon",
+  "hasManwha": true,
+  "manwhaImage": "BaekSaheonManwha.webp",
+  "firstAppearance": 2,
+  "birthday": "May 11",
+  "bloodType": "A",
+  "preferredAlt": "eyepatch",
+  "alts": [
+    {
+      "id": "eyepatch",
+      "name": "Baek Saheon (Eyepatch)",
+      "chapter": 5,
+      "toggleable": true,
+      "hasManwha": true,
+      "hasWebnovel": true,
+      "manwhaImage": "Eyepatch.webp",
+      "webnovelImage": "EyepatchWebnovel.webp"
+    }
+  ]
+}

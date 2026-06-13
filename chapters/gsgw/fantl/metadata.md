@@ -15,7 +15,6 @@ language: en-GB
 subject:
   - Fantasy
   - Mystery
-  - Steampunk
   - Transmigration
 description: "A pop-up event for some ‘modern fantasy’ media I loved so much that I even took a precious day off work to attend. On that day, I ended up transmigrating as a character in that very fantasy world."
 rights: "All rights belong to the original author and licensed platforms."
@@ -34,7 +33,9 @@ page-progression-direction: ltr
 # Got Dropped into a Ghost Story, Still Gotta Work
 
 **Author:** Baek Deoksoo  
-**Translator:** Salt Goblin  
+
+**Original Translator:** Salt Goblin (edited by readers)
+
 **Last Updated:** {{DATE}}
 
-this chapter is ignored by the website, its exclusive to the epub.
+this chapter is ignored by the website, its exclusive to the epub for adding credits or whatever else 

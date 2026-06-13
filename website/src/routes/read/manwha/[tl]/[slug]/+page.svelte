@@ -15,8 +15,25 @@
   let showSettings = $state(false);
   let imageScale = $state(browser ? parseFloat(localStorage.getItem("manwha-scale") ?? "0.7") : 0.7);
 
+  const PRIORITY_THEMES = ["sunset", "light", "retro", "night", "business", "cupcake", "black"];
+  const ALL_THEMES = ["sunset","light","dark","cupcake","bumblebee","emerald","corporate","synthwave","retro","cyberpunk","valentine","halloween","garden","forest","aqua","lofi","pastel","fantasy","wireframe","black","luxury","dracula","cmyk","autumn","business","acid","lemonade","night","coffee","winter","dim","nord","sunset"];
+  const MISC_THEMES = ALL_THEMES.filter((t) => !PRIORITY_THEMES.includes(t));
+  let theme = $state(browser ? (() => { try { const s = localStorage.getItem("readerSettings"); if (s) { const p = JSON.parse(s); if (p.theme) return p.theme; } } catch {} return "sunset"; })() : "sunset");
+
   $effect(() => {
     localStorage.setItem("manwha-scale", String(imageScale));
+  });
+
+  $effect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (browser) {
+      try {
+        const saved = localStorage.getItem("readerSettings");
+        const config = saved ? JSON.parse(saved) : {};
+        config.theme = theme;
+        localStorage.setItem("readerSettings", JSON.stringify(config));
+      } catch {}
+    }
   });
 
   interface Chapter { title: string; slug: string; index: number; }
@@ -109,8 +126,8 @@
     {/if}
   </div>
 
-  <div class="max-md:hidden relative">
-    <div class="tooltip tooltip-bottom" data-tip="Image Size (S)">
+  <div class="relative">
+    <div class="tooltip tooltip-bottom" data-tip="Settings">
       <button onclick={() => showSettings = !showSettings} class="btn btn-ghost btn-sm btn-square rounded-btn relative z-[60]">
         <Icon icon="material-symbols:settings-outline-rounded" class="size-5" />
       </button>
@@ -119,17 +136,35 @@
       <div class="fixed inset-0 z-40" onclick={() => showSettings = false}></div>
       <div class="absolute top-full right-0 mt-2 z-50 bg-base-100 border border-base-content/10 rounded-box shadow-2xl p-4 min-w-48" onclick={(e) => e.stopPropagation()}>
         <div class="flex flex-col gap-3">
-          <span class="text-xs font-medium">Size: {Math.round(imageScale * 100)}%</span>
-          <input type="range" min="0.5" max="1.5" step="0.05" bind:value={imageScale} class="range range-sm" />
-          <div class="flex justify-between text-[10px] opacity-40 px-0.5">
-            <span>50%</span>
-            <span>70%</span>
-            <span>150%</span>
+          <div class="max-md:hidden">
+            <span class="text-xs font-medium">Size: {Math.round(imageScale * 100)}%</span>
+            <input type="range" min="0.5" max="1.5" step="0.05" bind:value={imageScale} class="range range-sm" />
+            <div class="flex justify-between text-[10px] opacity-40 px-0.5">
+              <span>50%</span>
+              <span>70%</span>
+              <span>150%</span>
+            </div>
+            <div class="border-t border-base-content/10 my-1"></div>
           </div>
+          <span class="text-xs font-medium">Theme</span>
+          <select class="select select-bordered select-sm w-full rounded-btn" bind:value={theme}>
+            <optgroup label="Recommended">
+              {#each PRIORITY_THEMES as t}
+                <option value={t}>{t}</option>
+              {/each}
+            </optgroup>
+            <optgroup label="Other">
+              {#each MISC_THEMES as t}
+                <option value={t}>{t}</option>
+              {/each}
+            </optgroup>
+          </select>
         </div>
       </div>
     {/if}
   </div>
+
+
 
   <div class="tooltip tooltip-bottom" data-tip="Comments (C)">
     <button onclick={() => document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" })} class="btn btn-ghost btn-sm btn-square rounded-btn">

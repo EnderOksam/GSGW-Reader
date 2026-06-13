@@ -1,0 +1,20 @@
+{
+  "id": "Braun",
+  "name": "Braun",
+  "hasManwha": true,
+  "manwhaImage": "BraunManwha.webp",
+  "firstAppearance": 10,
+  "birthday": "■■",
+  "bloodType": "■■",
+  "preferredAlt": "goodfriend",
+  "alts": [
+    {
+      "id": "goodfriend",
+      "name": "Braun (Good Friend)",
+      "chapter": 25,
+      "toggleable": true,
+      "hasWebnovel": true,
+      "webnovelImage": "GoodfriendWebnovel.webp"
+    }
+  ]
+}

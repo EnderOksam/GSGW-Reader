@@ -241,6 +241,11 @@ hr.visible-hr {
   opacity: 0.55;
 }
 
+.text-sub {
+  font-size: 0.75em;
+  opacity: 0.6;
+}
+
 .text-fade-right {
   display: inline-block;
   -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.6) 0%, transparent 100%);

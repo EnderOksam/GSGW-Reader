@@ -224,7 +224,7 @@
 >
   <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {totalChapters} />
 
-  <main class="mx-auto my-3 max-w-4xl w-full px-4 py-8 sm:px-6 md:px-12 sm:py-12 z-0 relative">
+  <main class="mx-auto my-3 max-w-4xl w-full px-4 py-8 sm:px-6 md:px-12 sm:py-12 z-0 relative transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
     <div
       class="absolute inset-0 bg-base-200 -z-10 rounded-box transition-opacity duration-300"
       style="opacity: var(--card-bg-opacity);"
@@ -267,7 +267,17 @@
     </div>
   </main>
 
-  <div id="comments" class="mx-auto max-w-4xl px-4 pb-16">
+  {#if bookSlug === "gsgw"}
+    <button
+      onclick={() => readerState.refPanelOpen = !readerState.refPanelOpen}
+      class="fixed right-0 top-1/2 -translate-y-1/2 z-40 btn btn-ghost btn-square btn-sm rounded-l-full bg-base-100/80 shadow-md hover:bg-base-100 border border-base-content/20 border-r-0"
+      aria-label="Toggle Reference Panel"
+    >
+      <Icon icon={readerState.refPanelOpen ? "material-symbols:chevron-right-rounded" : "material-symbols:chevron-left-rounded"} class="size-5" />
+    </button>
+  {/if}
+
+  <div id="comments" class="mx-auto max-w-4xl px-4 pb-16 transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
     {#key page.url.pathname}
       <Giscus
         repo="EnderOksam/GSGW-Reader"
@@ -289,6 +299,11 @@
 </div>
 
 <style>
+  @media (max-width: 639px) {
+    .ref-shift {
+      transform: none !important;
+    }
+  }
   .chapter-content {
     font-family: var(--chapter-font);
     font-size: var(--chapter-size);

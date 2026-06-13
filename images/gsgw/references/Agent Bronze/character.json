@@ -1,0 +1,11 @@
+{
+  "id": "AgentBronze",
+  "name": "Agent Bronze",
+  "hasManwha": false,
+  "webnovelImage": "AgentBronzeWebnovel.webp",
+  "firstAppearance": 33,
+  "birthday": "Dec 9",
+  "bloodType": "A",
+  "preferredAlt": null,
+  "alts": []
+}

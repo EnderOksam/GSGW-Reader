@@ -129,7 +129,7 @@
   $effect(() => {
     const tls = Object.keys(meta[bookSlug] || {});
     if (!selectedTL || !tls.includes(selectedTL)) {
-      selectedTL = tls[0] || "";
+      selectedTL = tls.includes("fantl") ? "fantl" : tls.includes("mtl") ? "mtl" : tls[0] || "";
     }
   });
   let continueData = $state<ReadingHistory | null>(null);

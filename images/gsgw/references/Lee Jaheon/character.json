@@ -1,0 +1,21 @@
+{
+  "id": "LeeJaheon",
+  "name": "Lee Jaheon",
+  "hasManwha": true,
+  "manwhaImage": "LeeJaheonManwha.webp",
+  "webnovelImage": "LeeJaheonWebnovel.webp",
+  "firstAppearance": 14,
+  "birthday": "Jan 2",
+  "bloodType": "AB",
+  "preferredAlt": null,
+  "alts": [
+    {
+      "id": "lizard",
+      "name": "Lee Jaheon (Lizard)",
+      "chapter": null,
+      "toggleable": true,
+      "hasManwha": true,
+      "manwhaImage": "Lizard.webp"
+    }
+  ]
+}

@@ -78,9 +78,9 @@
   </div>
 {/if}
 
-<div class="relative min-h-dvh flex flex-col items-center justify-center p-6 md:p-12">
-  <div class="flex flex-col items-center gap-6 md:gap-14 w-full max-w-7xl">
-    <h1 class="crt-title text-6xl md:text-7xl font-bold leading-tight text-center filter drop-shadow-[0_0_10px_#fb8462]" style="color:#fb8462">
+<div class="relative h-dvh flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden">
+  <div class="flex flex-col items-center gap-4 md:gap-8 w-full max-w-7xl">
+    <h1 class="crt-title text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight text-center whitespace-nowrap filter drop-shadow-[0_0_10px_#fb8462]" style="color:#fb8462">
       GSGW-Reader
     </h1>
 
@@ -173,31 +173,31 @@
       {/each}
     </div>
 
-    <div class="flex flex-wrap items-center justify-center gap-4">
+    <div class="flex flex-nowrap items-center justify-center gap-2 md:gap-4">
       <div class="tooltip" data-tip="Download">
-        <a href="/download" class="btn btn-soft btn-square btn-xl btn-secondary shadow-lg">
-          <Icon icon="material-symbols:download" class="size-7" />
+        <a href="/download" class="btn btn-soft btn-square btn-lg md:btn-xl btn-secondary shadow-lg">
+          <Icon icon="material-symbols:download" class="size-5 md:size-7" />
         </a>
       </div>
       <div class="tooltip" data-tip="Contribute">
-        <button onclick={() => contributeModal.showModal()} class="btn btn-soft btn-square btn-xl btn-warning shadow-lg">
-          <Icon icon="ri:edit-line" class="size-7" />
+        <button onclick={() => contributeModal.showModal()} class="btn btn-soft btn-square btn-lg md:btn-xl btn-warning shadow-lg">
+          <Icon icon="ri:edit-line" class="size-5 md:size-7" />
         </button>
       </div>
       <div class="tooltip" data-tip="Discord">
-        <a href="https://discord.gg/HHnSjeGN4d" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-square btn-xl btn-accent shadow-lg">
-          <Icon icon="mingcute:discord-line" class="size-7" />
+        <a href="https://discord.gg/HHnSjeGN4d" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-square btn-lg md:btn-xl btn-accent shadow-lg">
+          <Icon icon="mingcute:discord-line" class="size-5 md:size-7" />
         </a>
       </div>
       <div class="tooltip" data-tip="GitHub">
-        <a href="https://github.com/EnderOksam/GSGW-Reader" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-square btn-xl btn-info shadow-lg">
-          <Icon icon="mdi:github" class="size-7" />
+        <a href="https://github.com/EnderOksam/GSGW-Reader" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-square btn-lg md:btn-xl btn-info shadow-lg">
+          <Icon icon="mdi:github" class="size-5 md:size-7" />
         </a>
       </div>
       <StarField>
         <div class="tooltip" data-tip="Info">
-          <a href="/info" class="btn btn-soft btn-square btn-xl btn-ghost shadow-lg info-glow">
-            <Icon icon="mdi:information-outline" class="size-7" />
+          <a href="/info" class="btn btn-soft btn-square btn-lg md:btn-xl btn-ghost shadow-lg info-glow">
+            <Icon icon="mdi:information-outline" class="size-5 md:size-7" />
           </a>
         </div>
       </StarField>
@@ -225,6 +225,8 @@
 
 <style>
   .crt-title {
+    -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5);
+    paint-order: stroke fill;
     text-shadow:
       0 0 3px rgba(251, 132, 98, 0.3),
       0 0 8px rgba(251, 132, 98, 0.1),

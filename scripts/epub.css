@@ -1,579 +1,359 @@
-/* Default CSS */
-
-/* This defines styles and classes used in the book */
-@page {
-  margin: 10px;
-}
-
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-article,
-aside,
-canvas,
-details,
-embed,
-figure,
-figcaption,
-footer,
-header,
-hgroup,
-menu,
-nav,
-output,
-ruby,
-section,
-summary,
-time,
-mark,
-audio,
-video,
-ol,
-ul,
-li,
-dl,
-dt,
-dd {
+div.svg_outer {
+  display: block;
   margin: 0;
   padding: 0;
-  border: 0;
-  font-size: 100%;
-  vertical-align: baseline;
+  text-align: left;
 }
 
-html {
-  font-family: Georgia, serif;
-  color: #1a1a1a;
+div.svg_inner {
+  display: block;
+  text-align: center;
+}
+
+body {
+  margin: 2%;
+  color: #111;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+p {
+  margin: 1em 0;
+  line-height: 1.45;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
-sup {
-  vertical-align: super;
-  font-size: smaller;
-}
-
-sub {
-  vertical-align: sub;
-  font-size: smaller;
-}
-
-h1 {
-  margin: 3em 0 0 0;
-  font-size: 2em;
-  page-break-before: always;
-  line-height: 150%;
-}
-
-h2 {
-  margin: 1.5em 0 0 0;
-  font-size: 1.75em;
-  line-height: normal;
-}
-
-h3 {
-  margin: 1.3em 0 0 0;
-  font-size: 1.3em;
-}
-
-h4 {
-  margin: 1.2em 0 0 0;
-  font-size: 1.2em;
-}
-
-h5 {
-  margin: 1.1em 0 0 0;
-  font-size: 1.1em;
-}
-
-h6 {
-  font-size: 1em;
-}
-
-ol,
-ul {
-  margin: 1em 0 0 1.7em;
-}
-
-li > ol,
-li > ul {
-  margin-top: 0;
-}
-
-blockquote {
-  margin: 1em 0 1em 1.7em;
-}
-
-code {
-  font-family: Menlo, Monaco, "Lucida Console", Consolas, monospace;
-  font-size: 85%;
-  margin: 0;
-}
-
-pre {
-  margin: 1em 0;
-  overflow: auto;
-}
-
-pre code {
-  padding: 0;
-  overflow: visible;
-  overflow-wrap: normal;
-}
-
-.sourceCode {
-  background-color: transparent;
-  overflow: visible;
-}
-
-table {
-  margin: 1em 0;
-  border-collapse: collapse;
-  width: 100%;
-  overflow-x: auto;
-  display: block;
-}
-
-table caption {
-  margin-bottom: 0.75em;
-}
-
-tbody {
-  margin-top: 0.5em;
-  border-top: 1px solid #1a1a1a;
-  border-bottom: 1px solid #1a1a1a;
-}
-
-th,
-td {
-  padding: 0.25em 0.5em 0.25em 0.5em;
-}
-
-th {
-  border-top: 1px solid #1a1a1a;
-}
-
-header {
-  margin-bottom: 4em;
-  text-align: center;
-}
-
-#TOC li {
-  list-style: none;
-}
-
-#TOC ul {
-  padding-left: 1.3em;
-}
-
-#TOC > ul {
-  padding-left: 0;
-}
-
-#TOC a:not(:hover) {
-  text-decoration: none;
-}
-
-code {
-  white-space: pre-wrap;
-}
-
-span.smallcaps {
-  font-variant: small-caps;
-}
-
-div.column {
-  display: inline-block;
-  vertical-align: top;
-  width: 50%;
-}
-
-div.hanging-indent {
-  margin-left: 1.5em;
-  text-indent: -1.5em;
-}
-
-ul.task-list {
-  list-style: none;
-}
-
-ul.task-list li input[type="checkbox"] {
-  width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
-  vertical-align: middle;
-}
-
-.display.math {
-  display: block;
-  text-align: center;
-  margin: 0.5rem auto;
-}
-
-nav#toc ol,
-nav#landmarks ol {
-  padding: 0;
-  margin-left: 1em;
-}
-
-nav#toc ol li,
-nav#landmarks ol li {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-a.footnote-ref {
-  vertical-align: super;
-}
-
-em,
-em em em,
-em em em em em {
-  font-style: italic;
-}
-
-em em,
-em em em em {
-  font-style: normal;
-}
-
-q {
-  quotes: "ΓÇ£" "ΓÇ¥" "ΓÇÿ" "ΓÇÖ";
-}
-
-@media screen {
-  /* Workaround for iBooks issue; see #6242 */
-  .sourceCode {
-    overflow: visible !important;
-    white-space: pre-wrap !important;
-  }
-}
-
-/* CUSTOM */
-
-.epub-invis {
-  display: block;
-  height: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
-  font-size: 0;
-  line-height: 0;
-}
-
-/* Horizontal rule */
-hr {
-  border: none;
-  border-top: 2px solid;
-  width: 40%;
-  margin: 2.5em auto;
-  page-break-inside: avoid;
-  page-break-before: avoid;
-  break-before: avoid;
-  border-color: currentColor;
-}
-/* Page Break Healpers */
-.epub-page-break {
-  page-break-before: always;
-}
-
-.epub-no-break {
-  page-break-inside: avoid;
-}
-
 h1,
-h2,
+h2 {
+  text-align: center;
+  margin-bottom: 10%;
+  margin-top: 10%;
+  line-height: 1.25;
+}
+
 h3,
 h4,
 h5,
 h6 {
-  width: 15em;
-  max-width: 80%;
-  text-indent: 0;
-  margin: 1em auto;
-  font-weight: bold;
   text-align: center;
-  padding-bottom: 0.3em;
-  border-bottom: 2px solid;
-  font-variant: small-caps;
-  page-break-after: avoid;
-  page-break-inside: avoid;
-}
-h4,
-h5,
-h6 {
-  border-bottom: none;
+  margin-bottom: 15%;
+  margin-top: 10%;
+  line-height: 1.25;
 }
 
-p {
-  widows: 2;
-  orphans: 2;
-  margin: 1em 0;
-  line-height: 1.5;
-/*  text-indent: 1.2em; */
+ol,
+ul {
+  padding-left: 8%;
 }
 
-/*h1 + p,
-h2 + p,
-hr + p {
-  text-indent: 0;
-}*/
-
-.epub-small {
-  font-size: 0.8em;
+li {
+  margin: 0.35em 0;
 }
 
-/* 1. The Container */
-figure {
-  display: block;
-  margin: 1.5em auto;
-  width: 100%;
-  page-break-inside: avoid; 
-  break-inside: avoid;
+blockquote {
+  margin: 1em 6%;
 }
 
-/* 2. The Image */
-img {
-  max-width: 100%;
-  height: auto;
-  max-height: 92vh; 
-  display: block;
-  margin: 1.5em auto;
-  page-break-inside: avoid;
-}
-
-figure img {
-  margin-bottom: 0.2em;
-  page-break-after: avoid;
-  break-after: avoid;
-}
-
-/* 4. The Caption */
-figcaption {
-  margin-top: 0.5em;
-  page-break-before: avoid;
-  break-before: avoid;
-  
-  /* Your existing styling */
-  font-size: small;
-  text-align: center;
-  opacity: 0.8;
-  font-style: italic;
-  margin-bottom: 2em;
-  line-height: 1.3;
-}
-
-.hidden-caption + figcaption {
-  display: none;
-}
-
-#footnotes hr {
-  display: block;
-  height: 0;
-  margin: 0;
+dd,
+dt,
+dl {
   padding: 0;
+  margin: 0;
+}
+
+code,
+pre {
+  font-family: "Courier New", Courier, monospace;
+}
+
+pre {
+  white-space: pre-wrap;
+  margin: 1em 0;
+}
+
+img {
+  display: block;
+  min-height: 1em;
+  max-height: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2%;
+  margin-top: 2%;
+}
+
+img.inline {
+  display: inline;
+  min-height: 1em;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.image-block {
+  display: block;
+  margin: 1.5em auto;
+  page-break-inside: avoid;
+}
+
+.thumbcaption {
+  display: block;
+  font-size: 0.9em;
+  font-style: italic;
+  line-height: 1.3;
+  text-align: center;
+  padding-right: 5%;
+  padding-left: 5%;
+}
+
+hr {
+  color: black;
+  background-color: black;
+  height: 2px;
   border: none;
-  font-size: 0;
-  line-height: 0;
+  width: 100%;
+  margin: 2em auto;
+}
+
+a:link {
+  text-decoration: none;
+  color: #0b0080;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+a:hover,
+a:active {
+  text-decoration: underline;
+}
+
+table {
+  width: 90%;
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+}
+
+.webToEpub-author-note {
+  border: 1px solid black;
+  padding: 0.5em;
+}
+
+nav#toc ol {
+  padding-left: 8%;
+}
+
+nav#toc li {
+  margin: 0.5em 0;
+}
+
+strong,
+b {
+  font-weight: bold;
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+del {
+  text-decoration: line-through;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.text-red {
+  color: #cc2200;
+  font-weight: bold;
+}
+
+.text-blue {
+  color: #2255cc;
+  font-weight: bold;
+}
+
+.text-yellow {
+  color: #8a7000;
+  font-weight: bold;
+}
+
+.text-magenta {
+  color: #aa00aa;
+  font-weight: bold;
+}
+
+.text-green {
+  color: #228800;
+  font-weight: bold;
+}
+
+.text-orange {
+  color: #dd6600;
+  font-weight: bold;
+}
+
+.hl-red {
+  background: #ffd3ca;
+}
+
+.hl-blue {
+  background: #d6ecff;
+}
+
+.hl-yellow {
+  background: #fff3a8;
+}
+
+.hl-magenta {
+  background: #f5d2ff;
+}
+
+.hl-green {
+  background: #d9f5df;
+}
+
+.hl-orange {
+  background: #ffe0c7;
+}
+
+.text-large {
+  font-size: 1.25em;
+  font-weight: bold;
+}
+
+.text-large-centered {
+  display: block;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  line-height: 1.35;
+}
+
+.mono {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+}
+
+.mono-left,
+.align-left {
+  display: block;
+  text-align: left;
+}
+
+.mono-right,
+.align-right {
+  display: block;
+  text-align: right;
 }
 
 .text-faded {
-  opacity: 0.1;
-}
-
-.text-grow {
-  display: inline-block;
-}
-
-.glitch-subtle {
-  position: relative;
-  display: inline-block;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  text-shadow:
-    0.5px -1px 0 rgba(255,255,255,0.10),
-    -0.5px 1px 0 rgba(255,255,255,0.10);
-}
-
-.glitch-subtle .char {
-  display: inline-block;
-  opacity: 0.7;
+  opacity: 0.25;
 }
 
 .text-fade-right {
   display: inline-block;
-  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.6) 0%, transparent 100%);
-  mask-image: linear-gradient(to right, rgba(0,0,0,0.6) 0%, transparent 100%);
+  opacity: 0.55;
 }
 
 .text-fade-left {
   display: inline-block;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 100%);
-  mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 100%);
+  opacity: 0.55;
 }
 
-.hl-red {
-  background: linear-gradient(to bottom, rgba(255, 77, 0, 0.55) 85%, transparent 85%);
+.text-grow,
+.shake,
+.wave-up,
+.glitch-text,
+.glitch-subtle {
+  display: inline-block;
 }
 
-.hl-blue {
-  background: linear-gradient(to bottom, rgba(56, 189, 248, 0.55) 85%, transparent 85%);
+.shake,
+.wave-up {
+  font-weight: bold;
 }
 
-.hl-yellow {
-  background: linear-gradient(to bottom, rgba(255, 247, 0, 0.55) 85%, transparent 85%);
+.glitch-text {
+  opacity: 0.8;
+  text-shadow: 1px 0 0 #cc2200, -1px 0 0 #2255cc;
 }
 
-.hl-magenta {
-  background: linear-gradient(to bottom, rgba(217, 70, 239, 0.55) 85%, transparent 85%);
+.glitch-subtle {
+  opacity: 0.9;
+  text-shadow: 0.5px 0.5px 0 #777;
 }
 
-.hl-green {
-  background: linear-gradient(to bottom, rgba(34, 197, 94, 0.55) 85%, transparent 85%);
-}
-
-.hl-orange {
-  background: linear-gradient(to bottom, rgba(251, 130, 70, 0.55) 85%, transparent 85%);
-}
-
-/* Window boxes */
-.sticky-window {
+.system-window,
+.note-window,
+.sticky-window,
+.black-window,
+.braun-screen {
+  display: block;
   margin: 1.5em auto;
+  padding: 0.8em 1em;
+  max-width: 86%;
   page-break-inside: avoid;
-  max-width: 70%;
-  background: #fef9e0;
-  color: #000000 !important;
-  border: 2px solid #e6c942;
-  border-radius: 3px;
-  padding: 0.6em 1em 0.4em;
-  text-align: center;
-}
-
-.note-window {
-  margin: 1.5em auto;
-  page-break-inside: avoid;
-  max-width: 70%;
-  background: #fef9e0;
-  color: #000000 !important;
-  border: 2px solid #e6c942;
-  border-radius: 3px;
-  padding: 0.6em 1em 0.4em;
-  text-align: left;
-}
-
-.black-window {
-  margin: 1.5em auto;
-  page-break-inside: avoid;
-  max-width: 70%;
-  background: #000000;
-  color: #ffffff;
-  border: 2px solid #333333;
-  border-radius: 3px;
-  padding: 0.6em 1em 0.4em;
-  text-align: center;
 }
 
 .system-window {
-  margin: 1.5em auto;
-  page-break-inside: avoid;
-  max-width: 75%;
   border: 1px solid #666;
-  border-radius: 4px;
-  padding: 0.5em 1em;
+  background: #f1f1f1;
 }
 
-.wiki-window {
-  margin: 1.5em auto;
-  page-break-inside: avoid;
-  max-width: 75%;
+.note-window,
+.sticky-window {
+  border: 1px solid #d2b63f;
+  background: #fff6c9;
+  color: #000;
 }
 
-/* Underline */
-.underline { text-decoration: underline; }
-
-/* Colored text */
-.text-red { color: #cc2200; }
-.text-blue { color: #2255cc; }
-.text-yellow { color: #bb9900; }
-.text-magenta { color: #aa00aa; }
-.text-green { color: #228800; }
-.text-orange { color: #dd6600; }
-
-/* Large text */
-.text-large { font-size: 1.3em; }
-
-/* Monospace */
-.mono { font-family: Menlo, Monaco, "Courier New", Consolas, monospace; }
-.mono-left { text-align: left; display: block; }
-.mono-right { text-align: right; display: block; }
-
-/* Aligned text */
-.align-left { text-align: left; display: block; }
-.align-right { text-align: right; display: block; }
-
-/* Distorted text — shadow overlay */
-.distorted {
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3), -1px 0 1px rgba(0,0,0,0.15);
+.black-window,
+.braun-screen {
+  border: 1px solid #111;
+  background: #000;
+  color: #fff;
 }
 
-/* Braun dialogue */
-.braun-dialogue {
-  background-color: #000000;
-  color: #ffffff;
-  font-size: 1.2em;
-  padding: 0.5em 1em;
-  margin: 0;
-  page-break-inside: avoid;
+.braun-screen,
+.black-window {
+  text-align: center;
+}
+
+.black-window p,
+.braun-screen p {
+  color: #fff;
+}
+
+.window-sep {
+  text-align: center;
+  margin: 1em 0;
+}
+
+.window-small {
+  font-size: 0.85em;
+}
+
+.system-window p:first-child,
+.note-window p:first-child,
+.sticky-window p:first-child,
+.black-window p:first-child,
+.braun-screen p:first-child {
+  margin-top: 0;
+}
+
+.system-window p:last-child,
+.note-window p:last-child,
+.sticky-window p:last-child,
+.black-window p:last-child,
+.braun-screen p:last-child {
+  margin-bottom: 0;
 }
