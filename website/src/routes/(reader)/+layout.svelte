@@ -30,6 +30,7 @@
       indent: false,
       navbarVisible: true,
       navbarSticky: true,
+      solidBackground: true,
       hideTweetMetadata: false,
     });
 
