@@ -109,7 +109,7 @@
   class:translate-x-full={!readerState.refPanelOpen}
   style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"
 >
-  <div class="sticky top-0 z-10 bg-base-100/95 backdrop-blur flex items-center px-4 pt-2.5 pb-1.5 border-b border-base-content/10 relative">
+  <div class="sticky top-0 z-20 bg-base-100/95 backdrop-blur flex items-center px-4 pt-2.5 pb-1.5 border-b border-base-content/10 relative">
     <h2 class="font-bold text-lg text-primary">Reference</h2>
     <span class="flex-1"></span>
     <div class="tooltip tooltip-bottom" data-tip="Spoiler Settings">

@@ -577,6 +577,7 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"#f>#(.+?)#f>#", '<span class="text-fade-right">{inner}</span>'),
         (r"#f<#(.+?)#f<#", '<span class="text-fade-left">{inner}</span>'),
         (r"#f#(.+?)#f#", '<span class="text-faded">{inner}</span>'),
+        (r"(?<!\\)\-#\s*(.+?)\s*#-(?!\\)", '<span class="text-sub">{inner}</span>'),
         (r"#r(.+?)r#", '<span class="text-red">{inner}</span>'),
         (r"#b(.+?)b#", '<span class="text-blue">{inner}</span>'),
         (r"#y(.+?)y#", '<span class="text-yellow">{inner}</span>'),
@@ -673,6 +674,7 @@ def is_block_start(line: str) -> bool:
     return bool(
         window_spec(line)
         or is_hr_line(line)
+        or re.match(r"^\^\^\s*$", line)
         or re.match(r"^#{1,6}\s+", line)
         or re.match(r"^(```|~~~[A-Za-z0-9_-]+)", line.strip())
         or re.match(r"^>\s?", line)
@@ -795,6 +797,11 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
         if heading:
             level = min(len(heading.group(1)), 6)
             out.append(f"<h{level}>{render_inline(heading.group(2), ctx)}</h{level}>")
+            i += 1
+            continue
+
+        if re.match(r"^\^\^\s*$", line):
+            out.append('<br /><hr class="invisible-hr" /><br />')
             i += 1
             continue
 

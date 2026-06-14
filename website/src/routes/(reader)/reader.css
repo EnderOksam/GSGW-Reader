@@ -84,6 +84,14 @@ hr.visible-hr {
   width: 60%;
 }
 
+hr.invisible-hr {
+  display: block;
+  border: none;
+  height: 1px;
+  background: transparent;
+  margin: 4rem auto;
+}
+
 @keyframes shake {
   0%, 100% { transform: translate(0, 0); }
   25% { transform: translate(0.2px, -0.2px); }

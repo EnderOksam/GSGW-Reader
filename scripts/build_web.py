@@ -55,6 +55,7 @@ TWITTER_URL_RE = re.compile(
 )
 
 VISIBLE_HR_RE = re.compile(r"^~~~\s*$", re.MULTILINE)
+INVISIBLE_HR_RE = re.compile(r"^\^\^\s*$", re.MULTILINE)
 
 STYLE_BLOCK_RE = re.compile(r'^[ \t]*\{style="([^"]*)"\}\s*$')
 
@@ -92,6 +93,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"#g(.*?)g#", re.DOTALL), r'<span class="text-green">\1</span>'),
     (re.compile(r"#o(.*?)o#", re.DOTALL), r'<span class="text-orange">\1</span>'),
     (re.compile(r"#f#(.*?)#f#", re.DOTALL), r'<span class="text-faded">\1</span>'),
+    (re.compile(r"(?<!\\)\-#\s*(.+?)\s*#-(?!\\)", re.DOTALL), r'<span class="text-sub">\1</span>'),
     (re.compile(r"#f>#(.*?)#f>#", re.DOTALL), r'<span class="text-fade-right">\1</span>'),
     (re.compile(r"#f<#(.*?)#f<#", re.DOTALL), r'<span class="text-fade-left">\1</span>'),
 
@@ -469,6 +471,7 @@ def convert_chapter(content):
     content = WAVE_RE.sub(wave_char_replacer, content)
 
     content = VISIBLE_HR_RE.sub('<hr class="visible-hr">', content)
+    content = INVISIBLE_HR_RE.sub('<hr class="invisible-hr">', content)
 
     content = SUBTLEDISTORT_RE.sub(subtle_replacer, content)
 

@@ -115,6 +115,13 @@ hr {
   margin: 2em auto;
 }
 
+hr.invisible-hr {
+  border: none;
+  height: 1px;
+  background: transparent;
+  margin: 2em auto;
+}
+
 a:link {
   text-decoration: none;
   color: #0b0080;
