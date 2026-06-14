@@ -2,7 +2,7 @@
   import { fade, fly } from "svelte/transition";
   import Icon from "@iconify/svelte";
 
-  const standardUrl = "https://github.com/EnderOksam/GSGW-Reader/releases/latest/download/Got+Dropped+into+a+Ghost+Story%2C+Still+Gotta+Work+-+fantl+%5BDefault%5D.epub";
+  const standardUrl = "https://raw.githubusercontent.com/EnderOksam/GSGW-Reader/main/scripts/epub/Got%20Dropped%20into%20a%20Ghost%20Story%2C%20Still%20Gotta%20Work%20-%20fantl%20%5BDefault%5D.epub";
 </script>
 
 <div class="flex flex-col items-center justify-center min-h-dvh p-4 md:p-8">
