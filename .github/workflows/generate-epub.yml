@@ -31,7 +31,7 @@ jobs:
         run: pip install Pillow
 
       # 5. Run your Image Manipulator Script
-      #    This creates ./images_default and ./images_legacy
+      #    This creates ./images_default
       - name: Process Images
         run: python scripts/images_epub.py
         env:

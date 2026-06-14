@@ -12,7 +12,6 @@ sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SOURCE_DIR = os.path.join(SCRIPT_DIR, "..", "images")
 WEBP_DIR = os.path.join(SCRIPT_DIR, "..", "images_default")
-JPEG_DIR = os.path.join(SCRIPT_DIR, "..", "images_legacy")
 
 
 def gh_log(msg, log_type="info"):
@@ -34,22 +33,13 @@ def process_image_suite(paths):
     filename = os.path.basename(input_path)
 
     webp_path = os.path.join(WEBP_DIR, relative_path)
-    jpeg_path = os.path.join(JPEG_DIR, os.path.splitext(relative_path)[0] + ".jpg")
 
     os.makedirs(os.path.dirname(webp_path), exist_ok=True)
-    os.makedirs(os.path.dirname(jpeg_path), exist_ok=True)
 
     try:
         img = Image.open(input_path)
         img.thumbnail((1600, 1600), Image.LANCZOS)
         img.save(webp_path, "WEBP", quality=85, method=6)
-        img.close()
-
-        img = Image.open(input_path)
-        img.thumbnail((800, 800), Image.LANCZOS)
-        jpeg_img = img.convert("L")
-        jpeg_img = jpeg_img.point(lambda x: int(255 * (x / 255) ** (1.0 / 1.1)))
-        jpeg_img.save(jpeg_path, "JPEG", quality=70, optimize=True, progressive=True, exif=b"")
         img.close()
 
         return {"status": "success", "file": filename}
