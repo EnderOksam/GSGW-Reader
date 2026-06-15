@@ -4,7 +4,7 @@
 
 Passion project for hosting and reading GSGW translations
 
-🌐: [ireum.pages.dev](ireum.pages.dev) \
+🌐: [ireum.pages.dev](https://ireum.pages.dev/) \
 ⭐: Don't forget to star this repository!
 
 ---
