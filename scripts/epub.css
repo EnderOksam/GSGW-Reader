@@ -1,3 +1,17 @@
+.cover-page {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  page-break-after: always;
+}
+
+.cover-image {
+  max-width: 100%;
+  max-height: 100vh;
+  margin: 0 auto;
+  display: block;
+}
+
 div.svg_outer {
   display: block;
   margin: 0;

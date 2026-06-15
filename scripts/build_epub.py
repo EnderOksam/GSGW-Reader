@@ -7,6 +7,7 @@ import html
 import json
 import posixpath
 import re
+import sys
 import urllib.parse
 import urllib.request
 import uuid
@@ -874,6 +875,8 @@ def content_opf(
     items: list[EpubItem],
     assets: list[EpubAsset],
     modified: str,
+    cover_asset: EpubAsset | None = None,
+    cover_item: EpubItem | None = None,
 ) -> str:
     language = metadata_text(metadata.get("language"), "en")
     creator = metadata_text(metadata.get("creator"), "unknown")
@@ -890,18 +893,33 @@ def content_opf(
         '<item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>',
         '<item href="Text/nav.xhtml" id="nav" media-type="application/xhtml+xml" properties="nav"/>',
     ]
+    if cover_item:
+        manifest_items.append(
+            f'<item href="{escape_attr(cover_item.href)}" id="{cover_item.item_id}" '
+            'media-type="application/xhtml+xml"/>'
+        )
     for item in items:
         manifest_items.append(
             f'<item href="{escape_attr(item.href)}" id="{item.item_id}" '
             'media-type="application/xhtml+xml"/>'
         )
     for idx, asset in enumerate(assets):
-        manifest_items.append(
-            f'<item href="{escape_attr(asset.href)}" id="image{idx:04d}" '
-            f'media-type="{escape_attr(asset.media_type)}"/>'
-        )
+        if cover_asset and asset.source_path == cover_asset.source_path:
+            manifest_items.append(
+                f'<item href="{escape_attr(asset.href)}" id="cover-image" '
+                f'media-type="{escape_attr(asset.media_type)}" properties="cover-image"/>'
+            )
+        else:
+            manifest_items.append(
+                f'<item href="{escape_attr(asset.href)}" id="image{idx:04d}" '
+                f'media-type="{escape_attr(asset.media_type)}"/>'
+            )
 
-    spine = "\n".join(f'<itemref idref="{item.item_id}"/>' for item in items)
+    spine_items = []
+    if cover_item:
+        spine_items.append(f'<itemref idref="{cover_item.item_id}"/>')
+    spine_items.extend(f'<itemref idref="{item.item_id}"/>' for item in items)
+    spine = "\n".join(spine_items)
 
     meta_lines = [
         f'<dc:title>{escape_text(book_title)}</dc:title>',
@@ -913,6 +931,8 @@ def content_opf(
         f'<meta property="dcterms:modified">{escape_text(modified)}</meta>',
         f'<dc:source>{escape_text(EPUB_SOURCE_URL)}</dc:source>',
     ]
+    if cover_asset:
+        meta_lines.append('<meta name="cover" content="cover-image"/>')
     if contributor:
         meta_lines.append(f'<dc:contributor>{escape_text(contributor)}</dc:contributor>')
     if description:
@@ -975,6 +995,8 @@ def write_epub(
     metadata: dict[str, Any],
     items: list[EpubItem],
     assets: dict[Path, EpubAsset],
+    cover_item: EpubItem | None = None,
+    cover_asset: EpubAsset | None = None,
 ) -> None:
     css = CSS_PATH.read_text(encoding="utf-8")
     modified = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -994,9 +1016,12 @@ def write_epub(
 
         write_text("META-INF/container.xml", container_xml())
         write_text("OEBPS/Styles/stylesheet.css", css)
-        write_text("OEBPS/content.opf", content_opf(book_title, metadata, items, asset_list, modified))
+        write_text("OEBPS/content.opf", content_opf(book_title, metadata, items, asset_list, modified, cover_asset, cover_item))
         write_text("OEBPS/toc.ncx", toc_ncx(book_title, identifier, items))
         write_text("OEBPS/Text/nav.xhtml", nav_xhtml(book_title, items))
+
+        if cover_item:
+            write_text(f"OEBPS/{cover_item.href}", xhtml_page(cover_item.title, cover_item.body))
 
         for item in items:
             write_text(f"OEBPS/{item.href}", xhtml_page(item.title, item.body))
@@ -1051,6 +1076,31 @@ def build_translation(tl_path: Path, args: argparse.Namespace) -> Path | None:
     tweet_cache = load_tweet_cache()
     assets: dict[Path, EpubAsset] = {}
     asset_names: set[str] = set()
+
+    cover_asset: EpubAsset | None = None
+    cover_item: EpubItem | None = None
+    cover_image_path = IMAGES_ROOT / book_id / "cover.webp"
+    if cover_image_path.exists():
+        cover_name = unique_asset_name(cover_image_path, "cover.webp", asset_names)
+        cover_asset = EpubAsset(
+            source_path=cover_image_path,
+            href=f"Images/{cover_name}",
+            media_type=media_type_for(cover_image_path),
+        )
+        assets[cover_image_path] = cover_asset
+        cover_body = (
+            '<div class="cover-page">'
+            f'<img src="../{escape_attr(cover_asset.href)}" alt="Cover" class="cover-image" />'
+            "</div>"
+        )
+        cover_item = EpubItem(
+            item_id="cover",
+            href="Text/cover.xhtml",
+            title="Cover",
+            body=cover_body,
+        )
+        print(f"  Cover: {cover_asset.href}")
+
     items: list[EpubItem] = []
 
     today = dt.date.today()
@@ -1084,7 +1134,7 @@ def build_translation(tl_path: Path, args: argparse.Namespace) -> Path | None:
 
     output_name = sanitize_filename(f"{book_title} - {tl_name} [Default].epub", "book.epub")
     epub_path = OUTPUT_DIR / output_name
-    write_epub(epub_path, book_title, master_meta, items, assets)
+    write_epub(epub_path, book_title, master_meta, items, assets, cover_item, cover_asset)
     save_tweet_cache(tweet_cache)
     print(f"  Done -> {epub_path}")
     return epub_path
@@ -1114,6 +1164,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     args = parse_args()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     TWITTER_IMG_DIR.mkdir(parents=True, exist_ok=True)
