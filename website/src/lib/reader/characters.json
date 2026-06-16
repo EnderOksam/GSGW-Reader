@@ -40,7 +40,7 @@
   },
   {
     "id": "GoYoungeun",
-    "name": "Go Yeong-eun",
+    "name": "Go Yeongeun",
     "hasManwha": true,
     "hasManwhaImage": true,
     "hasWebnovelImage": true,
@@ -53,16 +53,16 @@
     "alts": []
   },
   {
-    "id": "JangHeowoon",
-    "name": "Jang Heowoon",
+    "id": "JangHeoun",
+    "name": "Jang Heoun",
     "hasManwha": true,
     "hasManwhaImage": true,
     "hasWebnovelImage": false,
-    "manwhaImage": "JangHeowoonManwha.webp",
+    "manwhaImage": "JangHeounManwha.webp",
     "webnovelImage": null,
     "firstAppearance": 5,
     "birthday": "■■",
-    "bloodType": "Unknown",
+    "bloodType": "■■",
     "preferredAlt": null,
     "alts": []
   },
@@ -145,12 +145,12 @@
     ]
   },
   {
-    "id": "KwakJaekwang",
-    "name": "Kwak Jaekwang",
+    "id": "KwakJekang",
+    "name": "Kwak Jekang",
     "hasManwha": true,
     "hasManwhaImage": true,
     "hasWebnovelImage": false,
-    "manwhaImage": "KwakJaekwangManwha.webp",
+    "manwhaImage": "KwakJekangManwha.webp",
     "webnovelImage": null,
     "firstAppearance": 16,
     "birthday": "■■",
