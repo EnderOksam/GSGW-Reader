@@ -33,10 +33,7 @@ OUTPUT_DIR = SCRIPT_DIR / "epub"
 TWITTER_IMG_DIR = OUTPUT_DIR / "twitter_images"
 TWEET_CACHE_PATH = TWITTER_IMG_DIR / "cache.json"
 
-EPUB_SOURCE_URL = (
-    "https://mythicregressor.com/series/"
-    "got-dropped-into-a-ghost-story-still-gotta-work/chapter-1-1/"
-)
+EPUB_SOURCE_URL = "https://ireum.pages.dev"
 
 UA = "GSGW-Reader-EPUB/2.0"
 
@@ -854,7 +851,7 @@ def xhtml_page(title: str, body: str) -> str:
 
 def nav_xhtml(book_title: str, items: list[EpubItem]) -> str:
     links = "\n".join(
-        f'<li><a href="{escape_attr(item.href)}">{escape_text(item.title)}</a></li>'
+        f'<li><a href="{escape_attr(item.href.removeprefix("Text/"))}">{escape_text(item.title)}</a></li>'
         for item in items
     )
     return (
