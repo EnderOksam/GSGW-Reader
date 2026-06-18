@@ -374,35 +374,36 @@ def request_bytes(url: str) -> bytes:
         return response.read()
 
 
-def fetch_twitter_webp(username: str, tweet_id: str, photo_index: int) -> Path | None:
+def fetch_twitter_webp(username: str, tweet_id: str, photo_index: int) -> tuple[Path | None, str | None]:
     cache_key = f"{tweet_id}_{photo_index}"
     webp_path = TWITTER_IMG_DIR / f"{cache_key}.webp"
     if webp_path.exists():
-        return webp_path
+        return webp_path, None
 
     if Image is None:
         print(f"      Pillow is unavailable; cannot convert tweet {tweet_id} to WebP")
-        return None
+        return None, None
 
     api_url = f"https://api.fxtwitter.com/{username}/status/{tweet_id}"
     data = request_json(api_url)
     tweet = data.get("tweet") or {}
+    screen_name = ((tweet.get("user") or {}).get("screen_name")) or username
     photos = ((tweet.get("media") or {}).get("photos") or [])
     idx = photo_index - 1
     if idx < 0 or idx >= len(photos):
         print(f"      Tweet {tweet_id} has no photo #{photo_index}")
-        return None
+        return None, None
 
     photo_url = photos[idx].get("url")
     if not photo_url:
         print(f"      Tweet {tweet_id} photo #{photo_index} has no URL")
-        return None
+        return None, None
 
     image_bytes = request_bytes(photo_url)
     image = Image.open(BytesIO(image_bytes))
     TWITTER_IMG_DIR.mkdir(parents=True, exist_ok=True)
     image.save(webp_path, "WEBP", quality=88, method=6)
-    return webp_path
+    return webp_path, screen_name
 
 
 def twitter_image_html(match: re.Match[str], ctx: RenderContext) -> str:
@@ -412,23 +413,33 @@ def twitter_image_html(match: re.Match[str], ctx: RenderContext) -> str:
     cache_key = f"{tweet_id}_{photo_index}"
     webp_path = TWITTER_IMG_DIR / f"{cache_key}.webp"
 
+    cached_entry = ctx.tweet_cache.get(cache_key)
+    screen_name = None
+
+    if cached_entry:
+        screen_name = cached_entry.get("screen_name")
+
     if not webp_path.exists() and ctx.fetch_twitter:
         try:
             print(f"      Fetching tweet image {tweet_id}/{photo_index}")
-            webp_path = fetch_twitter_webp(username, tweet_id, photo_index) or webp_path
-            ctx.tweet_cache[cache_key] = {
-                "username": username,
-                "tweet_id": tweet_id,
-                "photo": photo_index,
-                "path": str(webp_path),
-            }
-            save_tweet_cache(ctx.tweet_cache)
+            webp_path, api_screen_name = fetch_twitter_webp(username, tweet_id, photo_index)
+            screen_name = api_screen_name or screen_name
+            if webp_path:
+                ctx.tweet_cache[cache_key] = {
+                    "username": username,
+                    "screen_name": screen_name or username,
+                    "tweet_id": tweet_id,
+                    "photo": photo_index,
+                    "path": str(webp_path),
+                }
+                save_tweet_cache(ctx.tweet_cache)
         except Exception as exc:
             print(f"      Warning: failed to fetch tweet {tweet_id}: {exc}")
 
     if webp_path.exists():
         asset = register_asset(ctx, webp_path, webp_path.name)
-        alt = f"Illustration from @{username} on X"
+        display_name = screen_name or username
+        alt = f"Illustration from @{display_name} on X"
         return image_block_html(f"../{asset.href}", alt)
 
     url = match.group(0)
