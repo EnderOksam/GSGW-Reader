@@ -39,3 +39,20 @@ page-progression-direction: ltr
 **Last Updated:** {{DATE}}
 
 this chapter is ignored by the website, its exclusive to the epub for adding credits or whatever else 
+
+also there is some custom formatting in this epub if you cant see it you might want to consider getting a different epub reader.
+
+#r this line should show up as red text r#
+
+#b this line should show up as blue text b#
+
+!-
+this should look like its inside a yellow window
+-!
+
+Illustrations by:
+
+#* @uoongpig on X *#
+
+#* @yjh_ism on X *#
+

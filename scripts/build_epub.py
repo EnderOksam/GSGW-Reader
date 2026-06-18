@@ -1142,9 +1142,12 @@ def find_translation_paths(args: argparse.Namespace) -> list[Path]:
         return [Path(args.path).resolve()]
 
     root = CHAPTERS_ROOT / args.book
-    if not root.exists():
-        return []
-    return sorted(path for path in root.iterdir() if path.is_dir())
+    fantl = root / "fantl"
+    if fantl.exists():
+        return [fantl]
+    if root.exists():
+        return sorted(path for path in root.iterdir() if path.is_dir())
+    return []
 
 
 def parse_args() -> argparse.Namespace:

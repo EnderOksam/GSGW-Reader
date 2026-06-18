@@ -93,10 +93,14 @@
   );
 
 
-  // 3. Get Total Chapters for the current TL
-  const totalChapters = $derived(
-  (bookData as any)[bookSlug][currentTL].length
+  // 3. Get chapters list and current index for the current TL
+  const chaptersForTL = $derived(
+    (bookData as any)[bookSlug]?.[currentTL] || []
   );
+  const currentIndex = $derived(
+    chaptersForTL.findIndex((ch: any) => Number(ch.slug) === currentChapter)
+  );
+  const totalChapters = $derived(chaptersForTL.length);
 
 
   let navState = $state({ searchQuery: "", selectedTL: "webnovel" });
@@ -157,8 +161,6 @@
     if (["INPUT", "TEXTAREA"].includes((event.target as HTMLElement).tagName))
       return;
 
-    // Use derived URL chapter for navigation
-    const slug = currentChapter;
     const key = event.key.toLowerCase();
 
     switch (key) {
@@ -184,16 +186,16 @@
         break;
        case "n":
        case "arrowright":
-          // Check if it's the last chapter before navigating
-          if (slug < totalChapters - 1) {
-             goto(`/read/${bookSlug}/${currentTL}/${slug + 1}`);
-          }
-         break;
+           // Check if it's the last chapter before navigating
+           if (currentIndex < totalChapters - 1) {
+              goto(`/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}`);
+           }
+          break;
        case "p":
        case "arrowleft":
-         if (slug > 0) {
-             goto(`/read/${bookSlug}/${currentTL}/${slug - 1}`);
-         }
+          if (currentIndex > 0) {
+              goto(`/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}`);
+          }
          break;
     }
   }
@@ -223,7 +225,7 @@
     --card-bg-opacity: {prefs.config.solidBackground ? 1 : 0};
   "
 >
-  <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {totalChapters} />
+  <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {chaptersForTL} {currentIndex} />
 
   <main class="mx-auto my-3 max-w-4xl w-full px-4 py-8 sm:px-6 md:px-12 sm:py-12 z-0 relative transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
     <div
@@ -239,15 +241,15 @@
 
     <div class="mt-16 flex items-center justify-between border-t border-base-content/10 pt-8">
       <a
-        href={currentChapter <= 0 
+        href={currentIndex <= 0 
             ? `/book/${bookSlug}` 
-            : `/read/${bookSlug}/${navState.selectedTL}/${currentChapter - 1}`}
+            : `/read/${bookSlug}/${navState.selectedTL}/${chaptersForTL[currentIndex - 1].slug}`}
         class="btn btn-soft btn-sm gap-2"
-        aria-label={currentChapter <= 0 ? "Go Home" : "Previous Chapter"}
+        aria-label={currentIndex <= 0 ? "Go Home" : "Previous Chapter"}
 
       >
-        <Icon icon={currentChapter <= 0 ? "iconamoon:home-light" : "mage:previous"} class="size-5" />
-        <span class="hidden sm:inline">{currentChapter <= 0 ? "Home" : "Prev"}</span>
+        <Icon icon={currentIndex <= 0 ? "iconamoon:home-light" : "mage:previous"} class="size-5" />
+        <span class="hidden sm:inline">{currentIndex <= 0 ? "Home" : "Prev"}</span>
       </a>
 
       <span class="text-xs font-mono font-bold opacity-50 tracking-wider">
@@ -255,15 +257,15 @@
       </span>
 
       <a
-        href={currentChapter >= totalChapters - 1
+        href={currentIndex >= totalChapters - 1
             ? `/book/${bookSlug}`
-            : `/read/${bookSlug}/${navState.selectedTL}/${currentChapter + 1}`}
+            : `/read/${bookSlug}/${navState.selectedTL}/${chaptersForTL[currentIndex + 1].slug}`}
         class="btn btn-soft btn-sm gap-2"
-        aria-label={currentChapter >= totalChapters - 1 ? "Go Home" : "Next Chapter"}
+        aria-label={currentIndex >= totalChapters - 1 ? "Go Home" : "Next Chapter"}
         data-sveltekit-preload-data="viewport"
       >
-        <span class="hidden sm:inline">{currentChapter >= totalChapters - 1 ? "Home" : "Next"}</span>
-        <Icon icon={currentChapter >= totalChapters - 1 ? "iconamoon:home-light" : "mage:next"} class="size-5" />
+        <span class="hidden sm:inline">{currentIndex >= totalChapters - 1 ? "Home" : "Next"}</span>
+        <Icon icon={currentIndex >= totalChapters - 1 ? "iconamoon:home-light" : "mage:next"} class="size-5" />
       </a>
     </div>
   </main>

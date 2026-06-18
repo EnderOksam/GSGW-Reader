@@ -153,7 +153,7 @@
 
   const REPO = "EnderOksam/GSGW-Reader";
   const BRANCH = "main";
-  const SOURCE_TRANSLATIONS = ["fantl", "MTL"];
+  const SOURCE_TRANSLATIONS = ["fantl", "MTL", "unfinishedtl"];
   const CUSTOM_TRANSLATIONS_KEY = "editor-custom-translations";
 
   const TWITTER_EMBED_RE = /https?:\/\/(?:x|twitter)\.com\/(\w+)\/status\/(\d+)(?:\/photo\/(\d+))?[^\s<>"']*/g;
@@ -1926,6 +1926,7 @@
           <select bind:value={translation} onchange={handleTranslationChange} class="bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 w-22 transition-colors focus:border-primary/30 focus:text-base-content/80">
             <option value="fantl">fantl</option>
             <option value="MTL">MTL</option>
+            <option value="unfinishedtl">unfinishedtl</option>
             {#each customTranslations as t}
               <option value={t}>{t}</option>
             {/each}
@@ -2373,9 +2374,10 @@
             <div class="flex gap-1 p-2 border-b border-base-content/10">
               <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
               <select bind:value={translation} onchange={handleTranslationChange} class="bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 w-22 transition-colors focus:border-primary/30 focus:text-base-content/80">
-                <option value="fantl">fantl</option>
-                <option value="MTL">MTL</option>
-                {#each customTranslations as t}
+              <option value="fantl">fantl</option>
+              <option value="MTL">MTL</option>
+              <option value="unfinishedtl">unfinishedtl</option>
+              {#each customTranslations as t}
                   <option value={t}>{t}</option>
                 {/each}
               </select>

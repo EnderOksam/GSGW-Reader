@@ -11,7 +11,8 @@
 
   // --- Props ---
   // Using Svelte 5 $props for reactive input
-  let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, totalChapters = 0 } = $props();
+  let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, chaptersForTL = [], currentIndex = 0 } = $props();
+  const totalChapters = $derived(chaptersForTL.length);
 
   // --- State ---
   // Store dialog references in a reactive object for element binding
@@ -94,9 +95,9 @@
 
       <!-- Previous Chapter -->
       <div class="tooltip tooltip-bottom" data-tip="Previous (P)">
-        {#if currentChapter > 0}
+        {#if currentIndex > 0}
           <a
-            href="/read/{bookSlug}/{navState.selectedTL}/{currentChapter - 1}"
+            href="/read/{bookSlug}/{navState.selectedTL}/{chaptersForTL[currentIndex - 1].slug}"
             class="btn btn-ghost btn-sm btn-square rounded-btn"
             aria-label="Previous Chapter"
           >
@@ -122,9 +123,9 @@
 
       <!-- Next Chapter -->
       <div class="tooltip tooltip-bottom" data-tip="Next (N)">
-        {#if currentChapter < totalChapters - 1}
+        {#if currentIndex < totalChapters - 1}
           <a
-            href="/read/{bookSlug}/{navState.selectedTL}/{currentChapter + 1}"
+            href="/read/{bookSlug}/{navState.selectedTL}/{chaptersForTL[currentIndex + 1].slug}"
             class="btn btn-ghost btn-sm btn-square rounded-btn"
             aria-label="Next Chapter"
             data-sveltekit-preload-data="viewport"
