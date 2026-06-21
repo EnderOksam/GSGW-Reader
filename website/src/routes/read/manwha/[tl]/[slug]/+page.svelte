@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state";
+  import { onMount, onDestroy } from "svelte";
   import { browser, dev } from "$app/environment";
   import JSZip from "jszip";
   import Icon from "@iconify/svelte";
@@ -45,12 +46,25 @@
 
   function padSlug(s: string) { return s.padStart(4, "0"); }
 
+  function saveLastRead() {
+    localStorage.setItem(
+      "lastRead",
+      JSON.stringify({
+        book: "manwha",
+        tl,
+        slug,
+        timestamp: Date.now(),
+      }),
+    );
+  }
+
   $effect(() => {
     const s = slug;
     const t = tl;
     images = [];
     loaded = false;
     error = "";
+    saveLastRead();
 
     (async () => {
       try {

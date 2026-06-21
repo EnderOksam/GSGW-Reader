@@ -145,15 +145,17 @@
         <section class="bg-[#0d0d0d]/60 p-6 rounded-xl border border-[#fb8462]/10">
           <div class="flex items-center gap-2 mb-2">
             <Icon icon="mdi:palette" class="text-[#fb8462] size-5" />
-            <h2 class="text-lg font-semibold text-white/80">Illustrations</h2>
+            <h2 class="text-lg font-semibold text-white/80">Artists</h2>
           </div>
           <p class="text-sm text-white/50 mb-4 leading-relaxed">
-            Illustrations featured on the reader are Twitter embeds completely client side, Clicking the @'s should take you to the original post.
+            Illustrations featured on the reader are Twitter embeds, these link back to the original post so show support whenever you can.
           </p>
           <div class="flex flex-wrap gap-3">
-            <div class="bg-[#0d0d0d]/80 px-3 py-1.5 rounded-full border border-[#fb8462]/10">
-              <TwitterHover user="uoongpig" />
-            </div>
+            {#each ["uoongpig", "Katzz_artt", "d_kartonidze", "chiiiiliii", "yjh_ism"] as user}
+              <div class="bg-[#0d0d0d]/80 px-3 py-1.5 rounded-full border border-[#fb8462]/10">
+                <TwitterHover {user} />
+              </div>
+            {/each}
           </div>
         </section>
 

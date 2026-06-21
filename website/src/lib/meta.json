@@ -2109,147 +2109,161 @@
         "category": "Chapter 0",
         "index": 0,
         "slug": "0",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/0.webp"
+        "thumb": "/chapters/manwha/thumbnails/0.webp"
       },
       {
         "title": "Chapter 1",
         "category": "Chapter 1",
         "index": 1,
         "slug": "1",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/1.webp"
+        "thumb": "/chapters/manwha/thumbnails/1.webp"
       },
       {
         "title": "Chapter 2",
         "category": "Chapter 2",
         "index": 2,
         "slug": "2",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/2.webp"
+        "thumb": "/chapters/manwha/thumbnails/2.webp"
       },
       {
         "title": "Chapter 3",
         "category": "Chapter 3",
         "index": 3,
         "slug": "3",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/3.webp"
+        "thumb": "/chapters/manwha/thumbnails/3.webp"
       },
       {
         "title": "Chapter 4",
         "category": "Chapter 4",
         "index": 4,
         "slug": "4",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/4.webp"
+        "thumb": "/chapters/manwha/thumbnails/4.webp"
       },
       {
         "title": "Chapter 5",
         "category": "Chapter 5",
         "index": 5,
         "slug": "5",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/5.webp"
+        "thumb": "/chapters/manwha/thumbnails/5.webp"
       },
       {
         "title": "Chapter 6",
         "category": "Chapter 6",
         "index": 6,
         "slug": "6",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/6.webp"
+        "thumb": "/chapters/manwha/thumbnails/6.webp"
       },
       {
         "title": "Chapter 7",
         "category": "Chapter 7",
         "index": 7,
         "slug": "7",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/7.webp"
+        "thumb": "/chapters/manwha/thumbnails/7.webp"
       },
       {
         "title": "Chapter 8",
         "category": "Chapter 8",
         "index": 8,
         "slug": "8",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/8.webp"
+        "thumb": "/chapters/manwha/thumbnails/8.webp"
       },
       {
         "title": "Chapter 9",
         "category": "Chapter 9",
         "index": 9,
         "slug": "9",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/9.webp"
+        "thumb": "/chapters/manwha/thumbnails/9.webp"
       },
       {
         "title": "Chapter 10",
         "category": "Chapter 10",
         "index": 10,
         "slug": "10",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/10.webp"
+        "thumb": "/chapters/manwha/thumbnails/10.webp"
       },
       {
         "title": "Chapter 11",
         "category": "Chapter 11",
         "index": 11,
         "slug": "11",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/11.webp"
+        "thumb": "/chapters/manwha/thumbnails/11.webp"
       },
       {
         "title": "Chapter 12",
         "category": "Chapter 12",
         "index": 12,
         "slug": "12",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/12.webp"
+        "thumb": "/chapters/manwha/thumbnails/12.webp"
       },
       {
         "title": "Chapter 13",
         "category": "Chapter 13",
         "index": 13,
         "slug": "13",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/13.webp"
+        "thumb": "/chapters/manwha/thumbnails/13.webp"
       },
       {
         "title": "Chapter 14",
         "category": "Chapter 14",
         "index": 14,
         "slug": "14",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/14.webp"
+        "thumb": "/chapters/manwha/thumbnails/14.webp"
       },
       {
         "title": "Chapter 15",
         "category": "Chapter 15",
         "index": 15,
         "slug": "15",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/15.webp"
+        "thumb": "/chapters/manwha/thumbnails/15.webp"
       },
       {
         "title": "Chapter 16",
         "category": "Chapter 16",
         "index": 16,
         "slug": "16",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/16.webp"
+        "thumb": "/chapters/manwha/thumbnails/16.webp"
       },
       {
         "title": "Chapter 17",
         "category": "Chapter 17",
         "index": 17,
         "slug": "17",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/17.webp"
+        "thumb": "/chapters/manwha/thumbnails/17.webp"
       },
       {
         "title": "Chapter 18",
         "category": "Chapter 18",
         "index": 18,
         "slug": "18",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/18.webp"
+        "thumb": "/chapters/manwha/thumbnails/18.webp"
       },
       {
         "title": "Chapter 19",
         "category": "Chapter 19",
         "index": 19,
         "slug": "19",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/19.webp"
+        "thumb": "/chapters/manwha/thumbnails/19.webp"
       },
       {
         "title": "Chapter 20",
         "category": "Chapter 20",
         "index": 20,
         "slug": "20",
-        "thumb": "/chapters/manwha/vortex scans/thumbs/20.webp"
+        "thumb": "/chapters/manwha/thumbnails/20.webp"
+      },
+      {
+        "title": "Chapter 21",
+        "category": "Chapter 21",
+        "index": 21,
+        "slug": "21",
+        "thumb": "/chapters/manwha/thumbnails/21.webp"
+      },
+      {
+        "title": "Chapter 22",
+        "category": "Chapter 22",
+        "index": 22,
+        "slug": "22",
+        "thumb": "/chapters/manwha/thumbnails/22.webp"
       }
     ]
   }

@@ -86,7 +86,7 @@
       button_primary: "btn-accent",
       button_secondary: "btn-primary",
       cover: imgManwhaCover,
-      external_link: "",
+      external_link: "https://page.kakao.com/content/69229506",
     },
   };
 
@@ -348,11 +348,12 @@
           </a>
         {:else}
           {#each availableTLs as tl}
+            {@const isRecommended = (bookSlug === "gsgw" && tl === "fantl") || (bookSlug === "manwha" && tl === "flame comics")}
             {@const firstSlug = meta[bookSlug]?.[tl]?.[0]?.slug ?? "1"}
             <a href="../../read/{bookSlug}/{tl}/{firstSlug}" class="btn btn-outline btn-lg justify-between h-auto py-4 group rounded-xl" onclick={() => tlSelectionModal.close()}>
               <div class="text-left">
                 <div class="font-bold text-base flex items-center gap-2">
-                  {tl.toUpperCase()} <span class="badge badge-secondary badge-sm">Recommended</span>
+                  {tl.toUpperCase()} {#if isRecommended}<span class="badge badge-primary badge-sm">Recommended</span>{/if}
                 </div>
               </div>
               <Icon icon="material-symbols:arrow-forward-rounded" class="size-6 group-hover:translate-x-1 transition-transform" />
@@ -471,8 +472,11 @@
               {@const isCurr = isContinueChapter(ch)}
               <a
                 href="../../read/{bookSlug}/{selectedTL}/{ch.slug}"
-                class="chapter-row group flex items-center gap-4 p-3 rounded-xl bg-base-200/30 border border-transparent hover:border-base-content/10 hover:bg-base-200/60 transition-all duration-200 {isCurr ? 'bg-accent/5 border-accent/20' : ''}"
+                class="chapter-row group flex items-center gap-4 p-3 rounded-xl bg-base-200/30 border transition-all duration-200 relative overflow-hidden {isCurr ? 'border-accent/20 bg-accent/5 hover:bg-accent/10' : 'border-transparent hover:border-base-content/10 hover:bg-base-200/60'}"
               >
+                {#if isCurr}
+                  <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-accent rounded-full"></div>
+                {/if}
                 <div class="relative w-32 h-24 shrink-0 rounded-lg overflow-hidden bg-base-300/60">
                   {#if ch.thumb}
                     <img
@@ -488,16 +492,18 @@
                   {/if}
                 </div>
                 <div class="flex flex-col min-w-0">
-                  <span class="text-2xl font-bold group-hover:text-accent transition-colors truncate">
+                  <span class="text-2xl font-bold group-hover:text-accent transition-colors truncate {isCurr ? 'text-accent' : ''}">
                     {ch.title}
                   </span>
+                  {#if isCurr}
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="inline-flex items-center gap-1 text-[10px] font-mono text-accent">
+                        <Icon icon="material-symbols:resume" class="size-3" />
+                        In progress
+                      </span>
+                    </div>
+                  {/if}
                 </div>
-                {#if isCurr}
-                  <span class="ml-auto badge badge-xs badge-accent gap-1 shrink-0">
-                    <Icon icon="material-symbols:resume" class="size-3" />
-                    Reading
-                  </span>
-                {/if}
                 <Icon icon="material-symbols:chevron-right-rounded" class="size-5 opacity-0 -translate-x-2 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-200 shrink-0 {isCurr ? 'opacity-30' : ''}" />
               </a>
             {/each}
