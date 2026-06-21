@@ -496,6 +496,8 @@ def convert_chapter(content):
     for pattern, repl in SIMPLE_REPLACEMENTS:
         content = pattern.sub(repl, content)
 
+    content = re.sub(r"\$\$(.*?)\$\$", r'<span class="handwritten">\1</span>', content)
+
     # restore protected patterns
     for key, val in img_placeholders.items():
         content = content.replace(key, val)

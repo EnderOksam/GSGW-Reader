@@ -314,6 +314,12 @@ hr.invisible-hr {
   text-align: center;
 }
 
+.handwritten {
+  font-family: 'Caveat', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+  font-size: 1.45em;
+  font-weight: 500;
+}
+
 .mono {
   font-family: 'Courier New', Courier, monospace;
   font-weight: bold;

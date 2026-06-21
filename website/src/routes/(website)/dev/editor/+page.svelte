@@ -477,6 +477,7 @@
       [/;p(.*?)p;/gs, '<span class="hl-magenta">$1</span>'],
       [/;g(.*?)g;/gs, '<span class="hl-green">$1</span>'],
       [/;o(.*?)o;/gs, '<span class="hl-orange">$1</span>'],
+      [/\$\$(.*?)\$\$/gs, '<span class="handwritten">$1</span>'],
     ];
     for (const [re, repl] of simple) {
       s = s.replace(re, repl);

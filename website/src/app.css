@@ -117,3 +117,16 @@ body {
   font-style: italic;
   font-display: swap;
 }
+
+/* --- Caveat (handwritten) --- */
+@font-face {
+  font-family: "Caveat";
+  src:
+    local("Caveat"),
+    local("Caveat Regular"),
+    local("Caveat-Regular"),
+    url("/fonts/Caveat-Variable.woff2") format("woff2-variations");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}

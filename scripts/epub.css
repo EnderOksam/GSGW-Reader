@@ -303,6 +303,12 @@ del {
   font-weight: bold;
 }
 
+.handwritten {
+  font-family: 'Caveat', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
 .glitch-text {
   opacity: 0.8;
   text-shadow: 1px 0 0 #cc2200, -1px 0 0 #2255cc;

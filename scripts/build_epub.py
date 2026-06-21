@@ -604,6 +604,7 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"%\^(.+?)\^%", '<span class="wave-up">{inner}</span>'),
         (r"#\^#(.+?)#\^#", '<span class="text-grow">{inner}</span>'),
         (r"#v#(.+?)#v#", '<span class="text-grow">{inner}</span>'),
+        (r"\$\$(.+?)\$\$", '<span class="handwritten">{inner}</span>'),
     ]
 
     for pattern, wrapper in custom_wrappers:

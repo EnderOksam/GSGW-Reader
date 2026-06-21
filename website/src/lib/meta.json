@@ -1683,17 +1683,15 @@
         "slug": 209
       },
       {
-        "title": "Security Isolation Room",
+        "title": "Security Isolation Room, I",
         "category": "Part 2",
         "discussion": 210,
         "index": 210,
         "section": "Chapter 210",
         "slug": 210
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
-        "title": "Chapter 211",
+        "title": "Security Isolation Room, II",
         "category": "Part 2",
         "discussion": 211,
         "index": 211,
@@ -1701,13 +1699,15 @@
         "slug": 211
       },
       {
-        "title": "Chapter 212",
+        "title": "Special Division",
         "category": "Part 2",
         "discussion": 212,
         "index": 212,
         "section": "Chapter 212",
         "slug": 212
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "Chapter 213",
         "category": "Part 2",
