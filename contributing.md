@@ -84,6 +84,7 @@ To add a titlebar, put text on the first line inside the window. Put `\` before 
 | `@_@text@_@` | Subtle glitch text |
 | `#^#text#^#` | Growing text (sizes up left to right) |
 | `#v#text#v#` | Shrinking text (sizes down left to right) |
+| `$s text s$` | Smoke text |
 
 ### Colored Text
 

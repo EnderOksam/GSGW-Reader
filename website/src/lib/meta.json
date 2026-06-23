@@ -1705,11 +1705,9 @@
         "index": 212,
         "section": "Chapter 212",
         "slug": 212
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
-        "title": "Chapter 213",
+        "title": "Familiar Faces",
         "category": "Part 2",
         "discussion": 213,
         "index": 213,
@@ -1717,7 +1715,7 @@
         "slug": 213
       },
       {
-        "title": "Chapter 214",
+        "title": "[Echoes of Rainwater], I",
         "category": "Part 2",
         "discussion": 214,
         "index": 214,
@@ -1725,7 +1723,7 @@
         "slug": 214
       },
       {
-        "title": "Chapter 215",
+        "title": "[Echoes of Rainwater], II",
         "category": "Part 2",
         "discussion": 215,
         "index": 215,
@@ -1733,13 +1731,15 @@
         "slug": 215
       },
       {
-        "title": "Chapter 216",
+        "title": "[Echoes of Rainwater], III",
         "category": "Part 2",
         "discussion": 216,
         "index": 216,
         "section": "Chapter 216",
         "slug": 216
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "Chapter 218",
         "category": "Part 2",

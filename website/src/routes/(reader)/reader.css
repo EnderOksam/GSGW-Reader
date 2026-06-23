@@ -6,7 +6,7 @@
 }
 
 .reader-container strong {
-  font-weight: 700;
+  font-size: 1.15em;
 }
 .reader-container em {
   font-style: italic;
@@ -202,6 +202,31 @@ hr.invisible-hr {
   80%  { transform: translate(0.2px,0.5px) rotate(0.3deg); }
   100% { transform: translate(0,0) rotate(0deg); }
 }
+
+.smoke-text {
+  font-weight: 700;
+  -webkit-text-fill-color: black;
+  -webkit-text-stroke: 1px rgba(255, 200, 0, 0.9);
+  paint-order: stroke fill;
+}
+
+.aurora-text {
+  display: inline-block;
+  font-weight: 800;
+  background: linear-gradient(135deg, #00c2ff, #33ff8c, #ffc640, #e54cff, #00c2ff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: aurora-flow 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(0, 194, 255, 0.2)) drop-shadow(0 0 15px rgba(229, 76, 255, 0.1));
+}
+
+@keyframes aurora-flow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 .wave-up {
   display: inline-block;
   max-width: 100%;
@@ -319,6 +344,12 @@ hr.invisible-hr {
   font-size: 1.45em;
   font-weight: 500;
 }
+
+.contaminated {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+}
+
+
 
 .mono {
   font-family: 'Courier New', Courier, monospace;

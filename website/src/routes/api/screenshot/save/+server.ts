@@ -19,11 +19,11 @@ export async function POST({ request }) {
 
     const buf = Buffer.from(base64, "base64");
 
-    const thumbsDir = path.resolve(REPO_ROOT, "chapters", "manwha", tl, "thumbs");
+    const thumbsDir = path.resolve(REPO_ROOT, "chapters", "manwha", "thumbnails");
     fs.mkdirSync(thumbsDir, { recursive: true });
     fs.writeFileSync(path.join(thumbsDir, `${slug}.webp`), buf);
 
-    const staticThumbsDir = path.resolve(REPO_ROOT, "website", "static", "chapters", "manwha", tl, "thumbs");
+    const staticThumbsDir = path.resolve(REPO_ROOT, "website", "static", "chapters", "manwha", "thumbnails");
     fs.mkdirSync(staticThumbsDir, { recursive: true });
     fs.writeFileSync(path.join(staticThumbsDir, `${slug}.webp`), buf);
 

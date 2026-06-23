@@ -3,6 +3,7 @@
   import TwitterHover from "$lib/TwitterHover.svelte";
   import { fade } from "svelte/transition";
 
+
   let contributeModal: HTMLDialogElement;
 
   let developers = $state([
@@ -31,6 +32,20 @@
       cardBorder: "#0d0606",
       tagBg: "#fb8462",
       tagColor: "#131416",
+      textColor: "#d7d7da",
+      taglineColor: "#d7d7da",
+    },
+    {
+      name: "Moon_Angel",
+      user: "moon_angels",
+      banner: "/assets/moon_angels-banner.png",
+      avatar: "/assets/moon_angels-avatar.png",
+      tagline: "Moon was here",
+      role: "Community Manager",
+      cardBg: "#1a1a2e",
+      cardBorder: "#494987",
+      tagBg: "#494987",
+      tagColor: "#ffffff",
       textColor: "#d7d7da",
       taglineColor: "#d7d7da",
     },
@@ -81,7 +96,9 @@
               <div class="space-y-1">
               <h2 class="text-3xl font-extrabold leading-tight flex items-center gap-2"
                   style="color:{dev.textColor};">
-                {dev.name}
+                <span class:aurora-text={dev.name === "Moon_Angel"}>
+                  {dev.name}
+                </span>
                   <span class="inline-flex items-center gap-1 text-[0.65rem] font-semibold px-1.5 py-0.5 rounded-full translate-y-[1px]" style="background:{dev.tagBg}; color:{dev.tagColor};">
                     <Icon icon="mdi:code-tags" class="size-3" />
                     {dev.role}
@@ -223,5 +240,21 @@
     94% { opacity: 1; }
     96% { opacity: 0.92; }
     97% { opacity: 1; }
+  }
+
+  .aurora-text {
+    font-weight: 800;
+    background: linear-gradient(135deg, #00c2ff, #33ff8c, #ffc640, #e54cff, #00c2ff);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: aurora-flow 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(0, 194, 255, 0.2)) drop-shadow(0 0 15px rgba(229, 76, 255, 0.1));
+  }
+
+  @keyframes aurora-flow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
 </style>

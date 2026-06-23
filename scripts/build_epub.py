@@ -576,6 +576,7 @@ def render_inline(text: str, ctx: RenderContext) -> str:
     custom_wrappers = [
         (r"@@(.+?)@@", '<span class="glitch-text">{inner}</span>'),
         (r"@_@(.+?)@_@", '<span class="glitch-subtle">{inner}</span>'),
+        (r"\$s(.+?)s\$", '<span class="smoke-text">{inner}</span>'),
         (r"@ll@(.+?)@ll@", '<span class="mono mono-left">{inner}</span>'),
         (r"@rr@(.+?)@rr@", '<span class="mono mono-right">{inner}</span>'),
         (r"@l@(.+?)@l@", '<span class="align-left">{inner}</span>'),
@@ -605,6 +606,8 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"#\^#(.+?)#\^#", '<span class="text-grow">{inner}</span>'),
         (r"#v#(.+?)#v#", '<span class="text-grow">{inner}</span>'),
         (r"\$\$(.+?)\$\$", '<span class="handwritten">{inner}</span>'),
+        (r"\$c(.+?)c\$", '<span class="contaminated">{inner}</span>'),
+        (r"\$a(.+?)a\$", '<span class="aurora-text">{inner}</span>'),
     ]
 
     for pattern, wrapper in custom_wrappers:
@@ -863,7 +866,7 @@ def xhtml_page(title: str, body: str) -> str:
 
 def nav_xhtml(book_title: str, items: list[EpubItem]) -> str:
     links = "\n".join(
-        f'<li><a href="{escape_attr(item.href.removeprefix("Text/"))}">{escape_text(item.title)}</a></li>'
+        f'<li><a href="{escape_attr(item.href)}">{escape_text(item.title)}</a></li>'
         for item in items
     )
     return (
@@ -871,7 +874,7 @@ def nav_xhtml(book_title: str, items: list[EpubItem]) -> str:
         '<html xmlns="http://www.w3.org/1999/xhtml" '
         'xmlns:epub="http://www.idpf.org/2007/ops">'
         f"<head><title>{escape_text(book_title)} Table of Contents</title>"
-        '<link href="../Styles/stylesheet.css" type="text/css" rel="stylesheet" />'
+        '<link href="Styles/stylesheet.css" type="text/css" rel="stylesheet" />'
         "</head><body>"
         '<nav epub:type="toc" id="toc"><h1>Table of Contents</h1>'
         f"<ol>{links}</ol></nav></body></html>\n"
@@ -900,7 +903,7 @@ def content_opf(
     manifest_items = [
         '<item href="Styles/stylesheet.css" id="stylesheet" media-type="text/css"/>',
         '<item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>',
-        '<item href="Text/nav.xhtml" id="nav" media-type="application/xhtml+xml" properties="nav"/>',
+        '<item href="nav.xhtml" id="nav" media-type="application/xhtml+xml" properties="nav"/>',
     ]
     if cover_item:
         manifest_items.append(
@@ -1027,7 +1030,7 @@ def write_epub(
         write_text("OEBPS/Styles/stylesheet.css", css)
         write_text("OEBPS/content.opf", content_opf(book_title, metadata, items, asset_list, modified, cover_asset, cover_item))
         write_text("OEBPS/toc.ncx", toc_ncx(book_title, identifier, items))
-        write_text("OEBPS/Text/nav.xhtml", nav_xhtml(book_title, items))
+        write_text("OEBPS/nav.xhtml", nav_xhtml(book_title, items))
 
         if cover_item:
             write_text(f"OEBPS/{cover_item.href}", xhtml_page(cover_item.title, cover_item.body))

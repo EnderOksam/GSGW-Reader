@@ -50,6 +50,9 @@ SUBTLEDISTORT_RE = re.compile(r"@_@(.+?)@_@", re.DOTALL)
 GROW_RE = re.compile(r"#\^#(.+?)#\^#", re.DOTALL)
 SHRINK_RE = re.compile(r"#v#(.+?)#v#", re.DOTALL)
 
+SMOKE_RE = re.compile(r"\$s(.+?)s\$", re.DOTALL)
+AURORA_RE = re.compile(r"\$a(.+?)a\$", re.DOTALL)
+
 TWITTER_URL_RE = re.compile(
     r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
 )
@@ -103,6 +106,8 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r";p(.*?)p;", re.DOTALL), r'<span class="hl-magenta">\1</span>'),
     (re.compile(r";g(.*?)g;", re.DOTALL), r'<span class="hl-green">\1</span>'),
     (re.compile(r";o(.*?)o;", re.DOTALL), r'<span class="hl-orange">\1</span>'),
+
+    (re.compile(r"\$c(.*?)c\$", re.DOTALL), r'<span class="contaminated">\1</span>'),
 ]
 
 
@@ -330,6 +335,24 @@ def subtle_replacer(match):
     )
 
 
+def smoke_replacer(match):
+
+    inner = match.group(1)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    return f'<span class="smoke-text">{inner}</span>'
+
+
+def aurora_replacer(match):
+
+    inner = match.group(1)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    return f'<span class="aurora-text">{inner}</span>'
+
+
 def grow_replacer(match):
 
     inner = match.group(1)
@@ -497,6 +520,10 @@ def convert_chapter(content):
         content = pattern.sub(repl, content)
 
     content = re.sub(r"\$\$(.*?)\$\$", r'<span class="handwritten">\1</span>', content)
+
+    content = SMOKE_RE.sub(smoke_replacer, content)
+
+    content = AURORA_RE.sub(aurora_replacer, content)
 
     # restore protected patterns
     for key, val in img_placeholders.items():
@@ -737,12 +764,12 @@ def main():
                 })
 
         elif cbz_files:
-            thumbs_dir = path / "thumbs"
+            thumbs_dir = REPO_ROOT / "chapters" / "manwha" / "thumbnails"
             static_thumbs_dir = (
                 REPO_ROOT
                 / "website" / "static"
                 / "chapters" / "manwha"
-                / bookTL / "thumbs"
+                / "thumbnails"
             )
 
             for i, f in enumerate(cbz_files):
@@ -766,7 +793,7 @@ def main():
                     "category": f"Chapter {slug}",
                     "index": i,
                     "slug": slug,
-                    "thumb": f"/chapters/manwha/{bookTL}/thumbs/{slug}.webp",
+                    "thumb": f"/chapters/manwha/thumbnails/{slug}.webp",
                 })
 
     META_OUTPUT_PATH.write_text(

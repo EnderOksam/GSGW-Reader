@@ -478,6 +478,8 @@
       [/;g(.*?)g;/gs, '<span class="hl-green">$1</span>'],
       [/;o(.*?)o;/gs, '<span class="hl-orange">$1</span>'],
       [/\$\$(.*?)\$\$/gs, '<span class="handwritten">$1</span>'],
+      [/\$c(.*?)c\$/gs, '<span class="contaminated">$1</span>'],
+
     ];
     for (const [re, repl] of simple) {
       s = s.replace(re, repl);
@@ -494,6 +496,16 @@
         return [...part].map(c => c === " " ? " " : `<span class="char">${c}</span>`);
       });
       return `<span class="glitch-text">${chars.join("")}</span>`;
+    });
+
+    s = s.replace(/\$s(.+?)s\$/gs, (_, inner) => {
+      inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      return `<span class="smoke-text">${inner}</span>`;
+    });
+
+    s = s.replace(/\$a(.+?)a\$/gs, (_, inner) => {
+      inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      return `<span class="aurora-text">${inner}</span>`;
     });
 
     function makeWindow(cls: string, inner: string, extra?: string): string {
