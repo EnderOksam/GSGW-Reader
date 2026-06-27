@@ -1,20 +1,21 @@
-{
-  "id": "Braun",
-  "name": "Braun",
-  "hasManwha": true,
-  "manwhaImage": "BraunManwha.webp",
-  "firstAppearance": 10,
-  "birthday": "■■",
-  "bloodType": "■■",
-  "preferredAlt": "goodfriend",
-  "alts": [
-    {
-      "id": "goodfriend",
-      "name": "Braun (Good Friend)",
-      "chapter": 25,
-      "toggleable": true,
-      "hasWebnovel": true,
-      "webnovelImage": "GoodfriendWebnovel.webp"
-    }
-  ]
+﻿{
+    "alias":  "Talk Show Host",
+    "id":  "Braun",
+    "alts":  [
+                 {
+                     "id":  "goodfriend",
+                     "name":  "Braun (Good Friend)",
+                     "webnovelImage":  "GoodfriendWebnovel.webp",
+                     "manwhaImage":  null,
+                     "chapter":  25,
+                     "toggleable":  true
+                 }
+             ],
+    "manwhaImage":  "BraunManwha.webp",
+    "webnovelImage":  null,
+    "birthday":  "■■",
+    "name":  "Braun",
+    "preferredAlt":  "goodfriend",
+    "firstAppearance":  10,
+    "faction":  "ghost"
 }

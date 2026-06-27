@@ -9,7 +9,8 @@
     "webnovelImage": "KimSoleumWebnovel.webp",
     "firstAppearance": 1,
     "birthday": "Sep 13",
-    "bloodType": "A",
+    "alias": "Roe Deer",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
@@ -23,7 +24,8 @@
     "webnovelImage": null,
     "firstAppearance": 2,
     "birthday": "May 11",
-    "bloodType": "A",
+    "alias": "Goat",
+    "faction": "daydream",
     "preferredAlt": "eyepatch",
     "alts": [
       {
@@ -48,7 +50,8 @@
     "webnovelImage": "GoYoungeunWebnovel.webp",
     "firstAppearance": 2,
     "birthday": "Mar 24",
-    "bloodType": "O",
+    "alias": "Goral",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
@@ -62,7 +65,8 @@
     "webnovelImage": null,
     "firstAppearance": 5,
     "birthday": "■■",
-    "bloodType": "■■",
+    "alias": "Bison",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
@@ -76,7 +80,8 @@
     "webnovelImage": "EunHajeWebnovel.webp",
     "firstAppearance": 6,
     "birthday": "Oct 4",
-    "bloodType": "B",
+    "alias": "Falcon",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
@@ -90,7 +95,8 @@
     "webnovelImage": "ParkMinseongWebnovel.webp",
     "firstAppearance": 6,
     "birthday": "Apr 18",
-    "bloodType": "O",
+    "alias": "Badger",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
@@ -104,7 +110,8 @@
     "webnovelImage": null,
     "firstAppearance": 10,
     "birthday": "■■",
-    "bloodType": "■■",
+    "alias": "Talk Show Host",
+    "faction": "ghost",
     "preferredAlt": "goodfriend",
     "alts": [
       {
@@ -129,7 +136,8 @@
     "webnovelImage": "LeeJaheonWebnovel.webp",
     "firstAppearance": 14,
     "birthday": "Jan 2",
-    "bloodType": "AB",
+    "alias": "Lizard",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": [
       {
@@ -154,7 +162,8 @@
     "webnovelImage": null,
     "firstAppearance": 16,
     "birthday": "■■",
-    "bloodType": "■■",
+    "alias": "Daydream Inc. Researcher",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
@@ -167,8 +176,9 @@
     "manwhaImage": "JinNasolManwhal.webp",
     "webnovelImage": "JinNasolWebnovel.webp",
     "firstAppearance": 18,
-    "birthday": "■■",
-    "bloodType": "■■",
+    "birthday": "Sep 13",
+    "alias": "Butterfly",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
@@ -182,13 +192,14 @@
     "webnovelImage": "J3Webnovel.webp",
     "firstAppearance": 32,
     "birthday": "Oct 10",
-    "bloodType": "A (Formerly) O (Currently)",
+    "alias": "Security Sergeant",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
   {
     "id": "AgentBronze",
-    "name": "Agent Bronze",
+    "name": "Ryu Jaekwan",
     "hasManwha": false,
     "hasManwhaImage": false,
     "hasWebnovelImage": true,
@@ -196,7 +207,8 @@
     "webnovelImage": "AgentBronzeWebnovel.webp",
     "firstAppearance": 33,
     "birthday": "Dec 9",
-    "bloodType": "A",
+    "alias": "Agent Bronze",
+    "faction": "bureau",
     "preferredAlt": null,
     "alts": []
   },
@@ -210,7 +222,8 @@
     "webnovelImage": "LeeSeonghaeWebnovel.webp",
     "firstAppearance": 68,
     "birthday": "May 20",
-    "bloodType": "■■",
+    "alias": "Dolphin",
+    "faction": "daydream",
     "preferredAlt": null,
     "alts": []
   },
@@ -224,7 +237,8 @@
     "webnovelImage": "AgentChoiWebnovel.webp",
     "firstAppearance": 143,
     "birthday": "Aug 29",
-    "bloodType": "B",
+    "alias": "■■",
+    "faction": "bureau",
     "preferredAlt": null,
     "alts": []
   }

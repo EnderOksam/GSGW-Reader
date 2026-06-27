@@ -1,12 +1,14 @@
-{
-  "id": "KimSoleum",
-  "name": "Kim Soleum",
-  "hasManwha": true,
-  "manwhaImage": "KimSoleumManwha.webp",
-  "webnovelImage": "KimSoleumWebnovel.webp",
-  "firstAppearance": 1,
-  "birthday": "Sep 13",
-  "bloodType": "A",
-  "preferredAlt": null,
-  "alts": []
+﻿{
+    "alias":  "Roe Deer",
+    "id":  "KimSoleum",
+    "alts":  [
+
+             ],
+    "manwhaImage":  "KimSoleumManwha.webp",
+    "webnovelImage":  "KimSoleumWebnovel.webp",
+    "birthday":  "Sep 13",
+    "name":  "Kim Soleum",
+    "preferredAlt":  null,
+    "firstAppearance":  1,
+    "faction":  "daydream"
 }

@@ -1,11 +1,14 @@
-{
-  "id": "AgentChoi",
-  "name": "Agent Choi",
-  "hasManwha": false,
-  "webnovelImage": "AgentChoiWebnovel.webp",
-  "firstAppearance": 143,
-  "birthday": "Aug 29",
-  "bloodType": "B",
-  "preferredAlt": null,
-  "alts": []
+﻿{
+    "alias":  "■■",
+    "id":  "AgentChoi",
+    "alts":  [
+
+             ],
+    "manwhaImage":  null,
+    "webnovelImage":  "AgentChoiWebnovel.webp",
+    "birthday":  "Aug 29",
+    "name":  "Agent Choi",
+    "preferredAlt":  null,
+    "firstAppearance":  143,
+    "faction":  "bureau"
 }

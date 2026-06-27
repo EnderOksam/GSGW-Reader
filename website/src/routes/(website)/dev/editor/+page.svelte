@@ -416,7 +416,7 @@
     });
 
     s = s.replace(/^~~~\s*$/gm, '<hr class="visible-hr">');
-    s = s.replace(/^\^\^\s*$/gm, '<hr class="invisible-hr">');
+    s = s.replace(/^~\^~\s*$/gm, '<hr class="invisible-hr">');
 
     s = s.replace(/@_@(.+?)@_@/gs, (_, inner) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
@@ -506,6 +506,21 @@
     s = s.replace(/\$a(.+?)a\$/gs, (_, inner) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       return `<span class="aurora-text">${inner}</span>`;
+    });
+
+    s = s.replace(/\$g(.+?)g\$/gs, (_, inner) => {
+      inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      return `<span class="gold-text">${inner}</span>`;
+    });
+
+    s = s.replace(/\$\*(.+?)\*\$/gs, (_, inner) => {
+      inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      return `<span class="sparkle-text">${inner}</span>`;
+    });
+
+    s = s.replace(/\$\((.+?)\)\$/gs, (_, inner) => {
+      inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      return `<span class="moon-text">${inner}</span>`;
     });
 
     function makeWindow(cls: string, inner: string, extra?: string): string {
@@ -1109,8 +1124,6 @@
     name: string;
     chapter: number | null;
     toggleable: boolean;
-    hasManwha: boolean;
-    hasWebnovel: boolean;
     manwhaImage: string | null;
     webnovelImage: string | null;
   }
@@ -1118,12 +1131,12 @@
   interface CharacterData {
     id: string;
     name: string;
-    hasManwha: boolean;
+    faction: string;
     manwhaImage: string | null;
     webnovelImage: string | null;
     firstAppearance: number | null;
     birthday: string;
-    bloodType: string;
+    alias: string;
     preferredAlt: string | null;
     alts: Alt[];
   }
@@ -1315,12 +1328,12 @@
         characters = (localCharacters as any[]).map(c => ({
           id: c.id,
           name: c.name,
-          hasManwha: c.hasManwha ?? false,
+          faction: c.faction ?? "daydream",
           manwhaImage: c.manwhaImage ?? null,
           webnovelImage: c.webnovelImage ?? null,
           firstAppearance: c.firstAppearance ?? null,
           birthday: c.birthday ?? "",
-          bloodType: c.bloodType ?? "",
+          alias: c.alias ?? "",
           preferredAlt: c.preferredAlt ?? null,
           alts: c.alts ?? [],
         }));
@@ -1459,12 +1472,12 @@
     const newChar: CharacterData = {
       id,
       name,
-      hasManwha: true,
+      faction: "daydream",
       manwhaImage: `${id}Manwha.webp`,
       webnovelImage: `${id}Webnovel.webp`,
       firstAppearance: null,
       birthday: "",
-      bloodType: "",
+      alias: "",
       preferredAlt: null,
       alts: [],
     };
@@ -1735,10 +1748,10 @@
     } catch {}
     // Fallback: re-merge local source with custom
     const source = (localCharacters as any[]).map(c => ({
-      id: c.id, name: c.name, hasManwha: c.hasManwha ?? false,
+      id: c.id, name: c.name, faction: c.faction ?? "daydream",
       manwhaImage: c.manwhaImage ?? null, webnovelImage: c.webnovelImage ?? null,
       firstAppearance: c.firstAppearance ?? null, birthday: c.birthday ?? "",
-      bloodType: c.bloodType ?? "", preferredAlt: c.preferredAlt ?? null, alts: c.alts ?? [],
+      alias: c.alias ?? "", preferredAlt: c.preferredAlt ?? null, alts: c.alts ?? [],
     }));
     const merged = [...source];
     for (const c of custom) {
@@ -2000,7 +2013,7 @@
           <table class="w-full border-collapse">
             <tbody>
               {#each [
-                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
               ] as opt}
                 <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                   <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -2241,8 +2254,8 @@
                       <span>{selectedAltObj?.chapter ? 'CH ' + selectedAltObj.chapter : displayCharData.firstAppearance ? 'CH ' + displayCharData.firstAppearance : '■■'}</span>
                     </div>
                     <div class="flex justify-between">
-                      <span class="font-medium">Blood Type</span>
-                      <span>{displayCharData.bloodType || '■■'}</span>
+                      <span class="font-medium">Alias</span>
+                      <span>{displayCharData.alias || '■■'}</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="font-medium">Birthday</span>
@@ -2423,7 +2436,7 @@
             <table class="w-full border-collapse">
               <tbody>
                 {#each [
-                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
                 ] as opt}
                   <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                     <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>

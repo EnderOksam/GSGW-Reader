@@ -29,7 +29,7 @@ def scan_character(folder: Path) -> dict | None:
         return None
 
     try:
-        info = json.loads(info_path.read_text(encoding="utf-8"))
+        info = json.loads(info_path.read_text(encoding="utf-8-sig"))
     except json.JSONDecodeError as e:
         print(f"  Warning: invalid JSON in {info_path.name}: {e}")
         return None
@@ -51,7 +51,8 @@ def scan_character(folder: Path) -> dict | None:
     has_manwha = info.get("hasManwha", manwha_image is not None)
     first_appearance = info.get("firstAppearance")
     birthday = info.get("birthday", UNKNOWN)
-    blood_type = info.get("bloodType", UNKNOWN)
+    blood_type = info.get("alias", UNKNOWN)
+    faction = info.get("faction")
     preferred_alt = info.get("preferredAlt")
     alts_config = info.get("alts", [])
 
@@ -107,7 +108,8 @@ def scan_character(folder: Path) -> dict | None:
         "webnovelImage": webnovel_image,
         "firstAppearance": first_appearance,
         "birthday": birthday,
-        "bloodType": blood_type,
+        "alias": blood_type,
+        "faction": faction,
         "preferredAlt": preferred_alt,
         "alts": alts,
     }

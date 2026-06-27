@@ -1,10 +1,14 @@
-{
-  "id": "JangHeoun",
-  "name": "Jang Heoun",
-  "hasManwha": true,
-  "manwhaImage": "JangHeounManwha.webp",
-  "firstAppearance": 5,
-  "bloodType": "■■",
-  "preferredAlt": null,
-  "alts": []
+﻿{
+    "alias":  "Bison",
+    "id":  "JangHeoun",
+    "alts":  [
+
+             ],
+    "manwhaImage":  "JangHeounManwha.webp",
+    "webnovelImage":  null,
+    "birthday":  "■■",
+    "name":  "Jang Heoun",
+    "preferredAlt":  null,
+    "firstAppearance":  5,
+    "faction":  "daydream"
 }

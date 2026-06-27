@@ -1,11 +1,14 @@
-{
-  "id": "LeeSeonghae",
-  "name": "Lee Seonghae",
-  "hasManwha": false,
-  "webnovelImage": "LeeSeonghaeWebnovel.webp",
-  "firstAppearance": 68,
-  "birthday": "May 20",
-  "bloodType": "■■",
-  "preferredAlt": null,
-  "alts": []
+﻿{
+    "alias":  "Dolphin",
+    "id":  "LeeSeonghae",
+    "alts":  [
+
+             ],
+    "manwhaImage":  null,
+    "webnovelImage":  "LeeSeonghaeWebnovel.webp",
+    "birthday":  "May 20",
+    "name":  "Lee Seonghae",
+    "preferredAlt":  null,
+    "firstAppearance":  68,
+    "faction":  "daydream"
 }

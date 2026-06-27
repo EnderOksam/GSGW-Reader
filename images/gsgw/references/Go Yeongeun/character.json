@@ -1,12 +1,14 @@
-{
-  "id": "GoYoungeun",
-  "name": "Go Yeongeun",
-  "hasManwha": true,
-  "manwhaImage": "GoYoungeunManwha.webp",
-  "webnovelImage": "GoYoungeunWebnovel.webp",
-  "firstAppearance": 2,
-  "birthday": "Mar 24",
-  "bloodType": "O",
-  "preferredAlt": null,
-  "alts": []
+﻿{
+    "alias":  "Goral",
+    "id":  "GoYoungeun",
+    "alts":  [
+
+             ],
+    "manwhaImage":  "GoYoungeunManwha.webp",
+    "webnovelImage":  "GoYoungeunWebnovel.webp",
+    "birthday":  "Mar 24",
+    "name":  "Go Yeongeun",
+    "preferredAlt":  null,
+    "firstAppearance":  2,
+    "faction":  "daydream"
 }

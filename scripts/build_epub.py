@@ -608,6 +608,9 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"\$\$(.+?)\$\$", '<span class="handwritten">{inner}</span>'),
         (r"\$c(.+?)c\$", '<span class="contaminated">{inner}</span>'),
         (r"\$a(.+?)a\$", '<span class="aurora-text">{inner}</span>'),
+        (r"\$g(.+?)g\$", '<span class="gold-text">{inner}</span>'),
+        (r"\$\*(.+?)\*\$", '<span class="sparkle-text">{inner}</span>'),
+        (r"\$\((.+?)\)\$", '<span class="moon-text">{inner}</span>'),
     ]
 
     for pattern, wrapper in custom_wrappers:
@@ -813,7 +816,11 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
             i += 1
             continue
 
-        if re.match(r"^\^\^\s*$", line):
+        if re.match(r"^-\&-\s*$", line):
+            i += 1
+            continue
+
+        if re.match(r"^~\^~\s*$", line):
             out.append('<br /><hr class="invisible-hr" /><br />')
             i += 1
             continue

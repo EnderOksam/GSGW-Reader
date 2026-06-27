@@ -315,8 +315,9 @@ del {
 
 .smoke-text {
   color: #000;
+  letter-spacing: 0.2em;
   -webkit-text-fill-color: #000;
-  -webkit-text-stroke: 1px rgba(255, 200, 0, 0.9);
+  -webkit-text-stroke: 0.25em rgba(255, 200, 0, 0.9);
   paint-order: stroke fill;
   font-weight: bold;
 }
@@ -327,6 +328,22 @@ del {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: #00ccff;
+  font-weight: bold;
+}
+
+.gold-text {
+  color: #E8C24A;
+  -webkit-text-fill-color: #E8C24A;
+  -webkit-text-stroke: 0.25em #5b3912;
+  paint-order: stroke fill;
+  font-weight: bold;
+}
+
+.moon-text {
+  color: #cce4ff;
+  -webkit-text-fill-color: #cce4ff;
+  -webkit-text-stroke: 0.25em #6aacdf;
+  paint-order: stroke fill;
   font-weight: bold;
 }
 

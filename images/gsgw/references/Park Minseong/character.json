@@ -1,12 +1,14 @@
-{
-  "id": "ParkMinseong",
-  "name": "Park Minseong",
-  "hasManwha": true,
-  "manwhaImage": "ParkMinseongManwha.webp",
-  "webnovelImage": "ParkMinseongWebnovel.webp",
-  "firstAppearance": 6,
-  "birthday": "Apr 18",
-  "bloodType": "O",
-  "preferredAlt": null,
-  "alts": []
+﻿{
+    "alias":  "Badger",
+    "id":  "ParkMinseong",
+    "alts":  [
+
+             ],
+    "manwhaImage":  "ParkMinseongManwha.webp",
+    "webnovelImage":  "ParkMinseongWebnovel.webp",
+    "birthday":  "Apr 18",
+    "name":  "Park Minseong",
+    "preferredAlt":  null,
+    "firstAppearance":  6,
+    "faction":  "daydream"
 }

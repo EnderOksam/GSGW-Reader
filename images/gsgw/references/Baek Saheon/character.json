@@ -1,22 +1,21 @@
-{
-  "id": "BaekSaheon",
-  "name": "Baek Saheon",
-  "hasManwha": true,
-  "manwhaImage": "BaekSaheonManwha.webp",
-  "firstAppearance": 2,
-  "birthday": "May 11",
-  "bloodType": "A",
-  "preferredAlt": "eyepatch",
-  "alts": [
-    {
-      "id": "eyepatch",
-      "name": "Baek Saheon (Eyepatch)",
-      "chapter": 5,
-      "toggleable": true,
-      "hasManwha": true,
-      "hasWebnovel": true,
-      "manwhaImage": "Eyepatch.webp",
-      "webnovelImage": "EyepatchWebnovel.webp"
-    }
-  ]
+﻿{
+    "alias":  "Goat",
+    "id":  "BaekSaheon",
+    "alts":  [
+                 {
+                     "id":  "eyepatch",
+                     "name":  "Baek Saheon (Eyepatch)",
+                     "webnovelImage":  "EyepatchWebnovel.webp",
+                     "manwhaImage":  "Eyepatch.webp",
+                     "chapter":  5,
+                     "toggleable":  true
+                 }
+             ],
+    "manwhaImage":  "BaekSaheonManwha.webp",
+    "webnovelImage":  null,
+    "birthday":  "May 11",
+    "name":  "Baek Saheon",
+    "preferredAlt":  "eyepatch",
+    "firstAppearance":  2,
+    "faction":  "daydream"
 }

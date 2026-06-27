@@ -85,6 +85,10 @@ To add a titlebar, put text on the first line inside the window. Put `\` before 
 | `#^#text#^#` | Growing text (sizes up left to right) |
 | `#v#text#v#` | Shrinking text (sizes down left to right) |
 | `$s text s$` | Smoke text |
+| `$a text a$` | Aurora gradient text |
+| `$g text g$` | Gold shimmer text |
+| `$* text *$` | Sparkle stars text |
+| `$( text )$` | Moon shimmer text |
 
 ### Colored Text
 

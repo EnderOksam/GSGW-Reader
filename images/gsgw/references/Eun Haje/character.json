@@ -1,12 +1,14 @@
-{
-  "id": "EunHaje",
-  "name": "Eun Haje",
-  "hasManwha": true,
-  "manwhaImage": "EunHajeManwha.webp",
-  "webnovelImage": "EunHajeWebnovel.webp",
-  "firstAppearance": 6,
-  "birthday": "Oct 4",
-  "bloodType": "B",
-  "preferredAlt": null,
-  "alts": []
+﻿{
+    "alias":  "Falcon",
+    "id":  "EunHaje",
+    "alts":  [
+
+             ],
+    "manwhaImage":  "EunHajeManwha.webp",
+    "webnovelImage":  "EunHajeWebnovel.webp",
+    "birthday":  "Oct 4",
+    "name":  "Eun Haje",
+    "preferredAlt":  null,
+    "firstAppearance":  6,
+    "faction":  "daydream"
 }

@@ -52,13 +52,16 @@ SHRINK_RE = re.compile(r"#v#(.+?)#v#", re.DOTALL)
 
 SMOKE_RE = re.compile(r"\$s(.+?)s\$", re.DOTALL)
 AURORA_RE = re.compile(r"\$a(.+?)a\$", re.DOTALL)
+GOLD_RE = re.compile(r"\$g(.+?)g\$", re.DOTALL)
+SPARKLE_RE = re.compile(r"\$\*(.+?)\*\$", re.DOTALL)
+MOON_RE = re.compile(r"\$\((.+?)\)\$", re.DOTALL)
 
 TWITTER_URL_RE = re.compile(
     r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
 )
 
 VISIBLE_HR_RE = re.compile(r"^~~~\s*$", re.MULTILINE)
-INVISIBLE_HR_RE = re.compile(r"^\^\^\s*$", re.MULTILINE)
+INVISIBLE_HR_RE = re.compile(r"^~\^~\s*$", re.MULTILINE)
 
 STYLE_BLOCK_RE = re.compile(r'^[ \t]*\{style="([^"]*)"\}\s*$')
 
@@ -524,6 +527,12 @@ def convert_chapter(content):
     content = SMOKE_RE.sub(smoke_replacer, content)
 
     content = AURORA_RE.sub(aurora_replacer, content)
+
+    content = GOLD_RE.sub(r'<span class="gold-text">\1</span>', content)
+
+    content = SPARKLE_RE.sub(r'<span class="sparkle-text">\1</span>', content)
+
+    content = MOON_RE.sub(r'<span class="moon-text">\1</span>', content)
 
     # restore protected patterns
     for key, val in img_placeholders.items():

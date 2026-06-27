@@ -1,11 +1,14 @@
-{
-  "id": "AgentBronze",
-  "name": "Agent Bronze",
-  "hasManwha": false,
-  "webnovelImage": "AgentBronzeWebnovel.webp",
-  "firstAppearance": 33,
-  "birthday": "Dec 9",
-  "bloodType": "A",
-  "preferredAlt": null,
-  "alts": []
+﻿{
+    "alias":  "Agent Bronze",
+    "id":  "AgentBronze",
+    "alts":  [
+
+             ],
+    "manwhaImage":  null,
+    "webnovelImage":  "AgentBronzeWebnovel.webp",
+    "birthday":  "Dec 9",
+    "name":  "Ryu Jaekwan",
+    "preferredAlt":  null,
+    "firstAppearance":  33,
+    "faction":  "bureau"
 }
