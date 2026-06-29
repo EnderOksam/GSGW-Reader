@@ -264,7 +264,7 @@
 </script>
 
 {#if readerState.refPanelOpen}
-  <div class="fixed inset-0 z-50 backdrop-blur-[2px] sm:backdrop-blur-none" class:sm:hidden={pinned} onclick={() => readerState.refPanelOpen = false}></div>
+  <div class="fixed inset-0 z-50 backdrop-blur-[2px] sm:backdrop-blur-none" class:sm:hidden={pinned} onclick={() => readerState.refPanelOpen = false} onkeydown={(e) => { if (e.key === 'Escape') readerState.refPanelOpen = false; }} role="presentation"></div>
 {/if}
 <div
   class="fixed top-0 right-0 z-50 h-dvh w-80 sm:w-96 bg-base-100 shadow-2xl border-l border-base-content/10 rounded-l-2xl transition-transform duration-300 ease-out"
@@ -322,7 +322,7 @@
               {@const altName = activeAlt?.name ?? null}
               {@const altLocked = activeAlt != null && activeAlt.chapter != null && activeAlt.chapter > currentChapter}
               <div class="id-card faction-{ch.faction} {cardTextClass(ch.faction)}" class:dark-card={darkCards} style={cardBg(ch.faction) ? `background:${cardBg(ch.faction)}` : ''}>
-                <div class="portrait" class:hover-toggles={hoverToggles[ch.id]} onclick={() => hoverToggles[ch.id] = !hoverToggles[ch.id]}>
+                <div class="portrait" class:hover-toggles={hoverToggles[ch.id]} onclick={() => hoverToggles[ch.id] = !hoverToggles[ch.id]} onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hoverToggles[ch.id] = !hoverToggles[ch.id]; } }} role="button" tabindex="0">
                   {#if manwhaSrc}
                     <img
                       src={'/characters/' + manwhaSrc}
@@ -453,6 +453,7 @@
         <Icon icon="material-symbols:format-paint-outline-rounded" class="size-4" />
       </button>
     </div>
+  </div>
   <form method="dialog" class="modal-backdrop">
     <button>close</button>
   </form>
@@ -485,7 +486,7 @@
                     maxlength={7}
                     bind:value={factionColors[f.id]}
                     oninput={() => {
-                      if (linkedFaction === f.id && /^#[0-9a-f]{6}$/i.test(factionColors[f.id])) {
+                      if (/^#[0-9a-f]{6}$/i.test(factionColors[f.id])) {
                         pickerColor = factionColors[f.id];
                         const [h, s, l] = hexToHsl(factionColors[f.id]);
                         hue = h; sat = s; light = l;
@@ -530,12 +531,12 @@
           {/each}
         </div>
         <div class="flex flex-col items-center justify-center gap-3 shrink-0 pl-4 border-l border-base-content/10">
-          <div class="relative size-28 rounded-xl overflow-hidden border-2 border-base-content/10 shadow-lg cursor-crosshair touch-none" style="background: hsl({hue}, 100%, 50%)" onmousedown={startSvDrag} ontouchstart={startSvDrag}>
+          <div class="relative size-28 rounded-xl overflow-hidden border-2 border-base-content/10 shadow-lg cursor-crosshair touch-none" style="background: hsl({hue}, 100%, 50%)" onmousedown={startSvDrag} ontouchstart={startSvDrag} role="presentation">
             <div class="absolute inset-0" style="background: linear-gradient(to right, #fff, transparent)"></div>
             <div class="absolute inset-0" style="background: linear-gradient(to top, #000, transparent)"></div>
             <div class="absolute rounded-full border-2 border-white shadow-md size-4 pointer-events-none -translate-x-1/2 -translate-y-1/2" style="left: {sat}%; top: {100 - light}%; background: {pickerColor}"></div>
           </div>
-          <div class="relative w-28 h-4 rounded-full overflow-hidden border border-base-content/20 cursor-pointer touch-none" style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)" onmousedown={startHueDrag} ontouchstart={startHueDrag}>
+          <div class="relative w-28 h-4 rounded-full overflow-hidden border border-base-content/20 cursor-pointer touch-none" style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)" onmousedown={startHueDrag} ontouchstart={startHueDrag} role="presentation">
             <div class="absolute rounded-full border-2 border-white shadow-md size-4 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style="left: {hue / 360 * 100}%; top: 50%; background: hsl({hue}, 100%, 50%)"></div>
           </div>
           <div class="flex items-center gap-2 text-xs font-mono uppercase bg-base-300/50 px-3 py-1 rounded-full">
@@ -695,11 +696,13 @@
   .faction-bureau .alt-btn {
     background: rgba(0,0,0,.08);
     backdrop-filter: blur(4px);
+    color: #111;
   }
 
   .faction-ghost .alt-btn {
     background: rgba(255,255,255,.15);
     backdrop-filter: blur(4px);
+    color: #fff;
   }
 
   .alt-btn:hover {
@@ -756,7 +759,6 @@
   .faction-daydream .blood-type,
   .faction-bureau .blood-type {
     -webkit-text-stroke: none;
-    text-stroke: none;
     color: #000;
   }
 
@@ -900,7 +902,7 @@
   }
 
   .dark-card.faction-bureau {
-    background: #1e1e3f;
+    background: #1A1D2D;
     border-color: rgba(255,255,255,0.08);
   }
 
@@ -951,6 +953,7 @@
   .dark-card.faction-daydream .alt-btn,
   .dark-card.faction-bureau .alt-btn {
     background: rgba(255,255,255,.15);
+    color: #fff;
   }
 
   .custom-text-light .name {
@@ -987,5 +990,6 @@
 
   .custom-text-light .alt-btn {
     background: rgba(255,255,255,.15);
+    color: #fff;
   }
 </style>

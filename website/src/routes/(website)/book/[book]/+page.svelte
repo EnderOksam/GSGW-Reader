@@ -6,6 +6,7 @@
   import imgLotmCover from "$lib/assets/web-lotm-cover.jpg";
   import imgtempCover from "$lib/assets/web-coi-cover.jpg";
   import imgManwhaCover from "$lib/assets/webtoon-cover.webp";
+  import imgDebutCover from "$lib/assets/debut.webp";
   import book_meta from "$lib/meta.json";
 
   interface Chapter {
@@ -67,6 +68,27 @@
       button_primary: "btn-secondary",
       button_secondary: "btn-primary",
       cover: imgtempCover,
+      external_link: "",
+    },
+    debut: {
+      title: "Debut Or Die",
+      author: "Baek Deoksoo",
+      synopsis: [
+        "A student who had been preparing for the Civil Service examination for 4 years suddenly found himself in an unfamiliar body, 3 years in the past.",
+        "Along with it came a status window displaying a threat right before his eyes!",
+        "",
+        "[Outbreak!]",
+        "[Status Abnormality: \u2018Debut or Die\u2019 occurs!]",
+        "",
+        "A diary about the transformation of the main character, who was suddenly challenged to be an idol even though he had never been in the industry before, due to the sudden threat of death.",
+        "",
+        "\u203bSpeciality: Before regressing and possessing his new body, he used to collect and sell idol\u2019s data.",
+      ].join("\n\n"),
+      title_accent: "text-primary",
+      accent_color: "secondary",
+      button_primary: "btn-secondary",
+      button_secondary: "btn-info",
+      cover: imgDebutCover,
       external_link: "",
     },
     manwha: {

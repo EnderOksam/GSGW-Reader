@@ -520,7 +520,7 @@
 
     s = s.replace(/\$\((.+?)\)\$/gs, (_, inner) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-      return `<span class="moon-text">${inner}</span>`;
+      return `<span class="moon-wrap"><span class="moon-text">${inner}</span></span>`;
     });
 
     function makeWindow(cls: string, inner: string, extra?: string): string {

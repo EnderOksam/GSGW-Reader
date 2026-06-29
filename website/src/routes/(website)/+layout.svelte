@@ -5,6 +5,7 @@
   import { browser, dev } from "$app/environment";
   import { goto } from "$app/navigation";
   import bgImage from "$lib/assets/background.jpg";
+  import imgLotmCover from "$lib/assets/web-lotm-cover.jpg";
 
   let { children } = $props();
 
@@ -50,6 +51,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 
   <meta property="og:type" content="website" />
   <meta property="og:title" content="GSGW-Reader" />
+  <meta property="og:image" content={imgLotmCover} />
   <meta
     property="og:description"
     content="A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.
@@ -58,6 +60,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="GSGW-Reader" />
+  <meta name="twitter:image" content={imgLotmCover} />
   <meta
     name="twitter:description"
     content="A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.

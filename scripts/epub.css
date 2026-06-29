@@ -31,8 +31,8 @@ body {
 }
 
 p {
-  margin: 1em 0;
-  line-height: 1.45;
+  margin: 1.5em 0;
+  line-height: 1.5;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -192,6 +192,11 @@ del {
   text-decoration: underline;
 }
 
+.text-sub {
+  font-size: 0.75em;
+  opacity: 0.6;
+}
+
 .text-red {
   color: #cc2200;
   font-weight: bold;
@@ -323,6 +328,7 @@ del {
 }
 
 .aurora-text {
+  display: inline-block;
   background: linear-gradient(135deg, #00ff88, #00ccff, #aa66ff, #ff66aa, #ffaa00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -332,19 +338,67 @@ del {
 }
 
 .gold-text {
-  color: #E8C24A;
-  -webkit-text-fill-color: #E8C24A;
-  -webkit-text-stroke: 0.25em #5b3912;
-  paint-order: stroke fill;
-  font-weight: bold;
+  position: relative;
+  display: inline-block;
+  font-weight: 800;
+  background:
+    linear-gradient(90deg,
+      transparent 25%,
+      rgba(255,255,255,0.3) 46%,
+      rgba(255,255,255,0.5) 50%,
+      rgba(255,255,255,0.3) 54%,
+      transparent 75%
+    ),
+    repeating-linear-gradient(
+      65deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(255,215,100,0.08) 3px,
+      rgba(255,215,100,0.08) 5px
+    ),
+    #E8C24A;
+  background-size: 200px 100%, auto, auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-text-stroke: 1.2px #5b3912;
+  text-stroke: 1.2px #5b3912;
+  filter: drop-shadow(0 0 5px rgba(212, 160, 23, 0.35));
 }
 
 .moon-text {
-  color: #cce4ff;
-  -webkit-text-fill-color: #cce4ff;
-  -webkit-text-stroke: 0.25em #6aacdf;
-  paint-order: stroke fill;
-  font-weight: bold;
+  position: relative;
+  display: inline-block;
+  font-weight: 800;
+  background:
+    linear-gradient(90deg,
+      transparent 25%,
+      rgba(255,255,255,0.35) 46%,
+      rgba(255,255,255,0.55) 50%,
+      rgba(255,255,255,0.35) 54%,
+      transparent 75%
+    ),
+    repeating-linear-gradient(
+      65deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(180,220,255,0.08) 3px,
+      rgba(180,220,255,0.08) 5px
+    ),
+    linear-gradient(
+      135deg,
+      #8ab8e0 0%,
+      #c0dff5 35%,
+      #e8f4ff 65%,
+      #ffffff 100%
+    );
+  background-size: 200px 100%, auto, auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-text-stroke: 1.2px #6aacdf;
+  text-stroke: 1.2px #6aacdf;
+  filter: drop-shadow(0 0 5px rgba(100, 180, 230, 0.35));
 }
 
 

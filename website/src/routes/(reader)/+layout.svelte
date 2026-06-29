@@ -15,6 +15,7 @@
   import { readerState } from "$lib/reader.svelte";
   import bookData from "$lib/meta.json";
 
+
   let { children } = $props();
 
   // --- Logic: User Preferences ---
@@ -101,6 +102,11 @@
     chaptersForTL.findIndex((ch: any) => Number(ch.slug) === currentChapter)
   );
   const totalChapters = $derived(chaptersForTL.length);
+  const currentChMeta = $derived(
+    chaptersForTL.find((ch: any) => Number(ch.slug) === currentChapter) ??
+    { section: "", title: "", slug: 0 }
+  );
+
 
 
   let navState = $state({ searchQuery: "", selectedTL: "webnovel" });
@@ -202,10 +208,23 @@
 </script>
 
 <svelte:head>
-  <title>{bookSlug.toUpperCase()} {readerState.ch_meta.slug} — {readerState.ch_meta.title}</title>
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content="{bookSlug.toUpperCase()} {readerState.ch_meta.slug} — {readerState.ch_meta.title}" />
-  <meta name="twitter:title" content="{bookSlug.toUpperCase()} {readerState.ch_meta.slug} — {readerState.ch_meta.title}" />
+  {#if bookSlug === "manwha"}
+    <title>GSGW Manwha - {currentChMeta.title}</title>
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="GSGW Manwha - {currentChMeta.title}" />
+    <meta name="twitter:title" content="GSGW Manwha - {currentChMeta.title}" />
+    {#if currentTL === "flame comics"}
+      <meta property="og:description" content="Flame Comics" />
+      <meta name="twitter:description" content="Flame Comics" />
+    {/if}
+  {:else}
+    <title>{currentChMeta.section} - {currentChMeta.title}</title>
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{currentChMeta.section} - {currentChMeta.title}" />
+    <meta name="twitter:title" content="{currentChMeta.section} - {currentChMeta.title}" />
+    <meta property="og:description" content="" />
+    <meta name="twitter:description" content="" />
+  {/if}
 </svelte:head>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -253,7 +272,7 @@
       </a>
 
       <span class="text-xs font-mono font-bold opacity-50 tracking-wider">
-        CH. {readerState.ch_meta.slug}
+        CH. {currentChMeta.slug}
       </span>
 
       <a

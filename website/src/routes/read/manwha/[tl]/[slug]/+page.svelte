@@ -98,9 +98,7 @@
 
 </script>
 
-<svelte:head>
-  <title>Manwha Chapter {slug}</title>
-</svelte:head>
+
 
 <nav class="sticky top-0 z-50 flex w-full items-center justify-center gap-2 sm:gap-5 bg-base-100 border-b border-base-content/10 p-3">
   <div class="tooltip tooltip-bottom" data-tip="Home (H)">
