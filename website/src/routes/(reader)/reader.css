@@ -669,6 +669,82 @@ body .reader-container .sticky-window.sticky-window li {
   color: #000000 !important;
 }
 
+body .reader-container .debut-window.debut-window {
+  position: relative;
+  width: min(430px, 90%);
+  margin: 2rem auto;
+  padding: 2rem 2.5rem;
+  color: #fff !important;
+  text-align: center;
+  background: #1e1e30;
+  border: 2px solid rgba(255,255,255,.85);
+  box-shadow:
+    0 0 10px rgba(255,255,255,.45),
+    0 0 25px rgba(170,210,255,.25),
+    inset 0 0 25px rgba(255,255,255,.08);
+}
+body .reader-container .debut-window.debut-window::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255,255,255,.55);
+  pointer-events: none;
+}
+body .reader-container .debut-window.debut-window p {
+  color: #fff;
+}
+body .reader-container .debut-window.debut-window .debut-window-label {
+  display: block;
+  padding: .15rem 1.2rem;
+  background: rgba(255,255,255,.25);
+  border-radius: 4px;
+  font-size: .85em;
+  text-align: center;
+  width: fit-content;
+  margin: .3rem auto;
+}
+body .reader-container .debut-window.debut-window .debut-window-title {
+  position: absolute;
+  top: -.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: .05rem .9rem;
+  font-size: .75em;
+  background: #1e1e30;
+  border: 2px solid rgba(255,255,255,.8);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(255,255,255,.4), inset 0 0 8px rgba(255,255,255,.08);
+}
+
+body .reader-container .debut-alert.debut-alert {
+  position: relative;
+  width: min(430px, 95%);
+  margin: 2rem auto;
+  padding: 2rem 2.5rem;
+  color: #fff !important;
+  text-align: left;
+  background: #b01030;
+  border: 2px solid rgba(255,120,140,.9);
+  box-shadow:
+    0 0 10px rgba(255,50,80,.6),
+    0 0 25px rgba(255,50,80,.3),
+    inset 0 0 25px rgba(255,50,80,.12);
+}
+body .reader-container .debut-alert.debut-alert::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255,120,140,.55);
+  pointer-events: none;
+}
+body .reader-container .debut-alert.debut-alert p {
+  color: #fff;
+}
+
 .wrap-break-word {
   overflow-wrap: break-word;
   word-break: break-word;

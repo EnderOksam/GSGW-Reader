@@ -153,8 +153,24 @@
 
   const REPO = "EnderOksam/GSGW-Reader";
   const BRANCH = "main";
-  const SOURCE_TRANSLATIONS = ["fantl", "MTL", "unfinishedtl"];
   const CUSTOM_TRANSLATIONS_KEY = "editor-custom-translations";
+
+  const BOOKS = [
+    { slug: "gsgw", label: "Ghost Story, Gotta Work", translations: ["fantl", "MTL", "unfinishedtl"] },
+    { slug: "debut", label: "Debut Or Die", translations: ["plaintext"] },
+  ] as const;
+
+  /** Maps (book, tl) → the actual GitHub directory name (case-sensitive). */
+  function tlDir(book: string, tl: string): string {
+    if (book === "debut" && tl === "plaintext") return "Plaintext";
+    return tl;
+  }
+
+  let currentBook = $state("gsgw");
+
+  const SOURCE_TRANSLATIONS = $derived(
+    BOOKS.find(b => b.slug === currentBook)?.translations ?? []
+  );
 
   const TWITTER_EMBED_RE = /https?:\/\/(?:x|twitter)\.com\/(\w+)\/status\/(\d+)(?:\/photo\/(\d+))?[^\s<>"']*/g;
 
@@ -562,6 +578,25 @@
 
     s = s.replace(/!\[\n(.*?)\n\]!/gs, (_, inner) => makeWindow("braun-screen", inner));
 
+    s = s.replace(/★!\n(.*?)\n!★/gs, (_, inner) => makeWindow("debut-alert", inner));
+
+    s = s.replace(/★-\n(.*?)\n-★/gs, (_, inner) => {
+      const lines = inner.split("\n");
+      let title = lines[0].trim();
+      if (title.startsWith("\\")) {
+        title = "";
+        lines[0] = lines[0].replace("\\", "").trim();
+      }
+      const bodyLines = (title ? lines.slice(1) : lines).map((l: string) => {
+        const m = l.match(/^\s*\[(.+?)\]\s*$/);
+        if (m) return `<div class="debut-window-label">${m[1]}</div>`;
+        return l;
+      });
+      const body = bodyLines.join("\n").trim();
+      const titleHtml = title ? `<div class="debut-window-title">${title}</div>\n\n` : "";
+      return makeWindow("debut-window", titleHtml + body);
+    });
+
     s = replaceTwitterUrls(s);
     return s;
   }
@@ -584,7 +619,7 @@
     const imap = new Map<string, string>();
     await Promise.allSettled(files.map(async (f) => {
       try {
-        const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/gsgw/${translation}/${f}`;
+        const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/${currentBook}/${tlDir(currentBook, translation)}/${f}`;
         const res = await fetch(url);
         if (!res.ok) return;
         const reader = res.body?.getReader();
@@ -626,7 +661,7 @@
     error = "";
     try {
       if (isSourceTranslation) {
-        const url = `https://api.github.com/repos/${REPO}/contents/chapters/gsgw/${translation}`;
+        const url = `https://api.github.com/repos/${REPO}/contents/chapters/${currentBook}/${tlDir(currentBook, translation)}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
         const data = await res.json();
@@ -679,7 +714,7 @@
       return;
     }
     try {
-      const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/gsgw/${translation}/${file}`;
+      const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/${currentBook}/${tlDir(currentBook, translation)}/${file}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`fetch: ${res.status}`);
       const text = await res.text();
@@ -697,6 +732,15 @@
   let showManageTL = $state(false);
   let renameTL: string | null = $state(null);
   let renameTLValue = $state("");
+
+  function handleBookChange() {
+    saveCurrent();
+    const tls = BOOKS.find(b => b.slug === currentBook)?.translations ?? [];
+    if (!tls.includes(translation)) {
+      translation = tls[0] ?? "fantl";
+    }
+    loadChapterList();
+  }
 
   function handleTranslationChange() {
     saveCurrent();
@@ -946,7 +990,7 @@
       input = orig;
     } else {
       try {
-        const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/gsgw/${translation}/${selected}`;
+        const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/${currentBook}/${tlDir(currentBook, translation)}/${selected}`;
         const res = await fetch(url);
         if (res.ok) {
           const text = await res.text();
@@ -970,7 +1014,7 @@
         input = orig;
       } else {
         try {
-          const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/gsgw/${translation}/${selected}`;
+          const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/${currentBook}/${tlDir(currentBook, translation)}/${selected}`;
           const res = await fetch(url);
           if (res.ok) {
             const text = await res.text();
@@ -1947,19 +1991,28 @@
     <!-- ===== DESKTOP LAYOUT (lg+) ===== -->
     <div transition:slide class="hidden lg:flex flex-1 gap-3">
       <div class="w-56 flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shrink-0 min-h-0 shadow-lg">
-        <div class="flex gap-1 p-2 border-b border-base-content/10">
-          <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
-          <select bind:value={translation} onchange={handleTranslationChange} class="bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 w-22 transition-colors focus:border-primary/30 focus:text-base-content/80">
-            <option value="fantl">fantl</option>
-            <option value="MTL">MTL</option>
-            <option value="unfinishedtl">unfinishedtl</option>
-            {#each customTranslations as t}
-              <option value={t}>{t}</option>
-            {/each}
-          </select>
-          <button onclick={refreshChapters} disabled={refreshing} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
-            <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
-          </button>
+        <div class="flex flex-col border-b border-base-content/10">
+          <div class="flex gap-1 p-1.5 pb-0.5">
+            <select bind:value={currentBook} onchange={handleBookChange} class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80">
+              {#each BOOKS as b}
+                <option value={b.slug}>{b.slug}</option>
+              {/each}
+            </select>
+            <select bind:value={translation} onchange={handleTranslationChange} class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80">
+              {#each (BOOKS.find(b => b.slug === currentBook)?.translations ?? []) as tl}
+                <option value={tl}>{tl}</option>
+              {/each}
+              {#each customTranslations as t}
+                <option value={t}>{t}</option>
+              {/each}
+            </select>
+          </div>
+          <div class="flex gap-1 p-1.5 pt-0.5">
+            <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
+            <button onclick={refreshChapters} disabled={refreshing} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
+              <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
+            </button>
+          </div>
         </div>
         <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
           <button onclick={loadSandbox} class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {selected === 'sandbox' ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">blank chapter</button>
@@ -2013,7 +2066,7 @@
           <table class="w-full border-collapse">
             <tbody>
               {#each [
-                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" },
               ] as opt}
                 <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                   <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -2332,14 +2385,14 @@
 
   <div class="flex items-center justify-between px-4 py-1.5 border-t border-base-content/10 bg-base-300/30 backdrop-blur-sm shrink-0">
     {#if editorMode === "chapters"}
-      <span class="text-[10px] font-mono text-base-content/25">gsgw / {translation}{#if !isSourceTranslation} <span class="text-warning/40">(custom)</span>{/if}</span>
+      <span class="text-[10px] font-mono text-base-content/25">{currentBook} / {translation}{#if !isSourceTranslation} <span class="text-warning/40">(custom)</span>{/if}</span>
       <div class="flex items-center gap-3">
         {#if selected === "sandbox"}
           <span class="text-[10px] font-mono text-base-content/25">blank chapter</span>
         {:else if selected}
           {#if isSourceTranslation}
             <a
-              href="https://github.com/{REPO}/edit/{BRANCH}/chapters/gsgw/{translation}/{selected}"
+              href="https://github.com/{REPO}/edit/{BRANCH}/chapters/{currentBook}/{tlDir(currentBook, translation)}/{selected}"
               target="_blank"
               class="text-[10px] font-mono text-base-content/30 hover:text-primary transition-colors"
             >↗ {selected}</a>
@@ -2351,7 +2404,7 @@
         {/if}
       </div>
     {:else}
-      <span class="text-[10px] font-mono text-base-content/25">gsgw / characters</span>
+      <span class="text-[10px] font-mono text-base-content/25">{currentBook} / characters</span>
       <div class="flex items-center gap-3">
         {#if charExplorerPath.length > 0}
           <a
@@ -2397,19 +2450,28 @@
         <div class="flex-1 min-h-0 px-3 pb-3 pt-1.5">
           {#if leftTab === 'chapters'}
           <div class="h-full flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg">
-            <div class="flex gap-1 p-2 border-b border-base-content/10">
-              <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
-              <select bind:value={translation} onchange={handleTranslationChange} class="bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 w-22 transition-colors focus:border-primary/30 focus:text-base-content/80">
-              <option value="fantl">fantl</option>
-              <option value="MTL">MTL</option>
-              <option value="unfinishedtl">unfinishedtl</option>
-              {#each customTranslations as t}
-                  <option value={t}>{t}</option>
-                {/each}
-              </select>
-              <button onclick={refreshChapters} disabled={refreshing} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
-                <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
-              </button>
+            <div class="flex flex-col border-b border-base-content/10">
+              <div class="flex gap-1 p-1.5 pb-0.5">
+                <select bind:value={currentBook} onchange={handleBookChange} class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80">
+                  {#each BOOKS as b}
+                    <option value={b.slug}>{b.slug}</option>
+                  {/each}
+                </select>
+                <select bind:value={translation} onchange={handleTranslationChange} class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2 py-1.5 rounded-lg outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80">
+                  {#each (BOOKS.find(b => b.slug === currentBook)?.translations ?? []) as tl}
+                    <option value={tl}>{tl}</option>
+                  {/each}
+                  {#each customTranslations as t}
+                    <option value={t}>{t}</option>
+                  {/each}
+                </select>
+              </div>
+              <div class="flex gap-1 p-1.5 pt-0.5">
+                <input type="text" bind:value={search} placeholder="search" class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-1.5 rounded-lg outline-none border border-base-content/10 min-w-0 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80" />
+                <button onclick={refreshChapters} disabled={refreshing} class="text-base-content/40 hover:text-base-content transition-colors p-1.5 rounded hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:cursor-not-allowed" title="Refresh chapters">
+                  <Icon icon={refreshing ? "mdi:loading" : "mdi:refresh"} class="size-3.5 {refreshing ? 'animate-spin' : ''}" />
+                </button>
+              </div>
             </div>
             <div class="flex-1 overflow-y-auto p-1.5 min-h-0 space-y-0.5 scrollbar-thin">
               <button onclick={() => { loadSandbox(); showMobileMenu = false; }} class="block w-full text-left text-xs px-2.5 py-1.5 rounded-lg hover:bg-base-content/5 transition-colors {selected === 'sandbox' ? 'bg-primary/10 text-primary' : 'text-base-content/70'}">blank chapter</button>
@@ -2436,7 +2498,7 @@
             <table class="w-full border-collapse">
               <tbody>
                 {#each [
-                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" },
+                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" },
                 ] as opt}
                   <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                     <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -2647,6 +2709,86 @@
 
   .chapter-content :global(p) {
     text-indent: var(--chapter-indent);
+  }
+
+  .reader-container :global(.debut-window) {
+    position: relative;
+    width: min(430px, 90%);
+    margin: 2rem auto;
+    padding: 2rem 2.5rem;
+    color: #fff !important;
+    text-align: center;
+    background: #1e1e30;
+    border: 2px solid rgba(255,255,255,.85);
+    box-shadow:
+        0 0 10px rgba(255,255,255,.45),
+        0 0 25px rgba(170,210,255,.25),
+        inset 0 0 25px rgba(255,255,255,.08);
+  }
+
+  .reader-container :global(.debut-window)::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(255,255,255,.55);
+    pointer-events: none;
+  }
+
+  .reader-container :global(.debut-window p) {
+    color: #fff;
+  }
+
+  .reader-container :global(.debut-alert) {
+    position: relative;
+    width: min(430px, 95%);
+    margin: 2rem auto;
+    padding: 2rem 2.5rem;
+    color: #fff !important;
+    text-align: left;
+    background: #b01030;
+    border: 2px solid rgba(255,120,140,.9);
+    box-shadow:
+        0 0 10px rgba(255,50,80,.6),
+        0 0 25px rgba(255,50,80,.3),
+        inset 0 0 25px rgba(255,50,80,.12);
+  }
+  .reader-container :global(.debut-alert)::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(255,120,140,.55);
+    pointer-events: none;
+  }
+  .reader-container :global(.debut-alert p) {
+    color: #fff;
+  }
+
+  .reader-container :global(.debut-window .debut-window-label) {
+    display: block;
+    padding: .15rem 1.2rem;
+    background: rgba(255,255,255,.25);
+    border-radius: 4px;
+    font-size: .85em;
+    text-align: center;
+    width: fit-content;
+    margin: .3rem auto;
+  }
+
+  .reader-container :global(.debut-window .debut-window-title) {
+    position: absolute;
+    top: -.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: .05rem .9rem;
+    font-size: .75em;
+    background: #1e1e30;
+    border: 2px solid rgba(255,255,255,.8);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 0 0 10px rgba(255,255,255,.4), inset 0 0 8px rgba(255,255,255,.08);
   }
 
   :root {
