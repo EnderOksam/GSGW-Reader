@@ -157,12 +157,13 @@
 
   const BOOKS = [
     { slug: "gsgw", label: "Ghost Story, Gotta Work", translations: ["fantl", "MTL", "unfinishedtl"] },
-    { slug: "debut", label: "Debut Or Die", translations: ["plaintext"] },
+    { slug: "debut", label: "Debut Or Die", translations: ["debutplaintxt", "debutformatted"] },
   ];
 
   /** Maps (book, tl) → the actual GitHub directory name (case-sensitive). */
   function tlDir(book: string, tl: string): string {
-    if (book === "debut" && tl === "plaintext") return "Plaintext";
+    if (book === "debut" && tl === "debutplaintxt") return "DebutPlainTxt";
+    if (book === "debut" && tl === "debutformatted") return "DebutFormatted";
     return tl;
   }
 
