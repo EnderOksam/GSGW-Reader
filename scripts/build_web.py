@@ -712,6 +712,11 @@ def main():
     tasks_data = []
 
     meta_map = {}
+    if META_OUTPUT_PATH.exists():
+        try:
+            meta_map = json.loads(META_OUTPUT_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            pass
 
     for p in paths:
 
@@ -731,7 +736,7 @@ def main():
         bookTL = master.get("metaTl", "fantl").lower()
 
         meta_map.setdefault(bookID, {})
-        meta_map[bookID].setdefault(bookTL, [])
+        meta_map[bookID][bookTL] = []
 
         md_files = sorted(
             f for f in os.listdir(path)

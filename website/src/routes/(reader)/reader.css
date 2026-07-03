@@ -745,6 +745,130 @@ body .reader-container .debut-alert.debut-alert p {
   color: #fff;
 }
 
+body .reader-container .debut-achievement {
+  position: relative;
+  width: min(430px, 90%);
+  margin: 2rem auto;
+  padding: 2rem 2.5rem;
+  color: #fff !important;
+  text-align: center;
+  background: #234670;
+  border: 2px solid rgba(255,255,255,.85);
+  box-shadow:
+      0 0 10px rgba(100,160,255,.45),
+      0 0 25px rgba(100,160,255,.25),
+      inset 0 0 25px rgba(100,160,255,.08);
+}
+body .reader-container .debut-achievement::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255,255,255,.4);
+  pointer-events: none;
+}
+body .reader-container .debut-achievement-sub {
+  display: block;
+  padding: .15rem .75rem;
+  margin: .3rem auto;
+  background: rgba(255,255,255,.25);
+  font-size: .85em;
+  text-align: center;
+  width: fit-content;
+}
+body .reader-container .debut-achievement-list {
+  border: 4px solid rgba(255,255,255,.6);
+  background: #305582;
+  font-size: .95em;
+  display: block;
+  margin: .3rem auto;
+  width: fit-content;
+  text-align: center;
+  box-shadow: 0 0 12px rgba(100,160,255,.35);
+}
+body .reader-container .debut-achievement-list-item {
+  padding: .5rem 1.25rem;
+}
+body .reader-container .debut-achievement-list-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(100,160,255,.5) 20%, rgba(100,160,255,.5) 80%, transparent);
+}
+body .reader-container .debut-achievement-sub-left,
+body .reader-container .debut-achievement-sub-right {
+  --border: rgba(255,255,255,.85);
+  --outline: rgba(180,220,255,.35);
+
+  position: relative;
+  display: inline-block;
+
+  padding: .35rem 1.25rem;
+
+  font-size: .9em;
+  color: white;
+
+  background:
+      linear-gradient(
+          180deg,
+          #6fa8ff 0%,
+          #4f86db 40%,
+          #3568b7 100%
+      );
+
+  border: 3px solid var(--border);
+
+  clip-path: polygon(
+      10px 0,
+      100% 0,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%,
+      0 10px
+  );
+
+  box-shadow:
+      0 0 12px var(--outline),
+      inset 0 0 6px rgba(255,255,255,.1);
+}
+
+body .reader-container .debut-achievement-sub-left {
+  margin-right: .5rem;
+}
+
+body .reader-container .debut-achievement-sub-right {
+  margin-left: .5rem;
+}
+
+body .reader-container .debut-achievement-sub-left::before,
+body .reader-container .debut-achievement-sub-right::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: -7px;
+
+  width: 22px;
+  height: 22px;
+
+  border-top: 3px solid var(--border);
+  border-left: 3px solid var(--border);
+
+  opacity: .9;
+}
+
+body .reader-container .debut-achievement-sub-left::after,
+body .reader-container .debut-achievement-sub-right::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+
+  width: 22px;
+  height: 22px;
+
+  border-right: 3px solid var(--border);
+  border-bottom: 3px solid var(--border);
+
+  opacity: .9;
+}
+
 .wrap-break-word {
   overflow-wrap: break-word;
   word-break: break-word;

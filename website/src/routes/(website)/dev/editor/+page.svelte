@@ -158,7 +158,7 @@
   const BOOKS = [
     { slug: "gsgw", label: "Ghost Story, Gotta Work", translations: ["fantl", "MTL", "unfinishedtl"] },
     { slug: "debut", label: "Debut Or Die", translations: ["plaintext"] },
-  ] as const;
+  ];
 
   /** Maps (book, tl) → the actual GitHub directory name (case-sensitive). */
   function tlDir(book: string, tl: string): string {
@@ -416,15 +416,15 @@
 
     s = s.replace(/%%(.*?)%%/gs, '<span class="shake">$1</span>');
 
-    s = s.replace(/%~(.*?)~%/gs, (_, inner) => {
-      return [...inner].map((c, i) =>
+    s = s.replace(/%~(.*?)~%/gs, (_: string, inner: string) => {
+      return [...inner].map((c: string, i: number) =>
         c === " " ? " " : `<span class="shake" style="animation-delay:-${(i * 0.05) % 0.5}s">${c}</span>`
       ).join("");
     });
 
-    s = s.replace(/%\^(.*?)\^%/gs, (_, inner) => {
+    s = s.replace(/%\^(.*?)\^%/gs, (_: string, inner: string) => {
       const len = inner.length;
-      return [...inner].map((c, i) => {
+      return [...inner].map((c: string, i: number) => {
         if (c === " ") return " ";
         const delay = ((len - 1 - i) * 0.05) % 0.5;
         return `<span class="wave-up" style="animation-delay:-${delay}s">${c}</span>`;
@@ -434,7 +434,7 @@
     s = s.replace(/^~~~\s*$/gm, '<hr class="visible-hr">');
     s = s.replace(/^~\^~\s*$/gm, '<hr class="invisible-hr">');
 
-    s = s.replace(/@_@(.+?)@_@/gs, (_, inner) => {
+    s = s.replace(/@_@(.+?)@_@/gs, (_: string, inner: string) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
         if (part.startsWith("<") && part.endsWith(">")) return [part];
@@ -443,9 +443,9 @@
       return `<span class="glitch-subtle">${chars.join("")}</span>`;
     });
 
-    s = s.replace(/#\^#(.+?)#\^#/gs, (_, inner) => {
+    s = s.replace(/#\^#(.+?)#\^#/gs, (_: string, inner: string) => {
       const len = inner.length;
-      const chars = [...inner].map((c, i) => {
+      const chars = [...inner].map((c: string, i: number) => {
         if (c === " ") return " ";
         const scale = 1 + (i / Math.max(len - 1, 1)) * 0.6;
         return `<span class="grow-char" style="font-size:${scale.toFixed(2)}em">${c}</span>`;
@@ -453,9 +453,9 @@
       return `<span class="text-grow">${chars.join("")}</span>`;
     });
 
-    s = s.replace(/#v#(.+?)#v#/gs, (_, inner) => {
+    s = s.replace(/#v#(.+?)#v#/gs, (_: string, inner: string) => {
       const len = inner.length;
-      const chars = [...inner].map((c, i) => {
+      const chars = [...inner].map((c: string, i: number) => {
         if (c === " ") return " ";
         const scale = 1.4 - (i / Math.max(len - 1, 1)) * 0.4;
         return `<span class="grow-char" style="font-size:${scale.toFixed(2)}em">${c}</span>`;
@@ -465,8 +465,8 @@
 
     const placeholders = new Map<string, string>();
     let pid = 0;
-    s = s.replace(/!\[.*?\]\(.*?\)/g, (m) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
-    s = s.replace(/~~[^~]+?~~/g, (m) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
+    s = s.replace(/!\[.*?\]\(.*?\)/g, (m: string) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
+    s = s.replace(/~~[^~]+?~~/g, (m: string) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
 
     const simple: [RegExp, string][] = [
       [/(?<!\\)_(.*?)(?<!\\)_/gs, '<span class="underline">$1</span>'],
@@ -505,7 +505,7 @@
       s = s.replace(key, val);
     }
 
-    s = s.replace(/@@([^@]+)@@/gs, (_, inner) => {
+    s = s.replace(/@@([^@]+)@@/gs, (_: string, inner: string) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
         if (part.startsWith("<") && part.endsWith(">")) return [part];
@@ -514,27 +514,27 @@
       return `<span class="glitch-text">${chars.join("")}</span>`;
     });
 
-    s = s.replace(/\$s(.+?)s\$/gs, (_, inner) => {
+    s = s.replace(/\$s(.+?)s\$/gs, (_: string, inner: string) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       return `<span class="smoke-text">${inner}</span>`;
     });
 
-    s = s.replace(/\$a(.+?)a\$/gs, (_, inner) => {
+    s = s.replace(/\$a(.+?)a\$/gs, (_: string, inner: string) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       return `<span class="aurora-text">${inner}</span>`;
     });
 
-    s = s.replace(/\$g(.+?)g\$/gs, (_, inner) => {
+    s = s.replace(/\$g(.+?)g\$/gs, (_: string, inner: string) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       return `<span class="gold-text">${inner}</span>`;
     });
 
-    s = s.replace(/\$\*(.+?)\*\$/gs, (_, inner) => {
+    s = s.replace(/\$\*(.+?)\*\$/gs, (_: string, inner: string) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       return `<span class="sparkle-text">${inner}</span>`;
     });
 
-    s = s.replace(/\$\((.+?)\)\$/gs, (_, inner) => {
+    s = s.replace(/\$\((.+?)\)\$/gs, (_: string, inner: string) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       return `<span class="moon-wrap"><span class="moon-text">${inner}</span></span>`;
     });
@@ -544,43 +544,66 @@
       return `\n<div class="${cl}">\n\n${inner}\n\n</div>\n`;
     }
 
-    s = s.replace(/\+[-+]+\n(.*?)\n[-+]+\+/gs, (_, inner) => {
+    s = s.replace(/\+[-+]+\n(.*?)\n[-+]+\+/gs, (_: string, inner: string) => {
       const noMeta = inner.trimStart().startsWith("\\");
       if (noMeta) inner = inner.replace("\\", "");
       return makeWindow("wiki-window", inner, noMeta ? "no-meta" : undefined);
     });
 
-    s = s.replace(/\+[=]+\n(.*?)\n[=]+\+/gs, (_, inner) => makeWindow("black-window", inner));
+    s = s.replace(/\+[=]+\n(.*?)\n[=]+\+/gs, (_: string, inner: string) => makeWindow("black-window", inner));
 
-    s = s.replace(/\+[~]+\n(.*?)\n[~]+\+/gs, (_, inner) => {
+    s = s.replace(/\+[~]+\n(.*?)\n[~]+\+/gs, (_: string, inner: string) => {
       const noFl = inner.trimStart().startsWith("\\");
       if (noFl) inner = inner.replace("\\", "");
       return makeWindow("system-window", inner, noFl ? "no-fl-dividers" : undefined);
     });
 
-    s = s.replace(/\+\$\n(.*?)\n\$\+/gs, (_, inner) => makeWindow("plain-window", inner));
+    s = s.replace(/\+\$\n(.*?)\n\$\+/gs, (_: string, inner: string) => makeWindow("plain-window", inner));
 
-    s = s.replace(/&[-]+\n(.*?)\n[-]+&/gs, (_, inner) => {
+    s = s.replace(/&[-]+\n(.*?)\n[-]+&/gs, (_: string, inner: string) => {
       const noMeta = inner.trimStart().startsWith("\\");
       if (noMeta) inner = inner.replace("\\", "");
       return makeWindow("record-window", inner, noMeta ? "no-meta" : undefined);
     });
 
-    s = s.replace(/&\$\n(.*?)\n\$&/gs, (_, inner) => makeWindow("followup-window", inner));
+    s = s.replace(/&\$\n(.*?)\n\$&/gs, (_: string, inner: string) => makeWindow("followup-window", inner));
 
-    s = s.replace(/![-]+\n(.*?)\n[-]+!/gs, (_, inner) => {
+    s = s.replace(/![-]+\n(.*?)\n[-]+!/gs, (_: string, inner: string) => {
       const noMeta = inner.trimStart().startsWith("\\");
       if (noMeta) inner = inner.replace("\\", "");
       return makeWindow("note-window", inner, noMeta ? "no-meta" : undefined);
     });
 
-    s = s.replace(/!\$\n(.*?)\n\$!/gs, (_, inner) => makeWindow("sticky-window", inner));
+    s = s.replace(/!\$\n(.*?)\n\$!/gs, (_: string, inner: string) => makeWindow("sticky-window", inner));
 
-    s = s.replace(/!\[\n(.*?)\n\]!/gs, (_, inner) => makeWindow("braun-screen", inner));
+    s = s.replace(/!\[\n(.*?)\n\]!/gs, (_: string, inner: string) => makeWindow("braun-screen", inner));
 
-    s = s.replace(/★!\n(.*?)\n!★/gs, (_, inner) => makeWindow("debut-alert", inner));
+    s = s.replace(/★!\n(.*?)\n!★/gs, (_: string, inner: string) => makeWindow("debut-alert", inner));
 
-    s = s.replace(/★-\n(.*?)\n-★/gs, (_, inner) => {
+    s = s.replace(/★=\n(.*?)\n=★/gs, (_: string, inner: string) => {
+      const lines = inner.split("\n");
+      let title = lines[0].trim();
+      if (title.startsWith("\\")) {
+        title = "";
+        lines[0] = lines[0].replace("\\", "").trim();
+      }
+      const bodyRaw = (title ? lines.slice(1) : lines).join("\n").trim();
+      const body = bodyRaw
+        .replace(/\[\s*\n([\s\S]*?)\n\s*\]/g, (_m: string, inner: string) => {
+          const items = inner.split("\n").map((l: string) => l.trim()).filter((l: string) => l);
+          const itemHtml = items.map((item: string) =>
+            `<div class="debut-achievement-list-item">${item}</div>`
+          ).join('\n<div class="debut-achievement-list-divider"></div>\n');
+          return `<div class="debut-achievement-list">\n${itemHtml}\n</div>`;
+        })
+        .replace(/^\s*\[(.+?)\]\s*$/gm, (_m: string, content: string) => {
+          return `<div class="debut-achievement-list">\n<div class="debut-achievement-list-item">${content}</div>\n</div>`;
+        });
+      const titleHtml = title ? `<div class="debut-window-title">${title}</div>\n\n` : "";
+      return makeWindow("debut-achievement", titleHtml + body);
+    });
+
+    s = s.replace(/★-\n(.*?)\n-★/gs, (_: string, inner: string) => {
       const lines = inner.split("\n");
       let title = lines[0].trim();
       if (title.startsWith("\\")) {
@@ -595,6 +618,13 @@
       const body = bodyLines.join("\n").trim();
       const titleHtml = title ? `<div class="debut-window-title">${title}</div>\n\n` : "";
       return makeWindow("debut-window", titleHtml + body);
+    });
+
+    s = s.replace(/\}([^}]+)\}/g, (_: string, content: string) => {
+      return `<span class="debut-achievement-sub debut-achievement-sub-left">${content.trim()}</span>`;
+    });
+    s = s.replace(/\{([^{]+)\{/g, (_: string, content: string) => {
+      return `<span class="debut-achievement-sub debut-achievement-sub-right">${content.trim()}</span>`;
     });
 
     s = replaceTwitterUrls(s);
@@ -2066,7 +2096,7 @@
           <table class="w-full border-collapse">
             <tbody>
               {#each [
-                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" },
+                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" }, { syntax: "★=text=★", desc: "DoD achievement" }, { syntax: "}text}", desc: "Oriented sub (left)" }, { syntax: "{text{", desc: "Oriented sub (right)" },
               ] as opt}
                 <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                   <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -2498,7 +2528,7 @@
             <table class="w-full border-collapse">
               <tbody>
                 {#each [
-                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" },
+                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "^^^", desc: "Invisible section break" }, { syntax: "-&-", desc: "Red string of fate divider" }, { syntax: "_text_", desc: "Underline" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" }, { syntax: "★=text=★", desc: "DoD achievement" }, { syntax: "}text}", desc: "Oriented sub (left)" }, { syntax: "{text{", desc: "Oriented sub (right)" },
                 ] as opt}
                   <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                     <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -2789,6 +2819,130 @@
     text-align: center;
     white-space: nowrap;
     box-shadow: 0 0 10px rgba(255,255,255,.4), inset 0 0 8px rgba(255,255,255,.08);
+  }
+
+  .reader-container :global(.debut-achievement) {
+    position: relative;
+    width: min(430px, 90%);
+    margin: 2rem auto;
+    padding: 2rem 2.5rem;
+    color: #fff !important;
+    text-align: center;
+    background: #234670;
+    border: 2px solid rgba(255,255,255,.85);
+    box-shadow:
+        0 0 10px rgba(100,160,255,.45),
+        0 0 25px rgba(100,160,255,.25),
+        inset 0 0 25px rgba(100,160,255,.08);
+  }
+  .reader-container :global(.debut-achievement)::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(255,255,255,.4);
+    pointer-events: none;
+  }
+  .reader-container :global(.debut-achievement-sub) {
+    display: block;
+    padding: .15rem .75rem;
+    margin: .3rem auto;
+    background: rgba(255,255,255,.25);
+    font-size: .85em;
+    text-align: center;
+    width: fit-content;
+  }
+  .reader-container :global(.debut-achievement-list) {
+    border: 4px solid rgba(255,255,255,.6);
+    background: #305582;
+    font-size: .95em;
+    display: block;
+    margin: .3rem auto;
+    width: fit-content;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(100,160,255,.35);
+  }
+  .reader-container :global(.debut-achievement-list-item) {
+    padding: .5rem 1.25rem;
+  }
+  .reader-container :global(.debut-achievement-list-divider) {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(100,160,255,.5) 20%, rgba(100,160,255,.5) 80%, transparent);
+  }
+  .reader-container :global(.debut-achievement-sub-left),
+  .reader-container :global(.debut-achievement-sub-right) {
+    --border: rgba(255,255,255,.85);
+    --outline: rgba(180,220,255,.35);
+
+    position: relative;
+    display: inline-block;
+
+    padding: .35rem 1.25rem;
+
+    font-size: .9em;
+    color: white;
+
+    background:
+        linear-gradient(
+            180deg,
+            #6fa8ff 0%,
+            #4f86db 40%,
+            #3568b7 100%
+        );
+
+    border: 3px solid var(--border);
+
+    clip-path: polygon(
+        10px 0,
+        100% 0,
+        100% calc(100% - 10px),
+        calc(100% - 10px) 100%,
+        0 100%,
+        0 10px
+    );
+
+    box-shadow:
+        0 0 12px var(--outline),
+        inset 0 0 6px rgba(255,255,255,.1);
+  }
+
+  .reader-container :global(.debut-achievement-sub-left) {
+    margin-right: .5rem;
+  }
+
+  .reader-container :global(.debut-achievement-sub-right) {
+    margin-left: .5rem;
+  }
+
+  .reader-container :global(.debut-achievement-sub-left)::before,
+  .reader-container :global(.debut-achievement-sub-right)::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: -7px;
+
+    width: 22px;
+    height: 22px;
+
+    border-top: 3px solid var(--border);
+    border-left: 3px solid var(--border);
+
+    opacity: .9;
+  }
+
+  .reader-container :global(.debut-achievement-sub-left)::after,
+  .reader-container :global(.debut-achievement-sub-right)::after {
+    content: "";
+    position: absolute;
+    right: -7px;
+    bottom: -7px;
+
+    width: 22px;
+    height: 22px;
+
+    border-right: 3px solid var(--border);
+    border-bottom: 3px solid var(--border);
+
+    opacity: .9;
   }
 
   :root {

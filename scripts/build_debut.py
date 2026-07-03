@@ -1,4 +1,3 @@
-import os
 import re
 import json
 import subprocess
@@ -20,14 +19,16 @@ import build_web as bw
 SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_ROOT = SCRIPT_DIR.parent
 
-DEBUT_MD_DIR = REPO_ROOT / "chapters" / "debut" / "Plaintext"
+DEBUT_MD_DIRS = [
+    REPO_ROOT / "chapters" / "debut" / "DebutPlainTxt",
+    REPO_ROOT / "chapters" / "debut" / "DebutFormatted",
+]
 
 META_OUTPUT_PATH = REPO_ROOT / "website/src/lib/meta.json"
 TEMPLATE_PATH = REPO_ROOT / "website/src/lib/reader/template.svelte"
 OUTPUT_ROOT = REPO_ROOT / "website/src/routes/(reader)/read/"
 
 BOOK_ID = "debut"
-TL_NAME = "Plaintext"
 
 
 
@@ -37,6 +38,7 @@ TL_NAME = "Plaintext"
 
 DEBUT_WINDOW_RE = re.compile(r"★-\n(.*?)\n-★", re.DOTALL)
 DEBUT_ALERT_RE = re.compile(r"★!\n(.*?)\n!★", re.DOTALL)
+DEBUT_ACHIEVE_RE = re.compile(r"★=\n(.*?)\n=★", re.DOTALL)
 
 
 # =========================================================
@@ -64,6 +66,29 @@ def debut_window_replacer(match):
 
 def debut_alert_replacer(match):
     return bw.make_window("debut-alert", match.group(1))
+
+
+def debut_achieve_replacer(match):
+    import re
+    inner = match.group(1)
+    lines = inner.split("\n")
+    title = lines[0].strip()
+    if title.startswith("\\"):
+        title = ""
+        lines[0] = lines[0].lstrip("\\").strip()
+    body = "\n".join(lines[1:] if title else lines).strip()
+    body = re.sub(
+        r"\[\n([\s\S]*?)\n\]",
+        lambda m: '<div class="debut-achievement-sub">\n' +
+            "\n".join(
+                f'<div class="debut-achievement-line">{l}</div>'
+                for l in m.group(1).strip().split("\n") if l.strip()
+            ) +
+            '\n</div>',
+        body,
+    )
+    title_html = f'<div class="debut-achievement-title">{title}</div>\n\n' if title else ""
+    return bw.make_window("debut-achievement", title_html + body)
 
 
 # =========================================================
@@ -155,6 +180,7 @@ def convert_chapter(content):
     # star windows (debut-specific)
     content = DEBUT_ALERT_RE.sub(debut_alert_replacer, content)
     content = DEBUT_WINDOW_RE.sub(debut_window_replacer, content)
+    content = DEBUT_ACHIEVE_RE.sub(debut_achieve_replacer, content)
 
     try:
         proc = subprocess.run(
@@ -209,75 +235,79 @@ def process_task(task, template_str):
 
 
 def build_pages(slug_filter=None):
-    metadata_path = DEBUT_MD_DIR / "metadata.md"
-    if not metadata_path.exists():
-        print(f"metadata.md not found at {metadata_path}")
-        return False
-
-    master = frontmatter.load(metadata_path)
-    bookID = master.get("metaBook", BOOK_ID)
-    metaTl = master.get("metaTl", TL_NAME).lower()
-
-    md_files = sorted(
-        f for f in os.listdir(DEBUT_MD_DIR)
-        if f.endswith(".md") and f != "metadata.md"
-    )
-
-    if not md_files:
-        print("No chapter markdown files found.")
-        return False
-
     template_str = TEMPLATE_PATH.read_text(encoding="utf-8")
 
-    tasks_data = []
-    meta_list = []
-
-    for file in md_files:
-        post = frontmatter.load(DEBUT_MD_DIR / file)
-
-        slug = post.metadata.get("slug")
-        if not slug:
+    for md_dir in DEBUT_MD_DIRS:
+        metadata_path = md_dir / "metadata.md"
+        if not metadata_path.exists():
+            print(f"metadata.md not found at {metadata_path}")
             continue
 
-        if slug_filter is not None and slug != slug_filter:
+        master = frontmatter.load(metadata_path)
+        bookID = master.get("metaBook", BOOK_ID)
+        metaTl = master.get("metaTl", md_dir.name).lower()
+
+        md_files = sorted(
+            f.name for f in md_dir.iterdir()
+            if f.suffix == ".md" and f.name != "metadata.md"
+        )
+
+        if not md_files:
+            print(f"No chapter markdown files found in {md_dir}.")
             continue
 
-        meta_list.append(post.metadata)
+        tasks_data = []
+        meta_list = []
 
-        out_dir = OUTPUT_ROOT / str(bookID) / str(metaTl) / str(slug)
-        out_dir.mkdir(parents=True, exist_ok=True)
+        for file in md_files:
+            post = frontmatter.load(md_dir / file)
 
-        tasks_data.append({
-            "content": post.content,
-            "meta": post.metadata,
-            "dest": out_dir / "+page.svelte",
-        })
+            slug = post.metadata.get("slug")
+            if not slug:
+                continue
 
-    existing_meta = {}
-    if META_OUTPUT_PATH.exists():
-        existing_meta = json.loads(META_OUTPUT_PATH.read_text(encoding="utf-8"))
+            if slug_filter is not None and slug != slug_filter:
+                continue
 
-    existing_meta[bookID] = {metaTl: meta_list}
-    META_OUTPUT_PATH.write_text(
-        json.dumps(existing_meta, indent=2),
-        encoding="utf-8"
-    )
+            meta_list.append(post.metadata)
 
-    total = len(tasks_data)
-    print(f"Building {total} chapters for {bookID}/{metaTl}...")
+            out_dir = OUTPUT_ROOT / str(bookID) / str(metaTl) / str(slug)
+            out_dir.mkdir(parents=True, exist_ok=True)
 
-    errors = 0
-    for i, task in enumerate(tasks_data, 1):
-        try:
-            process_task(task, template_str)
-        except Exception as e:
-            print(f"Failed: {task['dest'].name} — {e}")
-            errors += 1
+            tasks_data.append({
+                "content": post.content,
+                "meta": post.metadata,
+                "dest": out_dir / "+page.svelte",
+            })
 
-        if i % 10 == 0 or i == total:
-            print(f"Generated {i}/{total} chapters ({errors} errors)...")
+        existing_meta = {}
+        if META_OUTPUT_PATH.exists():
+            existing_meta = json.loads(META_OUTPUT_PATH.read_text(encoding="utf-8"))
 
-    print(f"Build complete with {errors} errors.")
+        if bookID not in existing_meta:
+            existing_meta[bookID] = {}
+        existing_meta[bookID][metaTl] = meta_list
+        META_OUTPUT_PATH.write_text(
+            json.dumps(existing_meta, indent=2),
+            encoding="utf-8"
+        )
+
+        total = len(tasks_data)
+        print(f"Building {total} chapters for {bookID}/{metaTl}...")
+
+        errors = 0
+        for i, task in enumerate(tasks_data, 1):
+            try:
+                process_task(task, template_str)
+            except Exception as e:
+                print(f"Failed: {task['dest'].name} — {e}")
+                errors += 1
+
+            if i % 10 == 0 or i == total:
+                print(f"Generated {i}/{total} chapters ({errors} errors)...")
+
+        print(f"  Done with {bookID}/{metaTl} ({errors} errors).")
+
     return True
 
 
