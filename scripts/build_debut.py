@@ -209,6 +209,7 @@ def process_task(task, template_str):
 
     safe_html = (
         html_content
+        .replace("\\", "\\\\")
         .replace("`", "\\`")
         .replace("${", "$\\{")
     )
