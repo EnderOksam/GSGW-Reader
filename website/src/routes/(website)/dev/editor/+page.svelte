@@ -191,22 +191,32 @@
     return num.toLocaleString();
   }
 
+  const tweetCache = new Map<string, any>();
+
   async function hydrateTwitterEmbeds() {
     const embeds = document.querySelectorAll<HTMLElement>('.twitter-embed');
+    const pending: { el: HTMLElement; user: string; tweetId: string; photo?: string }[] = [];
     for (const el of embeds) {
       const user = el.dataset.user;
       const tweetId = el.dataset.tweetId;
       if (!user || !tweetId) continue;
       if (el.querySelector('.twitter-embed-inner')) continue;
+      pending.push({ el, user, tweetId, photo: el.dataset.photo });
+    }
+    if (!pending.length) return;
+    await Promise.allSettled(pending.map(async ({ el, user, tweetId, photo }) => {
       try {
-        const res = await fetch(`https://api.fxtwitter.com/${user}/status/${tweetId}`);
-        const data = await res.json();
-        if (!data?.tweet) throw new Error('no tweet data');
-        const t = data.tweet;
+        const cacheKey = `${user}/${tweetId}`;
+        if (!tweetCache.has(cacheKey)) {
+          const res = await fetch(`https://api.fxtwitter.com/${user}/status/${tweetId}`);
+          const data = await res.json();
+          if (!data?.tweet) throw new Error('no tweet data');
+          tweetCache.set(cacheKey, data.tweet);
+        }
+        const t = tweetCache.get(cacheKey);
         const author = t.author || {};
         const name = author.name || user;
         const tweetUrl = `https://x.com/${user}/status/${tweetId}`;
-        const photo = el.dataset.photo;
         const photos = t.media?.photos || [];
         const videos = t.media?.video || null;
         const text = t.text || '';
@@ -259,7 +269,7 @@
       } catch {
         el.innerHTML = '<div class="twitter-embed-error">Failed to load tweet</div>';
       }
-    }
+    }));
   }
 
   function escHtml(s: string): string {
@@ -936,6 +946,13 @@
 
   $effect(() => {
     if (previewHtml) {
+      hydrateTwitterEmbeds();
+    }
+  });
+
+  $effect(() => {
+    if (window.innerWidth >= 768) return;
+    if (rightTab === 'reader' && previewHtml) {
       hydrateTwitterEmbeds();
     }
   });
