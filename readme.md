@@ -45,7 +45,7 @@ Have questions or suggestions? Join the [Discord Server](https://discord.gg/HHnS
 
 **We do not own the rights to the original novel.** All translations available on this page are fan translations sourced from the public Internet.
 
-Support the creator, **Cuttlefish That Loves Diving**, by purchasing official releases through the links above.
+Support the creator, **Baek Deoksoo**, by purchasing official releases through the links above.
 
 * **[View Full License & Credits](./license.md)** - Includes credits and DMCA info.
 * **[Source Code License](./license.md#-website-code-license)** - MIT License for the website engine.

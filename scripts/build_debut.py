@@ -51,14 +51,18 @@ def debut_window_replacer(match):
     title = lines[0].strip()
     if title.startswith("\\"):
         title = ""
-        lines[0] = lines[0].lstrip("\\").strip()
+        lines[0] = lines[0][1:] if lines[0].startswith("\\") else lines[0]
+        lines[0] = lines[0].strip()
     body_lines = []
     for line in (lines[1:] if title else lines):
-        m = re.match(r"^\s*\[(.+?)\]\s*$", line)
-        if m:
-            body_lines.append(f'<div class="debut-window-label">{m.group(1)}</div>')
+        if line.startswith("\\"):
+            body_lines.append(line[1:])
         else:
-            body_lines.append(line)
+            m = re.match(r"^\s*\[(.+?)\]\s*$", line)
+            if m:
+                body_lines.append(f'<div class="debut-window-label">{m.group(1)}</div>')
+            else:
+                body_lines.append(line)
     body = "\n".join(body_lines).strip()
     title_html = f'<div class="debut-window-title">{title}</div>\n\n' if title else ""
     return bw.make_window("debut-window", title_html + body)
@@ -75,16 +79,32 @@ def debut_achieve_replacer(match):
     title = lines[0].strip()
     if title.startswith("\\"):
         title = ""
-        lines[0] = lines[0].lstrip("\\").strip()
+        lines[0] = lines[0][1:] if lines[0].startswith("\\") else lines[0]
+        lines[0] = lines[0].strip()
     body = "\n".join(lines[1:] if title else lines).strip()
     body = re.sub(
         r"\[\n([\s\S]*?)\n\]",
-        lambda m: '<div class="debut-achievement-sub">\n' +
+        lambda m: '<div class="debut-achievement-list">\n' +
             "\n".join(
-                f'<div class="debut-achievement-line">{l}</div>'
+                f'<div class="debut-achievement-list-item">{l.strip()}</div>'
                 for l in m.group(1).strip().split("\n") if l.strip()
+            ).replace(
+                '</div>\n<div class="debut-achievement-list-item">',
+                '</div>\n<div class="debut-achievement-list-divider"></div>\n<div class="debut-achievement-list-item">'
             ) +
             '\n</div>',
+        body,
+    )
+
+    body = re.sub(
+        r"\}([^}]+)\}",
+        lambda m: f'<span class="debut-achievement-sub debut-achievement-sub-left">{m.group(1).strip()}</span>',
+        body,
+    )
+
+    body = re.sub(
+        r"\{([^{]+)\{",
+        lambda m: f'<span class="debut-achievement-sub debut-achievement-sub-right">{m.group(1).strip()}</span>',
         body,
     )
     title_html = f'<div class="debut-achievement-title">{title}</div>\n\n' if title else ""
@@ -166,7 +186,13 @@ def convert_chapter(content):
 
     content = bw.DISTORT_RE.sub(bw.distorted_replacer, content)
 
-    # only ! windows — skip + and & windows
+    # + windows
+    content = bw.PLAIN_WINDOW_RE.sub(
+        lambda m: bw.make_window("plain-window", m.group(1)),
+        content
+    )
+
+    # ! windows
     content = bw.NOTE_WINDOW_RE.sub(bw.note_window_replacer, content)
     content = bw.STICKY_WINDOW_RE.sub(
         lambda m: bw.make_window("sticky-window", m.group(1)),
