@@ -115,6 +115,18 @@ def debut_achieve_replacer(match):
     return bw.make_window("debut-achievement", title_html + body)
 
 
+def safe_html(text):
+    """Escape HTML special characters but preserve existing HTML tags."""
+    parts = re.split(r'(<[^>]*>)', text)
+    result = []
+    for i, part in enumerate(parts):
+        if i % 2 == 1:
+            result.append(part)
+        else:
+            result.append(html.escape(part))
+    return ''.join(result)
+
+
 def sms_window_replacer(match):
     inner = match.group(1)
     lines = inner.split("\n")
@@ -134,18 +146,18 @@ def sms_window_replacer(match):
             content = dash_left.group(1)
             sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
             color = speaker_colors[sp.group(1)] if sp else None
-            display = html.escape(content[sp.end():] if sp else content)
+            display = safe_html(content[sp.end():] if sp else content)
             style = f' style="background:{color};color:#222"' if color else ''
             html_parts.append(f'<div class="sms-bubble sms-left"{style}>{display}</div>')
         elif dash_right:
             content = dash_right.group(1)
             sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
             color = speaker_colors[sp.group(1)] if sp else None
-            display = html.escape(content[sp.end():] if sp else content)
+            display = safe_html(content[sp.end():] if sp else content)
             style = f' style="background:{color};color:#222"' if color else ''
             html_parts.append(f'<div class="sms-bubble sms-right"{style}>{display}</div>')
         else:
-            html_parts.append(f'<div class="sms-bubble sms-center">{html.escape(trimmed)}</div>')
+            html_parts.append(f'<div class="sms-bubble sms-center">{safe_html(trimmed)}</div>')
     return bw.make_window("sms-window", "\n\n".join(html_parts))
 
 
@@ -157,31 +169,28 @@ def comment_window_replacer(match):
     items = []
     in_comments = False
 
-    def esc(t):
-        return html.escape(t)
-
     for raw in lines:
         line = raw.strip()
         if line.startswith("["):
-            title = esc(line.strip())
+            title = safe_html(line.strip())
         elif line.startswith(":"):
-            desc = esc(line.replace(":", "", 1).strip())
+            desc = safe_html(line.replace(":", "", 1).strip())
         elif line.startswith("-") or line.startswith("\u2013") or line.startswith("\u2014"):
             in_comments = True
             content = re.sub(r"^[\u2014\u2013-]", "", line).strip()
-            items.append((esc(content), 0))
-        elif line.startswith("\u2937") or line.startswith("\u2514"):
+            items.append((safe_html(content), 0))
+        elif line.startswith("\u2937") or line.startswith("\u2514") or line.startswith("\u221F"):
             in_comments = True
             depth = 0
             content = line
-            while content.startswith("\u2937") or content.startswith("\u2514"):
+            while content.startswith("\u2937") or content.startswith("\u2514") or content.startswith("\u221F"):
                 depth += 1
-                content = re.sub(r"^[\u2937\u2514]", "", content).lstrip()
+                content = re.sub(r"^[\u2937\u2514\u221F]", "", content).lstrip()
             if depth > 3:
                 depth = 3
-            items.append((esc(content.strip()), depth))
+            items.append((safe_html(content.strip()), depth))
         elif line and not in_comments:
-            desc += ("" if not desc else "</p>\n<p>") + esc(line)
+            desc += ("" if not desc else "</p>\n<p>") + safe_html(line)
 
     html_parts = []
     if title or desc:

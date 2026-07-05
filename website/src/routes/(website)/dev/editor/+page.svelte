@@ -556,7 +556,10 @@
     }
 
     function escapeHtml(text: string): string {
-      return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return text.split(/(<[^>]*>)/).map((part, i) => {
+        if (i % 2 === 1) return part;
+        return part.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }).join('');
     }
 
     s = s.replace(/\+[-+]+\n(.*?)\n[-+]+\+/gs, (_: string, inner: string) => {
@@ -637,10 +640,6 @@
       const items: { text: string; depth: number }[] = [];
       let inComments = false;
 
-      function escapeHtml(text: string): string {
-        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      }
-
       for (const raw of lines) {
         const line = raw.trim();
         if (line.startsWith('[')) {
@@ -651,13 +650,13 @@
           inComments = true;
           const content = line.replace(/^[\u2014\u2013-]/, '').trim();
           items.push({ text: escapeHtml(content), depth: 0 });
-        } else if (line.startsWith('⤷') || line.startsWith('└')) {
+        } else if (line.startsWith('⤷') || line.startsWith('└') || line.startsWith('∟')) {
           inComments = true;
           let depth = 0;
           let content = line;
-          while (content.startsWith('⤷') || content.startsWith('└')) {
+          while (content.startsWith('⤷') || content.startsWith('└') || content.startsWith('∟')) {
             depth++;
-            content = content.replace(/^[⤷└]/, '').trimStart();
+            content = content.replace(/^[⤷└∟]/, '').trimStart();
           }
           if (depth > 3) depth = 3;
           items.push({ text: escapeHtml(content.trim()), depth });

@@ -943,7 +943,7 @@ body .reader-container .comment-post-header.comment-post-header {
   z-index: 2;
 }
 body .reader-container .comment-post-title.comment-post-title {
-  text-align: center;
+  text-align: left;
   font-size: 1.2em;
   font-weight: 700;
   color: #111;
@@ -951,7 +951,7 @@ body .reader-container .comment-post-title.comment-post-title {
   letter-spacing: 0.01em;
 }
 body .reader-container .comment-post-desc.comment-post-desc {
-  text-align: left;
+  text-align: justify;
   font-size: 0.82em;
   color: #777;
   font-style: italic;
@@ -970,6 +970,7 @@ body .reader-container .comment.comment {
   font-size: 0.92em;
   color: #333;
   line-height: 1.5;
+  text-align: justify;
 }
 body .reader-container .comment.comment:last-child {
   margin-bottom: 0;
@@ -1006,6 +1007,7 @@ body .reader-container .reply-icon.reply-icon {
 }
 body .reader-container .reply-body.reply-body {
   color: #444;
+  text-align: justify;
 }
 
 /* =========================================================
