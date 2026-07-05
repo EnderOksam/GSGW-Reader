@@ -1,4 +1,5 @@
 import re
+import html
 import json
 import subprocess
 from pathlib import Path
@@ -39,6 +40,9 @@ BOOK_ID = "debut"
 DEBUT_WINDOW_RE = re.compile(r"★-\n(.*?)\n-★", re.DOTALL)
 DEBUT_ALERT_RE = re.compile(r"★!\n(.*?)\n!★", re.DOTALL)
 DEBUT_ACHIEVE_RE = re.compile(r"★=\n(.*?)\n=★", re.DOTALL)
+
+SMS_WINDOW_RE = re.compile(r"★:\n([\s\S]*?)\n:★", re.DOTALL)
+COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
 
 # =========================================================
@@ -109,6 +113,97 @@ def debut_achieve_replacer(match):
     )
     title_html = f'<div class="debut-achievement-title">{title}</div>\n\n' if title else ""
     return bw.make_window("debut-achievement", title_html + body)
+
+
+def sms_window_replacer(match):
+    inner = match.group(1)
+    lines = inner.split("\n")
+    speaker_colors = {
+        'PMD': '#FFF8D9', 'SAH': '#FFF0E1', 'BSJ': '#EDF5FF',
+        'LSJ': '#F2ECFF', 'KRB': '#FDE8F1', 'CE': '#FFE5E5',
+        'RCW': '#EAF8F2'
+    }
+    html_parts = []
+    for raw in lines:
+        trimmed = raw.strip()
+        if not trimmed:
+            continue
+        dash_left = re.match(r"^[-–—]\s*(.+)", trimmed)
+        dash_right = re.match(r"(.+)\s*[-–—]$", trimmed)
+        if dash_left:
+            content = dash_left.group(1)
+            sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
+            color = speaker_colors[sp.group(1)] if sp else None
+            display = html.escape(content[sp.end():] if sp else content)
+            style = f' style="background:{color};color:#222"' if color else ''
+            html_parts.append(f'<div class="sms-bubble sms-left"{style}>{display}</div>')
+        elif dash_right:
+            content = dash_right.group(1)
+            sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
+            color = speaker_colors[sp.group(1)] if sp else None
+            display = html.escape(content[sp.end():] if sp else content)
+            style = f' style="background:{color};color:#222"' if color else ''
+            html_parts.append(f'<div class="sms-bubble sms-right"{style}>{display}</div>')
+        else:
+            html_parts.append(f'<div class="sms-bubble sms-center">{html.escape(trimmed)}</div>')
+    return bw.make_window("sms-window", "\n\n".join(html_parts))
+
+
+def comment_window_replacer(match):
+    inner = match.group(1)
+    lines = inner.split("\n")
+    title = ""
+    desc = ""
+    items = []
+    in_comments = False
+
+    def esc(t):
+        return html.escape(t)
+
+    for raw in lines:
+        line = raw.strip()
+        if line.startswith("["):
+            title = esc(line.strip())
+        elif line.startswith(":"):
+            desc = esc(line.replace(":", "", 1).strip())
+        elif line.startswith("-") or line.startswith("\u2013") or line.startswith("\u2014"):
+            in_comments = True
+            content = re.sub(r"^[\u2014\u2013-]", "", line).strip()
+            items.append((esc(content), 0))
+        elif line.startswith("\u2937") or line.startswith("\u2514"):
+            in_comments = True
+            depth = 0
+            content = line
+            while content.startswith("\u2937") or content.startswith("\u2514"):
+                depth += 1
+                content = re.sub(r"^[\u2937\u2514]", "", content).lstrip()
+            if depth > 3:
+                depth = 3
+            items.append((esc(content.strip()), depth))
+        elif line and not in_comments:
+            desc += ("" if not desc else "</p>\n<p>") + esc(line)
+
+    html_parts = []
+    if title or desc:
+        html_parts.append('<div class="comment-post-header">')
+        if title:
+            html_parts.append(f'<div class="comment-post-title">{title}</div>')
+        if desc:
+            html_parts.append(f'<div class="comment-post-desc"><p>{desc}</p></div>')
+        html_parts.append('</div>')
+    if items:
+        html_parts.append('<div class="comment-section">')
+        for text, depth in items:
+            if depth == 0:
+                html_parts.append(f'<div class="comment">{text}</div>')
+            else:
+                html_parts.append(
+                    f'<div class="comment-reply depth-{depth}">'
+                    f'<span class="reply-icon">\u2937</span>'
+                    f'<span class="reply-body">{text}</span></div>'
+                )
+        html_parts.append('</div>')
+    return bw.make_window("alert-window", "\n\n".join(html_parts))
 
 
 # =========================================================
@@ -207,6 +302,10 @@ def convert_chapter(content):
     content = DEBUT_ALERT_RE.sub(debut_alert_replacer, content)
     content = DEBUT_WINDOW_RE.sub(debut_window_replacer, content)
     content = DEBUT_ACHIEVE_RE.sub(debut_achieve_replacer, content)
+
+    # sms and comment windows
+    content = SMS_WINDOW_RE.sub(sms_window_replacer, content)
+    content = COMMENT_WINDOW_RE.sub(comment_window_replacer, content)
 
     try:
         proc = subprocess.run(

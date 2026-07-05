@@ -891,3 +891,189 @@ body .reader-container .debut-achievement-sub-right::after {
 [data-hide-tweet-meta="true"] .twitter-embed-video {
   border-radius: 12px;
 }
+
+/* =========================================================
+   COMMENT WINDOW (★$)
+   ========================================================= */
+
+body .reader-container .alert-window.alert-window {
+  position: relative;
+  width: min(430px, 95%);
+  margin: 2rem auto;
+  padding: 0;
+  background: #fff;
+  color: #222 !important;
+  text-align: left;
+  border: 2px solid #555;
+  border-radius: 12px;
+  box-shadow: 0 0 0 6px #bbb, 0 0 0 8px #555;
+  overflow: hidden;
+}
+body .reader-container .alert-window.alert-window::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.015) 2px,
+      rgba(0,0,0,0.015) 4px
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 65%,
+      rgba(0,0,0,0.04) 100%
+    );
+  pointer-events: none;
+  z-index: 10;
+}
+body .reader-container .alert-window.alert-window p {
+  color: #222;
+  position: relative;
+  z-index: 2;
+}
+body .reader-container .comment-post-header.comment-post-header {
+  padding: 1.25rem 1.5rem 0.75rem;
+  background: transparent;
+  border-bottom: 1px solid #d0d0d0;
+  position: relative;
+  z-index: 2;
+}
+body .reader-container .comment-post-title.comment-post-title {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 0.2rem;
+  letter-spacing: 0.01em;
+}
+body .reader-container .comment-post-desc.comment-post-desc {
+  text-align: left;
+  font-size: 0.82em;
+  color: #777;
+  font-style: italic;
+}
+body .reader-container .comment-section.comment-section {
+  padding: 0.5rem 1.25rem 1rem;
+  position: relative;
+  z-index: 2;
+}
+body .reader-container .comment.comment {
+  padding: 0.5rem 0.6rem;
+  margin: 0.7rem 0;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  font-size: 0.92em;
+  color: #333;
+  line-height: 1.5;
+}
+body .reader-container .comment.comment:last-child {
+  margin-bottom: 0;
+}
+body .reader-container .comment-reply.comment-reply {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.88em;
+  margin-top: 0.5rem;
+}
+body .reader-container .comment-reply.comment-reply.depth-1 {
+  margin-left: 1.2rem;
+  background: #d2d2d2;
+  border: 1px solid #bbb;
+}
+body .reader-container .comment-reply.comment-reply.depth-2 {
+  margin-left: 2rem;
+  background: #c8c8c8;
+  border: 1px solid #aaa;
+}
+body .reader-container .comment-reply.comment-reply.depth-3 {
+  margin-left: 2.8rem;
+  background: #bebebe;
+  border: 1px solid #999;
+}
+body .reader-container .reply-icon.reply-icon {
+  flex-shrink: 0;
+  font-size: 0.7em;
+  color: #999;
+  line-height: 1.6;
+}
+body .reader-container .reply-body.reply-body {
+  color: #444;
+}
+
+/* =========================================================
+   SMS WINDOW (★:)
+   ========================================================= */
+
+body .reader-container .sms-window.sms-window {
+  position: relative;
+  width: min(430px, 95%);
+  margin: 2rem auto;
+  padding: 1rem 1rem;
+  background: var(--window-bg);
+  color: #fff !important;
+  text-align: left;
+  border: 2px solid #555;
+  border-radius: 12px;
+  box-shadow: 0 0 0 6px #444, 0 0 0 8px #555;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+body .reader-container .sms-window.sms-window::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.015) 2px,
+      rgba(0,0,0,0.015) 4px
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 65%,
+      rgba(0,0,0,0.04) 100%
+    );
+  pointer-events: none;
+  z-index: 10;
+}
+body .reader-container .sms-bubble.sms-bubble {
+  max-width: 80%;
+  padding: 8px 14px;
+  border-radius: 14px;
+  font-size: 0.95em;
+  line-height: 1.45;
+  position: relative;
+  z-index: 2;
+  word-wrap: break-word;
+}
+body .reader-container .sms-left.sms-left {
+  align-self: flex-start;
+  background: #3a3a4e;
+  border-bottom-left-radius: 4px;
+}
+body .reader-container .sms-right.sms-right {
+  align-self: flex-end;
+  background: #eae391;
+  color: #222;
+  border-bottom-right-radius: 4px;
+}
+body .reader-container .sms-center.sms-center {
+  align-self: center;
+  background: transparent;
+  font-style: italic;
+  opacity: 0.8;
+  font-size: 0.85em;
+}

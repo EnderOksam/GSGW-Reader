@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
   import { marked } from "marked";
@@ -555,6 +555,10 @@
       return `\n<div class="${cl}">\n\n${inner}\n\n</div>\n`;
     }
 
+    function escapeHtml(text: string): string {
+      return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
     s = s.replace(/\+[-+]+\n(.*?)\n[-+]+\+/gs, (_: string, inner: string) => {
       const noMeta = inner.trimStart().startsWith("\\");
       if (noMeta) inner = inner.replace("\\", "");
@@ -590,6 +594,98 @@
     s = s.replace(/!\[\n(.*?)\n\]!/gs, (_: string, inner: string) => makeWindow("braun-screen", inner));
 
     s = s.replace(/★!\n(.*?)\n!★/gs, (_: string, inner: string) => makeWindow("debut-alert", inner));
+
+    s = s.replace(/★:\n([\s\S]*?)\n:★/gs, (_: string, inner: string) => {
+      const lines = inner.split('\n');
+      const speakerColors: Record<string, string> = {
+        PMD: '#FFF8D9', SAH: '#FFF0E1', BSJ: '#EDF5FF',
+        LSJ: '#F2ECFF', KRB: '#FDE8F1', CE: '#FFE5E5',
+        RCW: '#EAF8F2'
+      };
+      let html = '';
+      for (const raw of lines) {
+        const trimmed = raw.trim();
+        if (!trimmed) continue;
+        const dashLeft = trimmed.match(/^[-–—]\s*(.+)/);
+        const dashRight = trimmed.match(/(.+)\s*[-–—]$/);
+        const speakerMatch = (content: string) => content.match(/^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*/);
+        if (dashLeft) {
+          const content = dashLeft[1];
+          const sp = speakerMatch(content);
+          const color = sp ? speakerColors[sp[1]] : null;
+          const display = sp ? content.slice(sp[0].length) : content;
+          const style = color ? ` style="background:${color};color:#222"` : '';
+          html += `<div class="sms-bubble sms-left"${style}>${escapeHtml(display)}</div>\n`;
+        } else if (dashRight) {
+          const content = dashRight[1];
+          const sp = speakerMatch(content);
+          const color = sp ? speakerColors[sp[1]] : null;
+          const display = sp ? content.slice(sp[0].length) : content;
+          const style = color ? ` style="background:${color};color:#222"` : '';
+          html += `<div class="sms-bubble sms-right"${style}>${escapeHtml(display)}</div>\n`;
+        } else {
+          html += `<div class="sms-bubble sms-center">${escapeHtml(trimmed)}</div>\n`;
+        }
+      }
+      return makeWindow("sms-window", html);
+    });
+
+    s = s.replace(/★\$\n([\s\S]*?)\n\$★/gs, (_: string, inner: string) => {
+      const lines = inner.split('\n');
+      let title = '';
+      let desc = '';
+      const items: { text: string; depth: number }[] = [];
+      let inComments = false;
+
+      function escapeHtml(text: string): string {
+        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (line.startsWith('[')) {
+          title = escapeHtml(line.trim());
+        } else if (line.startsWith(':')) {
+          desc = escapeHtml(line.replace(/^:/, '').trim());
+        } else if (line.startsWith('-') || line.startsWith('\u2013') || line.startsWith('\u2014')) {
+          inComments = true;
+          const content = line.replace(/^[\u2014\u2013-]/, '').trim();
+          items.push({ text: escapeHtml(content), depth: 0 });
+        } else if (line.startsWith('⤷') || line.startsWith('└')) {
+          inComments = true;
+          let depth = 0;
+          let content = line;
+          while (content.startsWith('⤷') || content.startsWith('└')) {
+            depth++;
+            content = content.replace(/^[⤷└]/, '').trimStart();
+          }
+          if (depth > 3) depth = 3;
+          items.push({ text: escapeHtml(content.trim()), depth });
+        } else if (line && !inComments) {
+          desc += (desc ? '</p>\n<p>' : '<p>') + escapeHtml(line);
+        }
+      }
+
+      let html = '';
+      if (title || desc) {
+        html += '<div class="comment-post-header">\n';
+        if (title) html += `<div class="comment-post-title">${title}</div>\n`;
+        if (desc) html += `<div class="comment-post-desc">${desc}</p></div>\n`;
+        html += '</div>\n';
+      }
+      if (items.length) {
+        html += '<div class="comment-section">\n';
+        for (const item of items) {
+          if (item.depth === 0) {
+            html += `<div class="comment">${item.text}</div>\n`;
+          } else {
+            html += `<div class="comment-reply depth-${item.depth}"><span class="reply-icon">⤷</span><span class="reply-body">${item.text}</span></div>\n`;
+          }
+        }
+        html += '</div>\n';
+      }
+      return makeWindow("alert-window", html);
+    });
 
     s = s.replace(/★=\n(.*?)\n=★/gs, (_: string, inner: string) => {
       const lines = inner.split("\n");
@@ -2120,7 +2216,7 @@
           <table class="w-full border-collapse">
             <tbody>
               {#each [
-                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "~^~", desc: "Invisible section break" }, { syntax: "_text_", desc: "Underline" }, { syntax: "~~text~~", desc: "Strikethrough" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "#f#>text>#f#", desc: "Fade right" }, { syntax: "#f#<text<#f#", desc: "Fade left" }, { syntax: "$s$text$s$", desc: "Smoke text" }, { syntax: "$a$text$a$", desc: "Aurora text" }, { syntax: "$g$text$g$", desc: "Gold text" }, { syntax: "$*$text$*$", desc: "Sparkle text" }, { syntax: "$($text$)$", desc: "Moon text" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" }, { syntax: "★=text=★", desc: "DoD achievement" }, { syntax: "}text}", desc: "Oriented sub (left)" }, { syntax: "{text{", desc: "Oriented sub (right)" },
+                { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "~^~", desc: "Invisible section break" }, { syntax: "_text_", desc: "Underline" }, { syntax: "~~text~~", desc: "Strikethrough" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "#f#>text>#f#", desc: "Fade right" }, { syntax: "#f#<text<#f#", desc: "Fade left" }, { syntax: "$stexts$", desc: "Smoke text" }, { syntax: "$atexta$", desc: "Aurora text" }, { syntax: "$gtextg$", desc: "Gold text" }, { syntax: "$*text*$", desc: "Sparkle text" }, { syntax: "$(text)$", desc: "Moon text" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" }, { syntax: "★=text=★", desc: "DoD achievement" }, { syntax: "★$text$★", desc: "Comment window" }, { syntax: "★:text:★", desc: "SMS window" }, { syntax: "}text}", desc: "Oriented sub (left)" }, { syntax: "{text{", desc: "Oriented sub (right)" },
               ] as opt}
                 <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                   <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -2552,7 +2648,7 @@
             <table class="w-full border-collapse">
               <tbody>
                 {#each [
-                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "~^~", desc: "Invisible section break" }, { syntax: "_text_", desc: "Underline" }, { syntax: "~~text~~", desc: "Strikethrough" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "#f#>text>#f#", desc: "Fade right" }, { syntax: "#f#<text<#f#", desc: "Fade left" }, { syntax: "$s$text$s$", desc: "Smoke text" }, { syntax: "$a$text$a$", desc: "Aurora text" }, { syntax: "$g$text$g$", desc: "Gold text" }, { syntax: "$*$text$*$", desc: "Sparkle text" }, { syntax: "$($text$)$", desc: "Moon text" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" }, { syntax: "★=text=★", desc: "DoD achievement" }, { syntax: "}text}", desc: "Oriented sub (left)" }, { syntax: "{text{", desc: "Oriented sub (right)" },
+                  { syntax: "%%text%%", desc: "Shake effect (block)" }, { syntax: "%~text~%", desc: "Shake effect (per-char)" }, { syntax: "%^text^%", desc: "Wave up effect" }, { syntax: "@@text@@", desc: "Glitch text (heavy)" }, { syntax: "@_@text@_@", desc: "Glitch text (subtle)" }, { syntax: "#^#text#^#", desc: "Grow font size" }, { syntax: "#v#text#v#", desc: "Shrink font size" }, { syntax: "~~~", desc: "Visible horizontal rule" }, { syntax: "~^~", desc: "Invisible section break" }, { syntax: "_text_", desc: "Underline" }, { syntax: "~~text~~", desc: "Strikethrough" }, { syntax: "@ll@text@ll@", desc: "Mono left-aligned" }, { syntax: "@rr@text@rr@", desc: "Mono right-aligned" }, { syntax: "@l@text@l@", desc: "Left align" }, { syntax: "@r@text@r@", desc: "Right align" }, { syntax: "#*text*#", desc: "Large text" }, { syntax: "#><text><#", desc: "Large centered text" }, { syntax: "#rtextr#", desc: "Red text" }, { syntax: "#btextb#", desc: "Blue text" }, { syntax: "#ytexty#", desc: "Yellow text" }, { syntax: "#ptextp#", desc: "Magenta text" }, { syntax: "#gtextg#", desc: "Green text" }, { syntax: "#otexto#", desc: "Orange text" }, { syntax: "#f#text#f#", desc: "Fade out" }, { syntax: "#f#>text>#f#", desc: "Fade right" }, { syntax: "#f#<text<#f#", desc: "Fade left" }, { syntax: "$stexts$", desc: "Smoke text" }, { syntax: "$atexta$", desc: "Aurora text" }, { syntax: "$gtextg$", desc: "Gold text" }, { syntax: "$*text*$", desc: "Sparkle text" }, { syntax: "$(text)$", desc: "Moon text" }, { syntax: "-# text #-", desc: "Sub/small text" }, { syntax: ";rtextr;", desc: "Red highlight" }, { syntax: ";btextb;", desc: "Blue highlight" }, { syntax: ";ytexty;", desc: "Yellow highlight" }, { syntax: ";ptextp;", desc: "Magenta highlight" }, { syntax: ";gtextg;", desc: "Green highlight" }, { syntax: ";otexto;", desc: "Orange highlight" }, { syntax: "+-text-+", desc: "Wiki window" }, { syntax: "+$text$+", desc: "Plain window" }, { syntax: "&$text$&", desc: "Followup window" }, { syntax: "&--text--&", desc: "Record window" }, { syntax: "+~text~+", desc: "System window" }, { syntax: "+=text=+", desc: "Black CRT window" }, { syntax: "!-text-!", desc: "Notepad window" }, { syntax: "!$text$!", desc: "Sticky note window" }, { syntax: "![text]!", desc: "Braun CRT monitor" }, { syntax: "★-text-★", desc: "DoD window" }, { syntax: "★!text!★", desc: "DoD alert" }, { syntax: "★=text=★", desc: "DoD achievement" }, { syntax: "★$text$★", desc: "Comment window" }, { syntax: "★:text:★", desc: "SMS window" }, { syntax: "}text}", desc: "Oriented sub (left)" }, { syntax: "{text{", desc: "Oriented sub (right)" },
                 ] as opt}
                   <tr class="border-b border-base-content/[3%] hover:bg-base-content/[4%] transition-colors">
                     <td class="px-3 py-1.5 whitespace-nowrap text-base-content/70 text-[10px] font-mono">{opt.syntax}</td>
@@ -2815,6 +2911,183 @@
   }
   .reader-container :global(.debut-alert p) {
     color: #fff;
+  }
+
+  .reader-container :global(.alert-window) {
+    position: relative;
+    width: min(430px, 95%);
+    margin: 2rem auto;
+    padding: 0;
+    background: #fff;
+    color: #222 !important;
+    text-align: left;
+    border: 2px solid #555;
+    border-radius: 12px;
+    box-shadow: 0 0 0 6px #bbb, 0 0 0 8px #555;
+    overflow: hidden;
+  }
+  .reader-container :global(.alert-window)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.015) 2px,
+        rgba(0,0,0,0.015) 4px
+      ),
+      radial-gradient(
+        ellipse at center,
+        transparent 65%,
+        rgba(0,0,0,0.04) 100%
+      );
+    pointer-events: none;
+    z-index: 10;
+  }
+  .reader-container :global(.sms-window) {
+    position: relative;
+    width: min(430px, 95%);
+    margin: 2rem auto;
+    padding: 1rem 1rem;
+    background: var(--window-bg);
+    color: #fff !important;
+    text-align: left;
+    border: 2px solid #555;
+    border-radius: 12px;
+    box-shadow: 0 0 0 6px #444, 0 0 0 8px #555;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .reader-container :global(.sms-window)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.015) 2px,
+        rgba(0,0,0,0.015) 4px
+      ),
+      radial-gradient(
+        ellipse at center,
+        transparent 65%,
+        rgba(0,0,0,0.04) 100%
+      );
+    pointer-events: none;
+    z-index: 10;
+  }
+  .reader-container :global(.sms-bubble) {
+    max-width: 80%;
+    padding: 8px 14px;
+    border-radius: 14px;
+    font-size: 0.95em;
+    line-height: 1.45;
+    position: relative;
+    z-index: 2;
+    word-wrap: break-word;
+  }
+  .reader-container :global(.sms-left) {
+    align-self: flex-start;
+    background: #3a3a4e;
+    border-bottom-left-radius: 4px;
+  }
+  .reader-container :global(.sms-right) {
+    align-self: flex-end;
+    background: #eae391;
+    color: #222;
+    border-bottom-right-radius: 4px;
+  }
+  .reader-container :global(.sms-center) {
+    align-self: center;
+    background: transparent;
+    font-style: italic;
+    opacity: 0.8;
+    font-size: 0.85em;
+  }
+  .reader-container :global(.alert-window p) {
+    color: #222;
+    position: relative;
+    z-index: 2;
+  }
+  .reader-container :global(.comment-post-header) {
+    padding: 1.25rem 1.5rem 0.75rem;
+    background: transparent;
+    border-bottom: 1px solid #d0d0d0;
+    position: relative;
+    z-index: 2;
+  }
+  .reader-container :global(.comment-post-title) {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 0.2rem;
+    letter-spacing: 0.01em;
+  }
+  .reader-container :global(.comment-post-desc) {
+    text-align: left;
+    font-size: 0.82em;
+    color: #777;
+    font-style: italic;
+  }
+  .reader-container :global(.comment-section) {
+    padding: 0.5rem 1.25rem 1rem;
+    position: relative;
+    z-index: 2;
+  }
+  .reader-container :global(.comment) {
+    padding: 0.5rem 0.6rem;
+    margin: 0.7rem 0;
+    background: #eee;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 0.92em;
+    color: #333;
+    line-height: 1.5;
+  }
+  .reader-container :global(.comment:last-child) {
+    margin-bottom: 0;
+  }
+  .reader-container :global(.comment-reply) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.88em;
+    margin-top: 0.5rem;
+  }
+  .reader-container :global(.comment-reply.depth-1) {
+    margin-left: 1.2rem;
+    background: #d2d2d2;
+    border: 1px solid #bbb;
+  }
+  .reader-container :global(.comment-reply.depth-2) {
+    margin-left: 2rem;
+    background: #c8c8c8;
+    border: 1px solid #aaa;
+  }
+  .reader-container :global(.comment-reply.depth-3) {
+    margin-left: 2.8rem;
+    background: #bebebe;
+    border: 1px solid #999;
+  }
+  .reader-container :global(.reply-icon) {
+    flex-shrink: 0;
+    font-size: 0.7em;
+    color: #999;
+    line-height: 1.6;
+  }
+  .reader-container :global(.reply-body) {
+    color: #444;
   }
 
   .reader-container :global(.debut-window .debut-window-label) {

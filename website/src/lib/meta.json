@@ -2855,9 +2855,7 @@
         "index": 13,
         "section": "Chapter 14",
         "slug": "14"
-      }
-    ],
-    "debutplaintxt": [
+      },
       {
         "title": "Chapter 15",
         "category": "book",
@@ -2871,7 +2869,9 @@
         "index": 15,
         "section": "Chapter 16",
         "slug": "16"
-      },
+      }
+    ],
+    "debutplaintxt": [
       {
         "title": "Chapter 17",
         "category": "book",
