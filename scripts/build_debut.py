@@ -21,7 +21,6 @@ SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_ROOT = SCRIPT_DIR.parent
 
 DEBUT_MD_DIRS = [
-    REPO_ROOT / "chapters" / "debut" / "DebutPlainTxt",
     REPO_ROOT / "chapters" / "debut" / "DebutFormatted",
 ]
 
@@ -127,6 +126,11 @@ def safe_html(text):
     return ''.join(result)
 
 
+def fix_underline(text):
+    """Convert [text]{.underline} to <span class="underline">text</span>."""
+    return re.sub(r'\[([^\]]+)\]\{\.underline\}', r'<span class="underline">\1</span>', text)
+
+
 def sms_window_replacer(match):
     inner = match.group(1)
     lines = inner.split("\n")
@@ -146,18 +150,18 @@ def sms_window_replacer(match):
             content = dash_left.group(1)
             sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
             color = speaker_colors[sp.group(1)] if sp else None
-            display = safe_html(content[sp.end():] if sp else content)
+            display = fix_underline(safe_html(content[sp.end():] if sp else content))
             style = f' style="background:{color};color:#222"' if color else ''
             html_parts.append(f'<div class="sms-bubble sms-left"{style}>{display}</div>')
         elif dash_right:
             content = dash_right.group(1)
             sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
             color = speaker_colors[sp.group(1)] if sp else None
-            display = safe_html(content[sp.end():] if sp else content)
+            display = fix_underline(safe_html(content[sp.end():] if sp else content))
             style = f' style="background:{color};color:#222"' if color else ''
             html_parts.append(f'<div class="sms-bubble sms-right"{style}>{display}</div>')
         else:
-            html_parts.append(f'<div class="sms-bubble sms-center">{safe_html(trimmed)}</div>')
+            html_parts.append(f'<div class="sms-bubble sms-center">{fix_underline(safe_html(trimmed))}</div>')
     return bw.make_window("sms-window", "\n\n".join(html_parts))
 
 
@@ -172,13 +176,13 @@ def comment_window_replacer(match):
     for raw in lines:
         line = raw.strip()
         if line.startswith("["):
-            title = safe_html(line.strip())
+            title = fix_underline(safe_html(line.strip()))
         elif line.startswith(":"):
-            desc = safe_html(line.replace(":", "", 1).strip())
+            desc = fix_underline(safe_html(line.replace(":", "", 1).strip()))
         elif line.startswith("-") or line.startswith("\u2013") or line.startswith("\u2014"):
             in_comments = True
             content = re.sub(r"^[\u2014\u2013-]", "", line).strip()
-            items.append((safe_html(content), 0))
+            items.append((fix_underline(safe_html(content)), 0))
         elif line.startswith("\u2937") or line.startswith("\u2514") or line.startswith("\u221F"):
             in_comments = True
             depth = 0
@@ -188,9 +192,9 @@ def comment_window_replacer(match):
                 content = re.sub(r"^[\u2937\u2514\u221F]", "", content).lstrip()
             if depth > 3:
                 depth = 3
-            items.append((safe_html(content.strip()), depth))
+            items.append((fix_underline(safe_html(content.strip())), depth))
         elif line and not in_comments:
-            desc += ("" if not desc else "</p>\n<p>") + safe_html(line)
+            desc += ("" if not desc else "</p>\n<p>") + fix_underline(safe_html(line))
 
     html_parts = []
     if title or desc:
