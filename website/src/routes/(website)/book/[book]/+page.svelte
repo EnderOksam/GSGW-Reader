@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { dev } from "$app/environment";
   import Icon from "@iconify/svelte";
-  import imgLotmCover from "$lib/assets/web-lotm-cover.jpg";
+  import imgGsgwCover from "$lib/assets/web-gsgw-cover.webp";
   import imgtempCover from "$lib/assets/web-coi-cover.jpg";
   import imgManwhaCover from "$lib/assets/webtoon-cover.webp";
   import imgDebutCover from "$lib/assets/debut.webp";
@@ -56,7 +56,7 @@
       accent_color: "accent",
       button_primary: "btn-accent",
       button_secondary: "btn-info",
-      cover: imgLotmCover,
+      cover: imgGsgwCover,
       external_link: "https://page.kakao.com/content/65171279",
     },
     temp: {

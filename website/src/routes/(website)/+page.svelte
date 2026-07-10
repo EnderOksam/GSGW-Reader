@@ -3,7 +3,7 @@
   import { fade } from "svelte/transition";
   import Icon from "@iconify/svelte";
   import StarField from "$lib/StarField.svelte";
-  import imgLotm from "$lib/assets/web-lotm-cover.jpg";
+  import imgGsgw from "$lib/assets/web-gsgw-cover.webp";
   import imgCoi from "$lib/assets/web-coi-cover.jpg";
   import imgManwha from "$lib/assets/webtoon-cover.webp";
   import imgDebut from "$lib/assets/debut.webp";
@@ -34,7 +34,7 @@
   const books = [
     {
       href: "/book/gsgw",
-      img: imgLotm,
+      img: imgGsgw,
       title: "Got Dropped into a Ghost Story, Still Gotta Work",
       author: "Baek Deoksoo",
       tag: "Webnovel",
