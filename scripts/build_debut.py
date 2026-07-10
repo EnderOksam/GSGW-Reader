@@ -99,17 +99,21 @@ def debut_achieve_replacer(match):
         body,
     )
 
-    body = re.sub(
-        r"\}([^}]+)\}",
-        lambda m: f'<span class="debut-achievement-sub debut-achievement-sub-left">{m.group(1).strip()}</span>',
-        body,
-    )
+    def sub_left(match):
+        text = match.group(1).strip()
+        if text.startswith("[!]"):
+            return f'<span class="alert-sub alert-sub-left">{text[3:].strip()}</span>'
+        return f'<span class="debut-achievement-sub debut-achievement-sub-left">{text}</span>'
 
-    body = re.sub(
-        r"\{([^{]+)\{",
-        lambda m: f'<span class="debut-achievement-sub debut-achievement-sub-right">{m.group(1).strip()}</span>',
-        body,
-    )
+    def sub_right(match):
+        text = match.group(1).strip()
+        if text.startswith("[!]"):
+            return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
+        return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
+
+    body = re.sub(r"\}([^}]+)\}", sub_left, body)
+    body = re.sub(r"\{([^{]+)\{", sub_right, body)
+
     title_html = f'<div class="debut-achievement-title">{title}</div>\n\n' if title else ""
     return bw.make_window("debut-achievement", title_html + body)
 
@@ -285,6 +289,8 @@ def convert_chapter(content):
     content = bw.SPARKLE_RE.sub(r'<span class="sparkle-text">\1</span>', content)
 
     content = bw.MOON_RE.sub(r'<span class="moon-text">\1</span>', content)
+
+    content = bw.SILVER_RE.sub(bw.silver_replacer, content)
 
     # restore protected patterns
     for key, val in img_placeholders.items():

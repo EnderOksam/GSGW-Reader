@@ -494,6 +494,8 @@
       [/#p(.*?)p#/gs, '<span class="text-magenta">$1</span>'],
       [/#g(.*?)g#/gs, '<span class="text-green">$1</span>'],
       [/#o(.*?)o#/gs, '<span class="text-orange">$1</span>'],
+      [/#lp(.*?)lp#/gs, '<span class="text-light-purple">$1</span>'],
+      [/#cy(.*?)cy#/gs, '<span class="text-cyan">$1</span>'],
       [/#f#(.*?)#f#/gs, '<span class="text-faded">$1</span>'],
       [/(?<!\\)-#\s*(.+?)\s*#-(?!\\)/gs, '<span class="text-sub">$1</span>'],
       [/#f>#(.*?)#f>#/gs, '<span class="text-fade-right">$1</span>'],
@@ -548,6 +550,11 @@
     s = s.replace(/\$\((.+?)\)\$/gs, (_: string, inner: string) => {
       inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
       return `<span class="moon-wrap"><span class="moon-text">${inner}</span></span>`;
+    });
+
+    s = s.replace(/\$ag(.+?)ag\$/gs, (_: string, inner: string) => {
+      inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      return `<span class="silver-text">${inner}</span>`;
     });
 
     function makeWindow(cls: string, inner: string, extra?: string): string {
@@ -727,10 +734,14 @@
     });
 
     s = s.replace(/\}([^}]+)\}/g, (_: string, content: string) => {
-      return `<span class="debut-achievement-sub debut-achievement-sub-left">${content.trim()}</span>`;
+      const text = content.trim();
+      if (text.startsWith("[!]")) return `<span class="alert-sub alert-sub-left">${text.slice(3).trim()}</span>`;
+      return `<span class="debut-achievement-sub debut-achievement-sub-left">${text}</span>`;
     });
     s = s.replace(/\{([^{]+)\{/g, (_: string, content: string) => {
-      return `<span class="debut-achievement-sub debut-achievement-sub-right">${content.trim()}</span>`;
+      const text = content.trim();
+      if (text.startsWith("[!]")) return `<span class="alert-sub alert-sub-right">${text.slice(3).trim()}</span>`;
+      return `<span class="debut-achievement-sub debut-achievement-sub-right">${text}</span>`;
     });
 
     s = replaceTwitterUrls(s);
@@ -3165,7 +3176,9 @@
     background: linear-gradient(to right, transparent, rgba(100,160,255,.5) 20%, rgba(100,160,255,.5) 80%, transparent);
   }
   .reader-container :global(.debut-achievement-sub-left),
-  .reader-container :global(.debut-achievement-sub-right) {
+  .reader-container :global(.debut-achievement-sub-right),
+  .reader-container :global(.alert-sub-left),
+  .reader-container :global(.alert-sub-right) {
     --border: rgba(255,255,255,.85);
     --outline: rgba(180,220,255,.35);
 
@@ -3209,8 +3222,32 @@
     margin-left: .5rem;
   }
 
+  .reader-container :global(.alert-sub-left),
+  .reader-container :global(.alert-sub-right) {
+    --border: rgba(255,120,140,.9);
+    --outline: rgba(255,50,80,.35);
+
+    background:
+        linear-gradient(
+            180deg,
+            #d03050 0%,
+            #b01030 40%,
+            #8a0a25 100%
+        );
+  }
+
+  .reader-container :global(.alert-sub-left) {
+    margin-right: .5rem;
+  }
+
+  .reader-container :global(.alert-sub-right) {
+    margin-left: .5rem;
+  }
+
   .reader-container :global(.debut-achievement-sub-left)::before,
-  .reader-container :global(.debut-achievement-sub-right)::before {
+  .reader-container :global(.debut-achievement-sub-right)::before,
+  .reader-container :global(.alert-sub-left)::before,
+  .reader-container :global(.alert-sub-right)::before {
     content: "";
     position: absolute;
     left: -7px;
@@ -3226,7 +3263,9 @@
   }
 
   .reader-container :global(.debut-achievement-sub-left)::after,
-  .reader-container :global(.debut-achievement-sub-right)::after {
+  .reader-container :global(.debut-achievement-sub-right)::after,
+  .reader-container :global(.alert-sub-left)::after,
+  .reader-container :global(.alert-sub-right)::after {
     content: "";
     position: absolute;
     right: -7px;

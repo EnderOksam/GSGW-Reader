@@ -401,6 +401,36 @@ del {
   filter: drop-shadow(0 0 5px rgba(100, 180, 230, 0.35));
 }
 
+.silver-text {
+  display: inline-block;
+  font-weight: 800;
+  background:
+    linear-gradient(90deg,
+      transparent 25%,
+      rgba(255,255,255,0.3) 46%,
+      rgba(255,255,255,0.5) 50%,
+      rgba(255,255,255,0.3) 54%,
+      transparent 75%
+    ),
+    #C0C0C0;
+  background-size: 200px 100%, auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-text-stroke: 1.2px #666;
+  text-stroke: 1.2px #666;
+}
+
+.text-light-purple {
+  color: #a78bfa;
+  font-weight: bold;
+}
+
+.text-cyan {
+  color: #22d3ee;
+  font-weight: bold;
+}
+
 
 
 .glitch-text {

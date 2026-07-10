@@ -611,6 +611,9 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"\$g(.+?)g\$", '<span class="gold-text">{inner}</span>'),
         (r"\$\*(.+?)\*\$", '<span class="sparkle-text">{inner}</span>'),
         (r"\$\((.+?)\)\$", '<span class="moon-text">{inner}</span>'),
+        (r"\$ag(.+?)ag\$", '<span class="silver-text">{inner}</span>'),
+        (r"#lp(.+?)lp#", '<span class="text-light-purple">{inner}</span>'),
+        (r"#cy(.+?)cy#", '<span class="text-cyan">{inner}</span>'),
     ]
 
     for pattern, wrapper in custom_wrappers:

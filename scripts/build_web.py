@@ -55,6 +55,7 @@ AURORA_RE = re.compile(r"\$a(.+?)a\$", re.DOTALL)
 GOLD_RE = re.compile(r"\$g(.+?)g\$", re.DOTALL)
 SPARKLE_RE = re.compile(r"\$\*(.+?)\*\$", re.DOTALL)
 MOON_RE = re.compile(r"\$\((.+?)\)\$", re.DOTALL)
+SILVER_RE = re.compile(r"\$ag(.+?)ag\$", re.DOTALL)
 
 TWITTER_URL_RE = re.compile(
     r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
@@ -98,6 +99,8 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"#p(.*?)p#", re.DOTALL), r'<span class="text-magenta">\1</span>'),
     (re.compile(r"#g(.*?)g#", re.DOTALL), r'<span class="text-green">\1</span>'),
     (re.compile(r"#o(.*?)o#", re.DOTALL), r'<span class="text-orange">\1</span>'),
+    (re.compile(r"#lp(.*?)lp#", re.DOTALL), r'<span class="text-light-purple">\1</span>'),
+    (re.compile(r"#cy(.*?)cy#", re.DOTALL), r'<span class="text-cyan">\1</span>'),
     (re.compile(r"#f#(.*?)#f#", re.DOTALL), r'<span class="text-faded">\1</span>'),
     (re.compile(r"(?<!\\)\-#\s*(.+?)\s*#-(?!\\)", re.DOTALL), r'<span class="text-sub">\1</span>'),
     (re.compile(r"#f>#(.*?)#f>#", re.DOTALL), r'<span class="text-fade-right">\1</span>'),
@@ -356,6 +359,15 @@ def aurora_replacer(match):
     return f'<span class="aurora-text">{inner}</span>'
 
 
+def silver_replacer(match):
+
+    inner = match.group(1)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    return f'<span class="silver-text">{inner}</span>'
+
+
 def grow_replacer(match):
 
     inner = match.group(1)
@@ -533,6 +545,8 @@ def convert_chapter(content):
     content = SPARKLE_RE.sub(r'<span class="sparkle-text">\1</span>', content)
 
     content = MOON_RE.sub(r'<span class="moon-text">\1</span>', content)
+
+    content = SILVER_RE.sub(silver_replacer, content)
 
     # restore protected patterns
     for key, val in img_placeholders.items():

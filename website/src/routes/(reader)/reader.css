@@ -274,6 +274,77 @@ hr.invisible-hr {
   100% { background-position: calc(100% + 200px) 0, 0 0, 0 0; }
 }
 
+.silver-text {
+  position: relative;
+  display: inline-block;
+  font-weight: 800;
+  background:
+    linear-gradient(90deg,
+      transparent 25%,
+      rgba(255,255,255,0.3) 46%,
+      rgba(255,255,255,0.5) 50%,
+      rgba(255,255,255,0.3) 54%,
+      transparent 75%
+    ),
+    repeating-linear-gradient(
+      65deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(192,192,192,0.08) 3px,
+      rgba(192,192,192,0.08) 5px
+    ),
+    #C0C0C0;
+  background-size: 200px 100%, auto, auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-text-stroke: 1.2px #666;
+  text-stroke: 1.2px #666;
+  animation: silver-gleam 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 5px rgba(160, 160, 160, 0.35));
+}
+
+.silver-text::before,
+.silver-text::after {
+  content: "✦";
+  position: absolute;
+  font-size: 6px;
+  color: #e8e8ff;
+  filter: drop-shadow(0 0 3px rgba(200, 220, 255, 0.6));
+  pointer-events: none;
+  animation: silver-sparkle 2.5s ease-in-out infinite;
+}
+
+.silver-text::before {
+  top: -5px;
+  right: 10%;
+  animation-delay: 0s;
+  text-shadow:
+    -20px 12px 0 rgba(200,220,255,0.15),
+    15px 18px 0 rgba(200,220,255,0.1),
+    -35px -5px 0 rgba(200,220,255,0.12);
+}
+
+.silver-text::after {
+  bottom: -5px;
+  left: 10%;
+  animation-delay: 1.2s;
+  text-shadow:
+    20px -12px 0 rgba(200,220,255,0.15),
+    -15px -18px 0 rgba(200,220,255,0.1),
+    35px 5px 0 rgba(200,220,255,0.12);
+}
+
+@keyframes silver-sparkle {
+  0%, 100% { opacity: 0.1; transform: translate(0, 0) scale(0.6); }
+  50% { opacity: 0.9; transform: translate(0.5px, -0.5px) scale(1); }
+}
+
+@keyframes silver-gleam {
+  0% { background-position: -200px 0, 0 0, 0 0; }
+  100% { background-position: calc(100% + 200px) 0, 0 0, 0 0; }
+}
+
 @keyframes star-float {
   0%, 100% { opacity: 0.3; transform: translate(0, 0); }
   50% { opacity: 0.7; transform: translate(1px, -1px); }
@@ -474,13 +545,23 @@ hr.invisible-hr {
   font-weight: bold;
 }
 
+.text-light-purple {
+  color: #a78bfa;
+  font-weight: bold;
+}
+
+.text-cyan {
+  color: #22d3ee;
+  font-weight: bold;
+}
+
 .text-faded {
-  opacity: 0.1;
+  opacity: 0.35;
   transition: opacity 0.2s;
 }
 
 .text-faded:hover {
-  opacity: 0.55;
+  opacity: 0.75;
 }
 
 .text-sub {
@@ -793,7 +874,9 @@ body .reader-container .debut-achievement-list-divider {
   background: linear-gradient(to right, transparent, rgba(100,160,255,.5) 20%, rgba(100,160,255,.5) 80%, transparent);
 }
 body .reader-container .debut-achievement-sub-left,
-body .reader-container .debut-achievement-sub-right {
+body .reader-container .debut-achievement-sub-right,
+body .reader-container .alert-sub-left,
+body .reader-container .alert-sub-right {
   --border: rgba(255,255,255,.85);
   --outline: rgba(180,220,255,.35);
 
@@ -837,8 +920,32 @@ body .reader-container .debut-achievement-sub-right {
   margin-left: .5rem;
 }
 
+body .reader-container .alert-sub-left,
+body .reader-container .alert-sub-right {
+  --border: rgba(255,120,140,.9);
+  --outline: rgba(255,50,80,.35);
+
+  background:
+      linear-gradient(
+          180deg,
+          #d03050 0%,
+          #b01030 40%,
+          #8a0a25 100%
+      );
+}
+
+body .reader-container .alert-sub-left {
+  margin-right: .5rem;
+}
+
+body .reader-container .alert-sub-right {
+  margin-left: .5rem;
+}
+
 body .reader-container .debut-achievement-sub-left::before,
-body .reader-container .debut-achievement-sub-right::before {
+body .reader-container .debut-achievement-sub-right::before,
+body .reader-container .alert-sub-left::before,
+body .reader-container .alert-sub-right::before {
   content: "";
   position: absolute;
   left: -7px;
@@ -854,7 +961,9 @@ body .reader-container .debut-achievement-sub-right::before {
 }
 
 body .reader-container .debut-achievement-sub-left::after,
-body .reader-container .debut-achievement-sub-right::after {
+body .reader-container .debut-achievement-sub-right::after,
+body .reader-container .alert-sub-left::after,
+body .reader-container .alert-sub-right::after {
   content: "";
   position: absolute;
   right: -7px;

@@ -7,35 +7,33 @@ creator:
     text: "Baek Deoksoo"
 contributor:
   - role: translator
-    text: "Salt Goblin"
+    text: "Machine Translation"
 identifier:
   - scheme: URN
-    text: "urn:uuid:gsgw-reader-gsgw-webnovel"
+    text: "urn:uuid:gsgw-reader-gsgw-webnovel-mtl"
 language: en-GB
 subject:
-  - text: "Fantasy"
-  - text: "Mystery"
-  - text: "Steampunk"
-  - text: "Transmigration"
-description: "placeholder description"
+  - Fantasy
+  - Mystery
+  - Transmigration
+description: "Machine translated chapters of GSGW."
 rights: "All rights belong to the original author and licensed platforms."
 publisher: "GSGW-Reader"
-belongs-to-collection: "Got Dropped into a Ghost Story, Still Gotta Work"
 
-group-position: 1
+# Internal Script Variables
+metaBook: "gsgw"
+metaTl: "mtl"
+collection: "Got Dropped into a Ghost Story, Still Gotta Work"
+group-position: 2
 
-metaBook: gsgw
-metaTl: mtl
-
+# Pandoc EPUB Settings
 page-progression-direction: ltr
-accessModes:
-  - textual
-accessibilityFeatures:
-  - alternativeText
-  - readingOrder
-  - structuralNavigation
-  - tableOfContents
-accessibilitySummary: "This EPUB is a compiled version of the webnovel chapters with structural navigation and TOC."
 ---
 
-this file is ignored by the epub
+# Got Dropped into a Ghost Story, Still Gotta Work (MTL)
+
+**Author:** Baek Deoksoo
+
+**Machine Translation**
+
+Chapters 372–382
