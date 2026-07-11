@@ -22,6 +22,7 @@ REPO_ROOT = SCRIPT_DIR.parent
 
 DEBUT_MD_DIRS = [
     REPO_ROOT / "chapters" / "debut" / "DebutFormatted",
+    REPO_ROOT / "chapters" / "debut" / "DebutPlainTxt",
 ]
 
 META_OUTPUT_PATH = REPO_ROOT / "website/src/lib/meta.json"

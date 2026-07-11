@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import html
 import shutil
 import subprocess
 import zipfile
@@ -78,6 +79,12 @@ AMPERSAND_WINDOW_RE = re.compile(r"&\$\n(.*?)\n\$&", re.DOTALL)
 NOTE_WINDOW_RE = re.compile(r"![-]+\n(.*?)\n[-]+!", re.DOTALL)
 STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
 BRAUN_WINDOW_RE = re.compile(r"!\[\n(.*?)\n\]!", re.DOTALL)
+
+DEBUT_WINDOW_RE = re.compile(r"★-\n(.*?)\n-★", re.DOTALL)
+DEBUT_ALERT_RE = re.compile(r"★!\n(.*?)\n!★", re.DOTALL)
+DEBUT_ACHIEVE_RE = re.compile(r"★=\n(.*?)\n=★", re.DOTALL)
+SMS_WINDOW_RE = re.compile(r"★:\n([\s\S]*?)\n:★", re.DOTALL)
+COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
 
 SIMPLE_REPLACEMENTS = [
@@ -423,6 +430,7 @@ def shrink_replacer(match):
 def make_window(class_name, inner, extra_class=None):
 
     inner = escape_markdown_except_bold(inner)
+    inner = fix_underline(inner)
 
     cls = class_name
 
@@ -478,6 +486,180 @@ def note_window_replacer(match):
         return make_window("note-window", inner, "no-meta")
 
     return make_window("note-window", inner)
+
+
+def debut_window_replacer(match):
+    inner = match.group(1)
+    lines = inner.split("\n")
+    title = lines[0].strip()
+    if title.startswith("\\"):
+        title = ""
+        lines[0] = lines[0][1:] if lines[0].startswith("\\") else lines[0]
+        lines[0] = lines[0].strip()
+    body_lines = []
+    for line in (lines[1:] if title else lines):
+        if line.startswith("\\"):
+            body_lines.append(line[1:])
+        else:
+            m = re.match(r"^\s*\[(.+?)\]\s*$", line)
+            if m:
+                body_lines.append(f'<div class="debut-window-label">{m.group(1)}</div>')
+            else:
+                body_lines.append(line)
+    body = "\n".join(body_lines).strip()
+    title_html = f'<div class="debut-window-title">{title}</div>\n\n' if title else ""
+    return make_window("debut-window", title_html + body)
+
+
+def debut_alert_replacer(match):
+    return make_window("debut-alert", match.group(1))
+
+
+def debut_achieve_replacer(match):
+    inner = match.group(1)
+    lines = inner.split("\n")
+    title = lines[0].strip()
+    if title.startswith("\\"):
+        title = ""
+        lines[0] = lines[0][1:] if lines[0].startswith("\\") else lines[0]
+        lines[0] = lines[0].strip()
+    body = "\n".join(lines[1:] if title else lines).strip()
+    body = re.sub(
+        r"\[\n([\s\S]*?)\n\]",
+        lambda m: '<div class="debut-achievement-list">\n' +
+            "\n".join(
+                f'<div class="debut-achievement-list-item">{l.strip()}</div>'
+                for l in m.group(1).strip().split("\n") if l.strip()
+            ).replace(
+                '</div>\n<div class="debut-achievement-list-item">',
+                '</div>\n<div class="debut-achievement-list-divider"></div>\n<div class="debut-achievement-list-item">'
+            ) +
+            '\n</div>',
+        body,
+    )
+
+    def sub_left(match):
+        text = match.group(1).strip()
+        if text.startswith("[!]"):
+            return f'<span class="alert-sub alert-sub-left">{text[3:].strip()}</span>'
+        return f'<span class="debut-achievement-sub debut-achievement-sub-left">{text}</span>'
+
+    def sub_right(match):
+        text = match.group(1).strip()
+        if text.startswith("[!]"):
+            return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
+        return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
+
+    body = re.sub(r"\}([^}]+)\}", sub_left, body)
+    body = re.sub(r"\{([^{]+)\{", sub_right, body)
+
+    title_html = f'<div class="debut-achievement-title">{title}</div>\n\n' if title else ""
+    return make_window("debut-achievement", title_html + body)
+
+
+def safe_html(text):
+    """Escape HTML special characters but preserve existing HTML tags."""
+    parts = re.split(r'(<[^>]*>)', text)
+    result = []
+    for i, part in enumerate(parts):
+        if i % 2 == 1:
+            result.append(part)
+        else:
+            result.append(html.escape(part))
+    return ''.join(result)
+
+
+def fix_underline(text):
+    """Convert [text]{.underline} to <span class="underline">text</span>."""
+    return re.sub(r'\[([^\]]+)\]\{\.underline\}', r'<span class="underline">\1</span>', text)
+
+
+def sms_window_replacer(match):
+    inner = match.group(1)
+    lines = inner.split("\n")
+    speaker_colors = {
+        'PMD': '#FFF8D9', 'SAH': '#FFF0E1', 'BSJ': '#EDF5FF',
+        'LSJ': '#F2ECFF', 'KRB': '#FDE8F1', 'CE': '#FFE5E5',
+        'RCW': '#EAF8F2'
+    }
+    html_parts = []
+    for raw in lines:
+        trimmed = raw.strip()
+        if not trimmed:
+            continue
+        dash_left = re.match(r"^[-–—]\s*(.+)", trimmed)
+        dash_right = re.match(r"(.+)\s*[-–—]$", trimmed)
+        if dash_left:
+            content = dash_left.group(1)
+            sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
+            color = speaker_colors[sp.group(1)] if sp else None
+            display = fix_underline(safe_html(content[sp.end():] if sp else content))
+            style = f' style="background:{color};color:#222"' if color else ''
+            html_parts.append(f'<div class="sms-bubble sms-left"{style}>{display}</div>')
+        elif dash_right:
+            content = dash_right.group(1)
+            sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
+            color = speaker_colors[sp.group(1)] if sp else None
+            display = fix_underline(safe_html(content[sp.end():] if sp else content))
+            style = f' style="background:{color};color:#222"' if color else ''
+            html_parts.append(f'<div class="sms-bubble sms-right"{style}>{display}</div>')
+        else:
+            html_parts.append(f'<div class="sms-bubble sms-center">{fix_underline(safe_html(trimmed))}</div>')
+    return make_window("sms-window", "\n\n".join(html_parts))
+
+
+def comment_window_replacer(match):
+    inner = match.group(1)
+    lines = inner.split("\n")
+    title = ""
+    desc = ""
+    items = []
+    in_comments = False
+
+    for raw in lines:
+        line = raw.strip()
+        if line.startswith("["):
+            title = fix_underline(safe_html(line.strip()))
+        elif line.startswith(":"):
+            desc = fix_underline(safe_html(line.replace(":", "", 1).strip()))
+        elif line.startswith("-") or line.startswith("\u2013") or line.startswith("\u2014"):
+            in_comments = True
+            content = re.sub(r"^[\u2014\u2013-]", "", line).strip()
+            items.append((fix_underline(safe_html(content)), 0))
+        elif line.startswith("\u2937") or line.startswith("\u2514") or line.startswith("\u221F"):
+            in_comments = True
+            depth = 0
+            content = line
+            while content.startswith("\u2937") or content.startswith("\u2514") or content.startswith("\u221F"):
+                depth += 1
+                content = re.sub(r"^[\u2937\u2514\u221F]", "", content).lstrip()
+            if depth > 3:
+                depth = 3
+            items.append((fix_underline(safe_html(content.strip())), depth))
+        elif line and not in_comments:
+            desc += ("" if not desc else "</p>\n<p>") + fix_underline(safe_html(line))
+
+    html_parts = []
+    if title or desc:
+        html_parts.append('<div class="comment-post-header">')
+        if title:
+            html_parts.append(f'<div class="comment-post-title">{title}</div>')
+        if desc:
+            html_parts.append(f'<div class="comment-post-desc"><p>{desc}</p></div>')
+        html_parts.append('</div>')
+    if items:
+        html_parts.append('<div class="comment-section">')
+        for text, depth in items:
+            if depth == 0:
+                html_parts.append(f'<div class="comment">{text}</div>')
+            else:
+                html_parts.append(
+                    f'<div class="comment-reply depth-{depth}">'
+                    f'<span class="reply-icon">\u2937</span>'
+                    f'<span class="reply-body">{text}</span></div>'
+                )
+        html_parts.append('</div>')
+    return make_window("alert-window", "\n\n".join(html_parts))
 
 # =========================================================
 # MAIN CONVERTER
@@ -593,6 +775,15 @@ def convert_chapter(content):
         lambda m: make_window("braun-screen", m.group(1)),
         content
     )
+
+    # star windows (debut-specific)
+    content = DEBUT_ALERT_RE.sub(debut_alert_replacer, content)
+    content = DEBUT_WINDOW_RE.sub(debut_window_replacer, content)
+    content = DEBUT_ACHIEVE_RE.sub(debut_achieve_replacer, content)
+
+    # sms and comment windows
+    content = SMS_WINDOW_RE.sub(sms_window_replacer, content)
+    content = COMMENT_WINDOW_RE.sub(comment_window_replacer, content)
 
     try:
         proc = subprocess.run(
