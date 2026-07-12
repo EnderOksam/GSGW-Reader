@@ -73,7 +73,11 @@ def debut_window_replacer(match):
 
 
 def debut_alert_replacer(match):
-    return bw.make_window("debut-alert", match.group(1))
+    inner = match.group(1)
+    if inner.lstrip().startswith("<p align="):
+        inner = re.sub(r'^\s*<p\s+align="center">\s*', '', inner)
+        return bw.make_window("debut-alert debut-alert-center", inner)
+    return bw.make_window("debut-alert", inner)
 
 
 def debut_achieve_replacer(match):
@@ -319,13 +323,13 @@ def convert_chapter(content):
     )
 
     # star windows (debut-specific)
-    content = DEBUT_ALERT_RE.sub(debut_alert_replacer, content)
-    content = DEBUT_WINDOW_RE.sub(debut_window_replacer, content)
-    content = DEBUT_ACHIEVE_RE.sub(debut_achieve_replacer, content)
+    content = DEBUT_ALERT_RE.sub(bw.debut_alert_replacer, content)
+    content = DEBUT_WINDOW_RE.sub(bw.debut_window_replacer, content)
+    content = DEBUT_ACHIEVE_RE.sub(bw.debut_achieve_replacer, content)
 
     # sms and comment windows
-    content = SMS_WINDOW_RE.sub(sms_window_replacer, content)
-    content = COMMENT_WINDOW_RE.sub(comment_window_replacer, content)
+    content = SMS_WINDOW_RE.sub(bw.sms_window_replacer, content)
+    content = COMMENT_WINDOW_RE.sub(bw.comment_window_replacer, content)
 
     try:
         proc = subprocess.run(

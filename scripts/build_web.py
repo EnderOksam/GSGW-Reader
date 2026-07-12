@@ -429,15 +429,17 @@ def shrink_replacer(match):
 
 def make_window(class_name, inner, extra_class=None):
 
-    inner = escape_markdown_except_bold(inner)
     inner = fix_underline(inner)
+    inner = escape_markdown_except_bold(inner)
 
     cls = class_name
 
     if extra_class:
-        cls += f" .{extra_class}"
+        cls += f" {extra_class}"
 
-    return f'\n::: {{.{cls}}}\n{inner}\n:::\n'
+    dotted = " ".join(f".{c.lstrip('.')}" for c in cls.split())
+
+    return f'\n::: {{{dotted}}}\n{inner}\n:::\n'
 
 
 def wiki_window_replacer(match):
@@ -512,7 +514,11 @@ def debut_window_replacer(match):
 
 
 def debut_alert_replacer(match):
-    return make_window("debut-alert", match.group(1))
+    inner = match.group(1)
+    if inner.lstrip().startswith("<p align="):
+        inner = re.sub(r'^\s*<p\s+align="center">\s*', '', inner)
+        return make_window("debut-alert debut-alert-center", inner)
+    return make_window("debut-alert", inner)
 
 
 def debut_achieve_replacer(match):
