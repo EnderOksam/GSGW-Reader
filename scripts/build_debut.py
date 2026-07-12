@@ -1,6 +1,7 @@
 import re
 import html
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -30,6 +31,24 @@ TEMPLATE_PATH = REPO_ROOT / "website/src/lib/reader/template.svelte"
 OUTPUT_ROOT = REPO_ROOT / "website/src/routes/(reader)/read/"
 
 BOOK_ID = "debut"
+
+ILLUSTRATIONS_SRC = REPO_ROOT / "images" / "dod" / "illustrations"
+ILLUSTRATIONS_DEST = REPO_ROOT / "website" / "static" / "assets" / "images" / "static-illustrations"
+
+
+def copy_illustrations():
+    if not ILLUSTRATIONS_SRC.exists():
+        print(f"Illustrations source not found: {ILLUSTRATIONS_SRC}")
+        return
+    ILLUSTRATIONS_DEST.mkdir(parents=True, exist_ok=True)
+    count = 0
+    for img_file in ILLUSTRATIONS_SRC.glob("*.webp"):
+        dest = ILLUSTRATIONS_DEST / img_file.name
+        if not dest.exists() or img_file.stat().st_mtime > dest.stat().st_mtime:
+            shutil.copy2(str(img_file), str(dest))
+            count += 1
+    if count:
+        print(f"Copied {count} illustration(s) to {ILLUSTRATIONS_DEST}")
 
 
 
@@ -479,6 +498,7 @@ def main():
         print(f"Template not found: {TEMPLATE_PATH}")
         return
 
+    copy_illustrations()
     build_pages(slug_filter)
 
     print("=== Done ===")
