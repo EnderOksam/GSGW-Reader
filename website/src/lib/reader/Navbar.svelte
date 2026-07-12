@@ -11,7 +11,7 @@
 
   // --- Props ---
   // Using Svelte 5 $props for reactive input
-  let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, chaptersForTL = [], currentIndex = 0 } = $props();
+  let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, chaptersForTL = [], currentIndex = 0, currentTL = "" } = $props();
   const totalChapters = $derived(chaptersForTL.length);
 
   // --- State ---
@@ -97,7 +97,7 @@
       <div class="tooltip tooltip-bottom" data-tip="Previous (P)">
         {#if currentIndex > 0}
           <a
-            href="/read/{bookSlug}/{navState.selectedTL}/{chaptersForTL[currentIndex - 1].slug}"
+            href="/read/{bookSlug}/{currentTL}/{chaptersForTL[currentIndex - 1].slug}"
             class="btn btn-ghost btn-sm btn-square rounded-btn"
             aria-label="Previous Chapter"
           >
@@ -125,7 +125,7 @@
       <div class="tooltip tooltip-bottom" data-tip="Next (N)">
         {#if currentIndex < totalChapters - 1}
           <a
-            href="/read/{bookSlug}/{navState.selectedTL}/{chaptersForTL[currentIndex + 1].slug}"
+            href="/read/{bookSlug}/{currentTL}/{chaptersForTL[currentIndex + 1].slug}"
             class="btn btn-ghost btn-sm btn-square rounded-btn"
             aria-label="Next Chapter"
             data-sveltekit-preload-data="viewport"
@@ -207,7 +207,7 @@
     <div class="overflow-y-auto p-2">
       {#each chapterList as ch}
         <a
-          href="/read/{bookSlug}/{navState.selectedTL}/{ch.slug}"
+          href="/read/{bookSlug}/{currentTL}/{ch.slug}"
           class="btn btn-sm justify-start w-full font-normal border-none mb-1 rounded-btn {readerState.ch_meta.slug == ch.slug ? 'btn-primary btn-soft' : 'btn-ghost'}"
           onclick={() => modals.chapter?.close()}
         >

@@ -244,7 +244,7 @@
     --card-bg-opacity: {prefs.config.solidBackground ? 1 : 0};
   "
 >
-  <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {chaptersForTL} {currentIndex} />
+  <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {chaptersForTL} {currentIndex} {currentTL} />
 
   <main class="mx-auto my-3 max-w-4xl w-full px-4 py-8 sm:px-6 md:px-12 sm:py-12 z-0 relative transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
     <div
@@ -262,7 +262,7 @@
       <a
         href={currentIndex <= 0 
             ? `/book/${bookSlug}` 
-            : `/read/${bookSlug}/${navState.selectedTL}/${chaptersForTL[currentIndex - 1].slug}`}
+            : `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}`}
         class="btn btn-soft btn-sm gap-2"
         aria-label={currentIndex <= 0 ? "Go Home" : "Previous Chapter"}
 
@@ -278,7 +278,7 @@
       <a
         href={currentIndex >= totalChapters - 1
             ? `/book/${bookSlug}`
-            : `/read/${bookSlug}/${navState.selectedTL}/${chaptersForTL[currentIndex + 1].slug}`}
+            : `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}`}
         class="btn btn-soft btn-sm gap-2"
         aria-label={currentIndex >= totalChapters - 1 ? "Go Home" : "Next Chapter"}
         data-sveltekit-preload-data="viewport"
