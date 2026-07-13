@@ -13,6 +13,7 @@ First off, **thank you** for considering contributing. This project relies on fa
 | Resource | What it is |
 |----------|------------|
 | [Discord Server](https://discord.gg/XmzJVsyuTQ) | Report issues, ask questions, or suggest improvements |
+| [Editor](https://ireum.pages.dev/dev/editor/) | Web editor, you can preview your changes here and test formatting in realtime. cant push changes from here *yet* |
 
 ---
 
