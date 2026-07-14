@@ -90,12 +90,12 @@
         "slug": "382"
       },
       {
-        "title": "Chapter 384",
+        "title": "Chapter 383",
         "category": "Part 3",
-        "discussion": 384,
-        "index": 383,
-        "section": "Chapter 384",
-        "slug": "384"
+        "discussion": 383,
+        "index": 382,
+        "section": "Chapter 383",
+        "slug": "383"
       },
       {
         "title": "Chapter 384",
@@ -1924,7 +1924,7 @@
         "slug": "225"
       },
       {
-        "title": "Paper Boat",
+        "title": "Annex Duties",
         "category": "Part 2",
         "discussion": 226,
         "index": 226,
@@ -3688,9 +3688,7 @@
         "index": 115,
         "section": "Chapter 116",
         "slug": "116"
-      }
-    ],
-    "debutplaintxt": [
+      },
       {
         "title": "Chapter 117",
         "category": "book",
@@ -3888,26 +3886,28 @@
         "slug": "144"
       },
       {
-        "title": "Chapter 145",
+        "title": "PTSD, I",
         "category": "book",
         "index": 144,
         "section": "Chapter 145",
         "slug": "145"
       },
       {
-        "title": "Chapter 146",
+        "title": "PTSD, II",
         "category": "book",
         "index": 145,
         "section": "Chapter 146",
         "slug": "146"
       },
       {
-        "title": "Chapter 147",
+        "title": "PTSD, III",
         "category": "book",
         "index": 146,
         "section": "Chapter 147",
         "slug": "147"
-      },
+      }
+    ],
+    "debutplaintxt": [
       {
         "title": "Chapter 148",
         "category": "book",
