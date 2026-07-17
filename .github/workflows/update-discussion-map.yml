@@ -1,0 +1,32 @@
+name: Update Discussion Map
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "chapters/**/*.md"
+
+jobs:
+  update-map:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate discussion map
+        run: python scripts/generate_discussion_map.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add discussion_map.json
+          git diff --cached --quiet || git commit -m "chore: update discussion map [skip ci]"
+          git push

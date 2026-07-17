@@ -27,6 +27,17 @@ META_OUTPUT_PATH = REPO_ROOT / "website/src/lib/meta.json"
 
 OUTPUT_ROOT = REPO_ROOT / "website/src/routes/(reader)/read/"
 
+DISCUSSION_MAP_PATH = REPO_ROOT / "discussion_map.json"
+
+def load_discussion_map():
+    if DISCUSSION_MAP_PATH.exists():
+        return json.loads(DISCUSSION_MAP_PATH.read_text(encoding="utf-8"))
+    return {}
+
+def get_discussion_number(discussion_map, book_id, book_tl, slug):
+    pathname = f"read/{book_id}/{book_tl}/{slug}"
+    return discussion_map.get(pathname, 0)
+
 
 # =========================================================
 # CACHES
@@ -929,6 +940,9 @@ def main():
         except Exception:
             pass
 
+    discussion_map = load_discussion_map()
+    print(f"Loaded discussion map: {len(discussion_map)} entries")
+
     for p in paths:
 
         path = (REPO_ROOT / p).resolve()
@@ -967,6 +981,10 @@ def main():
 
                 if not slug:
                     continue
+
+                # Inject correct discussion number from map (0 = no mapping, use pathname fallback)
+                correct_discussion = get_discussion_number(discussion_map, bookID, bookTL, slug)
+                post.metadata["discussion"] = correct_discussion
 
                 meta_map[bookID][bookTL].append(post.metadata)
 

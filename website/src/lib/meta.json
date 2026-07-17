@@ -4,7 +4,7 @@
       {
         "title": "Chapter 372",
         "category": "Part 3",
-        "discussion": 372,
+        "discussion": 0,
         "index": 371,
         "section": "Chapter 372",
         "slug": "372"
@@ -12,7 +12,7 @@
       {
         "title": "Chapter 373",
         "category": "Part 3",
-        "discussion": 373,
+        "discussion": 0,
         "index": 372,
         "section": "Chapter 373",
         "slug": "373"
@@ -20,7 +20,7 @@
       {
         "title": "Chapter 374",
         "category": "Part 3",
-        "discussion": 374,
+        "discussion": 0,
         "index": 373,
         "section": "Chapter 374",
         "slug": "374"
@@ -28,7 +28,7 @@
       {
         "title": "Chapter 375",
         "category": "Part 3",
-        "discussion": 375,
+        "discussion": 0,
         "index": 374,
         "section": "Chapter 375",
         "slug": "375"
@@ -36,7 +36,7 @@
       {
         "title": "Chapter 376",
         "category": "Part 3",
-        "discussion": 376,
+        "discussion": 493,
         "index": 375,
         "section": "Chapter 376",
         "slug": "376"
@@ -44,7 +44,7 @@
       {
         "title": "Chapter 377",
         "category": "Part 3",
-        "discussion": 377,
+        "discussion": 510,
         "index": 376,
         "section": "Chapter 377",
         "slug": "377"
@@ -52,7 +52,7 @@
       {
         "title": "Chapter 378",
         "category": "Part 3",
-        "discussion": 378,
+        "discussion": 511,
         "index": 377,
         "section": "Chapter 378",
         "slug": "378"
@@ -60,7 +60,7 @@
       {
         "title": "Chapter 379",
         "category": "Part 3",
-        "discussion": 379,
+        "discussion": 512,
         "index": 378,
         "section": "Chapter 379",
         "slug": "379"
@@ -68,7 +68,7 @@
       {
         "title": "Chapter 380",
         "category": "Part 3",
-        "discussion": 380,
+        "discussion": 513,
         "index": 379,
         "section": "Chapter 380",
         "slug": "380"
@@ -76,7 +76,7 @@
       {
         "title": "Chapter 381",
         "category": "Part 3",
-        "discussion": 381,
+        "discussion": 514,
         "index": 380,
         "section": "Chapter 381",
         "slug": "381"
@@ -84,7 +84,7 @@
       {
         "title": "Chapter 382",
         "category": "Part 3",
-        "discussion": 382,
+        "discussion": 515,
         "index": 381,
         "section": "Chapter 382",
         "slug": "382"
@@ -92,7 +92,7 @@
       {
         "title": "Chapter 383",
         "category": "Part 3",
-        "discussion": 383,
+        "discussion": 548,
         "index": 382,
         "section": "Chapter 383",
         "slug": "383"
@@ -100,7 +100,7 @@
       {
         "title": "Chapter 384",
         "category": "Part 3",
-        "discussion": 384,
+        "discussion": 530,
         "index": 383,
         "section": "Chapter 384",
         "slug": "384"
@@ -108,17 +108,41 @@
       {
         "title": "Chapter 385",
         "category": "Part 3",
-        "discussion": 385,
+        "discussion": 529,
         "index": 384,
         "section": "Chapter 385",
         "slug": "385"
+      },
+      {
+        "title": "Chapter 386",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 385,
+        "section": "Chapter 386",
+        "slug": "386"
+      },
+      {
+        "title": "Chapter 387",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 386,
+        "section": "Chapter 387",
+        "slug": "387"
+      },
+      {
+        "title": "Chapter 388",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 387,
+        "section": "Chapter 388",
+        "slug": "388"
       }
     ],
     "fantl": [
       {
         "title": "Synopsis",
         "category": "Part 1",
-        "discussion": 1,
+        "discussion": 62,
         "index": 0,
         "section": "Chapter 0",
         "slug": "0"
@@ -126,7 +150,7 @@
       {
         "title": "Orientation",
         "category": "Part 1",
-        "discussion": 1,
+        "discussion": 3,
         "index": 1,
         "section": "Chapter 1",
         "slug": "1"
@@ -134,7 +158,7 @@
       {
         "title": "[Welcome to Abyss Transpo], I",
         "category": "Part 1",
-        "discussion": 2,
+        "discussion": 98,
         "index": 2,
         "section": "Chapter 2",
         "slug": "2"
@@ -142,7 +166,7 @@
       {
         "title": "[Welcome to Abyss Transpo], II",
         "category": "Part 1",
-        "discussion": 3,
+        "discussion": 0,
         "index": 3,
         "section": "Chapter 3",
         "slug": "3"
@@ -150,7 +174,7 @@
       {
         "title": "[Welcome to Abyss Transpo], III",
         "category": "Part 1",
-        "discussion": 4,
+        "discussion": 2,
         "index": 4,
         "section": "Chapter 4",
         "slug": "4"
@@ -158,7 +182,7 @@
       {
         "title": "Inprocessing, I",
         "category": "Part 1",
-        "discussion": 5,
+        "discussion": 224,
         "index": 5,
         "section": "Chapter 5",
         "slug": "5"
@@ -166,7 +190,7 @@
       {
         "title": "Inprocessing, II",
         "category": "Part 1",
-        "discussion": 6,
+        "discussion": 225,
         "index": 6,
         "section": "Chapter 6",
         "slug": "6"
@@ -174,7 +198,7 @@
       {
         "title": "[Make a Choice], I",
         "category": "Part 1",
-        "discussion": 7,
+        "discussion": 0,
         "index": 7,
         "section": "Chapter 7",
         "slug": "7"
@@ -182,7 +206,7 @@
       {
         "title": "[Make a Choice], II",
         "category": "Part 1",
-        "discussion": 8,
+        "discussion": 227,
         "index": 8,
         "section": "Chapter 8",
         "slug": "8"
@@ -190,7 +214,7 @@
       {
         "title": "Space Shopping Mart",
         "category": "Part 1",
-        "discussion": 9,
+        "discussion": 228,
         "index": 9,
         "section": "Chapter 9",
         "slug": "9"
@@ -198,7 +222,7 @@
       {
         "title": "[Chorus of the Sacrificial Lambs], I",
         "category": "Part 1",
-        "discussion": 10,
+        "discussion": 229,
         "index": 10,
         "section": "Chapter 10",
         "slug": "10"
@@ -206,7 +230,7 @@
       {
         "title": "[Chorus of the Sacrificial Lambs], II",
         "category": "Part 1",
-        "discussion": 11,
+        "discussion": 230,
         "index": 11,
         "section": "Chapter 11",
         "slug": "11"
@@ -214,7 +238,7 @@
       {
         "title": "[Chorus of the Sacrificial Lambs], III",
         "category": "Part 1",
-        "discussion": 12,
+        "discussion": 231,
         "index": 12,
         "section": "Chapter 12",
         "slug": "12"
@@ -222,7 +246,7 @@
       {
         "title": "[Chorus of the Sacrificial Lambs], IV",
         "category": "Part 1",
-        "discussion": 13,
+        "discussion": 232,
         "index": 13,
         "section": "Chapter 13",
         "slug": "13"
@@ -230,7 +254,7 @@
       {
         "title": "New Hires Group Chat",
         "category": "Part 1",
-        "discussion": 14,
+        "discussion": 0,
         "index": 14,
         "section": "Chapter 14",
         "slug": "14"
@@ -238,7 +262,7 @@
       {
         "title": "[Kind Seed Kit]",
         "category": "Part 1",
-        "discussion": 15,
+        "discussion": 4,
         "index": 15,
         "section": "Chapter 15",
         "slug": "15"
@@ -246,7 +270,7 @@
       {
         "title": "[The Pierrot Hates You], I",
         "category": "Part 1",
-        "discussion": 16,
+        "discussion": 233,
         "index": 16,
         "section": "Chapter 16",
         "slug": "16"
@@ -254,7 +278,7 @@
       {
         "title": "[The Pierrot Hates You], II",
         "category": "Part 1",
-        "discussion": 17,
+        "discussion": 234,
         "index": 17,
         "section": "Chapter 17",
         "slug": "17"
@@ -262,7 +286,7 @@
       {
         "title": "Settling in",
         "category": "Part 1",
-        "discussion": 18,
+        "discussion": 66,
         "index": 18,
         "section": "Chapter 18",
         "slug": "18"
@@ -270,7 +294,7 @@
       {
         "title": "[Cheerful Theme Park], I",
         "category": "Part 1",
-        "discussion": 19,
+        "discussion": 67,
         "index": 19,
         "section": "Chapter 19",
         "slug": "19"
@@ -278,7 +302,7 @@
       {
         "title": "[Cheerful Theme Park], II",
         "category": "Part 1",
-        "discussion": 20,
+        "discussion": 68,
         "index": 20,
         "section": "Chapter 20",
         "slug": "20"
@@ -286,7 +310,7 @@
       {
         "title": "[Cheerful Theme Park], III",
         "category": "Part 1",
-        "discussion": 21,
+        "discussion": 69,
         "index": 21,
         "section": "Chapter 21",
         "slug": "21"
@@ -294,7 +318,7 @@
       {
         "title": "[Cheerful Theme Park], IV",
         "category": "Part 1",
-        "discussion": 22,
+        "discussion": 70,
         "index": 22,
         "section": "Chapter 22",
         "slug": "22"
@@ -302,7 +326,7 @@
       {
         "title": "[Cheerful Theme Park], V",
         "category": "Part 1",
-        "discussion": 23,
+        "discussion": 71,
         "index": 23,
         "section": "Chapter 23",
         "slug": "23"
@@ -310,7 +334,7 @@
       {
         "title": "[Cheerful Theme Park], VI",
         "category": "Part 1",
-        "discussion": 24,
+        "discussion": 72,
         "index": 24,
         "section": "Chapter 24",
         "slug": "24"
@@ -318,7 +342,7 @@
       {
         "title": "[Cheerful Theme Park], VII",
         "category": "Part 1",
-        "discussion": 25,
+        "discussion": 73,
         "index": 25,
         "section": "Chapter 25",
         "slug": "25"
@@ -326,7 +350,7 @@
       {
         "title": ": Socius :",
         "category": "Part 1",
-        "discussion": 26,
+        "discussion": 74,
         "index": 26,
         "section": "Chapter 26",
         "slug": "26"
@@ -334,7 +358,7 @@
       {
         "title": "\"watch out for serial killers-\"",
         "category": "Part 1",
-        "discussion": 27,
+        "discussion": 11,
         "index": 27,
         "section": "Chapter 27",
         "slug": "27"
@@ -342,7 +366,7 @@
       {
         "title": "[The Day I Died]",
         "category": "Part 1",
-        "discussion": 28,
+        "discussion": 75,
         "index": 28,
         "section": "Chapter 28",
         "slug": "28"
@@ -350,7 +374,7 @@
       {
         "title": "K.LEE",
         "category": "Part 1",
-        "discussion": 29,
+        "discussion": 235,
         "index": 29,
         "section": "Chapter 29",
         "slug": "29"
@@ -358,7 +382,7 @@
       {
         "title": "Salmon Market",
         "category": "Part 1",
-        "discussion": 30,
+        "discussion": 236,
         "index": 30,
         "section": "Chapter 30",
         "slug": "30"
@@ -366,7 +390,7 @@
       {
         "title": "Promise",
         "category": "Part 1",
-        "discussion": 31,
+        "discussion": 76,
         "index": 31,
         "section": "Chapter 31",
         "slug": "31"
@@ -374,7 +398,7 @@
       {
         "title": "Missing Supervisor",
         "category": "Part 1",
-        "discussion": 32,
+        "discussion": 77,
         "index": 32,
         "section": "Chapter 32",
         "slug": "32"
@@ -382,7 +406,7 @@
       {
         "title": "[Sangun-nim], I",
         "category": "Part 1",
-        "discussion": 33,
+        "discussion": 78,
         "index": 33,
         "section": "Chapter 33",
         "slug": "33"
@@ -390,7 +414,7 @@
       {
         "title": "[Sangun-nim], II",
         "category": "Part 1",
-        "discussion": 34,
+        "discussion": 79,
         "index": 34,
         "section": "Chapter 34",
         "slug": "34"
@@ -398,7 +422,7 @@
       {
         "title": "[Sangun-nim], III",
         "category": "Part 1",
-        "discussion": 35,
+        "discussion": 80,
         "index": 35,
         "section": "Chapter 35",
         "slug": "35"
@@ -406,7 +430,7 @@
       {
         "title": "[Sangun-nim], IV",
         "category": "Part 1",
-        "discussion": 36,
+        "discussion": 81,
         "index": 36,
         "section": "Chapter 36",
         "slug": "36"
@@ -414,7 +438,7 @@
       {
         "title": "[Sangun-nim], V",
         "category": "Part 1",
-        "discussion": 37,
+        "discussion": 82,
         "index": 37,
         "section": "Chapter 37",
         "slug": "37"
@@ -422,7 +446,7 @@
       {
         "title": "[Sangun-nim], VI",
         "category": "Part 1",
-        "discussion": 38,
+        "discussion": 83,
         "index": 38,
         "section": "Chapter 38",
         "slug": "38"
@@ -430,7 +454,7 @@
       {
         "title": "Bloodbathtub",
         "category": "Part 1",
-        "discussion": 39,
+        "discussion": 84,
         "index": 39,
         "section": "Chapter 39",
         "slug": "39"
@@ -438,7 +462,7 @@
       {
         "title": "[Manor of the Blind], I",
         "category": "Part 1",
-        "discussion": 40,
+        "discussion": 85,
         "index": 40,
         "section": "Chapter 40",
         "slug": "40"
@@ -446,7 +470,7 @@
       {
         "title": "[Manor of the Blind], II",
         "category": "Part 1",
-        "discussion": 41,
+        "discussion": 86,
         "index": 41,
         "section": "Chapter 41",
         "slug": "41"
@@ -454,7 +478,7 @@
       {
         "title": "[Manor of the Blind], III",
         "category": "Part 1",
-        "discussion": 42,
+        "discussion": 87,
         "index": 42,
         "section": "Chapter 42",
         "slug": "42"
@@ -462,7 +486,7 @@
       {
         "title": "[Manor of the Blind], IV",
         "category": "Part 1",
-        "discussion": 43,
+        "discussion": 88,
         "index": 43,
         "section": "Chapter 43",
         "slug": "43"
@@ -470,7 +494,7 @@
       {
         "title": "[Manor of the Blind], V",
         "category": "Part 1",
-        "discussion": 44,
+        "discussion": 264,
         "index": 44,
         "section": "Chapter 44",
         "slug": "44"
@@ -478,7 +502,7 @@
       {
         "title": "[Manor of the Blind], VI",
         "category": "Part 1",
-        "discussion": 45,
+        "discussion": 89,
         "index": 45,
         "section": "Chapter 45",
         "slug": "45"
@@ -486,7 +510,7 @@
       {
         "title": "[Manor of the Blind], VII",
         "category": "Part 1",
-        "discussion": 46,
+        "discussion": 90,
         "index": 46,
         "section": "Chapter 46",
         "slug": "46"
@@ -494,7 +518,7 @@
       {
         "title": "[Manor of the Blind], VIII",
         "category": "Part 1",
-        "discussion": 47,
+        "discussion": 91,
         "index": 47,
         "section": "Chapter 47",
         "slug": "47"
@@ -502,7 +526,7 @@
       {
         "title": "Promotion",
         "category": "Part 1",
-        "discussion": 48,
+        "discussion": 92,
         "index": 48,
         "section": "Chapter 48",
         "slug": "48"
@@ -510,7 +534,7 @@
       {
         "title": "Regeneration Potion",
         "category": "Part 1",
-        "discussion": 49,
+        "discussion": 93,
         "index": 49,
         "section": "Chapter 49",
         "slug": "49"
@@ -518,7 +542,7 @@
       {
         "title": "[The Dilemma]",
         "category": "Part 1",
-        "discussion": 50,
+        "discussion": 94,
         "index": 50,
         "section": "Chapter 50",
         "slug": "50"
@@ -526,7 +550,7 @@
       {
         "title": "[And Then There Was One], I",
         "category": "Part 1",
-        "discussion": 51,
+        "discussion": 95,
         "index": 51,
         "section": "Chapter 51",
         "slug": "51"
@@ -534,7 +558,7 @@
       {
         "title": "[And Then There Was One], II",
         "category": "Part 1",
-        "discussion": 52,
+        "discussion": 96,
         "index": 52,
         "section": "Chapter 52",
         "slug": "52"
@@ -542,7 +566,7 @@
       {
         "title": "[And Then There Was One], III",
         "category": "Part 1",
-        "discussion": 53,
+        "discussion": 97,
         "index": 53,
         "section": "Chapter 53",
         "slug": "53"
@@ -550,7 +574,7 @@
       {
         "title": "[And Then There Was One], IV",
         "category": "Part 1",
-        "discussion": 54,
+        "discussion": 293,
         "index": 54,
         "section": "Chapter 54",
         "slug": "54"
@@ -558,7 +582,7 @@
       {
         "title": "[And Then There Was One], V",
         "category": "Part 1",
-        "discussion": 55,
+        "discussion": 99,
         "index": 55,
         "section": "Chapter 55",
         "slug": "55"
@@ -566,7 +590,7 @@
       {
         "title": "[And Then There Was One], VI",
         "category": "Part 1",
-        "discussion": 56,
+        "discussion": 100,
         "index": 56,
         "section": "Chapter 56",
         "slug": "56"
@@ -574,7 +598,7 @@
       {
         "title": "[It's Vacant]",
         "category": "Part 1",
-        "discussion": 57,
+        "discussion": 101,
         "index": 57,
         "section": "Chapter 57",
         "slug": "57"
@@ -582,7 +606,7 @@
       {
         "title": "[Moonlight Tattoo Shop], I",
         "category": "Part 1",
-        "discussion": 58,
+        "discussion": 102,
         "index": 58,
         "section": "Chapter 58",
         "slug": "58"
@@ -590,7 +614,7 @@
       {
         "title": "[Moonlight Tattoo Shop], II",
         "category": "Part 1",
-        "discussion": 59,
+        "discussion": 103,
         "index": 59,
         "section": "Chapter 59",
         "slug": "59"
@@ -598,7 +622,7 @@
       {
         "title": "Roulette'",
         "category": "Part 1",
-        "discussion": 60,
+        "discussion": 104,
         "index": 60,
         "section": "Chapter 60",
         "slug": "60"
@@ -606,7 +630,7 @@
       {
         "title": "[Hungry Hangman], I",
         "category": "Part 1",
-        "discussion": 61,
+        "discussion": 105,
         "index": 61,
         "section": "Chapter 61",
         "slug": "61"
@@ -614,7 +638,7 @@
       {
         "title": "[Hungry Hangman], II",
         "category": "Part 1",
-        "discussion": 62,
+        "discussion": 106,
         "index": 62,
         "section": "Chapter 62",
         "slug": "62"
@@ -622,7 +646,7 @@
       {
         "title": "[Hungry Hangman], III",
         "category": "Part 1",
-        "discussion": 63,
+        "discussion": 107,
         "index": 63,
         "section": "Chapter 63",
         "slug": "63"
@@ -630,7 +654,7 @@
       {
         "title": "[Hungry Hangman], IV",
         "category": "Part 1",
-        "discussion": 64,
+        "discussion": 108,
         "index": 64,
         "section": "Chapter 64",
         "slug": "64"
@@ -638,7 +662,7 @@
       {
         "title": "[Hungry Hangman], V",
         "category": "Part 1",
-        "discussion": 65,
+        "discussion": 63,
         "index": 65,
         "section": "Chapter 65",
         "slug": "65"
@@ -646,7 +670,7 @@
       {
         "title": "Contaminated",
         "category": "Part 1",
-        "discussion": 66,
+        "discussion": 109,
         "index": 66,
         "section": "Chapter 66",
         "slug": "66"
@@ -654,7 +678,7 @@
       {
         "title": "Recovering",
         "category": "Part 1",
-        "discussion": 67,
+        "discussion": 110,
         "index": 67,
         "section": "Chapter 67",
         "slug": "67"
@@ -662,7 +686,7 @@
       {
         "title": "[Ignorance is Bliss], I",
         "category": "Part 1",
-        "discussion": 68,
+        "discussion": 111,
         "index": 68,
         "section": "Chapter 68",
         "slug": "68"
@@ -670,7 +694,7 @@
       {
         "title": "[Ignorance is Bliss], II",
         "category": "Part 1",
-        "discussion": 69,
+        "discussion": 112,
         "index": 69,
         "section": "Chapter 69",
         "slug": "69"
@@ -678,7 +702,7 @@
       {
         "title": "Discount",
         "category": "Part 1",
-        "discussion": 70,
+        "discussion": 113,
         "index": 70,
         "section": "Chapter 70",
         "slug": "70"
@@ -686,7 +710,7 @@
       {
         "title": "[Within the Shadow of Darkness], I",
         "category": "Part 1",
-        "discussion": 71,
+        "discussion": 114,
         "index": 71,
         "section": "Chapter 71",
         "slug": "71"
@@ -694,7 +718,7 @@
       {
         "title": "[Within the Shadow of Darkness], II",
         "category": "Part 1",
-        "discussion": 72,
+        "discussion": 115,
         "index": 72,
         "section": "Chapter 72",
         "slug": "72"
@@ -702,7 +726,7 @@
       {
         "title": "[Within the Shadow of Darkness], III",
         "category": "Part 1",
-        "discussion": 73,
+        "discussion": 116,
         "index": 73,
         "section": "Chapter 73",
         "slug": "73"
@@ -710,7 +734,7 @@
       {
         "title": "[Within the Shadow of Darkness], IV",
         "category": "Part 1",
-        "discussion": 74,
+        "discussion": 117,
         "index": 74,
         "section": "Chapter 74",
         "slug": "74"
@@ -718,7 +742,7 @@
       {
         "title": "[Within the Shadow of Darkness], V",
         "category": "Part 1",
-        "discussion": 75,
+        "discussion": 118,
         "index": 75,
         "section": "Chapter 75",
         "slug": "75"
@@ -726,7 +750,7 @@
       {
         "title": "[Within the Shadow of Darkness], VI",
         "category": "Part 1",
-        "discussion": 76,
+        "discussion": 119,
         "index": 76,
         "section": "Chapter 76",
         "slug": "76"
@@ -734,7 +758,7 @@
       {
         "title": "[Within the Shadow of Darkness], VII",
         "category": "Part 1",
-        "discussion": 77,
+        "discussion": 120,
         "index": 77,
         "section": "Chapter 77",
         "slug": "77"
@@ -742,7 +766,7 @@
       {
         "title": "[Within the Shadow of Darkness], VIII",
         "category": "Part 1",
-        "discussion": 78,
+        "discussion": 121,
         "index": 78,
         "section": "Chapter 78",
         "slug": "78"
@@ -750,7 +774,7 @@
       {
         "title": "[Within the Shadow of Darkness], IIX",
         "category": "Part 1",
-        "discussion": 79,
+        "discussion": 122,
         "index": 79,
         "section": "Chapter 79",
         "slug": "79"
@@ -758,7 +782,7 @@
       {
         "title": "[Within the Shadow of Darkness], IX",
         "category": "Part 1",
-        "discussion": 80,
+        "discussion": 262,
         "index": 80,
         "section": "Chapter 80",
         "slug": "80"
@@ -766,7 +790,7 @@
       {
         "title": "[Within the Shadow of Darkness], X",
         "category": "Part 1",
-        "discussion": 81,
+        "discussion": 64,
         "index": 81,
         "section": "Chapter 81",
         "slug": "81"
@@ -774,7 +798,7 @@
       {
         "title": "A-grade Essence",
         "category": "Part 1",
-        "discussion": 82,
+        "discussion": 123,
         "index": 82,
         "section": "Chapter 82",
         "slug": "82"
@@ -782,7 +806,7 @@
       {
         "title": "Elite Squad Offer",
         "category": "Part 1",
-        "discussion": 83,
+        "discussion": 124,
         "index": 83,
         "section": "Chapter 83",
         "slug": "83"
@@ -790,7 +814,7 @@
       {
         "title": "[Fox Counseling Office], I",
         "category": "Part 1",
-        "discussion": 84,
+        "discussion": 125,
         "index": 84,
         "section": "Chapter 84",
         "slug": "84"
@@ -798,7 +822,7 @@
       {
         "title": "[Fox Counseling Office], II",
         "category": "Part 1",
-        "discussion": 85,
+        "discussion": 126,
         "index": 85,
         "section": "Chapter 85",
         "slug": "85"
@@ -806,7 +830,7 @@
       {
         "title": "Director Ho",
         "category": "Part 1",
-        "discussion": 86,
+        "discussion": 127,
         "index": 86,
         "section": "Chapter 86",
         "slug": "86"
@@ -814,7 +838,7 @@
       {
         "title": "New Elite Squad",
         "category": "Part 1",
-        "discussion": 87,
+        "discussion": 128,
         "index": 87,
         "section": "Chapter 87",
         "slug": "87"
@@ -822,7 +846,7 @@
       {
         "title": "[\u25a0\u25a0\u25a0 16th Avenue], I",
         "category": "Part 1",
-        "discussion": 88,
+        "discussion": 129,
         "index": 88,
         "section": "Chapter 88",
         "slug": "88"
@@ -830,7 +854,7 @@
       {
         "title": "[\u25a0\u25a0\u25a0 16th Avenue], II",
         "category": "Part 1",
-        "discussion": 89,
+        "discussion": 130,
         "index": 89,
         "section": "Chapter 89",
         "slug": "89"
@@ -838,7 +862,7 @@
       {
         "title": "[\u25a0\u25a0\u25a0 16th Avenue], III",
         "category": "Part 1",
-        "discussion": 90,
+        "discussion": 131,
         "index": 90,
         "section": "Chapter 90",
         "slug": "90"
@@ -846,7 +870,7 @@
       {
         "title": "[\u25a0\u25a0\u25a0 16th Avenue], IV",
         "category": "Part 1",
-        "discussion": 91,
+        "discussion": 132,
         "index": 91,
         "section": "Chapter 91",
         "slug": "91"
@@ -854,7 +878,7 @@
       {
         "title": "[\u25a0\u25a0\u25a0 16th Avenue], V",
         "category": "Part 1",
-        "discussion": 92,
+        "discussion": 522,
         "index": 92,
         "section": "Chapter 92",
         "slug": "92"
@@ -862,7 +886,7 @@
       {
         "title": "[\u25a0\u25a0\u25a0 16th Avenue], VI",
         "category": "Part 1",
-        "discussion": 93,
+        "discussion": 134,
         "index": 93,
         "section": "Chapter 93",
         "slug": "93"
@@ -870,7 +894,7 @@
       {
         "title": "[\u25a0\u25a0\u25a0 16th Avenue], VII",
         "category": "Part 1",
-        "discussion": 94,
+        "discussion": 135,
         "index": 94,
         "section": "Chapter 94",
         "slug": "94"
@@ -878,7 +902,7 @@
       {
         "title": "[\u25a0\u25a0\u25a0 16th Avenue], VIII",
         "category": "Part 1",
-        "discussion": 95,
+        "discussion": 136,
         "index": 95,
         "section": "Chapter 95",
         "slug": "95"
@@ -886,7 +910,7 @@
       {
         "title": "Taxi Service",
         "category": "Part 1",
-        "discussion": 96,
+        "discussion": 137,
         "index": 96,
         "section": "Chapter 96",
         "slug": "96"
@@ -894,7 +918,7 @@
       {
         "title": "Prank / Crack",
         "category": "Part 1",
-        "discussion": 97,
+        "discussion": 138,
         "index": 97,
         "section": "Chapter 97",
         "slug": "97"
@@ -902,7 +926,7 @@
       {
         "title": "[Dokkaebi Workshop], I",
         "category": "Part 1",
-        "discussion": 98,
+        "discussion": 139,
         "index": 98,
         "section": "Chapter 98",
         "slug": "98"
@@ -910,7 +934,7 @@
       {
         "title": "[Dokkaebi Workshop], II",
         "category": "Part 1",
-        "discussion": 99,
+        "discussion": 140,
         "index": 99,
         "section": "Chapter 99",
         "slug": "99"
@@ -918,7 +942,7 @@
       {
         "title": "[Don\u2019t Look in the Mirror], I",
         "category": "Part 1",
-        "discussion": 100,
+        "discussion": 141,
         "index": 100,
         "section": "Chapter 100",
         "slug": "100"
@@ -926,7 +950,7 @@
       {
         "title": "[Don\u2019t Look in the Mirror], II",
         "category": "Part 1",
-        "discussion": 101,
+        "discussion": 142,
         "index": 101,
         "section": "Chapter 101",
         "slug": "101"
@@ -934,7 +958,7 @@
       {
         "title": "[Don\u2019t Look in the Mirror], III",
         "category": "Part 1",
-        "discussion": 102,
+        "discussion": 143,
         "index": 102,
         "section": "Chapter 102",
         "slug": "102"
@@ -942,7 +966,7 @@
       {
         "title": "Disciplinary Action",
         "category": "Part 1",
-        "discussion": 103,
+        "discussion": 144,
         "index": 103,
         "section": "Chapter 103",
         "slug": "103"
@@ -950,7 +974,7 @@
       {
         "title": "Night Cleaning",
         "category": "Part 1",
-        "discussion": 104,
+        "discussion": 145,
         "index": 104,
         "section": "Chapter 104",
         "slug": "104"
@@ -958,7 +982,7 @@
       {
         "title": "'Doppelg\u00e4nger?'",
         "category": "Part 1",
-        "discussion": 105,
+        "discussion": 146,
         "index": 105,
         "section": "Chapter 105",
         "slug": "105"
@@ -966,7 +990,7 @@
       {
         "title": "'Look-alike?'",
         "category": "Part 1",
-        "discussion": 106,
+        "discussion": 147,
         "index": 106,
         "section": "Chapter 106",
         "slug": "106"
@@ -974,7 +998,7 @@
       {
         "title": "[Story Usurper], I",
         "category": "Part 1",
-        "discussion": 107,
+        "discussion": 148,
         "index": 107,
         "section": "Chapter 107",
         "slug": "107"
@@ -982,7 +1006,7 @@
       {
         "title": "[Story Usurper], II",
         "category": "Part 1",
-        "discussion": 108,
+        "discussion": 149,
         "index": 108,
         "section": "Chapter 108",
         "slug": "108"
@@ -990,7 +1014,7 @@
       {
         "title": "'Marked for Death'",
         "category": "Part 1",
-        "discussion": 109,
+        "discussion": 150,
         "index": 109,
         "section": "Chapter 109",
         "slug": "109"
@@ -998,7 +1022,7 @@
       {
         "title": "Bound for Tamra",
         "category": "Part 1",
-        "discussion": 110,
+        "discussion": 152,
         "index": 110,
         "section": "Chapter 110",
         "slug": "110"
@@ -1006,7 +1030,7 @@
       {
         "title": "[Tamra Express Disaster], I",
         "category": "Part 1",
-        "discussion": 111,
+        "discussion": 153,
         "index": 111,
         "section": "Chapter 111",
         "slug": "111"
@@ -1014,7 +1038,7 @@
       {
         "title": "[Tamra Express Disaster], II",
         "category": "Part 1",
-        "discussion": 112,
+        "discussion": 154,
         "index": 112,
         "section": "Chapter 112",
         "slug": "112"
@@ -1022,7 +1046,7 @@
       {
         "title": "[Tamra Express Disaster], III",
         "category": "Part 1",
-        "discussion": 113,
+        "discussion": 214,
         "index": 113,
         "section": "Chapter 113",
         "slug": "113"
@@ -1030,7 +1054,7 @@
       {
         "title": "[Tamra Express Disaster], IV",
         "category": "Part 1",
-        "discussion": 114,
+        "discussion": 155,
         "index": 114,
         "section": "Chapter 114",
         "slug": "114"
@@ -1038,7 +1062,7 @@
       {
         "title": "[Tamra Express Disaster], V",
         "category": "Part 1",
-        "discussion": 115,
+        "discussion": 156,
         "index": 115,
         "section": "Chapter 115",
         "slug": "115"
@@ -1046,7 +1070,7 @@
       {
         "title": "[Tamra Express Disaster], VI",
         "category": "Part 1",
-        "discussion": 116,
+        "discussion": 157,
         "index": 116,
         "section": "Chapter 116",
         "slug": "116"
@@ -1054,7 +1078,7 @@
       {
         "title": "[Tamra Express Disaster], VII",
         "category": "Part 1",
-        "discussion": 117,
+        "discussion": 217,
         "index": 117,
         "section": "Chapter 117",
         "slug": "117"
@@ -1062,7 +1086,7 @@
       {
         "title": "[Tamra Express Disaster], VIII",
         "category": "Part 1",
-        "discussion": 118,
+        "discussion": 158,
         "index": 118,
         "section": "Chapter 118",
         "slug": "118"
@@ -1070,7 +1094,7 @@
       {
         "title": "Cotton Insides",
         "category": "Part 1",
-        "discussion": 119,
+        "discussion": 159,
         "index": 119,
         "section": "Chapter 119",
         "slug": "119"
@@ -1078,7 +1102,7 @@
       {
         "title": "[Braun's Tuesday Quiz Show], I",
         "category": "Part 1",
-        "discussion": 120,
+        "discussion": 478,
         "index": 120,
         "section": "Chapter 120",
         "slug": "120"
@@ -1086,7 +1110,7 @@
       {
         "title": "[Braun's Tuesday Quiz Show], II",
         "category": "Part 1",
-        "discussion": 121,
+        "discussion": 162,
         "index": 121,
         "section": "Chapter 121",
         "slug": "121"
@@ -1094,7 +1118,7 @@
       {
         "title": "[Braun's Tuesday Quiz Show], III",
         "category": "Part 1",
-        "discussion": 122,
+        "discussion": 163,
         "index": 122,
         "section": "Chapter 122",
         "slug": "122"
@@ -1102,7 +1126,7 @@
       {
         "title": "[Braun's Tuesday Quiz Show], IV",
         "category": "Part 1",
-        "discussion": 123,
+        "discussion": 491,
         "index": 123,
         "section": "Chapter 123",
         "slug": "123"
@@ -1110,7 +1134,7 @@
       {
         "title": "[Braun's Tuesday Quiz Show], V",
         "category": "Part 1",
-        "discussion": 124,
+        "discussion": 492,
         "index": 124,
         "section": "Chapter 124",
         "slug": "124"
@@ -1118,7 +1142,7 @@
       {
         "title": "[Braun's Tuesday Quiz Show], VI",
         "category": "Part 1",
-        "discussion": 125,
+        "discussion": 166,
         "index": 125,
         "section": "Chapter 125",
         "slug": "125"
@@ -1126,7 +1150,7 @@
       {
         "title": "[Braun's Tuesday Quiz Show], VII",
         "category": "Part 1",
-        "discussion": 126,
+        "discussion": 494,
         "index": 126,
         "section": "Chapter 126",
         "slug": "126"
@@ -1134,7 +1158,7 @@
       {
         "title": "[Braun's Tuesday Quiz Show], VIII",
         "category": "Part 1",
-        "discussion": 127,
+        "discussion": 168,
         "index": 127,
         "section": "Chapter 127",
         "slug": "127"
@@ -1142,7 +1166,7 @@
       {
         "title": "Elite Essence Collector",
         "category": "Part 1",
-        "discussion": 128,
+        "discussion": 169,
         "index": 128,
         "section": "Chapter 128",
         "slug": "128"
@@ -1150,7 +1174,7 @@
       {
         "title": "Director Ho's Project",
         "category": "Part 1",
-        "discussion": 129,
+        "discussion": 523,
         "index": 129,
         "section": "Chapter 129",
         "slug": "129"
@@ -1158,7 +1182,7 @@
       {
         "title": "Spy Work",
         "category": "Part 1",
-        "discussion": 130,
+        "discussion": 171,
         "index": 130,
         "section": "Chapter 130",
         "slug": "130"
@@ -1166,7 +1190,7 @@
       {
         "title": "Interview",
         "category": "Part 1",
-        "discussion": 131,
+        "discussion": 172,
         "index": 131,
         "section": "Chapter 131",
         "slug": "131"
@@ -1174,7 +1198,7 @@
       {
         "title": "Dispatch & Rescue Unit",
         "category": "Part 1",
-        "discussion": 132,
+        "discussion": 226,
         "index": 132,
         "section": "Chapter 132",
         "slug": "132"
@@ -1182,7 +1206,7 @@
       {
         "title": "[Looky Mart], I",
         "category": "Part 1",
-        "discussion": 133,
+        "discussion": 173,
         "index": 133,
         "section": "Chapter 133",
         "slug": "133"
@@ -1190,7 +1214,7 @@
       {
         "title": "[Looky Mart], II",
         "category": "Part 1",
-        "discussion": 134,
+        "discussion": 174,
         "index": 134,
         "section": "Chapter 134",
         "slug": "134"
@@ -1198,7 +1222,7 @@
       {
         "title": "[Looky Mart], III",
         "category": "Part 1",
-        "discussion": 135,
+        "discussion": 175,
         "index": 135,
         "section": "Chapter 135",
         "slug": "135"
@@ -1206,7 +1230,7 @@
       {
         "title": "[Looky Mart], IV",
         "category": "Part 1",
-        "discussion": 136,
+        "discussion": 176,
         "index": 136,
         "section": "Chapter 136",
         "slug": "136"
@@ -1214,7 +1238,7 @@
       {
         "title": "[Looky Mart], V",
         "category": "Part 1",
-        "discussion": 137,
+        "discussion": 177,
         "index": 137,
         "section": "Chapter 137",
         "slug": "137"
@@ -1222,7 +1246,7 @@
       {
         "title": "[Looky Mart], VI",
         "category": "Part 1",
-        "discussion": 138,
+        "discussion": 178,
         "index": 138,
         "section": "Chapter 138",
         "slug": "138"
@@ -1230,7 +1254,7 @@
       {
         "title": "[Looky Mart], VII",
         "category": "Part 1",
-        "discussion": 139,
+        "discussion": 179,
         "index": 139,
         "section": "Chapter 139",
         "slug": "139"
@@ -1238,7 +1262,7 @@
       {
         "title": "[Looky Mart], VIII",
         "category": "Part 1",
-        "discussion": 140,
+        "discussion": 180,
         "index": 140,
         "section": "Chapter 140",
         "slug": "140"
@@ -1246,7 +1270,7 @@
       {
         "title": "[Looky Mart], IX",
         "category": "Part 1",
-        "discussion": 141,
+        "discussion": 181,
         "index": 141,
         "section": "Chapter 141",
         "slug": "141"
@@ -1254,7 +1278,7 @@
       {
         "title": "[Looky Mart], X",
         "category": "Part 1",
-        "discussion": 142,
+        "discussion": 182,
         "index": 142,
         "section": "Chapter 142",
         "slug": "142"
@@ -1262,7 +1286,7 @@
       {
         "title": "Agent Choi",
         "category": "Part 1",
-        "discussion": 143,
+        "discussion": 598,
         "index": 143,
         "section": "Chapter 143",
         "slug": "143"
@@ -1270,7 +1294,7 @@
       {
         "title": "Compensation",
         "category": "Part 1",
-        "discussion": 144,
+        "discussion": 184,
         "index": 144,
         "section": "Chapter 144",
         "slug": "144"
@@ -1278,7 +1302,7 @@
       {
         "title": "Gathering",
         "category": "Part 1",
-        "discussion": 145,
+        "discussion": 185,
         "index": 145,
         "section": "Chapter 145",
         "slug": "145"
@@ -1286,7 +1310,7 @@
       {
         "title": "[Faceless Market], I",
         "category": "Part 1",
-        "discussion": 146,
+        "discussion": 186,
         "index": 146,
         "section": "Chapter 146",
         "slug": "146"
@@ -1294,7 +1318,7 @@
       {
         "title": "[Faceless Market], II",
         "category": "Part 1",
-        "discussion": 147,
+        "discussion": 187,
         "index": 147,
         "section": "Chapter 147",
         "slug": "147"
@@ -1302,7 +1326,7 @@
       {
         "title": "[Faceless Market], III",
         "category": "Part 1",
-        "discussion": 148,
+        "discussion": 188,
         "index": 148,
         "section": "Chapter 148",
         "slug": "148"
@@ -1310,7 +1334,7 @@
       {
         "title": "Ghost Taxi, I",
         "category": "Part 1",
-        "discussion": 149,
+        "discussion": 532,
         "index": 149,
         "section": "Chapter 149",
         "slug": "149"
@@ -1318,7 +1342,7 @@
       {
         "title": "Ghost Taxi, II",
         "category": "Part 1",
-        "discussion": 150,
+        "discussion": 190,
         "index": 150,
         "section": "Chapter 150",
         "slug": "150"
@@ -1326,7 +1350,7 @@
       {
         "title": "Phone Booth Disaster, I",
         "category": "Part 1",
-        "discussion": 151,
+        "discussion": 191,
         "index": 151,
         "section": "Chapter 151",
         "slug": "151"
@@ -1334,7 +1358,7 @@
       {
         "title": "Phone Booth Disaster, II",
         "category": "Part 1",
-        "discussion": 152,
+        "discussion": 263,
         "index": 152,
         "section": "Chapter 152",
         "slug": "152"
@@ -1342,7 +1366,7 @@
       {
         "title": "[Twinkle Twinkle Ocean Palace], I",
         "category": "Part 1",
-        "discussion": 153,
+        "discussion": 192,
         "index": 153,
         "section": "Chapter 153",
         "slug": "153"
@@ -1350,7 +1374,7 @@
       {
         "title": "[Twinkle Twinkle Ocean Palace], II",
         "category": "Part 1",
-        "discussion": 154,
+        "discussion": 193,
         "index": 154,
         "section": "Chapter 154",
         "slug": "154"
@@ -1358,7 +1382,7 @@
       {
         "title": "[Mermaid Grave], I",
         "category": "Part 1",
-        "discussion": 155,
+        "discussion": 194,
         "index": 155,
         "section": "Chapter 155",
         "slug": "155"
@@ -1366,7 +1390,7 @@
       {
         "title": "[Mermaid Grave], II",
         "category": "Part 1",
-        "discussion": 156,
+        "discussion": 195,
         "index": 156,
         "section": "Chapter 156",
         "slug": "156"
@@ -1374,7 +1398,7 @@
       {
         "title": "[Mermaid Grave], III",
         "category": "Part 1",
-        "discussion": 157,
+        "discussion": 196,
         "index": 157,
         "section": "Chapter 157",
         "slug": "157"
@@ -1382,7 +1406,7 @@
       {
         "title": "[Mermaid Grave], IV",
         "category": "Part 1",
-        "discussion": 158,
+        "discussion": 197,
         "index": 158,
         "section": "Chapter 158",
         "slug": "158"
@@ -1390,7 +1414,7 @@
       {
         "title": "[Mermaid Grave], V",
         "category": "Part 1",
-        "discussion": 159,
+        "discussion": 198,
         "index": 159,
         "section": "Chapter 159",
         "slug": "159"
@@ -1398,7 +1422,7 @@
       {
         "title": "[Mermaid Grave], VI",
         "category": "Part 1",
-        "discussion": 160,
+        "discussion": 549,
         "index": 160,
         "section": "Chapter 160",
         "slug": "160"
@@ -1406,7 +1430,7 @@
       {
         "title": "[Mermaid Grave], VII",
         "category": "Part 1",
-        "discussion": 161,
+        "discussion": 200,
         "index": 161,
         "section": "Chapter 161",
         "slug": "161"
@@ -1414,7 +1438,7 @@
       {
         "title": "[Mermaid Grave], VIII",
         "category": "Part 1",
-        "discussion": 162,
+        "discussion": 201,
         "index": 162,
         "section": "Chapter 162",
         "slug": "162"
@@ -1422,7 +1446,7 @@
       {
         "title": "[Mermaid Grave], IX",
         "category": "Part 1",
-        "discussion": 163,
+        "discussion": 202,
         "index": 163,
         "section": "Chapter 163",
         "slug": "163"
@@ -1430,7 +1454,7 @@
       {
         "title": "[Mermaid Grave], X",
         "category": "Part 1",
-        "discussion": 164,
+        "discussion": 203,
         "index": 164,
         "section": "Chapter 164",
         "slug": "164"
@@ -1438,7 +1462,7 @@
       {
         "title": "The Elder",
         "category": "Part 1",
-        "discussion": 165,
+        "discussion": 204,
         "index": 165,
         "section": "Chapter 165",
         "slug": "165"
@@ -1446,7 +1470,7 @@
       {
         "title": "[The Conspiracy of Belief], I",
         "category": "Part 1",
-        "discussion": 166,
+        "discussion": 160,
         "index": 166,
         "section": "Chapter 166",
         "slug": "166"
@@ -1454,7 +1478,7 @@
       {
         "title": "[The Conspiracy of Belief], II",
         "category": "Part 1",
-        "discussion": 167,
+        "discussion": 207,
         "index": 167,
         "section": "Chapter 167",
         "slug": "167"
@@ -1462,7 +1486,7 @@
       {
         "title": "[The Conspiracy of Belief], III",
         "category": "Part 1",
-        "discussion": 168,
+        "discussion": 206,
         "index": 168,
         "section": "Chapter 168",
         "slug": "168"
@@ -1470,7 +1494,7 @@
       {
         "title": "Taking Care of Business",
         "category": "Part 1",
-        "discussion": 169,
+        "discussion": 208,
         "index": 169,
         "section": "Chapter 169",
         "slug": "169"
@@ -1478,7 +1502,7 @@
       {
         "title": "[Flower Golden Resort], I",
         "category": "Part 1",
-        "discussion": 170,
+        "discussion": 209,
         "index": 170,
         "section": "Chapter 170",
         "slug": "170"
@@ -1486,7 +1510,7 @@
       {
         "title": "[Flower Golden Resort],  II",
         "category": "Part 1",
-        "discussion": 171,
+        "discussion": 210,
         "index": 171,
         "section": "Chapter 171",
         "slug": "171"
@@ -1494,7 +1518,7 @@
       {
         "title": "[Flower Golden Resort],  III",
         "category": "Part 1",
-        "discussion": 172,
+        "discussion": 211,
         "index": 172,
         "section": "Chapter 172",
         "slug": "172"
@@ -1502,7 +1526,7 @@
       {
         "title": "[Flower Golden Resort],  IV",
         "category": "Part 1",
-        "discussion": 173,
+        "discussion": 212,
         "index": 173,
         "section": "Chapter 173",
         "slug": "173"
@@ -1510,7 +1534,7 @@
       {
         "title": "[Flower Golden Resort],  V",
         "category": "Part 1",
-        "discussion": 174,
+        "discussion": 213,
         "index": 174,
         "section": "Chapter 174",
         "slug": "174"
@@ -1518,7 +1542,7 @@
       {
         "title": "[Flower Golden Resort],  VI",
         "category": "Part 1",
-        "discussion": 175,
+        "discussion": 215,
         "index": 175,
         "section": "Chapter 175",
         "slug": "175"
@@ -1526,7 +1550,7 @@
       {
         "title": "[Flower Golden Resort],  VII",
         "category": "Part 1",
-        "discussion": 176,
+        "discussion": 216,
         "index": 176,
         "section": "Chapter 176",
         "slug": "176"
@@ -1534,7 +1558,7 @@
       {
         "title": "[Flower Golden Resort],  VIII",
         "category": "Part 1",
-        "discussion": 177,
+        "discussion": 218,
         "index": 177,
         "section": "Chapter 177",
         "slug": "177"
@@ -1542,7 +1566,7 @@
       {
         "title": "[Flower Golden Resort],  IX",
         "category": "Part 1",
-        "discussion": 178,
+        "discussion": 219,
         "index": 178,
         "section": "Chapter 178",
         "slug": "178"
@@ -1550,7 +1574,7 @@
       {
         "title": "[Flower Golden Resort], X",
         "category": "Part 1",
-        "discussion": 179,
+        "discussion": 220,
         "index": 179,
         "section": "Chapter 179",
         "slug": "179"
@@ -1558,7 +1582,7 @@
       {
         "title": "[Flower Golden Resort],  XI",
         "category": "Part 1",
-        "discussion": 180,
+        "discussion": 221,
         "index": 180,
         "section": "Chapter 180",
         "slug": "180"
@@ -1566,7 +1590,7 @@
       {
         "title": "[Flower Golden Resort],  XII",
         "category": "Part 1",
-        "discussion": 181,
+        "discussion": 222,
         "index": 181,
         "section": "Chapter 181",
         "slug": "181"
@@ -1574,7 +1598,7 @@
       {
         "title": "[Flower Golden Resort],  XIII",
         "category": "Part 1",
-        "discussion": 182,
+        "discussion": 397,
         "index": 182,
         "section": "Chapter 182",
         "slug": "182"
@@ -1582,7 +1606,7 @@
       {
         "title": "[Flower Golden Resort],  XIV",
         "category": "Part 1",
-        "discussion": 183,
+        "discussion": 399,
         "index": 183,
         "section": "Chapter 183",
         "slug": "183"
@@ -1590,7 +1614,7 @@
       {
         "title": "[Flower Golden Resort],  XV",
         "category": "Part 1",
-        "discussion": 184,
+        "discussion": 238,
         "index": 184,
         "section": "Chapter 184",
         "slug": "184"
@@ -1598,7 +1622,7 @@
       {
         "title": "[Flower Golden Resort],  XVI",
         "category": "Part 1",
-        "discussion": 185,
+        "discussion": 239,
         "index": 185,
         "section": "Chapter 185",
         "slug": "185"
@@ -1606,7 +1630,7 @@
       {
         "title": "Reporting in",
         "category": "Part 1",
-        "discussion": 186,
+        "discussion": 240,
         "index": 186,
         "section": "Chapter 186",
         "slug": "186"
@@ -1614,7 +1638,7 @@
       {
         "title": "Reuniting",
         "category": "Part 1",
-        "discussion": 187,
+        "discussion": 241,
         "index": 187,
         "section": "Chapter 187",
         "slug": "187"
@@ -1622,7 +1646,7 @@
       {
         "title": "VIP Shopper",
         "category": "Part 1",
-        "discussion": 188,
+        "discussion": 242,
         "index": 188,
         "section": "Chapter 188",
         "slug": "188"
@@ -1630,7 +1654,7 @@
       {
         "title": "'get a hold of yourself'",
         "category": "Part 1",
-        "discussion": 189,
+        "discussion": 243,
         "index": 189,
         "section": "Chapter 189",
         "slug": "189"
@@ -1638,7 +1662,7 @@
       {
         "title": "Kidnapping",
         "category": "Part 1",
-        "discussion": 190,
+        "discussion": 244,
         "index": 190,
         "section": "Chapter 190",
         "slug": "190"
@@ -1646,7 +1670,7 @@
       {
         "title": "[All the Things the Carrot Can Do]",
         "category": "Part 1",
-        "discussion": 191,
+        "discussion": 245,
         "index": 191,
         "section": "Chapter 191",
         "slug": "191"
@@ -1654,7 +1678,7 @@
       {
         "title": "Dream Incubator Confrontation",
         "category": "Part 1",
-        "discussion": 192,
+        "discussion": 246,
         "index": 192,
         "section": "Chapter 192",
         "slug": "192"
@@ -1662,7 +1686,7 @@
       {
         "title": "Unexpected Meeting",
         "category": "Part 1",
-        "discussion": 193,
+        "discussion": 247,
         "index": 193,
         "section": "Chapter 193",
         "slug": "193"
@@ -1670,7 +1694,7 @@
       {
         "title": "Incantation &  Betrayal",
         "category": "Part 1",
-        "discussion": 194,
+        "discussion": 248,
         "index": 194,
         "section": "Chapter 194",
         "slug": "194"
@@ -1678,7 +1702,7 @@
       {
         "title": "[Jisan Village], I",
         "category": "Part 1",
-        "discussion": 195,
+        "discussion": 249,
         "index": 195,
         "section": "Chapter 195",
         "slug": "195"
@@ -1686,7 +1710,7 @@
       {
         "title": "[Jisan Village], II",
         "category": "Part 1",
-        "discussion": 196,
+        "discussion": 250,
         "index": 196,
         "section": "Chapter 196",
         "slug": "196"
@@ -1694,7 +1718,7 @@
       {
         "title": "[Jisan Village], III",
         "category": "Part 1",
-        "discussion": 197,
+        "discussion": 251,
         "index": 197,
         "section": "Chapter 197",
         "slug": "197"
@@ -1702,7 +1726,7 @@
       {
         "title": "[Jisan Village], IV",
         "category": "Part 1",
-        "discussion": 198,
+        "discussion": 252,
         "index": 198,
         "section": "Chapter 198",
         "slug": "198"
@@ -1710,7 +1734,7 @@
       {
         "title": "[Jisan Village], V",
         "category": "Part 1",
-        "discussion": 199,
+        "discussion": 253,
         "index": 199,
         "section": "Chapter 199",
         "slug": "199"
@@ -1718,7 +1742,7 @@
       {
         "title": "[Jisan Village], VI",
         "category": "Part 1",
-        "discussion": 200,
+        "discussion": 254,
         "index": 200,
         "section": "Chapter 200",
         "slug": "200"
@@ -1726,7 +1750,7 @@
       {
         "title": "Tiger General",
         "category": "Part 1",
-        "discussion": 201,
+        "discussion": 255,
         "index": 201,
         "section": "Chapter 201",
         "slug": "201"
@@ -1734,7 +1758,7 @@
       {
         "title": "[Glass Prison], I",
         "category": "Part 1",
-        "discussion": 202,
+        "discussion": 256,
         "index": 202,
         "section": "Chapter 202",
         "slug": "202"
@@ -1742,7 +1766,7 @@
       {
         "title": "[Glass Prison], II",
         "category": "Part 1",
-        "discussion": 203,
+        "discussion": 257,
         "index": 203,
         "section": "Chapter 203",
         "slug": "203"
@@ -1750,7 +1774,7 @@
       {
         "title": "[Glass Prison], III",
         "category": "Part 1",
-        "discussion": 204,
+        "discussion": 258,
         "index": 204,
         "section": "Chapter 204",
         "slug": "204"
@@ -1758,7 +1782,7 @@
       {
         "title": "Resignation Letter",
         "category": "Part 1",
-        "discussion": 205,
+        "discussion": 259,
         "index": 205,
         "section": "Chapter 205",
         "slug": "205"
@@ -1766,7 +1790,7 @@
       {
         "title": "The Wish Ticket",
         "category": "Part 1",
-        "discussion": 206,
+        "discussion": 465,
         "index": 206,
         "section": "Chapter 206",
         "slug": "206"
@@ -1774,7 +1798,7 @@
       {
         "title": "Final Goodbyes",
         "category": "Part 1",
-        "discussion": 207,
+        "discussion": 466,
         "index": 207,
         "section": "Chapter 207",
         "slug": "207"
@@ -1782,7 +1806,7 @@
       {
         "title": "\u25a0\u25a0\u25a0",
         "category": "Part 1",
-        "discussion": 208,
+        "discussion": 151,
         "index": 208,
         "section": "Chapter 208",
         "slug": "208"
@@ -1790,7 +1814,7 @@
       {
         "title": "New Employee Orientation",
         "category": "Part 2",
-        "discussion": 209,
+        "discussion": 265,
         "index": 209,
         "section": "Chapter 209",
         "slug": 209
@@ -1798,7 +1822,7 @@
       {
         "title": "Security Isolation Room, I",
         "category": "Part 2",
-        "discussion": 210,
+        "discussion": 266,
         "index": 210,
         "section": "Chapter 210",
         "slug": 210
@@ -1806,7 +1830,7 @@
       {
         "title": "Security Isolation Room, II",
         "category": "Part 2",
-        "discussion": 211,
+        "discussion": 267,
         "index": 211,
         "section": "Chapter 211",
         "slug": 211
@@ -1814,7 +1838,7 @@
       {
         "title": "Special Division",
         "category": "Part 2",
-        "discussion": 212,
+        "discussion": 268,
         "index": 212,
         "section": "Chapter 212",
         "slug": 212
@@ -1822,7 +1846,7 @@
       {
         "title": "Familiar Faces",
         "category": "Part 2",
-        "discussion": 213,
+        "discussion": 474,
         "index": 213,
         "section": "Chapter 213",
         "slug": 213
@@ -1830,7 +1854,7 @@
       {
         "title": "[Echoes of Rainwater], I",
         "category": "Part 2",
-        "discussion": 214,
+        "discussion": 271,
         "index": 214,
         "section": "Chapter 214",
         "slug": 214
@@ -1838,7 +1862,7 @@
       {
         "title": "[Echoes of Rainwater], II",
         "category": "Part 2",
-        "discussion": 215,
+        "discussion": 272,
         "index": 215,
         "section": "Chapter 215",
         "slug": 215
@@ -1846,7 +1870,7 @@
       {
         "title": "[Echoes of Rainwater], III",
         "category": "Part 2",
-        "discussion": 216,
+        "discussion": 498,
         "index": 216,
         "section": "Chapter 216",
         "slug": 216
@@ -1854,7 +1878,7 @@
       {
         "title": "Pinky Promise",
         "category": "Part 2",
-        "discussion": 217,
+        "discussion": 483,
         "index": 217,
         "section": "Chapter 217",
         "slug": 217
@@ -1862,7 +1886,7 @@
       {
         "title": "Incident Report",
         "category": "Part 2",
-        "discussion": 218,
+        "discussion": 503,
         "index": 218,
         "section": "Chapter 218",
         "slug": 218
@@ -1870,7 +1894,7 @@
       {
         "title": "Broadcast Anomaly",
         "category": "Part 2",
-        "discussion": 219,
+        "discussion": 509,
         "index": 219,
         "section": "Chapter 219",
         "slug": 219
@@ -1878,7 +1902,7 @@
       {
         "title": "[The Man in the Screen], I",
         "category": "Part 2",
-        "discussion": 220,
+        "discussion": 516,
         "index": 220,
         "section": "Chapter 220",
         "slug": 220
@@ -1886,7 +1910,7 @@
       {
         "title": "[The Man in the Screen], II",
         "category": "Part 2",
-        "discussion": 221,
+        "discussion": 517,
         "index": 221,
         "section": "Chapter 221",
         "slug": 221
@@ -1894,7 +1918,7 @@
       {
         "title": "[The Man in the Screen], III",
         "category": "Part 2",
-        "discussion": 222,
+        "discussion": 518,
         "index": 222,
         "section": "Chapter 222",
         "slug": "222"
@@ -1902,7 +1926,7 @@
       {
         "title": "[The Man in the Screen], IV",
         "category": "Part 2",
-        "discussion": 223,
+        "discussion": 319,
         "index": 223,
         "section": "Chapter 223",
         "slug": "223"
@@ -1910,7 +1934,7 @@
       {
         "title": "Clear Thoughts",
         "category": "Part 2",
-        "discussion": 224,
+        "discussion": 320,
         "index": 224,
         "section": "Chapter 224",
         "slug": "224"
@@ -1918,7 +1942,7 @@
       {
         "title": "The Bell",
         "category": "Part 2",
-        "discussion": 225,
+        "discussion": 521,
         "index": 225,
         "section": "Chapter 225",
         "slug": "225"
@@ -1926,7 +1950,7 @@
       {
         "title": "Annex Duties",
         "category": "Part 2",
-        "discussion": 226,
+        "discussion": 528,
         "index": 226,
         "section": "Chapter 226",
         "slug": "226"
@@ -1936,7 +1960,7 @@
       {
         "title": "Chapter 227",
         "category": "Part 2",
-        "discussion": 227,
+        "discussion": 0,
         "index": 227,
         "section": "Chapter 227",
         "slug": "227"
@@ -1944,7 +1968,7 @@
       {
         "title": "Chapter 228",
         "category": "Part 2",
-        "discussion": 228,
+        "discussion": 0,
         "index": 228,
         "section": "Chapter 228",
         "slug": "228"
@@ -1952,7 +1976,7 @@
       {
         "title": "Chapter 229",
         "category": "Part 2",
-        "discussion": 229,
+        "discussion": 0,
         "index": 229,
         "section": "Chapter 229",
         "slug": "229"
@@ -1960,7 +1984,7 @@
       {
         "title": "Chapter 230",
         "category": "Part 2",
-        "discussion": 230,
+        "discussion": 316,
         "index": 230,
         "section": "Chapter 230",
         "slug": "230"
@@ -1968,7 +1992,7 @@
       {
         "title": "Chapter 231",
         "category": "Part 2",
-        "discussion": 231,
+        "discussion": 0,
         "index": 231,
         "section": "Chapter 231",
         "slug": "231"
@@ -1976,7 +2000,7 @@
       {
         "title": "Chapter 232",
         "category": "Part 2",
-        "discussion": 232,
+        "discussion": 0,
         "index": 232,
         "section": "Chapter 232",
         "slug": "232"
@@ -1984,7 +2008,7 @@
       {
         "title": "Chapter 233",
         "category": "Part 2",
-        "discussion": 233,
+        "discussion": 0,
         "index": 233,
         "section": "Chapter 233",
         "slug": "233"
@@ -1992,7 +2016,7 @@
       {
         "title": "Chapter 234",
         "category": "Part 2",
-        "discussion": 234,
+        "discussion": 0,
         "index": 234,
         "section": "Chapter 234",
         "slug": "234"
@@ -2000,7 +2024,7 @@
       {
         "title": "Chapter 235",
         "category": "Part 2",
-        "discussion": 235,
+        "discussion": 0,
         "index": 235,
         "section": "Chapter 235",
         "slug": "235"
@@ -2008,7 +2032,7 @@
       {
         "title": "Chapter 236",
         "category": "Part 2",
-        "discussion": 236,
+        "discussion": 0,
         "index": 236,
         "section": "Chapter 236",
         "slug": "236"
@@ -2016,7 +2040,7 @@
       {
         "title": "Chapter 237",
         "category": "Part 2",
-        "discussion": 237,
+        "discussion": 0,
         "index": 237,
         "section": "Chapter 237",
         "slug": "237"
@@ -2024,7 +2048,7 @@
       {
         "title": "Chapter 238",
         "category": "Part 2",
-        "discussion": 238,
+        "discussion": 0,
         "index": 238,
         "section": "Chapter 238",
         "slug": "238"
@@ -2032,7 +2056,7 @@
       {
         "title": "Chapter 239",
         "category": "Part 2",
-        "discussion": 239,
+        "discussion": 0,
         "index": 239,
         "section": "Chapter 239",
         "slug": "239"
@@ -2040,7 +2064,7 @@
       {
         "title": "Chapter 240",
         "category": "Part 2",
-        "discussion": 240,
+        "discussion": 0,
         "index": 240,
         "section": "Chapter 240",
         "slug": "240"
@@ -2048,7 +2072,7 @@
       {
         "title": "Chapter 241",
         "category": "Part 2",
-        "discussion": 241,
+        "discussion": 0,
         "index": 241,
         "section": "Chapter 241",
         "slug": "241"
@@ -2056,7 +2080,7 @@
       {
         "title": "Chapter 242",
         "category": "Part 2",
-        "discussion": 242,
+        "discussion": 0,
         "index": 242,
         "section": "Chapter 242",
         "slug": "242"
@@ -2064,7 +2088,7 @@
       {
         "title": "Chapter 243",
         "category": "Part 2",
-        "discussion": 243,
+        "discussion": 0,
         "index": 243,
         "section": "Chapter 243",
         "slug": "243"
@@ -2072,7 +2096,7 @@
       {
         "title": "Chapter 244",
         "category": "Part 2",
-        "discussion": 244,
+        "discussion": 0,
         "index": 244,
         "section": "Chapter 244",
         "slug": "244"
@@ -2080,7 +2104,7 @@
       {
         "title": "Chapter 245",
         "category": "Part 2",
-        "discussion": 245,
+        "discussion": 0,
         "index": 245,
         "section": "Chapter 245",
         "slug": "245"
@@ -2088,7 +2112,7 @@
       {
         "title": "Chapter 246",
         "category": "Part 2",
-        "discussion": 246,
+        "discussion": 0,
         "index": 246,
         "section": "Chapter 246",
         "slug": "246"
@@ -2096,7 +2120,7 @@
       {
         "title": "Chapter 247",
         "category": "Part 2",
-        "discussion": 247,
+        "discussion": 0,
         "index": 247,
         "section": "Chapter 247",
         "slug": "247"
@@ -2104,7 +2128,7 @@
       {
         "title": "Chapter 248",
         "category": "Part 2",
-        "discussion": 248,
+        "discussion": 0,
         "index": 248,
         "section": "Chapter 248",
         "slug": "248"
@@ -2112,7 +2136,7 @@
       {
         "title": "Chapter 249",
         "category": "Part 2",
-        "discussion": 249,
+        "discussion": 0,
         "index": 249,
         "section": "Chapter 249",
         "slug": "249"
@@ -2120,7 +2144,7 @@
       {
         "title": "Chapter 250",
         "category": "Part 2",
-        "discussion": 250,
+        "discussion": 0,
         "index": 250,
         "section": "Chapter 250",
         "slug": "250"
@@ -2128,7 +2152,7 @@
       {
         "title": "Chapter 251",
         "category": "Part 2",
-        "discussion": 251,
+        "discussion": 0,
         "index": 251,
         "section": "Chapter 251",
         "slug": "251"
@@ -2136,7 +2160,7 @@
       {
         "title": "Chapter 252",
         "category": "Part 2",
-        "discussion": 252,
+        "discussion": 0,
         "index": 252,
         "section": "Chapter 252",
         "slug": "252"
@@ -2144,7 +2168,7 @@
       {
         "title": "Chapter 253",
         "category": "Part 2",
-        "discussion": 253,
+        "discussion": 0,
         "index": 253,
         "section": "Chapter 253",
         "slug": "253"
@@ -2152,7 +2176,7 @@
       {
         "title": "Chapter 254",
         "category": "Part 2",
-        "discussion": 254,
+        "discussion": 0,
         "index": 254,
         "section": "Chapter 254",
         "slug": "254"
@@ -2160,7 +2184,7 @@
       {
         "title": "Chapter 255",
         "category": "Part 2",
-        "discussion": 255,
+        "discussion": 0,
         "index": 255,
         "section": "Chapter 255",
         "slug": "255"
@@ -2168,7 +2192,7 @@
       {
         "title": "Chapter 256",
         "category": "Part 2",
-        "discussion": 256,
+        "discussion": 0,
         "index": 256,
         "section": "Chapter 256",
         "slug": "256"
@@ -2176,7 +2200,7 @@
       {
         "title": "Chapter 257",
         "category": "Part 2",
-        "discussion": 257,
+        "discussion": 0,
         "index": 257,
         "section": "Chapter 257",
         "slug": "257"
@@ -2184,7 +2208,7 @@
       {
         "title": "Chapter 258",
         "category": "Part 2",
-        "discussion": 258,
+        "discussion": 0,
         "index": 258,
         "section": "Chapter 258",
         "slug": "258"
@@ -2192,7 +2216,7 @@
       {
         "title": "Chapter 259",
         "category": "Part 2",
-        "discussion": 259,
+        "discussion": 0,
         "index": 259,
         "section": "Chapter 259",
         "slug": "259"
@@ -2200,7 +2224,7 @@
       {
         "title": "Chapter 260",
         "category": "Part 2",
-        "discussion": 260,
+        "discussion": 0,
         "index": 260,
         "section": "Chapter 260",
         "slug": "260"
@@ -2208,7 +2232,7 @@
       {
         "title": "Chapter 261",
         "category": "Part 2",
-        "discussion": 261,
+        "discussion": 0,
         "index": 261,
         "section": "Chapter 261",
         "slug": "261"
@@ -2216,7 +2240,7 @@
       {
         "title": "Chapter 262",
         "category": "Part 2",
-        "discussion": 262,
+        "discussion": 0,
         "index": 262,
         "section": "Chapter 262",
         "slug": "262"
@@ -2224,7 +2248,7 @@
       {
         "title": "Chapter 263",
         "category": "Part 2",
-        "discussion": 263,
+        "discussion": 0,
         "index": 263,
         "section": "Chapter 263",
         "slug": "263"
@@ -2232,7 +2256,7 @@
       {
         "title": "Chapter 264",
         "category": "Part 2",
-        "discussion": 264,
+        "discussion": 0,
         "index": 264,
         "section": "Chapter 264",
         "slug": "264"
@@ -2240,7 +2264,7 @@
       {
         "title": "Chapter 265",
         "category": "Part 2",
-        "discussion": 265,
+        "discussion": 0,
         "index": 265,
         "section": "Chapter 265",
         "slug": "265"
@@ -2248,7 +2272,7 @@
       {
         "title": "Chapter 266",
         "category": "Part 2",
-        "discussion": 266,
+        "discussion": 0,
         "index": 266,
         "section": "Chapter 266",
         "slug": "266"
@@ -2256,7 +2280,7 @@
       {
         "title": "Chapter 267",
         "category": "Part 2",
-        "discussion": 267,
+        "discussion": 0,
         "index": 267,
         "section": "Chapter 267",
         "slug": "267"
@@ -2264,7 +2288,7 @@
       {
         "title": "Chapter 268",
         "category": "Part 2",
-        "discussion": 268,
+        "discussion": 0,
         "index": 268,
         "section": "Chapter 268",
         "slug": "268"
@@ -2272,7 +2296,7 @@
       {
         "title": "Chapter 269",
         "category": "Part 2",
-        "discussion": 269,
+        "discussion": 0,
         "index": 269,
         "section": "Chapter 269",
         "slug": "269"
@@ -2280,7 +2304,7 @@
       {
         "title": "Chapter 270",
         "category": "Part 2",
-        "discussion": 270,
+        "discussion": 0,
         "index": 270,
         "section": "Chapter 270",
         "slug": "270"
@@ -2288,7 +2312,7 @@
       {
         "title": "Chapter 271",
         "category": "Part 2",
-        "discussion": 271,
+        "discussion": 0,
         "index": 271,
         "section": "Chapter 271",
         "slug": "271"
@@ -2296,7 +2320,7 @@
       {
         "title": "Chapter 272",
         "category": "Part 2",
-        "discussion": 272,
+        "discussion": 0,
         "index": 272,
         "section": "Chapter 272",
         "slug": "272"
@@ -2304,7 +2328,7 @@
       {
         "title": "Chapter 273",
         "category": "Part 2",
-        "discussion": 273,
+        "discussion": 0,
         "index": 273,
         "section": "Chapter 273",
         "slug": "273"
@@ -2312,7 +2336,7 @@
       {
         "title": "Chapter 274",
         "category": "Part 2",
-        "discussion": 274,
+        "discussion": 0,
         "index": 274,
         "section": "Chapter 274",
         "slug": "274"
@@ -2320,7 +2344,7 @@
       {
         "title": "Chapter 275",
         "category": "Part 2",
-        "discussion": 275,
+        "discussion": 0,
         "index": 275,
         "section": "Chapter 275",
         "slug": "275"
@@ -2328,7 +2352,7 @@
       {
         "title": "Chapter 276",
         "category": "Part 2",
-        "discussion": 276,
+        "discussion": 0,
         "index": 276,
         "section": "Chapter 276",
         "slug": "276"
@@ -2336,7 +2360,7 @@
       {
         "title": "Chapter 277",
         "category": "Part 2",
-        "discussion": 277,
+        "discussion": 0,
         "index": 277,
         "section": "Chapter 277",
         "slug": "277"
@@ -2344,7 +2368,7 @@
       {
         "title": "Chapter 278",
         "category": "Part 2",
-        "discussion": 278,
+        "discussion": 0,
         "index": 278,
         "section": "Chapter 278",
         "slug": "278"
@@ -2352,7 +2376,7 @@
       {
         "title": "Chapter 279",
         "category": "Part 2",
-        "discussion": 279,
+        "discussion": 0,
         "index": 279,
         "section": "Chapter 279",
         "slug": "279"
@@ -2360,7 +2384,7 @@
       {
         "title": "Chapter 280",
         "category": "Part 2",
-        "discussion": 280,
+        "discussion": 0,
         "index": 280,
         "section": "Chapter 280",
         "slug": "280"
@@ -2368,7 +2392,7 @@
       {
         "title": "Chapter 281",
         "category": "Part 2",
-        "discussion": 281,
+        "discussion": 0,
         "index": 281,
         "section": "Chapter 281",
         "slug": "281"
@@ -2376,7 +2400,7 @@
       {
         "title": "Chapter 282",
         "category": "Part 2",
-        "discussion": 282,
+        "discussion": 0,
         "index": 282,
         "section": "Chapter 282",
         "slug": "282"
@@ -2384,7 +2408,7 @@
       {
         "title": "Chapter 283",
         "category": "Part 2",
-        "discussion": 283,
+        "discussion": 0,
         "index": 283,
         "section": "Chapter 283",
         "slug": "283"
@@ -2392,7 +2416,7 @@
       {
         "title": "Chapter 284",
         "category": "Part 2",
-        "discussion": 284,
+        "discussion": 0,
         "index": 284,
         "section": "Chapter 284",
         "slug": "284"
@@ -2400,7 +2424,7 @@
       {
         "title": "Chapter 285",
         "category": "Part 2",
-        "discussion": 285,
+        "discussion": 0,
         "index": 285,
         "section": "Chapter 285",
         "slug": "285"
@@ -2408,7 +2432,7 @@
       {
         "title": "Chapter 286",
         "category": "Part 2",
-        "discussion": 286,
+        "discussion": 0,
         "index": 286,
         "section": "Chapter 286",
         "slug": "286"
@@ -2416,7 +2440,7 @@
       {
         "title": "Chapter 287",
         "category": "Part 2",
-        "discussion": 287,
+        "discussion": 0,
         "index": 287,
         "section": "Chapter 287",
         "slug": "287"
@@ -2424,7 +2448,7 @@
       {
         "title": "Chapter 288",
         "category": "Part 2",
-        "discussion": 288,
+        "discussion": 0,
         "index": 288,
         "section": "Chapter 288",
         "slug": "288"
@@ -2432,7 +2456,7 @@
       {
         "title": "Chapter 289",
         "category": "Part 2",
-        "discussion": 289,
+        "discussion": 0,
         "index": 289,
         "section": "Chapter 289",
         "slug": "289"
@@ -2440,7 +2464,7 @@
       {
         "title": "Chapter 290",
         "category": "Part 2",
-        "discussion": 290,
+        "discussion": 0,
         "index": 290,
         "section": "Chapter 290",
         "slug": "290"
@@ -2448,7 +2472,7 @@
       {
         "title": "Chapter 291",
         "category": "Part 2",
-        "discussion": 291,
+        "discussion": 0,
         "index": 291,
         "section": "Chapter 291",
         "slug": "291"
@@ -2456,7 +2480,7 @@
       {
         "title": "Chapter 292",
         "category": "Part 2",
-        "discussion": 292,
+        "discussion": 419,
         "index": 292,
         "section": "Chapter 292",
         "slug": "292"
@@ -2464,7 +2488,7 @@
       {
         "title": "Chapter 293",
         "category": "Part 2",
-        "discussion": 293,
+        "discussion": 0,
         "index": 293,
         "section": "Chapter 293",
         "slug": "293"
@@ -2472,7 +2496,7 @@
       {
         "title": "Chapter 294",
         "category": "Part 2",
-        "discussion": 294,
+        "discussion": 0,
         "index": 294,
         "section": "Chapter 294",
         "slug": "294"
@@ -2480,7 +2504,7 @@
       {
         "title": "Chapter 295",
         "category": "Part 2",
-        "discussion": 295,
+        "discussion": 420,
         "index": 295,
         "section": "Chapter 295",
         "slug": "295"
@@ -2488,7 +2512,7 @@
       {
         "title": "Chapter 296",
         "category": "Part 2",
-        "discussion": 296,
+        "discussion": 441,
         "index": 296,
         "section": "Chapter 296",
         "slug": "296"
@@ -2496,7 +2520,7 @@
       {
         "title": "Chapter 297",
         "category": "Part 2",
-        "discussion": 297,
+        "discussion": 442,
         "index": 297,
         "section": "Chapter 297",
         "slug": "297"
@@ -2504,7 +2528,7 @@
       {
         "title": "Chapter 298",
         "category": "Part 2",
-        "discussion": 298,
+        "discussion": 445,
         "index": 298,
         "section": "Chapter 298",
         "slug": "298"
@@ -2512,10 +2536,586 @@
       {
         "title": "Chapter 299",
         "category": "Part 2",
-        "discussion": 299,
+        "discussion": 446,
         "index": 299,
         "section": "Chapter 299",
         "slug": "299"
+      },
+      {
+        "title": "Chapter 300",
+        "category": "Part 3",
+        "discussion": 447,
+        "index": 299,
+        "section": "Chapter 300",
+        "slug": "300"
+      },
+      {
+        "title": "Chapter 301",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 300,
+        "section": "Chapter 301",
+        "slug": "301"
+      },
+      {
+        "title": "Chapter 302",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 301,
+        "section": "Chapter 302",
+        "slug": "302"
+      },
+      {
+        "title": "Chapter 303",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 302,
+        "section": "Chapter 303",
+        "slug": "303"
+      },
+      {
+        "title": "Chapter 304",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 303,
+        "section": "Chapter 304",
+        "slug": "304"
+      },
+      {
+        "title": "Chapter 305",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 304,
+        "section": "Chapter 305",
+        "slug": "305"
+      },
+      {
+        "title": "Chapter 306",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 305,
+        "section": "Chapter 306",
+        "slug": "306"
+      },
+      {
+        "title": "Chapter 307",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 306,
+        "section": "Chapter 307",
+        "slug": "307"
+      },
+      {
+        "title": "Chapter 308",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 307,
+        "section": "Chapter 308",
+        "slug": "308"
+      },
+      {
+        "title": "Chapter 309",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 308,
+        "section": "Chapter 309",
+        "slug": "309"
+      },
+      {
+        "title": "Chapter 310",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 309,
+        "section": "Chapter 310",
+        "slug": "310"
+      },
+      {
+        "title": "Chapter 311",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 310,
+        "section": "Chapter 311",
+        "slug": "311"
+      },
+      {
+        "title": "Chapter 312",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 311,
+        "section": "Chapter 312",
+        "slug": "312"
+      },
+      {
+        "title": "Chapter 313",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 312,
+        "section": "Chapter 313",
+        "slug": "313"
+      },
+      {
+        "title": "Chapter 314",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 313,
+        "section": "Chapter 314",
+        "slug": "314"
+      },
+      {
+        "title": "Chapter 315",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 314,
+        "section": "Chapter 315",
+        "slug": "315"
+      },
+      {
+        "title": "Chapter 316",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 315,
+        "section": "Chapter 316",
+        "slug": "316"
+      },
+      {
+        "title": "Chapter 317",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 316,
+        "section": "Chapter 317",
+        "slug": "317"
+      },
+      {
+        "title": "Chapter 318",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 317,
+        "section": "Chapter 318",
+        "slug": "318"
+      },
+      {
+        "title": "Chapter 319",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 318,
+        "section": "Chapter 319",
+        "slug": "319"
+      },
+      {
+        "title": "Chapter 320",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 319,
+        "section": "Chapter 320",
+        "slug": "320"
+      },
+      {
+        "title": "Chapter 321",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 320,
+        "section": "Chapter 321",
+        "slug": "321"
+      },
+      {
+        "title": "Chapter 322",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 321,
+        "section": "Chapter 322",
+        "slug": "322"
+      },
+      {
+        "title": "Chapter 323",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 322,
+        "section": "Chapter 323",
+        "slug": "323"
+      },
+      {
+        "title": "Chapter 324",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 323,
+        "section": "Chapter 324",
+        "slug": "324"
+      },
+      {
+        "title": "Chapter 325",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 324,
+        "section": "Chapter 325",
+        "slug": "325"
+      },
+      {
+        "title": "Chapter 326",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 325,
+        "section": "Chapter 326",
+        "slug": "326"
+      },
+      {
+        "title": "Chapter 327",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 326,
+        "section": "Chapter 327",
+        "slug": "327"
+      },
+      {
+        "title": "Chapter 328",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 327,
+        "section": "Chapter 328",
+        "slug": "328"
+      },
+      {
+        "title": "Chapter 329",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 328,
+        "section": "Chapter 329",
+        "slug": "329"
+      },
+      {
+        "title": "Chapter 330",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 329,
+        "section": "Chapter 330",
+        "slug": "330"
+      },
+      {
+        "title": "Chapter 331",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 330,
+        "section": "Chapter 331",
+        "slug": "331"
+      },
+      {
+        "title": "Chapter 332",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 331,
+        "section": "Chapter 332",
+        "slug": "332"
+      },
+      {
+        "title": "Chapter 333",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 332,
+        "section": "Chapter 333",
+        "slug": "333"
+      },
+      {
+        "title": "Chapter 334",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 333,
+        "section": "Chapter 334",
+        "slug": "334"
+      },
+      {
+        "title": "Chapter 335",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 334,
+        "section": "Chapter 335",
+        "slug": "335"
+      },
+      {
+        "title": "Chapter 336",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 335,
+        "section": "Chapter 336",
+        "slug": "336"
+      },
+      {
+        "title": "Chapter 337",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 336,
+        "section": "Chapter 337",
+        "slug": "337"
+      },
+      {
+        "title": "Chapter 338",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 337,
+        "section": "Chapter 338",
+        "slug": "338"
+      },
+      {
+        "title": "Chapter 339",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 338,
+        "section": "Chapter 339",
+        "slug": "339"
+      },
+      {
+        "title": "Chapter 340",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 339,
+        "section": "Chapter 340",
+        "slug": "340"
+      },
+      {
+        "title": "Chapter 341",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 340,
+        "section": "Chapter 341",
+        "slug": "341"
+      },
+      {
+        "title": "Chapter 342",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 341,
+        "section": "Chapter 342",
+        "slug": "342"
+      },
+      {
+        "title": "Chapter 343",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 342,
+        "section": "Chapter 343",
+        "slug": "343"
+      },
+      {
+        "title": "Chapter 344",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 343,
+        "section": "Chapter 344",
+        "slug": "344"
+      },
+      {
+        "title": "Chapter 345",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 344,
+        "section": "Chapter 345",
+        "slug": "345"
+      },
+      {
+        "title": "Chapter 346",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 345,
+        "section": "Chapter 346",
+        "slug": "346"
+      },
+      {
+        "title": "Chapter 347",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 346,
+        "section": "Chapter 347",
+        "slug": "347"
+      },
+      {
+        "title": "Chapter 348",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 347,
+        "section": "Chapter 348",
+        "slug": "348"
+      },
+      {
+        "title": "Chapter 349",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 348,
+        "section": "Chapter 349",
+        "slug": "349"
+      },
+      {
+        "title": "Chapter 350",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 349,
+        "section": "Chapter 350",
+        "slug": "350"
+      },
+      {
+        "title": "Chapter 351",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 350,
+        "section": "Chapter 351",
+        "slug": "351"
+      },
+      {
+        "title": "Chapter 352",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 351,
+        "section": "Chapter 352",
+        "slug": "352"
+      },
+      {
+        "title": "Chapter 353",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 352,
+        "section": "Chapter 353",
+        "slug": "353"
+      },
+      {
+        "title": "Chapter 354",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 353,
+        "section": "Chapter 354",
+        "slug": "354"
+      },
+      {
+        "title": "Chapter 355",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 354,
+        "section": "Chapter 355",
+        "slug": "355"
+      },
+      {
+        "title": "Chapter 356",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 355,
+        "section": "Chapter 356",
+        "slug": "356"
+      },
+      {
+        "title": "Chapter 357",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 356,
+        "section": "Chapter 357",
+        "slug": "357"
+      },
+      {
+        "title": "Chapter 358",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 357,
+        "section": "Chapter 358",
+        "slug": "358"
+      },
+      {
+        "title": "Chapter 359",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 358,
+        "section": "Chapter 359",
+        "slug": "359"
+      },
+      {
+        "title": "Chapter 360",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 359,
+        "section": "Chapter 360",
+        "slug": "360"
+      },
+      {
+        "title": "Chapter 361",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 360,
+        "section": "Chapter 361",
+        "slug": "361"
+      },
+      {
+        "title": "Chapter 362",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 361,
+        "section": "Chapter 362",
+        "slug": "362"
+      },
+      {
+        "title": "Chapter 363",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 362,
+        "section": "Chapter 363",
+        "slug": "363"
+      },
+      {
+        "title": "Chapter 364",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 363,
+        "section": "Chapter 364",
+        "slug": "364"
+      },
+      {
+        "title": "Chapter 365",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 364,
+        "section": "Chapter 365",
+        "slug": "365"
+      },
+      {
+        "title": "Chapter 366",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 365,
+        "section": "Chapter 366",
+        "slug": "366"
+      },
+      {
+        "title": "Chapter 367",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 366,
+        "section": "Chapter 367",
+        "slug": "367"
+      },
+      {
+        "title": "Chapter 368",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 367,
+        "section": "Chapter 368",
+        "slug": "368"
+      },
+      {
+        "title": "Chapter 369",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 368,
+        "section": "Chapter 369",
+        "slug": "369"
+      },
+      {
+        "title": "Chapter 370",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 369,
+        "section": "Chapter 370",
+        "slug": "370"
+      },
+      {
+        "title": "Chapter 371",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 370,
+        "section": "Chapter 371",
+        "slug": "371"
       }
     ]
   },
