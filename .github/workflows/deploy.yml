@@ -2,9 +2,6 @@ name: Build and Deploy
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   deploy:
@@ -23,7 +20,7 @@ jobs:
           cache-dependency-path: website/package-lock.json
 
       - name: Install Python dependencies
-        run: pip install frontmatter imagesize Pillow
+        run: pip install python-frontmatter imagesize Pillow
 
       - name: Build web
         working-directory: website
