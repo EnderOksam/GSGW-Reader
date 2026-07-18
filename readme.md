@@ -7,6 +7,8 @@ Passion project for hosting and reading GSGW translations
 🌐: [ireum.pages.dev](https://ireum.pages.dev/) \
 ⭐: Don't forget to star this repository!
 
+![](website/src/lib/assets/web-gsgw-banner.jpg)
+
 ---
 
 ## ✨ Features
