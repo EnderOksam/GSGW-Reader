@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-static";
+import adapter from "@sveltejs/adapter-cloudflare";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -8,7 +8,7 @@ const config = {
     vitePreprocess(),
   ],
   kit: {
-    adapter: adapter({ strict: false, fallback: "200.html" }),
+    adapter: adapter(),
 
     prerender: {
       concurrency: 5,
