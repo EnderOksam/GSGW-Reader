@@ -207,7 +207,7 @@
     <div class="overflow-y-auto p-2">
       {#each chapterList as ch}
         <a
-          href="/read/{bookSlug}/{currentTL}/{ch.slug}"
+          href="/read/{bookSlug}/{navState.selectedTL}/{ch.slug}"
           class="btn btn-sm justify-start w-full font-normal border-none mb-1 rounded-btn {readerState.ch_meta.slug == ch.slug ? 'btn-primary btn-soft' : 'btn-ghost'}"
           onclick={() => modals.chapter?.close()}
         >

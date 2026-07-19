@@ -35,14 +35,14 @@
 
   <div id="comments" class="mx-auto max-w-4xl px-4 pb-16">
   {#key page.url.pathname}
-    {#if readerState.ch_meta.discussion}
+    {#if currentChMeta.discussion}
       <Giscus
         repo="EnderOksam/GSGW-Reader"
         repoId="R_kgDOSUYftA"
         category="General"
         categoryId="DIC_kwDOSUYftM4C9WvT"
         mapping="number"
-        term={String(readerState.ch_meta.discussion)}
+        term={String(currentChMeta.discussion)}
         strict="1"
         reactionsEnabled="1"
         emitMetadata="0"

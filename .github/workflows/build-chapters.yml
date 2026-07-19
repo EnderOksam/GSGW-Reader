@@ -1,0 +1,25 @@
+name: Build Chapters
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pandoc
+        run: sudo apt-get install -y pandoc
+
+      - name: Install Python dependencies
+        run: pip install python-frontmatter imagesize Pillow
+
+      - name: Build web chapters
+        run: python scripts/build_web.py
