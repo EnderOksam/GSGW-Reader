@@ -14,6 +14,7 @@ const config = {
       concurrency: 5,
       crawl: true,
       handleHttpError: "warn",
+      handleUnseenRoutes: "warn",
     },
 
     alias: {
