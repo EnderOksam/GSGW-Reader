@@ -324,6 +324,22 @@ def convert_chapter(content):
 
     content = bw.DISTORT_RE.sub(bw.distorted_replacer, content)
 
+    # }text} and {text{ subs (before windows so they don't match ::: {…} markers)
+    def global_sub_left(match):
+        text = match.group(1).strip()
+        if text.startswith("[!]"):
+            return f'<span class="alert-sub alert-sub-left">{text[3:].strip()}</span>'
+        return f'<span class="debut-achievement-sub debut-achievement-sub-left">{text}</span>'
+
+    def global_sub_right(match):
+        text = match.group(1).strip()
+        if text.startswith("[!]"):
+            return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
+        return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
+
+    content = re.sub(r"\}([^}]+)\}", global_sub_left, content)
+    content = re.sub(r"\{([^{]+)\{", global_sub_right, content)
+
     # + windows
     content = bw.WIKI_WINDOW_RE.sub(bw.wiki_window_replacer, content)
 
@@ -370,22 +386,6 @@ def convert_chapter(content):
     # sms and comment windows
     content = SMS_WINDOW_RE.sub(bw.sms_window_replacer, content)
     content = COMMENT_WINDOW_RE.sub(bw.comment_window_replacer, content)
-
-    # }text} and {text{ subs (global, matches outside achievement windows too)
-    def global_sub_left(match):
-        text = match.group(1).strip()
-        if text.startswith("[!]"):
-            return f'<span class="alert-sub alert-sub-left">{text[3:].strip()}</span>'
-        return f'<span class="debut-achievement-sub debut-achievement-sub-left">{text}</span>'
-
-    def global_sub_right(match):
-        text = match.group(1).strip()
-        if text.startswith("[!]"):
-            return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
-        return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
-
-    content = re.sub(r"\}([^}]+)\}", global_sub_left, content)
-    content = re.sub(r"\{([^{]+)\{", global_sub_right, content)
 
     try:
         proc = subprocess.run(
