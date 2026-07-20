@@ -1,7 +1,7 @@
 <script lang="ts">
 
   import css from "../../../../reader.css?url";
-  import "./reader-windows.css";
+  import "$lib/reader/reader-windows.css";
 
   import { readerState } from "$lib/reader.svelte";
   import { hydrateTwitterEmbeds } from "$lib/reader/twitter-embeds";
