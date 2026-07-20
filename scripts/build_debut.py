@@ -135,8 +135,8 @@ def debut_achieve_replacer(match):
             return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
         return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
 
-    body = re.sub(r"\}([^}]+)\}", sub_left, body)
-    body = re.sub(r"\{([^{]+)\{", sub_right, body)
+    body = re.sub(r"\}([^\n}]+)\}", sub_left, body)
+    body = re.sub(r"\{([^\n{]+)\{", sub_right, body)
 
     title_html = f'<div class="debut-achievement-title">{title}</div>\n\n' if title else ""
     return bw.make_window("debut-achievement", title_html + body)
@@ -337,8 +337,8 @@ def convert_chapter(content):
             return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
         return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
 
-    content = re.sub(r"\}([^}]+)\}", global_sub_left, content)
-    content = re.sub(r"\{([^{]+)\{", global_sub_right, content)
+    content = re.sub(r"\}([^\n}]+)\}", global_sub_left, content)
+    content = re.sub(r"\{([^\n{]+)\{", global_sub_right, content)
 
     # + windows
     content = bw.WIKI_WINDOW_RE.sub(bw.wiki_window_replacer, content)
