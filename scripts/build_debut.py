@@ -325,8 +325,29 @@ def convert_chapter(content):
     content = bw.DISTORT_RE.sub(bw.distorted_replacer, content)
 
     # + windows
+    content = bw.WIKI_WINDOW_RE.sub(bw.wiki_window_replacer, content)
+
+    content = bw.BLACK_WINDOW_RE.sub(
+        lambda m: bw.make_window("black-window", m.group(1)),
+        content
+    )
+
+    content = bw.SYSTEM_WINDOW_RE.sub(bw.system_window_replacer, content)
+
     content = bw.PLAIN_WINDOW_RE.sub(
         lambda m: bw.make_window("plain-window", m.group(1)),
+        content
+    )
+
+    content = bw.RECORD_WINDOW_RE.sub(bw.record_window_replacer, content)
+
+    content = bw.FOLLOWUP_WINDOW_RE.sub(
+        lambda m: bw.make_window("plain-window", m.group(1)),
+        content
+    )
+
+    content = bw.AMPERSAND_WINDOW_RE.sub(
+        lambda m: bw.make_window("followup-window", m.group(1)),
         content
     )
 
