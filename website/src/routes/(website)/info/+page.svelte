@@ -2,9 +2,10 @@
   import Icon from "@iconify/svelte";
   import TwitterHover from "$lib/TwitterHover.svelte";
   import { fade } from "svelte/transition";
-
+  import { onMount, onDestroy } from "svelte";
 
   let contributeModal: HTMLDialogElement;
+  let allCardsModal: HTMLDialogElement;
 
   let developers = $state([
     {
@@ -13,6 +14,7 @@
       banner: "/assets/enderoksam-banner.png",
       avatar: "/assets/enderoksam-avatar.png",
       tagline: "[ Your ■■ is 'Eternity' ]",
+      description: "Lead developer of the site.",
       role: "Developer",
       cardBg: "#d1d5db",
       cardBorder: "#96a0a8",
@@ -27,6 +29,7 @@
       banner: "",
       avatar: "/assets/dominusz-avatar.png",
       tagline: "■■",
+      description: "Lead GSGW editor, handles proofreading and making sure chapters are not broken.",
       role: "Editor",
       cardBg: "#131416",
       cardBorder: "#0d0606",
@@ -41,6 +44,7 @@
       banner: "/assets/moon_angels-banner.png",
       avatar: "/assets/moon_angels-avatar.png",
       tagline: "Moon was here",
+      description: "Keeps track of events and chapter releases on the Discord.",
       role: "Community Manager",
       cardBg: "#1a1a2e",
       cardBorder: "#494987",
@@ -49,7 +53,56 @@
       textColor: "#d7d7da",
       taglineColor: "#d7d7da",
     },
+    {
+      name: "Destiny",
+      user: "heydestiny",
+      banner: "/assets/heydestiny-banner.png",
+      avatar: "/assets/heydestiny-avatar.png",
+      tagline: "https://heydestiny.carrd.co/\n↳ stuff i enjoy/fandoms + social media!",
+      description: "Lead debut editor and formatting.",
+      role: "Editor",
+      cardBg: "#ffcb8e",
+      cardBorder: "#ffcb8e",
+      tagBg: "#1a1a1a",
+      tagColor: "#ffcb8e",
+      textColor: "#1a1a1a",
+      taglineColor: "#3a2a1a",
+    },
+    {
+      name: "Lei",
+      user: "moonsoleum",
+      banner: "/assets/moonsoleum-banner.jpg",
+      avatar: "/assets/moonsoleum-avatar.png",
+      tagline: "· ✩₊˚.⋆☾⋆⁺₊✧ ·",
+      description: "Lead debut editor and proofreader.",
+      role: "Editor",
+      cardBg: "#1a0f23",
+      cardBorder: "#B193F2",
+      tagBg: "#B193F2",
+      tagColor: "#ffffff",
+      textColor: "#d7d7da",
+      taglineColor: "#d7d7da",
+      nameColor: "#B193F2",
+      bannerPos: "top",
+    },
+    {
+      name: "ZestysDaddy",
+      user: "everythingtbs",
+      banner: "",
+      avatar: "/assets/everythingtbs-avatar.png",
+      tagline: "🤤",
+      description: "Lead translator for part three chapters.",
+      role: "Translator",
+      cardBg: "#0B234F",
+      cardBorder: "#1a3a6a",
+      tagBg: "#1a3a6a",
+      tagColor: "#ffffff",
+      textColor: "#d7d7da",
+      taglineColor: "#d7d7da",
+    },
   ]);
+
+  const groupedDevelopers = $derived(developers);
   let currentDeveloper = $state(0);
 
   function switchDeveloper() {
@@ -57,6 +110,14 @@
   }
 
   let dev = $derived(developers[currentDeveloper]);
+
+  let interval: ReturnType<typeof setInterval>;
+  onMount(() => {
+    interval = setInterval(switchDeveloper, 4000);
+  });
+  onDestroy(() => {
+    clearInterval(interval);
+  });
 </script>
 
 <div class="flex flex-col items-center justify-center min-h-dvh p-6 md:p-12">
@@ -78,7 +139,7 @@
                  style="grid-area:1/1; border-color:{dev.cardBorder}; background:{dev.cardBg};">
 
             <div class="h-28 bg-cover bg-center"
-                 style="background-image:url({dev.banner}); background-color:#0d0606;">
+                 style="background-image:url({dev.banner}); background-color:#0d0606; background-position:{dev.bannerPos ?? 'center'};">
             </div>
 
 
@@ -95,7 +156,7 @@
 
               <div class="space-y-1">
               <h2 class="text-3xl font-extrabold leading-tight flex items-center gap-2"
-                  style="color:{dev.textColor};">
+                  style="color:{dev.nameColor ?? dev.textColor};">
                 <span class:aurora-text={dev.name === "Moon_Angel"}>
                   {dev.name}
                 </span>
@@ -107,26 +168,32 @@
 
                 <p class="text-sm opacity-70"
                    style="color:{dev.textColor};">
-                  {dev.user}
+                  @{dev.user}
                 </p>
               </div>
 
 
-              <div class="mt-3">
-                <p class="text-sm font-bold"
+              <div class="mt-3 max-h-10 overflow-hidden">
+                <p class="text-sm font-bold whitespace-pre-line leading-snug"
                    style="color:{dev.taglineColor};">
-                  {dev.tagline}
+                  {#if dev.tagline.startsWith("http")}
+                    {@const parts = dev.tagline.split("\n")}
+                    <a href={parts[0]} target="_blank" rel="noopener noreferrer" class="hover:underline">{parts[0]}</a>
+                    {"\n"}{parts[1] ?? ""}
+                  {:else}
+                    {dev.tagline}
+                  {/if}
                 </p>
               </div>
 
             </div>
 
             <button
-              onclick={switchDeveloper}
+              onclick={() => allCardsModal.showModal()}
               class="absolute bottom-2 right-2 btn btn-soft btn-xs btn-square btn-accent shadow-lg opacity-70 hover:opacity-100"
-              title="Switch developer"
+              title="Show all developers"
             >
-              <Icon icon="mdi:swap-horizontal-bold" class="size-4" />
+              <Icon icon="mdi:expand-all" class="size-4" />
             </button>
           </div>
         {/key}
@@ -218,6 +285,77 @@
       <a href="/dev/editor" class="btn btn-outline w-full rounded-btn gap-2" style="border-color:#fb8462; color:#fb8462;">
         <Icon icon="material-symbols:edit-note-rounded" class="size-5" /> Editor
       </a>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<dialog bind:this={allCardsModal} class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-[#0d0d0d]/95 border border-[#fb8462]/15 rounded-2xl max-w-5xl max-h-[85vh] overflow-y-auto p-8">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-white/50 hover:text-white">✕</button>
+    </form>
+    <h3 class="font-bold text-xl mb-2 text-center" style="color:#fb8462">The Team</h3>
+    <p class="text-sm text-white/40 mb-8 text-center">im glad so many wonderful people have joined in to help with the project</p>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
+      {#each developers as dev}
+        <div>
+          <div class="relative overflow-hidden rounded-2xl border shadow-xl transition-transform hover:scale-[1.02]"
+               style="border-color:{dev.cardBorder}; background:{dev.cardBg};">
+
+            <div class="h-20 bg-cover bg-center"
+                 style="background-image:url({dev.banner}); background-color:#0d0606; background-position:{dev.bannerPos ?? 'center'};">
+            </div>
+
+            <div class="relative pl-4 pr-3 pb-3 pt-8">
+              {#if dev.avatar}
+                <img
+                  src={dev.avatar}
+                  alt=""
+                  class="absolute left-4 -top-7 size-14 rounded-full border-[3px] shadow-lg"
+                  style="border-color:{dev.cardBg}; background:{dev.cardBg};"
+                />
+              {:else}
+                <div class="absolute left-4 -top-7 size-14 rounded-full border-[3px] shadow-lg flex items-center justify-center text-lg font-bold"
+                     style="border-color:{dev.cardBorder}; background:{dev.cardBorder}; color:{dev.tagColor};">
+                  {dev.name.charAt(0)}
+                </div>
+              {/if}
+
+              <div class="space-y-1">
+                <h2 class="text-base font-extrabold leading-tight flex items-center gap-2"
+                    style="color:{dev.nameColor ?? dev.textColor};">
+                  <span class:aurora-text={dev.name === "Moon_Angel"}>
+                    {dev.name}
+                  </span>
+                  <span class="inline-flex items-center gap-1 text-[0.55rem] font-semibold px-1.5 py-0.5 rounded-full"
+                        style="background:{dev.tagBg}; color:{dev.tagColor};">
+                    {dev.role}
+                  </span>
+                </h2>
+              <p class="text-[0.65rem] opacity-70" style="color:{dev.textColor};">
+                @{dev.user}
+              </p>
+              </div>
+
+              <div class="mt-2">
+                <p class="text-[0.65rem] font-bold whitespace-pre-line" style="color:{dev.taglineColor};">
+                  {#if dev.tagline.startsWith("http")}
+                    {@const parts = dev.tagline.split("\n")}
+                    <a href={parts[0]} target="_blank" rel="noopener noreferrer" class="hover:underline">{parts[0]}</a>
+                    {"\n"}{parts[1] ?? ""}
+                  {:else}
+                    {dev.tagline}
+                  {/if}
+                </p>
+              </div>
+            </div>
+          </div>
+          <p class="text-[0.65rem] leading-relaxed text-white/40 mt-2 px-1 text-center">
+            {dev.description}
+          </p>
+        </div>
+      {/each}
     </div>
   </div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
