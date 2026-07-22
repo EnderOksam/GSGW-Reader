@@ -49,12 +49,12 @@
       tagClass: "text-accent",
     },
     {
-      href: "/book/temp",
-      img: imgCoi,
-      title: "Dark Exploration Records",
-      author: "Fanatics",
-      tag: "Unofficial",
-      tagClass: "text-warning",
+      href: "/book/debut",
+      img: imgDebut,
+      title: "Debut Or Die",
+      author: "Baek Deoksoo",
+      tag: "Webnovel",
+      tagClass: "text-primary",
     },
     {
       href: "#",
@@ -66,12 +66,12 @@
       blank: true,
     },
     {
-      href: "/book/debut",
-      img: imgDebut,
-      title: "Debut Or Die",
-      author: "Baek Deoksoo",
-      tag: "Webnovel",
-      tagClass: "text-primary",
+      href: "/book/temp",
+      img: imgCoi,
+      title: "Dark Exploration Records",
+      author: "Fanatics",
+      tag: "Unofficial",
+      tagClass: "text-warning",
     },
     {
       href: "#",
@@ -224,7 +224,7 @@
               {#if book.blank}
                 <div class="absolute inset-0 flex items-center justify-center bg-base-300/20">
                   <div class="text-center">
-                    <div class="text-2xl mb-2 opacity-30">+</div>
+                  <div class="text-2xl mb-2 opacity-30">+</div>
                     <span class="text-xs font-bold uppercase tracking-widest {book.tagClass}">{book.tag}</span>
                   </div>
                 </div>
