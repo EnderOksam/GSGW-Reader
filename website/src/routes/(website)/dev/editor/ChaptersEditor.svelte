@@ -37,6 +37,27 @@
   let formatSections = $state<Record<string, boolean>>({ 'Colors & Markdown': true, 'Changing Text': true, 'windows': true });
   let expandedSyntax = $state<Record<string, boolean>>({});
   let windowViewMode = $state<Record<string, 'code' | 'preview'>>({});
+
+  let activeTextarea: HTMLTextAreaElement | null = null;
+
+  function insertFormatting(syntax: string) {
+    if (!activeTextarea) return;
+    const el = activeTextarea;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const current = input;
+    const selected = current.slice(start, end);
+    const hasPlaceholder = syntax.includes("text");
+    const replacement = hasPlaceholder ? syntax.replace("text", selected || "text") : syntax;
+    const before = current.slice(0, start);
+    const after = current.slice(end);
+    input = before + replacement + after;
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + replacement.length;
+      el.setSelectionRange(pos, pos);
+    });
+  }
   let newTranslationName = $state("");
   let showManageTL = $state(false);
   let renameTL: string | null = $state(null);
@@ -524,7 +545,7 @@
     { syntax: "★:...:★", name: "sms window", cls: "sms-window", code: "★:\\n- PMD: left message\\nright message -\\ncentered message\\n:★", html: '<div class="sms-bubble sms-left" style="background:#FFF8D9;color:#222;">PMD: left message</div>\n<div class="sms-bubble sms-right" style="background:#FFF0E1;color:#222;">right message</div>\n<div class="sms-bubble sms-center">centered message</div>', expandable: true, meta: "Prefix with speaker code for colors: PMD (yellow), SAH (orange), BSJ (blue), LSJ (purple), KRB (pink), CE (red), RCW (green). Without - or - at end = centered" },
     { syntax: "★$...$★", name: "comment window", cls: "alert-window", code: "★$\\n[Title]\\n: Sub-Title\\nDescription\\n-Comment\\n└ reply\\n└└reply reply\\n$★", html: '<div class="comment-post-header"><div class="comment-post-title">Title</div><div class="comment-post-desc"><p>: Sub-Title</p><p>Description</p></div></div><div class="comment-section"><div class="comment">Comment</div><div class="comment-reply depth-1"><span class="reply-icon">└</span><span class="reply-body">reply</span></div><div class="comment-reply depth-2"><span class="reply-icon">└└</span><span class="reply-body">reply reply</span></div></div>', expandable: true, meta: "[title] = title, : desc = description, - comment = top-level comment, └ = reply (each └ adds a depth level, max 2)" },
     { syntax: "★=...=★", name: "debut achievement", cls: "debut-achievement", code: "★=\\n[Achievement]\\n[\\nitem one\\nitem two\\n]\\n=★", html: '<div class="debut-achievement-list"><div class="debut-achievement-list-item">item one</div><div class="debut-achievement-list-divider"></div><div class="debut-achievement-list-item">item two</div></div>', expandable: true, meta: "first line = title, [\\n lines \\n] = list, }text{ = sub-left, {text{ = sub-right, }[!]text} = alert-sub-left, {[!]text{ = alert-sub-right" },
-    { syntax: ":text:", name: "achievement list item", cls: "debut-achievement-list", code: ":list item:", html: '<div class="debut-achievement-list"><div class="debut-achievement-list-item">list item</div></div>', expandable: true, meta: "standalone achievement list item, same look as debut achievement lists" },
+    { syntax: ";text;", name: "achievement list item", cls: "debut-achievement-list", code: ";list item;", html: '<div class="debut-achievement-list"><div class="debut-achievement-list-item">list item</div></div>', expandable: true, meta: "standalone achievement list item, same look as debut achievement lists" },
     { syntax: "★-...-★", name: "debut window", cls: "debut-window", code: "★-\\nTitle\\n[label text]\\ncontent\\n-★", html: '<div class="debut-window-title">Title</div><div class="debut-window-label">label text</div><p>content</p>', expandable: true, meta: "first line = title (\\ to suppress), [text] on its own line = label div, use \\ before line to keep raw text" },
     { syntax: "}text}", name: "sub left", cls: "", code: "}left label}", html: '<span class="debut-achievement-sub debut-achievement-sub-left">left label</span>', expandable: true },
     { syntax: "{text{", name: "sub right", cls: "", code: "{right label{", html: '<span class="debut-achievement-sub debut-achievement-sub-right">right label</span>', expandable: true },
@@ -546,20 +567,24 @@
     {#if !formatSections[sectionId]}
       <div class="px-2 pb-2 space-y-0.5">
         {#each regular as item}
-          <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-base-content/[3%] transition-colors">
+          <button onclick={() => insertFormatting(item.syntax)} class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-base-content/[3%] transition-colors cursor-pointer text-left">
             <span class="text-[10px] font-mono text-base-content/70 whitespace-nowrap shrink-0">{item.syntax}</span>
             <span class="text-[10px] text-base-content/15 shrink-0">→</span>
             <span class="text-[11px] {item.cls} truncate">{item.text}</span>
-          </div>
+          </button>
         {/each}
         {#each expandable as item}
           <div class="rounded-lg overflow-hidden border border-base-content/5">
-            <button onclick={() => expandedSyntax[item.syntax] = !expandedSyntax[item.syntax]} class="flex items-center gap-2 w-full px-2 py-1.5 text-left hover:bg-base-content/[3%] transition-colors">
-              <Icon icon={expandedSyntax[item.syntax] ? "mdi:chevron-down" : "mdi:chevron-right"} class="size-3 text-base-content/20 shrink-0 transition-transform" />
-              <span class="text-[10px] font-mono text-base-content/70 whitespace-nowrap shrink-0">{item.syntax}</span>
-              <span class="text-[10px] text-base-content/15 shrink-0">→</span>
-              <span class="text-[11px] text-base-content/50 truncate">{item.text}</span>
-            </button>
+            <div class="flex items-center">
+              <button onclick={() => insertFormatting(item.syntax)} class="flex-1 flex items-center gap-2 px-2 py-1.5 text-left hover:bg-base-content/[3%] transition-colors cursor-pointer">
+                <span class="text-[10px] font-mono text-base-content/70 whitespace-nowrap shrink-0">{item.syntax}</span>
+                <span class="text-[10px] text-base-content/15 shrink-0">→</span>
+                <span class="text-[11px] text-base-content/50 truncate">{item.text}</span>
+              </button>
+              <button onclick={() => expandedSyntax[item.syntax] = !expandedSyntax[item.syntax]} class="p-2 text-base-content/20 hover:text-base-content/40 transition-colors shrink-0" title="Preview">
+                <Icon icon={expandedSyntax[item.syntax] ? "mdi:eye" : "mdi:eye-outline"} class="size-3.5" />
+              </button>
+            </div>
             {#if expandedSyntax[item.syntax]}
               <div class="px-3 py-3 bg-base-200/40 border-t border-base-content/5 {item.cls === 'text-left' ? 'text-left' : item.cls === 'text-right' ? 'text-right' : 'text-center'}">
                 {#if item.previewHtml}
@@ -592,7 +617,7 @@
             <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
           {/if}
         </div>
-        <textarea bind:value={input} bind:this={mdScroll} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+        <textarea bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
       </div>
     {:else}
       <div class="flex-1 flex flex-col min-h-0 min-w-0">
@@ -667,7 +692,7 @@
         <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
       {/if}
     </div>
-    <textarea bind:value={input} bind:this={mdScroll} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+    <textarea bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
   </div>
   <div class="flex-1 flex flex-col min-h-0 min-w-0">
     <div class="flex items-center gap-2 px-3 py-2 border-b border-base-content/10 bg-base-200/60 backdrop-blur-sm rounded-t-xl shrink-0">

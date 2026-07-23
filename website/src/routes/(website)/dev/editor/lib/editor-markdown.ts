@@ -79,7 +79,6 @@ export function preprocessMarkdown(text: string): string {
     [/@l@(.*?)@l@/gs, '<span class="align-left">$1</span>'],
     [/@c@(.*?)@c@/gs, '<span class="align-center">$1</span>'],
     [/@r@(.*?)@r@/gs, '<span class="align-right">$1</span>'],
-    [/:([^:]+):/gs, '<div class="debut-achievement-list"><div class="debut-achievement-list-item">$1</div></div>'],
     [/#\*(.*?)\*#/gs, '<span class="text-large">$1</span>'],
     [/#><(.*?)><#/gs, '<span class="text-large-centered">$1</span>'],
     [/#r(.*?)r#/gs, '<span class="text-red">$1</span>'],
@@ -313,6 +312,8 @@ export function preprocessMarkdown(text: string): string {
     const titleHtml = title ? `<div class="debut-window-title">${title}</div>\n\n` : "";
     return makeWindow("debut-window", titleHtml + body);
   });
+
+  s = s.replace(/;([^;]+);/g, '<div class="debut-achievement-list"><div class="debut-achievement-list-item">$1</div></div>');
 
   s = s.replace(/\}([^}]+)\}/g, (_: string, content: string) => {
     const text = content.trim();
