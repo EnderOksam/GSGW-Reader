@@ -6,9 +6,10 @@
   import readerCss from "../../../../routes/(reader)/reader.css?url";
   import ChaptersEditor from "./ChaptersEditor.svelte";
   import CharactersEditor from "./CharactersEditor.svelte";
+  import UderEditor from "./UderEditor.svelte";
   import { REPO, BRANCH } from "./lib/github-api";
 
-  type EditorMode = "chapters" | "characters";
+  type EditorMode = "chapters" | "characters" | "uder";
 
   function loadCachedTheme(): string {
     if (!browser) return "sunset";
@@ -37,6 +38,12 @@
   });
 
   let editorMode = $state<EditorMode>((typeof localStorage !== 'undefined' ? localStorage.getItem('gsgw-editor-mode') : null) as EditorMode ?? "chapters");
+
+  const EDITOR_MODE_LABELS: Record<EditorMode, string> = {
+    chapters: "Chapters",
+    characters: "Characters",
+    uder: "U-DER",
+  };
   let showModeMenu = $state(false);
   let showMobileMenu = $state(false);
   let showInfo = $state(false);
@@ -166,6 +173,8 @@
             <button onclick={() => { chaptersRef?.revertAllChapters(); showRevert = false; }} disabled={chapterDirty.size === 0} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Revert all edited chapters</button>
           </div>
         {/if}
+      {:else if editorMode === "uder"}
+        <a href="/" class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-5" /></a>
       {:else}
         <button onclick={() => showMobileMenu = true} class="lg:hidden text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Menu"><Icon icon="mdi:menu" class="size-5" /></button>
         <a href="/" class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-5" /></a>
@@ -214,13 +223,14 @@
     <div class="flex items-center gap-1.5 sm:gap-2">
       <div class="relative hidden lg:block">
         <button onclick={() => showModeMenu = !showModeMenu} class="text-xs font-mono font-medium px-3 py-1.5 rounded-lg border border-base-content/15 text-base-content/60 hover:text-base-content hover:border-base-content/30 hover:bg-base-content/5 transition-all whitespace-nowrap active:scale-95">
-          <span class="capitalize">{editorMode}</span>
+          <span class="capitalize">{EDITOR_MODE_LABELS[editorMode]}</span>
           <Icon icon="mdi:chevron-down" class="size-3.5 inline-block ml-0.5" />
         </button>
         {#if showModeMenu}
           <div class="absolute top-full right-0 mt-2 bg-base-200/95 backdrop-blur-xl border border-base-content/10 rounded-xl shadow-2xl shadow-black/20 py-1.5 min-w-40 z-50 overflow-hidden">
             <button onclick={() => { editorMode = "chapters"; showModeMenu = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors {editorMode === 'chapters' ? 'bg-primary/10 text-primary font-medium' : ''}">Chapters</button>
             <button onclick={() => { editorMode = "characters"; showModeMenu = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors {editorMode === 'characters' ? 'bg-primary/10 text-primary font-medium' : ''}">Characters</button>
+            <button onclick={() => { editorMode = "uder"; showModeMenu = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors {editorMode === 'uder' ? 'bg-primary/10 text-primary font-medium' : ''}">U-DER</button>
           </div>
         {/if}
       </div>
@@ -254,7 +264,7 @@
             bind:dirty={chapterDirty}
             bind:input={chapterInput}
           />
-        {:else}
+        {:else if editorMode === "characters"}
           <CharactersEditor
             bind:this={charsRef}
             bind:showMobileMenu
@@ -265,6 +275,8 @@
             bind:hasSelectedChar
             bind:hasCharacters
           />
+        {:else if editorMode === "uder"}
+          <UderEditor />
         {/if}
       </div>
     {/key}

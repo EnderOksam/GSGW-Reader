@@ -302,6 +302,8 @@ def convert_chapter(content):
     for pattern, repl in bw.SIMPLE_REPLACEMENTS:
         content = pattern.sub(repl, content)
 
+    content = re.sub(r":(.*?):", r'<div class="debut-achievement-list"><div class="debut-achievement-list-item">\1</div></div>', content)
+
     content = re.sub(r"\$\$(.*?)\$\$", r'<span class="handwritten">\1</span>', content)
 
     content = bw.SMOKE_RE.sub(bw.smoke_replacer, content)

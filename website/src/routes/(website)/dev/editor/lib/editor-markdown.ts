@@ -15,6 +15,8 @@ function escapeHtml(text: string): string {
 export function preprocessMarkdown(text: string): string {
   let s = text.replace(/\r\n/g, "\n");
 
+  // illustration tags are handled by the template, not here
+
   s = s.replace(/%%(.*?)%%/gs, '<span class="shake">$1</span>');
 
   s = s.replace(/%~(.*?)~%/gs, (_: string, inner: string) => {
@@ -75,7 +77,9 @@ export function preprocessMarkdown(text: string): string {
     [/@ll@(.*?)@ll@/gs, '<span class="mono mono-left">$1</span>'],
     [/@rr@(.*?)@rr@/gs, '<span class="mono mono-right">$1</span>'],
     [/@l@(.*?)@l@/gs, '<span class="align-left">$1</span>'],
+    [/@c@(.*?)@c@/gs, '<span class="align-center">$1</span>'],
     [/@r@(.*?)@r@/gs, '<span class="align-right">$1</span>'],
+    [/:([^:]+):/gs, '<div class="debut-achievement-list"><div class="debut-achievement-list-item">$1</div></div>'],
     [/#\*(.*?)\*#/gs, '<span class="text-large">$1</span>'],
     [/#><(.*?)><#/gs, '<span class="text-large-centered">$1</span>'],
     [/#r(.*?)r#/gs, '<span class="text-red">$1</span>'],

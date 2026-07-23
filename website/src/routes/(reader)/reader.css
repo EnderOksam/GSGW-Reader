@@ -658,6 +658,10 @@ hr.invisible-hr {
   display: block;
   text-align: left;
 }
+.align-center {
+  display: block;
+  text-align: center;
+}
 .align-right {
   display: block;
   text-align: right;
