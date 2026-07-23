@@ -88,7 +88,7 @@
     {
       name: "ZestysDaddy",
       user: "everythingtbs",
-      banner: "",
+      banner: "/assets/everythingtbs-banner.jpg",
       avatar: "/assets/everythingtbs-avatar.png",
       tagline: "🤤",
       description: "Lead translator for part three chapters.",
