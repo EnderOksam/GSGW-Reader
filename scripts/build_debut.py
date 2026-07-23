@@ -387,8 +387,6 @@ def convert_chapter(content):
     content = SMS_WINDOW_RE.sub(bw.sms_window_replacer, content)
     content = COMMENT_WINDOW_RE.sub(bw.comment_window_replacer, content)
 
-    content = re.sub(r";(.*?);", r'<div class="debut-achievement-list"><div class="debut-achievement-list-item">\1</div></div>', content)
-
     try:
         proc = subprocess.run(
             ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],

@@ -109,8 +109,6 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"@c@(.*?)@c@", re.DOTALL), r'<span class="align-center">\1</span>'),
     (re.compile(r"@r@(.*?)@r@", re.DOTALL), r'<span class="align-right">\1</span>'),
 
-    (re.compile(r";(.*?);", re.DOTALL), r'<div class="debut-achievement-list"><div class="debut-achievement-list-item">\1</div></div>'),
-
     (re.compile(r"#\*(.*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
     (re.compile(r"#><(.*?)><#", re.DOTALL), r'<span class="text-large-centered">\1</span>'),
 
