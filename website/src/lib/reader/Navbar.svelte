@@ -1,7 +1,12 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import { fade } from "svelte/transition";
+  import { tick } from "svelte";
+  import { toPng } from "html-to-image";
   import { readerState } from "$lib/reader.svelte";
   import ReferencePanel from "./ReferencePanel.svelte";
+  import readerCss from "../../routes/(reader)/reader.css?inline";
+  import readerWindowsCss from "./reader-windows.css?inline";
 
   // --- Types ---
   interface Chapter {
@@ -20,7 +25,147 @@
     chapter: null as HTMLDialogElement | null,
     settings: null as HTMLDialogElement | null,
     edit: null as HTMLDialogElement | null,
+    snippet: null as HTMLDialogElement | null,
   });
+
+  let snippetToast = $state(false);
+  let snippetTimer: ReturnType<typeof setTimeout> | null = null;
+  let capturedHtml = $state("");
+  let snippetPreviewEl: HTMLElement | null = $state(null);
+  let snippetOuterEl: HTMLElement | null = $state(null);
+  let snippetImageUrl = $state("");
+  let snippetLoading = $state(false);
+  let snippetShowDomain = $state(true);
+  let snippetShowChapter = $state(true);
+  let snippetCopied = $state(false);
+  let snippetPrimaryColor = $state("oklch(var(--p))");
+
+  const BOOK_NAMES: Record<string, string> = {
+    gsgw: "Got Dropped into a Ghost Story, Still Gotta Work",
+    debut: "Debut or Die",
+  };
+
+  const snippetBookName = $derived(BOOK_NAMES[bookSlug] ?? bookSlug);
+  const snippetChapterTitle = $derived.by(() => {
+    const ch = chaptersForTL[currentIndex];
+    if (!ch) return "";
+    return ch.title === `Chapter ${ch.slug}` ? String(ch.slug) : `${ch.slug} - ${ch.title}`;
+  });
+
+  async function handleCapture() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !selection.rangeCount) {
+      snippetToast = true;
+      if (snippetTimer) clearTimeout(snippetTimer);
+      snippetTimer = setTimeout(() => { snippetToast = false; }, 2000);
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    const el = container.nodeType === 1 ? container as HTMLElement : container.parentElement;
+    const article = el?.closest("article");
+    if (!article) return;
+
+    const cloned = range.cloneContents();
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(cloned);
+
+    capturedHtml = wrapper.innerHTML;
+    selection.removeAllRanges();
+
+    snippetLoading = true;
+    snippetImageUrl = "";
+    snippetCopied = false;
+    snippetShowDomain = true;
+    snippetShowChapter = true;
+    modals.snippet?.showModal();
+
+    await tick();
+    await applyReaderStyles();
+    await renderSnippet();
+  }
+
+  async function applyReaderStyles() {
+    if (!snippetPreviewEl) return;
+
+    const readerBgEl = document.querySelector<HTMLElement>(".bg-base-100");
+    if (readerBgEl) {
+      const cs = getComputedStyle(readerBgEl);
+      snippetPreviewEl.style.background = cs.backgroundColor;
+    }
+    const readerArticle = document.querySelector("article.chapter-content");
+    if (readerArticle) {
+      const cs = getComputedStyle(readerArticle);
+      snippetPreviewEl.style.fontFamily = cs.fontFamily;
+      snippetPreviewEl.style.fontSize = cs.fontSize;
+      snippetPreviewEl.style.fontWeight = cs.fontWeight;
+      snippetPreviewEl.style.color = cs.color;
+    }
+
+    const primaryEl = document.querySelector<HTMLElement>(".text-primary");
+    if (primaryEl) {
+      snippetPrimaryColor = getComputedStyle(primaryEl).color;
+    }
+
+    let styleEl = snippetPreviewEl.querySelector("style#snippet-injected-css");
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "snippet-injected-css";
+      styleEl.textContent = readerCss + "\n" + readerWindowsCss;
+      snippetPreviewEl.prepend(styleEl);
+    }
+  }
+
+  async function renderSnippet() {
+    if (!snippetOuterEl) return;
+    snippetLoading = true;
+    await tick();
+
+    try {
+      const readerBgEl = document.querySelector<HTMLElement>(".bg-base-100");
+      const bg = readerBgEl ? getComputedStyle(readerBgEl).backgroundColor : "#0d0d0d";
+
+      snippetImageUrl = await toPng(snippetOuterEl, {
+        pixelRatio: 2,
+        backgroundColor: bg,
+        skipAutoScale: true,
+        style: { borderRadius: "0" },
+      });
+    } catch (e) {
+      console.error("Failed to render snippet:", e);
+    } finally {
+      snippetLoading = false;
+    }
+  }
+
+  function onSnippetToggle() {
+    snippetCopied = false;
+    renderSnippet();
+  }
+
+  async function copySnippet() {
+    if (!snippetImageUrl) return;
+    try {
+      const res = await fetch(snippetImageUrl);
+      const blob = await res.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob }),
+      ]);
+      snippetCopied = true;
+      setTimeout(() => { snippetCopied = false; }, 2000);
+    } catch (e) {
+      console.error("Failed to copy snippet:", e);
+    }
+  }
+
+  function downloadSnippet() {
+    if (!snippetImageUrl) return;
+    const link = document.createElement("a");
+    link.download = "snippet.png";
+    link.href = snippetImageUrl;
+    link.click();
+  }
 
   // --- Constants: Themes ---
   const PRIORITY_THEMES = ["sunset", "light", "retro", "night", "business", "cupcake", "black"];
@@ -42,6 +187,11 @@
   ];
 
   // --- Logic: Derivations ---
+  function tlDir(book: string, tl: string): string {
+    if (book === "debut" && tl === "debutplaintxt") return "DebutPlainTxt";
+    if (book === "debut" && tl === "debutformatted") return "DebutFormatted";
+    return tl;
+  }
   // Automatically updates the list whenever searchQuery or selectedTL changes
   const chapterList = $derived.by(() => {
     const chapters: Chapter[] = bookData[bookSlug]?.[navState.selectedTL] || [];
@@ -146,6 +296,15 @@
           <span class="hidden sm:inline">Contents</span>
         </button>
       </div>
+
+      {#if bookSlug === "gsgw" || bookSlug === "debut"}
+        <!-- Camera -->
+        <div class="tooltip tooltip-bottom" data-tip="Capture text snippet">
+          <button onclick={handleCapture} class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Camera">
+            <Icon icon="mdi:camera-outline" class="size-6" />
+          </button>
+        </div>
+      {/if}
 
       <!-- Edit/Contribute Toggle -->
       <div class="tooltip tooltip-bottom" data-tip="Edit (E)">
@@ -322,7 +481,7 @@
         <Icon icon="mdi:book-open-page-variant" class="size-5 mr-2" /> Read Guide
       </a>
       <a
-        href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{navState.selectedTL}/{(Number(readerState.ch_meta.slug) + 1).toString().padStart(4, '0')}.md"
+        href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{tlDir(bookSlug, navState.selectedTL)}/{(Number(readerState.ch_meta.slug) + 1).toString().padStart(4, '0')}.md"
         target="_blank"
         class="btn btn-secondary w-full rounded-btn"
       >
@@ -332,5 +491,145 @@
   </div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
 </dialog>
+
+<!-- --- Modal: Captured Snippet --- -->
+<dialog bind:this={modals.snippet} class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-base-100 rounded-box p-0 overflow-hidden shadow-2xl max-w-lg snippet-reset">
+
+    <!-- Header -->
+    <div class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+      <div class="relative flex items-center justify-between px-6 py-4">
+        <div>
+          <span class="text-primary font-semibold" style="font-size: 1.15rem;">Snippet</span>
+          {#if snippetChapterTitle}
+            <p class="text-xs text-base-content/40 mt-0.5 max-w-[260px] truncate">{snippetChapterTitle}</p>
+          {/if}
+        </div>
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Hidden renderer (off-screen, used by html-to-image) -->
+    <div class="fixed left-[-9999px] top-0 pointer-events-none">
+      <!-- Outer wrapper: controls padding + rounding of the final image -->
+      <div
+        bind:this={snippetOuterEl}
+        style="padding: 20px; border-radius: 16px; width: 640px;"
+      >
+        <!-- Inner card: the actual content card with shadow -->
+        <div
+          bind:this={snippetPreviewEl}
+          class="reader-container"
+          style="width: 600px; padding: 2em 2.25em 1.25em; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2); --chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 2.2; font-family: var(--chapter-font); font-size: var(--chapter-size); font-weight: var(--chapter-weight); line-height: var(--chapter-lh);"
+        >
+          {@html capturedHtml}
+
+          {#if snippetShowDomain || snippetShowChapter}
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 1.25em; padding-top: 0.75em; border-top: 1px solid currentColor; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-size: 11px; letter-spacing: 0.01em; line-height: 1.3;">
+              {#if snippetShowDomain}
+                <span style="text-decoration: underline; text-underline-offset: 2px; color: {snippetPrimaryColor}; font-weight: 700;">ireum.pages.dev</span>
+              {:else}
+                <span></span>
+              {/if}
+              {#if snippetShowChapter}
+                <span style="text-align: right; font-weight: 700;">
+                  {#if snippetShowDomain}
+                    <span style="margin: 0 0.4em; opacity: 0.4;">/</span>
+                  {/if}
+                  {snippetBookName} &middot; {snippetChapterTitle}
+                </span>
+              {/if}
+            </div>
+          {/if}
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview area -->
+    <div class="px-5 pb-2 max-h-[55vh] overflow-y-auto overscroll-contain rounded-xl">
+      {#if snippetLoading}
+        <div class="flex flex-col items-center justify-center py-14 gap-3">
+          <div class="relative">
+            <Icon icon="mdi:loading" class="size-6 animate-spin text-primary/60" />
+            <div class="absolute inset-0 size-6 animate-ping text-primary/20">
+              <Icon icon="mdi:loading" class="size-6" />
+            </div>
+          </div>
+          <span class="text-xs text-base-content/40 font-medium">Rendering preview...</span>
+        </div>
+      {:else if snippetImageUrl}
+        <img src={snippetImageUrl} alt="Captured snippet" class="w-full rounded-xl" />
+      {/if}
+    </div>
+
+    <!-- Toggle bar -->
+    <!-- Toggle + action bar -->
+    <div class="px-5 pt-3 pb-3 mt-1">
+      <div class="flex items-center gap-2">
+        <button
+          onclick={() => { snippetShowDomain = !snippetShowDomain; onSnippetToggle(); }}
+          class="btn btn-xs rounded-full gap-1.5 {snippetShowDomain ? 'btn-primary' : 'btn-ghost bg-base-200/80 text-base-content/60'}"
+        >
+          <Icon icon="mdi:web" class="size-3.5" />
+          Domain
+        </button>
+        <button
+          onclick={() => { snippetShowChapter = !snippetShowChapter; onSnippetToggle(); }}
+          class="btn btn-xs rounded-full gap-1.5 {snippetShowChapter ? 'btn-primary' : 'btn-ghost bg-base-200/80 text-base-content/60'}"
+        >
+          <Icon icon="mdi:book-open-page-variant" class="size-3.5" />
+          Chapter
+        </button>
+        <div class="flex-1"></div>
+        <button
+          onclick={copySnippet}
+          class="btn btn-xs rounded-full gap-1.5 btn-ghost bg-base-200/80 text-base-content/60"
+          disabled={!snippetImageUrl || snippetLoading}
+        >
+          <Icon icon={snippetCopied ? "mdi:check" : "mdi:content-copy"} class="size-3.5 {snippetCopied ? 'text-success' : ''}" />
+          {snippetCopied ? "Copied" : "Copy"}
+        </button>
+        <button
+          onclick={downloadSnippet}
+          class="btn btn-xs rounded-full gap-1.5 btn-ghost bg-base-200/80 text-base-content/60"
+          disabled={!snippetImageUrl || snippetLoading}
+        >
+          <Icon icon="mdi:download" class="size-3.5" />
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+{#if snippetToast}
+  <div transition:fade={{ duration: 300 }} class="fixed top-14 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-base-200/90 backdrop-blur-md border border-red-500/40 text-base-content/80 text-xs font-medium px-5 py-3 rounded-2xl shadow-xl shadow-red-500/10">
+    <Icon icon="mdi:alert-circle-outline" class="size-4 text-red-400 shrink-0" />
+    <span>Highlight text to take a snippet</span>
+    <button onclick={() => { snippetToast = false; if (snippetTimer) clearTimeout(snippetTimer); }} class="btn btn-ghost btn-xs btn-square rounded-btn text-base-content/40 hover:text-base-content hover:bg-base-content/5 -mr-1">
+      <Icon icon="mdi:close" class="size-3.5" />
+    </button>
+  </div>
+{/if}
+
 <style>
+  :global(dialog.snippet-reset) h1,
+  :global(dialog.snippet-reset) h2,
+  :global(dialog.snippet-reset) h3 {
+    text-align: left;
+    position: static;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    font-variant: normal;
+  }
+  :global(dialog.snippet-reset) h1::after,
+  :global(dialog.snippet-reset) h2::after,
+  :global(dialog.snippet-reset) h3::after {
+    display: none;
+  }
 </style>

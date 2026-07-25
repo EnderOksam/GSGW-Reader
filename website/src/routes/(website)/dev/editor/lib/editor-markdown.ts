@@ -73,7 +73,7 @@ export function preprocessMarkdown(text: string): string {
 
   const simple: [RegExp, string][] = [
     [/(?<!\\)_(.*?)(?<!\\)_/gs, '<span class="underline">$1</span>'],
-    [/(?<!\\)(?<!~)~(?!~)(.+?)(?<!\\)~/gs, '~~$1~~'],
+
     [/@ll@(.*?)@ll@/gs, '<span class="mono mono-left">$1</span>'],
     [/@rr@(.*?)@rr@/gs, '<span class="mono mono-right">$1</span>'],
     [/@l@(.*?)@l@/gs, '<span class="align-left">$1</span>'],
@@ -186,38 +186,42 @@ export function preprocessMarkdown(text: string): string {
   s = s.replace(/★!\n(.*?)\n!★/gs, (_: string, inner: string) => makeWindow("debut-alert", inner));
 
   s = s.replace(/★:\n([\s\S]*?)\n:★/gs, (_: string, inner: string) => {
-    const lines = inner.split("\n");
-    const speakerColors: Record<string, string> = {
+    const SPEAKER_COLORS: Record<string, string> = {
       PMD: "#FFF8D9", SAH: "#FFF0E1", BSJ: "#EDF5FF",
       LSJ: "#F2ECFF", KRB: "#FDE8F1", CE: "#FFE5E5",
       RCW: "#EAF8F2"
     };
-    let html = "";
-    for (const raw of lines) {
+    const SPEAKERS = Object.keys(SPEAKER_COLORS);
+    const DASH = "[-–—]";
+
+    function parseLine(raw: string): string {
       const trimmed = raw.trim();
-      if (!trimmed) continue;
-      const dashLeft = trimmed.match(/^[-–—]\s*(.+)/);
-      const dashRight = trimmed.match(/(.+)\s*[-–—]$/);
-      const speakerMatch = (content: string) => content.match(/^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*/);
-      if (dashLeft) {
-        const content = dashLeft[1];
-        const sp = speakerMatch(content);
-        const color = sp ? speakerColors[sp[1]] : null;
-        const display = sp ? content.slice(sp[0].length) : content;
-        const style = color ? ` style="background:${color};color:#222"` : "";
-        html += `<div class="sms-bubble sms-left"${style}>${escapeHtml(display)}</div>\n`;
-      } else if (dashRight) {
-        const content = dashRight[1];
-        const sp = speakerMatch(content);
-        const color = sp ? speakerColors[sp[1]] : null;
-        const display = sp ? content.slice(sp[0].length) : content;
-        const style = color ? ` style="background:${color};color:#222"` : "";
-        html += `<div class="sms-bubble sms-right"${style}>${escapeHtml(display)}</div>\n`;
-      } else {
-        html += `<div class="sms-bubble sms-center">${escapeHtml(trimmed)}</div>\n`;
-      }
+      if (!trimmed) return "";
+
+      const dashPrefixRe = new RegExp(`^${DASH}\\s*(.+)`);
+      const dashSuffixRe = new RegExp(`(.+)\\s*${DASH}$`);
+
+      const isLeft = dashPrefixRe.test(trimmed);
+      const isRight = !isLeft && dashSuffixRe.test(trimmed);
+
+      let content = trimmed;
+      if (isLeft) content = trimmed.replace(dashPrefixRe, "$1");
+      else if (isRight) content = trimmed.replace(dashSuffixRe, "$1");
+
+      const speakerRe = new RegExp(`^(${SPEAKERS.join("|")}):\\s*(.*)`);
+      const sp = content.match(speakerRe);
+      const speaker = sp?.[1] ?? null;
+      const message = sp ? sp[2] : content;
+
+      const color = speaker ? SPEAKER_COLORS[speaker] : null;
+      const style = color ? ` style="background:${color};color:#222"` : "";
+      const align = isLeft ? "sms-left" : isRight ? "sms-right" : "sms-center";
+
+      return `<div class="sms-bubble ${align}"${style}>${escapeHtml(message)}</div>`;
     }
-    return makeWindow("sms-window", html);
+
+    const bubbles = inner.split("\n").map(parseLine).filter(Boolean).join("\n");
+    return makeWindow("sms-window", bubbles);
   });
 
   s = s.replace(/★\$\n([\s\S]*?)\n\$★/gs, (_: string, inner: string) => {

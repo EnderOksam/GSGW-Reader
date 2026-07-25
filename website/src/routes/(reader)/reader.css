@@ -618,13 +618,13 @@ hr.invisible-hr {
 }
 
 .text-large {
-  font-size: 1.3em;
+  font-size: 1.04em;
   font-weight: 700;
 }
 
 .text-large-centered {
   display: block;
-  font-size: 1.3em;
+  font-size: 1.04em;
   font-weight: 700;
   text-align: center;
 }

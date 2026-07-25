@@ -100,7 +100,7 @@ COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
 SIMPLE_REPLACEMENTS = [
     (re.compile(r"(?<!\\)_(.*?)(?<!\\)_", re.DOTALL), r"[\1]{.underline}"),
-    (re.compile(r"(?<!\\)(?<!~)~(?!~)(.*?)(?<!\\)~", re.DOTALL), r"~~\1~~"),
+
 
     (re.compile(r"@ll@(.*?)@ll@", re.DOTALL), r'<span class="mono mono-left">\1</span>'),
     (re.compile(r"@rr@(.*?)@rr@", re.DOTALL), r'<span class="mono mono-right">\1</span>'),

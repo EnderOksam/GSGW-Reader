@@ -40,7 +40,7 @@
 
   let activeTextarea: HTMLTextAreaElement | null = null;
 
-  function insertFormatting(syntax: string) {
+  async function insertFormatting(syntax: string) {
     if (!activeTextarea) return;
     const el = activeTextarea;
     const start = el.selectionStart;
@@ -51,12 +51,13 @@
     const replacement = hasPlaceholder ? syntax.replace("text", selected || "text") : syntax;
     const before = current.slice(0, start);
     const after = current.slice(end);
+    const readerTop = readerScroll?.scrollTop ?? 0;
     input = before + replacement + after;
-    requestAnimationFrame(() => {
-      el.focus();
-      const pos = start + replacement.length;
-      el.setSelectionRange(pos, pos);
-    });
+    await tick();
+    el.focus();
+    const pos = start + replacement.length;
+    el.setSelectionRange(pos, pos);
+    if (readerScroll) readerScroll.scrollTop = readerTop;
   }
   let newTranslationName = $state("");
   let showManageTL = $state(false);
@@ -179,14 +180,19 @@
     }
   }
 
-  function handleBookChange() {
-    saveCurrent();
-    const tls = BOOKS.find(b => b.slug === currentBook)?.translations ?? [];
-    if (!tls.includes(translation)) {
-      translation = tls[0] ?? "fantl";
+  let prevBook = currentBook;
+
+  $effect(() => {
+    if (currentBook !== prevBook) {
+      saveCurrent();
+      prevBook = currentBook;
+      const tls = BOOKS.find(b => b.slug === currentBook)?.translations ?? [];
+      if (!tls.includes(translation)) {
+        translation = tls[0] ?? "fantl";
+      }
+      refreshChapters();
     }
-    loadChapterList();
-  }
+  });
 
   function handleTranslationChange() {
     saveCurrent();
@@ -194,7 +200,7 @@
       customTranslations = [...customTranslations, translation];
       saveCustomTranslations(customTranslations);
     }
-    loadChapterList();
+    refreshChapters();
   }
 
   function confirmNewTranslation() {
@@ -484,6 +490,9 @@
   }
 
   const colorsItems = [
+    { syntax: "**text**", text: "bold text", cls: "font-bold" },
+    { syntax: "*text*", text: "italic text", cls: "italic" },
+    { syntax: "$$text$$", text: "handwritten text", cls: "handwritten", expandable: true },
     { syntax: "#rtextr#", text: "red text", cls: "text-red" },
     { syntax: "#otexto#", text: "orange text", cls: "text-orange" },
     { syntax: "#ytexty#", text: "yellow text", cls: "text-yellow" },
@@ -542,7 +551,7 @@
     { syntax: "!$...$!", name: "sticky window", cls: "sticky-window", code: "!$\\nsticky window example\\n$!", html: '<p>sticky window example</p>', expandable: true },
     { syntax: "![...]!", name: "braun screen", cls: "braun-screen", code: "![\\nbraun screen example\\n]!", html: '<p>braun screen example</p>', expandable: true },
     { syntax: "★!...!★", name: "debut alert", cls: "debut-alert", code: "★!\\ndebut alert example\\n!★", html: '<p>debut alert example</p>', expandable: true },
-    { syntax: "★:...:★", name: "sms window", cls: "sms-window", code: "★:\\n- PMD: left message\\nright message -\\ncentered message\\n:★", html: '<div class="sms-bubble sms-left" style="background:#FFF8D9;color:#222;">PMD: left message</div>\n<div class="sms-bubble sms-right" style="background:#FFF0E1;color:#222;">right message</div>\n<div class="sms-bubble sms-center">centered message</div>', expandable: true, meta: "Prefix with speaker code for colors: PMD (yellow), SAH (orange), BSJ (blue), LSJ (purple), KRB (pink), CE (red), RCW (green). Without - or - at end = centered" },
+    { syntax: "★:...:★", name: "sms window", cls: "sms-window", code: "★:\\n- PMD: left message\\nright message -\\ncentered message\\n:★", html: '<div class="sms-bubble sms-left" style="background:#FFF8D9;color:#222;">left message</div>\n<div class="sms-bubble sms-right" style="background:#FFF0E1;color:#222;">right message</div>\n<div class="sms-bubble sms-center">centered message</div>', expandable: true, meta: "Prefix with speaker code for colors: PMD (yellow), SAH (orange), BSJ (blue), LSJ (purple), KRB (pink), CE (red), RCW (green). - prefix = left, suffix - = right, no dash = centered" },
     { syntax: "★$...$★", name: "comment window", cls: "alert-window", code: "★$\\n[Title]\\n: Sub-Title\\nDescription\\n-Comment\\n└ reply\\n└└reply reply\\n$★", html: '<div class="comment-post-header"><div class="comment-post-title">Title</div><div class="comment-post-desc"><p>: Sub-Title</p><p>Description</p></div></div><div class="comment-section"><div class="comment">Comment</div><div class="comment-reply depth-1"><span class="reply-icon">└</span><span class="reply-body">reply</span></div><div class="comment-reply depth-2"><span class="reply-icon">└└</span><span class="reply-body">reply reply</span></div></div>', expandable: true, meta: "[title] = title, : desc = description, - comment = top-level comment, └ = reply (each └ adds a depth level, max 2)" },
     { syntax: "★=...=★", name: "debut achievement", cls: "debut-achievement", code: "★=\\n[Achievement]\\n[\\nitem one\\nitem two\\n]\\n=★", html: '<div class="debut-achievement-list"><div class="debut-achievement-list-item">item one</div><div class="debut-achievement-list-divider"></div><div class="debut-achievement-list-item">item two</div></div>', expandable: true, meta: "first line = title, [\\n lines \\n] = list, }text{ = sub-left, {text{ = sub-right, }[!]text} = alert-sub-left, {[!]text{ = alert-sub-right" },
     { syntax: ";text;", name: "achievement list item", cls: "debut-achievement-list", code: ";list item;", html: '<div class="debut-achievement-list"><div class="debut-achievement-list-item">list item</div></div>', expandable: true, meta: "standalone achievement list item, same look as debut achievement lists" },
@@ -643,7 +652,7 @@
   <div class="w-56 flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shrink-0 min-h-0 shadow-lg shadow-black/5">
     <div class="flex flex-col border-b border-base-content/10">
       <div class="flex gap-1.5 p-2 pb-1">
-        <select bind:value={currentBook} onchange={handleBookChange} class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-2 rounded-xl outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80 cursor-pointer">
+        <select bind:value={currentBook}  class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-2 rounded-xl outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80 cursor-pointer">
           {#each BOOKS as b}
             <option value={b.slug}>{b.slug}</option>
           {/each}
@@ -792,7 +801,7 @@
           <div class="h-full flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg">
             <div class="flex flex-col border-b border-base-content/10">
               <div class="flex gap-1.5 p-2 pb-1">
-                <select bind:value={currentBook} onchange={handleBookChange} class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-2 rounded-xl outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80 cursor-pointer">
+                <select bind:value={currentBook}  class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-2 rounded-xl outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80 cursor-pointer">
                   {#each BOOKS as b}
                     <option value={b.slug}>{b.slug}</option>
                   {/each}
