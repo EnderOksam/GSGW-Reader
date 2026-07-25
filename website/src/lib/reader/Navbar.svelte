@@ -40,6 +40,36 @@
   let snippetCopied = $state(false);
   let snippetPrimaryColor = $state("oklch(var(--p))");
 
+  // --- Selection cache (iOS coyote time) ---
+  let cachedSelectionHtml = $state("");
+  let selectionCacheExpiry: ReturnType<typeof setTimeout> | null = null;
+
+  $effect(() => {
+    function onSelectionChange() {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed || !selection.rangeCount) return;
+
+      const range = selection.getRangeAt(0);
+      const container = range.commonAncestorContainer;
+      const el = container.nodeType === 1 ? container as HTMLElement : container.parentElement;
+      if (!el?.closest("article")) return;
+
+      const cloned = range.cloneContents();
+      const wrapper = document.createElement("div");
+      wrapper.appendChild(cloned);
+      cachedSelectionHtml = wrapper.innerHTML;
+
+      if (selectionCacheExpiry) clearTimeout(selectionCacheExpiry);
+      selectionCacheExpiry = setTimeout(() => { cachedSelectionHtml = ""; }, 3000);
+    }
+
+    document.addEventListener("selectionchange", onSelectionChange);
+    return () => {
+      document.removeEventListener("selectionchange", onSelectionChange);
+      if (selectionCacheExpiry) clearTimeout(selectionCacheExpiry);
+    };
+  });
+
   const BOOK_NAMES: Record<string, string> = {
     gsgw: "Got Dropped into a Ghost Story, Still Gotta Work",
     debut: "Debut or Die",
@@ -54,25 +84,28 @@
 
   async function handleCapture() {
     const selection = window.getSelection();
-    if (!selection || selection.isCollapsed || !selection.rangeCount) {
+    if (selection && !selection.isCollapsed && selection.rangeCount) {
+      const range = selection.getRangeAt(0);
+      const container = range.commonAncestorContainer;
+      const el = container.nodeType === 1 ? container as HTMLElement : container.parentElement;
+      const article = el?.closest("article");
+      if (!article) return;
+
+      const cloned = range.cloneContents();
+      const wrapper = document.createElement("div");
+      wrapper.appendChild(cloned);
+      capturedHtml = wrapper.innerHTML;
+      selection.removeAllRanges();
+    } else if (cachedSelectionHtml) {
+      capturedHtml = cachedSelectionHtml;
+      cachedSelectionHtml = "";
+      if (selectionCacheExpiry) { clearTimeout(selectionCacheExpiry); selectionCacheExpiry = null; }
+    } else {
       snippetToast = true;
       if (snippetTimer) clearTimeout(snippetTimer);
       snippetTimer = setTimeout(() => { snippetToast = false; }, 2000);
       return;
     }
-
-    const range = selection.getRangeAt(0);
-    const container = range.commonAncestorContainer;
-    const el = container.nodeType === 1 ? container as HTMLElement : container.parentElement;
-    const article = el?.closest("article");
-    if (!article) return;
-
-    const cloned = range.cloneContents();
-    const wrapper = document.createElement("div");
-    wrapper.appendChild(cloned);
-
-    capturedHtml = wrapper.innerHTML;
-    selection.removeAllRanges();
 
     snippetLoading = true;
     snippetImageUrl = "";
