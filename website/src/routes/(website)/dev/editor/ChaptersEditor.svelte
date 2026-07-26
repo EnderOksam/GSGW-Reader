@@ -82,7 +82,7 @@
           : `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/gsgw/illustrations/${href}`;
         return `<img src="${src}" alt="${text}"${title ? ` title="${title}"` : ""}>`;
       };
-      return marked.parse(body, { renderer });
+      return marked.parse(body, { renderer, html: true });
     } catch {
       return body;
     }
@@ -330,7 +330,16 @@
 
   $effect(() => {
     const q = search.toLowerCase();
-    filtered = chapters.filter((f) => f.toLowerCase().includes(q));
+    filtered = chapters.filter((f) => {
+      const title = titles.get(f)?.toLowerCase() || '';
+      if (title.includes(q)) return true;
+      const index = indices.get(f);
+      if (index) {
+        const chapterNum = currentBook === "debut" ? String(Number(index) + 1) : index;
+        if (chapterNum.includes(q)) return true;
+      }
+      return false;
+    });
   });
 
   $effect(() => {
@@ -554,7 +563,6 @@
     { syntax: "★:...:★", name: "sms window", cls: "sms-window", code: "★:\\n- PMD: left message\\nright message -\\ncentered message\\n:★", html: '<div class="sms-bubble sms-left" style="background:#FFF8D9;color:#222;">left message</div>\n<div class="sms-bubble sms-right" style="background:#FFF0E1;color:#222;">right message</div>\n<div class="sms-bubble sms-center">centered message</div>', expandable: true, meta: "Prefix with speaker code for colors: PMD (yellow), SAH (orange), BSJ (blue), LSJ (purple), KRB (pink), CE (red), RCW (green). - prefix = left, suffix - = right, no dash = centered" },
     { syntax: "★$...$★", name: "comment window", cls: "alert-window", code: "★$\\n[Title]\\n: Sub-Title\\nDescription\\n-Comment\\n└ reply\\n└└reply reply\\n$★", html: '<div class="comment-post-header"><div class="comment-post-title">Title</div><div class="comment-post-desc"><p>: Sub-Title</p><p>Description</p></div></div><div class="comment-section"><div class="comment">Comment</div><div class="comment-reply depth-1"><span class="reply-icon">└</span><span class="reply-body">reply</span></div><div class="comment-reply depth-2"><span class="reply-icon">└└</span><span class="reply-body">reply reply</span></div></div>', expandable: true, meta: "[title] = title, : desc = description, - comment = top-level comment, └ = reply (each └ adds a depth level, max 2)" },
     { syntax: "★=...=★", name: "debut achievement", cls: "debut-achievement", code: "★=\\n[Achievement]\\n[\\nitem one\\nitem two\\n]\\n=★", html: '<div class="debut-achievement-list"><div class="debut-achievement-list-item">item one</div><div class="debut-achievement-list-divider"></div><div class="debut-achievement-list-item">item two</div></div>', expandable: true, meta: "first line = title, [\\n lines \\n] = list, }text{ = sub-left, {text{ = sub-right, }[!]text} = alert-sub-left, {[!]text{ = alert-sub-right" },
-    { syntax: ";text;", name: "achievement list item", cls: "debut-achievement-list", code: ";list item;", html: '<div class="debut-achievement-list"><div class="debut-achievement-list-item">list item</div></div>', expandable: true, meta: "standalone achievement list item, same look as debut achievement lists" },
     { syntax: "★-...-★", name: "debut window", cls: "debut-window", code: "★-\\nTitle\\n[label text]\\ncontent\\n-★", html: '<div class="debut-window-title">Title</div><div class="debut-window-label">label text</div><p>content</p>', expandable: true, meta: "first line = title (\\ to suppress), [text] on its own line = label div, use \\ before line to keep raw text" },
     { syntax: "}text}", name: "sub left", cls: "", code: "}left label}", html: '<span class="debut-achievement-sub debut-achievement-sub-left">left label</span>', expandable: true },
     { syntax: "{text{", name: "sub right", cls: "", code: "{right label{", html: '<span class="debut-achievement-sub debut-achievement-sub-right">right label</span>', expandable: true },

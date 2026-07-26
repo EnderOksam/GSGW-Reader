@@ -149,6 +149,17 @@ export function preprocessMarkdown(text: string): string {
     return `<span class="silver-text">${inner}</span>`;
   });
 
+  s = s.replace(/\}([^}]+)\}/g, (_: string, content: string) => {
+    const text = content.trim();
+    if (text.startsWith("[!]")) return `<span class="alert-sub alert-sub-left">${text.slice(3).trim()}</span>`;
+    return `<span class="debut-achievement-sub debut-achievement-sub-left">${text}</span>`;
+  });
+  s = s.replace(/\{([^{]+)\{/g, (_: string, content: string) => {
+    const text = content.trim();
+    if (text.startsWith("[!]")) return `<span class="alert-sub alert-sub-right">${text.slice(3).trim()}</span>`;
+    return `<span class="debut-achievement-sub debut-achievement-sub-right">${text}</span>`;
+  });
+
   s = s.replace(/\+[-+]+\n(.*?)\n[-+]+\+/gs, (_: string, inner: string) => {
     const noMeta = inner.trimStart().startsWith("\\");
     if (noMeta) inner = inner.replace("\\", "");
@@ -315,19 +326,6 @@ export function preprocessMarkdown(text: string): string {
     const body = bodyLines.join("\n").trim();
     const titleHtml = title ? `<div class="debut-window-title">${title}</div>\n\n` : "";
     return makeWindow("debut-window", titleHtml + body);
-  });
-
-  s = s.replace(/;([^;]+);/g, '<div class="debut-achievement-list"><div class="debut-achievement-list-item">$1</div></div>');
-
-  s = s.replace(/\}([^}]+)\}/g, (_: string, content: string) => {
-    const text = content.trim();
-    if (text.startsWith("[!]")) return `<span class="alert-sub alert-sub-left">${text.slice(3).trim()}</span>`;
-    return `<span class="debut-achievement-sub debut-achievement-sub-left">${text}</span>`;
-  });
-  s = s.replace(/\{([^{]+)\{/g, (_: string, content: string) => {
-    const text = content.trim();
-    if (text.startsWith("[!]")) return `<span class="alert-sub alert-sub-right">${text.slice(3).trim()}</span>`;
-    return `<span class="debut-achievement-sub debut-achievement-sub-right">${text}</span>`;
   });
 
   s = replaceTwitterUrls(s);

@@ -122,6 +122,12 @@ def debut_achieve_replacer(match):
             '\n</div>',
         body,
     )
+    body = re.sub(
+        r"^\s*\[(.+?)\]\s*$",
+        lambda m: f'<div class="debut-achievement-list">\n<div class="debut-achievement-list-item">{m.group(1).strip()}</div>\n</div>',
+        body,
+        flags=re.MULTILINE,
+    )
 
     def sub_left(match):
         text = match.group(1).strip()
@@ -155,8 +161,37 @@ def safe_html(text):
 
 
 def fix_underline(text):
-    """Convert [text]{.underline} to <span class="underline">text</span>."""
-    return re.sub(r'\[([^\]]+)\]\{\.underline\}', r'<span class="underline">\1</span>', text)
+    """Convert [text]{.underline} to <span class="underline">text</span>.
+    Uses bracket-depth counting to correctly handle nested brackets."""
+    while True:
+        marker = "{.underline}"
+        idx = text.find(marker)
+        if idx == -1:
+            break
+        close_bracket = idx - 1
+        if close_bracket < 0 or text[close_bracket] != "]":
+            break
+        depth = 1
+        pos = close_bracket - 1
+        while pos >= 0 and depth > 0:
+            ch = text[pos]
+            if ch == "]":
+                depth += 1
+            elif ch == "[":
+                depth -= 1
+            pos -= 1
+        if depth != 0:
+            break
+        open_bracket = pos + 1
+        inner = text[open_bracket + 1 : close_bracket]
+        text = (
+            text[:open_bracket]
+            + '<span class="underline">'
+            + inner
+            + "</span>"
+            + text[idx + len(marker) :]
+        )
+    return text
 
 
 def sms_window_replacer(match):
@@ -323,22 +358,6 @@ def convert_chapter(content):
         content = content.replace(key, val)
 
     content = bw.DISTORT_RE.sub(bw.distorted_replacer, content)
-
-    # }text} and {text{ subs (before windows so they don't match ::: {…} markers)
-    def global_sub_left(match):
-        text = match.group(1).strip()
-        if text.startswith("[!]"):
-            return f'<span class="alert-sub alert-sub-left">{text[3:].strip()}</span>'
-        return f'<span class="debut-achievement-sub debut-achievement-sub-left">{text}</span>'
-
-    def global_sub_right(match):
-        text = match.group(1).strip()
-        if text.startswith("[!]"):
-            return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
-        return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
-
-    content = re.sub(r"\}([^\n}]+)\}", global_sub_left, content)
-    content = re.sub(r"\{([^\n{]+)\{", global_sub_right, content)
 
     # + windows
     content = bw.WIKI_WINDOW_RE.sub(bw.wiki_window_replacer, content)

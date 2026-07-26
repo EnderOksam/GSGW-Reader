@@ -8,12 +8,8 @@
   import imgManwhaCover from "$lib/assets/webtoon-cover.webp";
   import imgDebutCover from "$lib/assets/debut.webp";
   import book_meta from "$lib/meta.json";
-
-  interface Chapter {
-    title: string;
-    slug: string | number;
-    category?: string;
-  }
+  import { searchChapterContent, renderSnippet, storeSnippetTarget } from "$lib/content-search";
+  import type { Chapter, ContentMatch } from "$lib/content-search";
 
   interface BookConfig {
     title: string;
@@ -148,6 +144,11 @@
   }
   let selectedTL = $state("");
 
+  let isSearchingContent = $state(false);
+  let contentMatches = $state<Map<string, ContentMatch>>(new Map());
+  let contentSearchAbort: AbortController | null = null;
+  let contentSearchTimeout: ReturnType<typeof setTimeout> | null = null;
+
   $effect(() => {
     const tls = Object.keys(meta[bookSlug] || {});
     if (!selectedTL || !tls.includes(selectedTL)) {
@@ -162,13 +163,50 @@
   const availableTLs = $derived(Object.keys(meta[bookSlug] || {}));
   const chapters = $derived(meta[bookSlug]?.[selectedTL] || []);
 
-  const filteredChapters = $derived(() => {
-    const list = chapters.filter(
+  const titleSlugMatches = $derived(
+    chapters.filter(
       (ch: Chapter) =>
         ch.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         ch.slug.toString().includes(searchQuery),
-    );
-    return isReversed ? [...list].reverse() : list;
+    ),
+  );
+
+  const filteredChapters = $derived(() => {
+    const titleSlugSet = new Set(titleSlugMatches.map((c: Chapter) => c.slug.toString()));
+    const contentOnly = [...contentMatches.values()]
+      .map((m) => m.chapter)
+      .filter((c: Chapter) => !titleSlugSet.has(c.slug.toString()));
+    const combined = [...titleSlugMatches, ...contentOnly];
+    return isReversed ? [...combined].reverse() : combined;
+  });
+
+  $effect(() => {
+    const q = searchQuery;
+    const tls = titleSlugMatches;
+    const tl = selectedTL;
+    if (contentSearchAbort) contentSearchAbort.abort();
+    if (contentSearchTimeout) clearTimeout(contentSearchTimeout);
+    contentMatches = new Map();
+    isSearchingContent = false;
+
+    if (q.length >= 3 && tls.length < 3 && !isTemp && !isManwha) {
+      const timeout = setTimeout(() => {
+        contentSearchAbort = new AbortController();
+        isSearchingContent = true;
+        searchChapterContent(
+          q, chapters, titleSlugMatches, bookSlug, tl,
+          (matches) => { contentMatches = matches; },
+          () => { isSearchingContent = true; },
+          () => { isSearchingContent = false; },
+          contentSearchAbort.signal,
+        );
+      }, 500);
+      contentSearchTimeout = timeout;
+    }
+    return () => {
+      if (contentSearchAbort) contentSearchAbort.abort();
+      if (contentSearchTimeout) clearTimeout(contentSearchTimeout);
+    };
   });
 
   const isContinueChapter = (ch: Chapter) =>
@@ -574,39 +612,61 @@
       </div>
 
       <div class="p-3 md:p-4 space-y-1.5">
+        {#if isSearchingContent}
+          <div class="flex items-center gap-2 px-3 py-2 text-xs text-base-content/50">
+            <span class="loading loading-spinner loading-xs"></span>
+            Searching chapter content...
+          </div>
+        {/if}
         {#if filteredChapters().length > 0}
           {#each filteredChapters() as ch}
             {@const isCurr = isContinueChapter(ch)}
-            <a
-              href="../../read/{bookSlug}/{selectedTL}/{ch.slug}"
-              class="group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-base-200/30 hover:bg-base-200/70 border transition-all duration-200 relative overflow-hidden {isCurr ? 'border-accent/20 bg-accent/5 hover:bg-accent/10' : 'border-transparent hover:border-base-content/10'}"
-            >
-              {#if isCurr}
-                <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-accent rounded-full"></div>
-              {/if}
-              <span class="text-xs md:text-sm font-mono opacity-40 tabular-nums shrink-0 leading-none w-24 text-right mr-2 whitespace-nowrap">
-                Chapter {ch.slug}
-              </span>
-              <div class="flex flex-col min-w-0 grow">
-                <span class="text-sm md:text-base font-bold truncate transition-colors {isCurr ? 'text-accent' : ''} group-hover:text-accent flex items-center gap-2">
-                  {ch.title}
-                  {#if ch.category}
-                    <span class="ml-auto badge badge-xs badge-ghost font-mono tracking-wider opacity-70">
-                      {ch.category}
-                    </span>
-                  {/if}
+            {@const contentMatch = contentMatches.get(ch.slug.toString())}
+            <div class="rounded-xl {isCurr ? 'ring-1 ring-accent/20 bg-accent/5' : ''}">
+              <a
+                href="../../read/{bookSlug}/{selectedTL}/{ch.slug}"
+                class="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-base-200/30 hover:bg-base-200/70 transition-all duration-200 relative {isCurr ? 'hover:bg-accent/10' : ''}"
+              >
+                {#if isCurr}
+                  <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-accent rounded-full"></div>
+                {/if}
+                <span class="text-xs md:text-sm font-mono opacity-40 tabular-nums shrink-0 leading-none w-24 text-right mr-2 whitespace-nowrap">
+                  Chapter {ch.slug}
                 </span>
-                <div class="flex items-center gap-2 mt-1">
-                  {#if isCurr}
-                    <span class="inline-flex items-center gap-1 text-[10px] font-mono text-accent">
+                <div class="flex flex-col min-w-0 grow">
+                  <span class="text-sm md:text-base font-bold truncate transition-colors {isCurr ? 'text-accent' : ''} group-hover/card:text-accent flex items-center gap-2">
+                    {ch.title}
+                    {#if ch.category}
+                      <span class="ml-auto badge badge-xs badge-ghost font-mono tracking-wider opacity-70">
+                        {ch.category}
+                      </span>
+                    {/if}
+                  </span>
+                  {#if !contentMatch && isCurr}
+                    <span class="inline-flex items-center gap-1 text-[10px] font-mono text-accent mt-1">
                       <Icon icon="material-symbols:resume" class="size-3" />
                       In progress
                     </span>
                   {/if}
                 </div>
-              </div>
-              <Icon icon="material-symbols:chevron-right-rounded" class="size-5 opacity-0 -translate-x-2 group-hover:opacity-30 group-hover:translate-x-0 transition-all duration-200 shrink-0" />
-            </a>
+                {#if !contentMatch}
+                  <Icon icon="material-symbols:chevron-right-rounded" class="size-5 opacity-0 -translate-x-2 group-hover/card:opacity-30 group-hover/card:translate-x-0 transition-all duration-200 shrink-0" />
+                {/if}
+              </a>
+              {#if contentMatch}
+                <button
+                  type="button"
+                  class="ml-5 md:ml-8 mr-2 mt-1 mb-1 px-3 py-2.5 rounded-lg bg-base-200/30 border border-accent/15 block transition-colors text-left cursor-pointer hover:bg-base-200/50"
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    storeSnippetTarget(contentMatch.snippet, searchQuery);
+                    window.location.href = `../../read/${bookSlug}/${selectedTL}/${ch.slug}`;
+                  }}
+                >
+                  <p class="text-[11px] leading-[1.7] text-base-content/50 whitespace-pre-line [&_strong]:text-base-content/65 [&_strong]:font-semibold [&_em]:italic [&_em]:text-base-content/50 [&_u]:decoration-base-content/25">{@html renderSnippet(contentMatch.snippet, searchQuery)}</p>
+                </button>
+              {/if}
+            </div>
           {/each}
         {:else}
           <div class="flex flex-col items-center justify-center py-28 opacity-25 gap-4">

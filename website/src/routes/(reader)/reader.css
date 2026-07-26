@@ -1192,3 +1192,11 @@ body .reader-container .sms-center.sms-center {
   opacity: 0.8;
   font-size: 0.85em;
 }
+
+.reader-container .search-highlight {
+  animation: search-flash 2s ease-out;
+}
+@keyframes search-flash {
+  0% { background: rgba(255, 200, 0, 0.3); }
+  100% { background: transparent; }
+}

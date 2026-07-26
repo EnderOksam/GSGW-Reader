@@ -203,6 +203,14 @@ def process_html_images(html_content):
 
 def escape_markdown_except_bold(text):
 
+    html_placeholders = {}
+    def save_html(m):
+        key = f"\x00HTML{len(html_placeholders)}\x00"
+        html_placeholders[key] = m.group(0)
+        return key
+    text = re.sub(r'<[a-zA-Z][^>]*>.*?</[a-zA-Z][^>]*>', save_html, text, flags=re.DOTALL)
+    text = re.sub(r'<[a-zA-Z][^>]*/>', save_html, text)
+
     text = re.sub(r'(?<!\\)\[', r'\\[', text)
     text = re.sub(r'(?<!\\)\]', r'\\]', text)
 
@@ -214,6 +222,9 @@ def escape_markdown_except_bold(text):
     text = re.sub(r'(?m)^(?<!\\):(?=\s)', r'\\:', text)
     text = re.sub(r'(?m)^(?<!\\)#(?=\s)', r'\\#', text)
     text = re.sub(r'(?m)^(?<!\\)>(?=\s)', r'\\>', text)
+
+    for key, val in html_placeholders.items():
+        text = text.replace(key, val)
 
     return text
 
@@ -555,6 +566,12 @@ def debut_achieve_replacer(match):
             '\n</div>',
         body,
     )
+    body = re.sub(
+        r"^\s*\[(.+?)\]\s*$",
+        lambda m: f'<div class="debut-achievement-list">\n<div class="debut-achievement-list-item">{m.group(1).strip()}</div>\n</div>',
+        body,
+        flags=re.MULTILINE,
+    )
 
     def sub_left(match):
         text = match.group(1).strip()
@@ -588,8 +605,37 @@ def safe_html(text):
 
 
 def fix_underline(text):
-    """Convert [text]{.underline} to <span class="underline">text</span>."""
-    return re.sub(r'\[([^\]]+)\]\{\.underline\}', r'<span class="underline">\1</span>', text)
+    """Convert [text]{.underline} to <span class="underline">text</span>.
+    Uses bracket-depth counting to correctly handle nested brackets."""
+    while True:
+        marker = "{.underline}"
+        idx = text.find(marker)
+        if idx == -1:
+            break
+        close_bracket = idx - 1
+        if close_bracket < 0 or text[close_bracket] != "]":
+            break
+        depth = 1
+        pos = close_bracket - 1
+        while pos >= 0 and depth > 0:
+            ch = text[pos]
+            if ch == "]":
+                depth += 1
+            elif ch == "[":
+                depth -= 1
+            pos -= 1
+        if depth != 0:
+            break
+        open_bracket = pos + 1
+        inner = text[open_bracket + 1 : close_bracket]
+        text = (
+            text[:open_bracket]
+            + '<span class="underline">'
+            + inner
+            + "</span>"
+            + text[idx + len(marker) :]
+        )
+    return text
 
 
 def sms_window_replacer(match):

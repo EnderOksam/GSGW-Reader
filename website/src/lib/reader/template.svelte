@@ -5,8 +5,9 @@
 
   import { readerState } from "$lib/reader.svelte";
   import { hydrateTwitterEmbeds } from "$lib/reader/twitter-embeds";
+  import { consumeSnippetTarget } from "$lib/content-search";
 
-  import { untrack } from 'svelte';
+  import { untrack, onMount } from 'svelte';
 
 
 
@@ -28,6 +29,27 @@
 
     }
 
+  });
+
+  onMount(() => {
+    const target = consumeSnippetTarget();
+    if (!target) return;
+    const { query } = target;
+    setTimeout(() => {
+      const article = document.querySelector("article.reader-container");
+      if (!article) return;
+      const q = query.toLowerCase();
+      const all = article.querySelectorAll("p, span, div, h1, h2, h3, h4, strong, em");
+      for (const el of all) {
+        const text = el.textContent?.toLowerCase() || "";
+        if (text.includes(q)) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.classList.add("search-highlight");
+          setTimeout(() => el.classList.remove("search-highlight"), 2500);
+          return;
+        }
+      }
+    }, 300);
   });
 
 
