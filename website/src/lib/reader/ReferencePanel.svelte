@@ -270,45 +270,46 @@
   class="fixed top-0 right-0 z-50 h-dvh w-80 sm:w-96 bg-base-100 shadow-2xl border-l border-base-content/10 rounded-l-2xl transition-transform duration-300 ease-out"
   class:translate-x-0={readerState.refPanelOpen}
   class:translate-x-full={!readerState.refPanelOpen}
-  style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"
+  style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; scroll-padding-top: 6.5rem;"
 >
-  <div class="sticky top-0 z-20 bg-base-100/95 backdrop-blur flex items-center px-4 pt-2.5 pb-1.5 border-b border-base-content/10 relative">
-    <h2 class="font-bold text-lg text-primary">Reference</h2>
-    <span class="flex-1"></span>
-    <div class="tooltip tooltip-bottom" data-tip="Reference Settings">
-      <button class="btn btn-sm btn-circle btn-ghost opacity-50 hover:opacity-100" onclick={() => spoilerDialog?.showModal()} aria-label="Reference Settings">
-        <Icon icon="material-symbols:settings-outline-rounded" class="size-5" />
-      </button>
+  <div class="sticky top-0 z-30 border-b border-base-content/10 relative bg-base-100">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none"></div>
+    <div class="relative px-5 pt-4 pb-3">
+      <div class="flex items-center justify-between mb-3">
+        <span class="font-bold text-lg text-primary flex items-center gap-2">
+          <Icon icon="mdi:book-open-page-variant" class="size-5" /> Reference
+        </span>
+        <div class="flex items-center gap-1">
+          <button
+            class="btn btn-sm btn-circle btn-ghost opacity-50 hover:opacity-100 max-sm:hidden {pinned ? 'text-primary opacity-100' : ''}"
+            onclick={() => pinned = !pinned}
+            aria-label={pinned ? 'Unpin panel' : 'Pin panel'}
+          >
+            <Icon icon={pinned ? "material-symbols:keep" : "material-symbols:keep-off-outline"} class="size-5" />
+          </button>
+          <button class="btn btn-sm btn-circle btn-ghost opacity-50 hover:opacity-100" onclick={() => spoilerDialog?.showModal()} aria-label="Reference Settings">
+            <Icon icon="material-symbols:settings-outline-rounded" class="size-5" />
+          </button>
+        </div>
+      </div>
+      <div class="flex gap-1.5">
+        <button class="flex-1 btn btn-sm rounded-xl {refTab === 'characters' ? 'btn-primary' : 'btn-ghost bg-base-200/60'}" onclick={() => refTab = 'characters'}>Characters</button>
+        <button class="flex-1 btn btn-sm rounded-xl cursor-not-allowed btn-ghost bg-base-200/60 line-through opacity-40" onclick={() => {}}>Ghost Stories</button>
+        <button class="flex-1 btn btn-sm rounded-xl cursor-not-allowed btn-ghost bg-base-200/60 line-through opacity-40" onclick={() => {}}>Information</button>
+      </div>
     </div>
-    <button
-      class="btn btn-sm btn-circle btn-ghost opacity-50 hover:opacity-100 max-sm:hidden {pinned ? 'text-primary opacity-100' : ''}"
-      onclick={() => pinned = !pinned}
-      aria-label={pinned ? 'Unpin panel' : 'Pin panel'}
-    >
-      <Icon icon={pinned ? "material-symbols:keep" : "material-symbols:keep-off-outline"} class="size-5" />
-    </button>
   </div>
-  <div class="flex flex-col gap-3 p-4">
-    {#if refTab === 'characters'}
-      <p class="text-[10px] opacity-40 text-center leading-tight">
-        <a href="https://gsgw.miraheze.org/wiki/GDCG_Wiki" target="_blank" rel="noopener noreferrer" class="no-underline hover:opacity-60 transition-opacity">all information used for the reference tab is sourced from the wiki</a>
-      </p>
-    {/if}
-    <div class="join w-full">
-      <button class="join-item btn btn-sm flex-1 {refTab === 'characters' ? 'btn-primary' : 'btn-ghost bg-base-200'}" onclick={() => refTab = 'characters'}>Characters</button>
-      <button class="join-item btn btn-sm flex-1 cursor-not-allowed {refTab === 'ghost stories' ? 'btn-primary line-through' : 'btn-ghost bg-base-200 line-through opacity-50'}" onclick={() => {}}>Ghost Stories</button>
-      <button class="join-item btn btn-sm flex-1 cursor-not-allowed {refTab === 'information' ? 'btn-primary line-through' : 'btn-ghost bg-base-200 line-through opacity-50'}" onclick={() => {}}>Information</button>
-    </div>
 
+  <div class="p-4">
     <div>
       {#if refTab === 'characters'}
         <div class="flex flex-col gap-4">
           {#if revealedCharacters.length === 0}
-            <div class="rounded-xl bg-base-200/40 border border-base-content/10 overflow-hidden">
-              <div class="w-full h-48 relative bg-base-300/50 flex items-center justify-center">
+            <div class="rounded-2xl bg-base-200/40 border border-base-content/5 overflow-hidden">
+              <div class="w-full h-48 relative bg-base-300/30 flex items-center justify-center">
                 <div class="text-center px-6">
-                  <Icon icon="material-symbols:search-rounded" class="size-8 opacity-30 mx-auto mb-2" />
-                  <p class="text-xs font-medium opacity-60">Keep reading to discover more characters&hellip;</p>
+                  <Icon icon="material-symbols:search-rounded" class="size-8 text-base-content/20 mx-auto mb-2" />
+                  <p class="text-xs font-medium text-base-content/40">Keep reading to discover more characters&hellip;</p>
                 </div>
               </div>
             </div>
@@ -396,11 +397,11 @@
               </div>
             {/each}
             {#if !discoveryDisabled && allCharacters.some(ch => ch.firstAppearance == null || ch.firstAppearance > currentChapter)}
-              <div class="rounded-xl bg-base-200/40 border border-base-content/10 overflow-hidden">
-                <div class="w-full h-36 relative bg-base-300/50 flex items-center justify-center">
+              <div class="rounded-2xl bg-base-200/40 border border-base-content/5 overflow-hidden">
+                <div class="w-full h-36 relative bg-base-300/30 flex items-center justify-center">
                   <div class="text-center px-6">
-                    <Icon icon="material-symbols:search-rounded" class="size-7 opacity-30 mx-auto mb-1.5" />
-                    <p class="text-xs font-medium opacity-60">Keep reading to discover more characters&hellip;</p>
+                    <Icon icon="material-symbols:search-rounded" class="size-7 text-base-content/20 mx-auto mb-1.5" />
+                    <p class="text-xs font-medium text-base-content/40">Keep reading to discover more characters&hellip;</p>
                   </div>
                 </div>
               </div>
@@ -408,47 +409,60 @@
           {/if}
         </div>
       {:else if refTab === 'ghost stories'}
-        <p class="text-sm opacity-50 py-8 text-center">Ghost stories coming soon...</p>
+        <div class="py-12 text-center">
+          <Icon icon="mdi:ghost" class="size-8 text-base-content/15 mx-auto mb-2" />
+          <p class="text-sm text-base-content/30">Coming soon&hellip;</p>
+        </div>
       {:else}
-        <p class="text-sm opacity-50 py-8 text-center">Information coming soon...</p>
+        <div class="py-12 text-center">
+          <Icon icon="mdi:information-outline" class="size-8 text-base-content/15 mx-auto mb-2" />
+          <p class="text-sm text-base-content/30">Coming soon&hellip;</p>
+        </div>
       {/if}
     </div>
   </div>
 </div>
 
 <dialog bind:this={spoilerDialog} class="modal">
-  <div class="modal-box">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-        <Icon icon="material-symbols:close-rounded" class="size-5" />
-      </button>
-    </form>
-    <h3 class="font-bold text-lg mb-4">Reference Settings</h3>
-    <div class="rounded-xl bg-base-200 border border-base-content/10 p-3 space-y-4">
-      <label class="flex items-start justify-between cursor-pointer gap-3">
+  <div class="modal-box bg-base-100 p-0 rounded-box shadow-2xl overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+      <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+        <span class="font-bold text-lg text-primary flex items-center gap-2">
+          <Icon icon="material-symbols:settings-outline-rounded" class="size-5" /> Reference Settings
+        </span>
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="p-5 space-y-3">
+      <label class="flex items-center justify-between cursor-pointer p-3 rounded-xl bg-base-200/40 border border-base-content/5 hover:bg-base-200/60 transition-colors">
         <div class="flex flex-col gap-0.5">
           <span class="text-sm font-medium">Show full spoilers</span>
-          <span class="text-xs opacity-50">disable the spoiler warning when seeing alts</span>
+          <span class="text-xs text-base-content/40">Disable the spoiler warning when seeing alts</span>
         </div>
-        <input type="checkbox" class="toggle toggle-sm shrink-0 self-center" bind:checked={spoilerDisabled} />
+        <input type="checkbox" class="toggle toggle-primary toggle-sm shrink-0" bind:checked={spoilerDisabled} />
       </label>
-      <label class="flex items-start justify-between cursor-pointer gap-3">
+      <label class="flex items-center justify-between cursor-pointer p-3 rounded-xl bg-base-200/40 border border-base-content/5 hover:bg-base-200/60 transition-colors">
         <div class="flex flex-col gap-0.5">
           <span class="text-sm font-medium">Disable discovery</span>
-          <span class="text-xs opacity-50">show characters regardless of chapter number</span>
+          <span class="text-xs text-base-content/40">Show characters regardless of chapter number</span>
         </div>
-        <input type="checkbox" class="toggle toggle-sm shrink-0 self-center" bind:checked={discoveryDisabled} />
+        <input type="checkbox" class="toggle toggle-primary toggle-sm shrink-0" bind:checked={discoveryDisabled} />
       </label>
-      <label class="flex items-start justify-between cursor-pointer gap-3">
+      <label class="flex items-center justify-between cursor-pointer p-3 rounded-xl bg-base-200/40 border border-base-content/5 hover:bg-base-200/60 transition-colors">
         <div class="flex flex-col gap-0.5">
           <span class="text-sm font-medium">Dark card theme</span>
-          <span class="text-xs opacity-50">use pre-set character card dark themes (this takes priority over custom colors)</span>
+          <span class="text-xs text-base-content/40">Use pre-set character card dark themes</span>
         </div>
-        <input type="checkbox" class="toggle toggle-sm shrink-0 self-center" bind:checked={darkCards} />
+        <input type="checkbox" class="toggle toggle-primary toggle-sm shrink-0" bind:checked={darkCards} />
       </label>
     </div>
-    <div class="flex items-center justify-end border-t border-base-content/10 pt-4 gap-2">
-      <span class="text-xs opacity-50">pick your own card colors &rarr;</span>
+    <div class="flex items-center justify-end px-6 py-4 border-t border-base-content/10 gap-2">
+      <span class="text-xs text-base-content/40">Card colors &rarr;</span>
       <button class="btn btn-xs btn-circle btn-ghost opacity-50 hover:opacity-100" onclick={() => { spoilerDialog?.close(); colorDialog?.showModal(); }} aria-label="Card Colors">
         <Icon icon="material-symbols:format-paint-outline-rounded" class="size-4" />
       </button>
@@ -460,28 +474,35 @@
 </dialog>
 
 <dialog bind:this={colorDialog} class="modal">
-  <div class="modal-box">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-        <Icon icon="material-symbols:close-rounded" class="size-5" />
-      </button>
-    </form>
-    <h3 class="font-bold text-lg mb-3">Card Colors</h3>
-    <div class="rounded-xl bg-base-200/50 border border-base-content/10 p-4">
+  <div class="modal-box bg-base-100 p-0 rounded-box shadow-2xl overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+      <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+        <span class="font-bold text-lg text-primary flex items-center gap-2">
+          <Icon icon="material-symbols:format-paint-outline-rounded" class="size-5" /> Card Colors
+        </span>
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="p-5">
       <div class="flex gap-6">
         <div class="flex flex-col gap-2 flex-1">
           {#each factions as f}
-            <div class="flex items-center gap-3 px-3 py-2 rounded-lg {linkedFaction === f.id ? 'bg-base-content/5' : ''} transition-colors">
+            <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl {linkedFaction === f.id ? 'bg-base-content/5 ring-1 ring-primary/20' : 'bg-base-200/40 border border-base-content/5'} transition-all">
               <div
-                class="size-6 rounded-md shrink-0 border border-base-content/10"
+                class="size-7 rounded-lg shrink-0 border border-base-content/10 shadow-sm"
                 style="background: {factionColors[f.id] || '#fff'}"
               ></div>
               <div class="flex flex-col min-w-0 flex-1">
                 <span class="text-sm font-medium">{f.label}</span>
-                <div class="flex items-center gap-1.5 mt-0.5">
+                <div class="flex items-center gap-1.5 mt-1">
                   <input
                     type="text"
-                    class="input input-xs input-bordered font-mono uppercase w-22"
+                    class="input input-xs input-bordered font-mono uppercase w-22 rounded-lg"
                     placeholder="#______"
                     maxlength={7}
                     bind:value={factionColors[f.id]}
@@ -495,9 +516,9 @@
                   />
                 </div>
               </div>
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-0.5">
                 <button
-                  class="btn btn-xs btn-circle btn-ghost opacity-50 hover:opacity-100 shrink-0 {linkedFaction === f.id ? 'text-primary opacity-100' : ''}"
+                  class="btn btn-xs btn-circle btn-ghost opacity-40 hover:opacity-100 shrink-0 {linkedFaction === f.id ? 'text-primary opacity-100' : ''}"
                   onclick={() => {
                     linkedFaction = linkedFaction === f.id ? null : f.id;
                     if (linkedFaction === f.id) {
@@ -512,7 +533,7 @@
                   <Icon icon={linkedFaction === f.id ? "material-symbols:link-rounded" : "material-symbols:link-off-rounded"} class="size-4" />
                 </button>
                 <button
-                  class="btn btn-xs btn-circle btn-ghost opacity-30 hover:opacity-100 shrink-0"
+                  class="btn btn-xs btn-circle btn-ghost opacity-20 hover:opacity-100 shrink-0"
                   onclick={() => {
                     const defaults: Record<string, string> = { daydream: "#ffffff", bureau: "#d0d8ff", ghost: "#000000" };
                     factionColors[f.id] = defaults[f.id];
@@ -539,8 +560,8 @@
           <div class="relative w-28 h-4 rounded-full overflow-hidden border border-base-content/20 cursor-pointer touch-none" style="background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)" onmousedown={startHueDrag} ontouchstart={startHueDrag} role="presentation">
             <div class="absolute rounded-full border-2 border-white shadow-md size-4 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style="left: {hue / 360 * 100}%; top: 50%; background: hsl({hue}, 100%, 50%)"></div>
           </div>
-          <div class="flex items-center gap-2 text-xs font-mono uppercase bg-base-300/50 px-3 py-1 rounded-full">
-            <span class="size-3 rounded-sm" style="background: {pickerColor}"></span>
+          <div class="flex items-center gap-2 text-xs font-mono uppercase bg-base-200/60 px-3 py-1.5 rounded-full border border-base-content/5">
+            <span class="size-3 rounded-sm shadow-sm" style="background: {pickerColor}"></span>
             <span class="opacity-80">{pickerColor}</span>
           </div>
         </div>
