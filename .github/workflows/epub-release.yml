@@ -53,9 +53,9 @@ jobs:
 
       - name: Upload EPUBs
         run: |
-          set -o noglob
           for epub in scripts/epub/*.epub; do
-            gh release upload latest --clobber -- "$epub"
+            base=$(basename "$epub")
+            gh release upload latest --clobber --name "$base" -- "$epub"
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
