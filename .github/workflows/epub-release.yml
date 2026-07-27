@@ -44,9 +44,8 @@ jobs:
             gh release delete "$LAST_TAG" --yes --cleanup-tag 2>/dev/null || true
           fi
 
-          gh release create "latest" \
+          gh release create latest \
             --title "latest - $DATE" \
-            --tag "latest" \
             --notes "EPUB build from $DATE" \
             --latest
         env:

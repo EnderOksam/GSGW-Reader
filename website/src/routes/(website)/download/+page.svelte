@@ -1,8 +1,26 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { fade, fly } from "svelte/transition";
   import Icon from "@iconify/svelte";
 
-  const standardUrl = "https://raw.githubusercontent.com/EnderOksam/GSGW-Reader/main/scripts/epub/Got%20Dropped%20into%20a%20Ghost%20Story%2C%20Still%20Gotta%20Work%20-%20fantl%20%5BDefault%5D.epub";
+  const releaseApiUrl = "https://api.github.com/repos/EnderOksam/GSGW-Reader/releases/tags/latest";
+  const releasePageUrl = "https://github.com/EnderOksam/GSGW-Reader/releases/tag/latest";
+
+  let downloadCount = $state(0);
+  let downloadUrl = $state(releasePageUrl);
+  let releaseDate = $state("");
+
+  onMount(async () => {
+    try {
+      const res = await fetch(releaseApiUrl);
+      if (!res.ok) return;
+      const data = await res.json();
+      downloadCount = (data.assets || []).reduce((sum: number, a: any) => sum + (a.download_count || 0), 0);
+      releaseDate = data.published_at?.slice(0, 10) || "";
+      const epub = (data.assets || []).find((a: any) => a.name?.endsWith(".epub"));
+      if (epub?.browser_download_url) downloadUrl = epub.browser_download_url;
+    } catch {}
+  });
 
   let recommendModal: HTMLDialogElement;
   const openRecommended = () => recommendModal?.showModal();
@@ -42,13 +60,18 @@
             Built EPUB based on the markdown files in the GitHub. Up to date with edits.
           </p>
           <p class="text-base-content/50 leading-relaxed text-xs">
-            It gets automatically updated on the 1st and 15th of every month.
+            {#if releaseDate}Last updated {releaseDate}.{/if}
+            {#if downloadCount > 0}
+              <span class="inline-flex items-center gap-1 ml-1">
+                <Icon icon="mdi:download" class="size-3" />{downloadCount.toLocaleString()}
+              </span>
+            {/if}
           </p>
         </div>
 
         <div class="w-full md:w-80 flex flex-col gap-3 shrink-0">
           <a
-            href={standardUrl}
+            href={downloadUrl}
             class="btn h-auto py-4 px-5 border-none bg-linear-to-r from-primary/90 to-primary text-white hover:brightness-110 shadow-lg shadow-primary/20 flex items-center justify-between group/btn text-base"
           >
             <div class="text-left">
