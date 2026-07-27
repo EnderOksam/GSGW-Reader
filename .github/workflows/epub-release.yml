@@ -22,7 +22,7 @@ jobs:
         run: pip install Pillow
 
       - name: Build EPUBs
-        run: python scripts/build_epub.py --no-fetch-twitter
+        run: python scripts/build_epub.py
 
       - name: Rotate releases
         run: |

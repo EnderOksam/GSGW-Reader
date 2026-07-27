@@ -82,16 +82,20 @@
           <p class="text-base-content/70 leading-relaxed text-sm pt-2">
             Built EPUB based on the markdown files in the GitHub. Up to date with edits.
           </p>
-          <p class="text-base-content/50 leading-relaxed text-xs">
+          <div class="flex items-center gap-3 pt-1">
             {#if releaseDate}
-              Last updated {releaseDate}
-              {#if downloadCount > 0}
-                <span class="inline-flex items-center gap-1">
-                  (<Icon icon="mdi:download" class="size-3" />{downloadCount.toLocaleString()})
-                </span>
-              {/if}
+              <span class="inline-flex items-center gap-1.5 text-xs font-mono text-base-content/40">
+                <Icon icon="mdi:calendar-outline" class="size-3.5" />
+                {releaseDate}
+              </span>
             {/if}
-          </p>
+            {#if downloadCount > 0}
+              <span class="inline-flex items-center gap-1.5 text-xs font-mono text-base-content/40">
+                <Icon icon="mdi:download-outline" class="size-3.5" />
+                {downloadCount.toLocaleString()}
+              </span>
+            {/if}
+          </div>
         </div>
 
         <div class="w-full md:w-80 flex flex-col gap-3 shrink-0">
