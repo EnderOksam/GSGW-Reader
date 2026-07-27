@@ -1159,7 +1159,7 @@ def build_translation(tl_path: Path, args: argparse.Namespace) -> Path | None:
             )
         )
 
-    output_name = sanitize_filename(f"{book_title} - {tl_name} (Default).epub", "book.epub")
+    output_name = f"{book_title} - {tl_name} (Default).epub"
     epub_path = OUTPUT_DIR / output_name
     write_epub(epub_path, book_title, master_meta, items, assets, cover_item, cover_asset)
     save_tweet_cache(tweet_cache)

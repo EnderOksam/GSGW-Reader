@@ -4,11 +4,12 @@
   import Icon from "@iconify/svelte";
 
   const releaseApiUrl = "https://api.github.com/repos/EnderOksam/GSGW-Reader/releases/tags/latest";
-  const releasePageUrl = "https://github.com/EnderOksam/GSGW-Reader/releases/tag/latest";
 
   let downloadCount = $state(0);
-  let downloadUrl = $state(releasePageUrl);
+  let downloadUrl = $state("");
+  let epubName = $state("");
   let releaseDate = $state("");
+  let downloading = $state(false);
 
   onMount(async () => {
     try {
@@ -18,9 +19,31 @@
       downloadCount = (data.assets || []).reduce((sum: number, a: any) => sum + (a.download_count || 0), 0);
       releaseDate = data.published_at?.slice(0, 10) || "";
       const epub = (data.assets || []).find((a: any) => a.name?.endsWith(".epub"));
-      if (epub?.browser_download_url) downloadUrl = epub.browser_download_url;
+      if (epub?.browser_download_url) {
+        downloadUrl = epub.browser_download_url;
+        epubName = epub.name;
+      }
     } catch {}
   });
+
+  async function handleDownload() {
+    if (!downloadUrl || downloading) return;
+    downloading = true;
+    try {
+      const res = await fetch(downloadUrl);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = epubName || "epub.epub";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(downloadUrl, "_blank");
+    } finally {
+      downloading = false;
+    }
+  }
 
   let recommendModal: HTMLDialogElement;
   const openRecommended = () => recommendModal?.showModal();
@@ -60,23 +83,26 @@
             Built EPUB based on the markdown files in the GitHub. Up to date with edits.
           </p>
           <p class="text-base-content/50 leading-relaxed text-xs">
-            {#if releaseDate}Last updated {releaseDate}.{/if}
-            {#if downloadCount > 0}
-              <span class="inline-flex items-center gap-1 ml-1">
-                <Icon icon="mdi:download" class="size-3" />{downloadCount.toLocaleString()}
-              </span>
+            {#if releaseDate}
+              Last updated {releaseDate}
+              {#if downloadCount > 0}
+                <span class="inline-flex items-center gap-1">
+                  (<Icon icon="mdi:download" class="size-3" />{downloadCount.toLocaleString()})
+                </span>
+              {/if}
             {/if}
           </p>
         </div>
 
         <div class="w-full md:w-80 flex flex-col gap-3 shrink-0">
-          <a
-            href={downloadUrl}
+          <button
+            onclick={handleDownload}
+            disabled={downloading || !downloadUrl}
             class="btn h-auto py-4 px-5 border-none bg-linear-to-r from-primary/90 to-primary text-white hover:brightness-110 shadow-lg shadow-primary/20 flex items-center justify-between group/btn text-base"
           >
             <div class="text-left">
               <div class="font-bold flex items-center gap-2 text-lg">
-                Download EPUB
+                {downloading ? "Downloading..." : "Download EPUB"}
                 <Icon icon="mdi:star-four-points" class="size-4 text-yellow-300" />
               </div>
               <div class="text-xs opacity-80 font-normal">
@@ -84,7 +110,7 @@
               </div>
             </div>
             <Icon icon="mdi:download" class="size-7 opacity-70 group-hover/btn:translate-y-1 transition-transform" />
-          </a>
+          </button>
           <button onclick={openRecommended} class="btn h-auto py-4 px-5 border-none bg-linear-to-r from-violet-600/90 to-purple-600 text-white hover:brightness-110 shadow-lg shadow-violet-600/20 flex items-center justify-between group/btn text-base">
             <div class="text-left">
               <div class="font-bold flex items-center gap-2 text-lg">
