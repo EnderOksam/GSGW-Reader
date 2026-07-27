@@ -556,6 +556,11 @@ def render_inline(text: str, ctx: RenderContext) -> str:
     store: dict[str, str] = {}
     text = protect_escapes(text, store)
 
+    def br_repl(match: re.Match[str]) -> str:
+        return stash_html(store, "<br /><br />")
+
+    text = re.sub(r"<br\s*/?>", br_repl, text, flags=re.IGNORECASE)
+
     def code_repl(match: re.Match[str]) -> str:
         return stash_html(store, f"<code>{escape_text(match.group(1))}</code>")
 

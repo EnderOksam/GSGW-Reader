@@ -1,0 +1,64 @@
+name: EPUB Release
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+    - cron: "0 0 15 * *"
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: pip install Pillow
+
+      - name: Build EPUBs
+        run: python scripts/build_epub.py --no-fetch-twitter
+
+      - name: Rotate releases
+        run: |
+          DATE=$(date -u +"%Y-%m-%d")
+
+          LAST_TAG=$(gh release view "latest" --json tagName -q .tagName 2>/dev/null || true)
+          LAST_BODY=$(gh release view "latest" --json body -q .body 2>/dev/null || true)
+
+          if [ -n "$LAST_TAG" ]; then
+            LAST_DATE=$(echo "$LAST_TAG" | grep -oP '(?<=latest - )\d{4}-\d{2}-\d{2}' || true)
+            if [ -z "$LAST_DATE" ]; then
+              LAST_DATE=$(echo "$LAST_TAG" | grep -oP '\d{4}-\d{2}-\d{2}' || true)
+            fi
+
+            gh release delete "last" --yes --cleanup-tag 2>/dev/null || true
+
+            gh release create "last - ${LAST_DATE:-unknown}" \
+              --title "last - ${LAST_DATE:-unknown}" \
+              --notes "${LAST_BODY:-}" \
+              --prerelease
+
+            gh release delete "$LAST_TAG" --yes --cleanup-tag 2>/dev/null || true
+          fi
+
+          gh release create "latest - $DATE" \
+            --title "latest - $DATE" \
+            --notes "EPUB build from $DATE" \
+            --latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload EPUBs
+        run: |
+          DATE=$(date -u +"%Y-%m-%d")
+          for epub in scripts/epub/*.epub; do
+            gh release upload "latest - $DATE" "$epub" --clobber
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
