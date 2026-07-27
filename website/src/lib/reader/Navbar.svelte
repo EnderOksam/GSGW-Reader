@@ -234,6 +234,14 @@
     );
   });
 
+  const totalAllChapters = $derived(
+    Object.values(bookData[bookSlug] || {}).reduce((sum: number, tl: any) => sum + tl.length, 0)
+  );
+  const totalCurrentTL = $derived(
+    (bookData[bookSlug]?.[navState.selectedTL] || []).length
+  );
+  const isSearching = $derived(navState.searchQuery.trim().length > 0);
+
   // --- UI Actions ---
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -251,11 +259,11 @@
   // but keeping these as internal functions for internal button triggers.
   const openTOC = () => {
     modals.chapter?.showModal();
-    // Scroll the currently active chapter into view within the modal
     setTimeout(() => {
       modals.chapter
         ?.querySelector(".btn-primary")
         ?.scrollIntoView({ block: "center" });
+      (modals.chapter?.querySelector("input[type=search]") as HTMLInputElement)?.blur();
     }, 0);
   };
   
@@ -266,99 +274,137 @@
 <!-- --- Navbar View --- -->
 {#if prefs.config.navbarVisible}
   <nav
-    class="flex w-full items-center justify-center gap-2 sm:gap-5 bg-base-100 border-b border-base-content/10 p-3 z-50 relative {prefs.config.navbarSticky ? 'sticky top-0' : ''}"
+    class="w-full bg-base-100/80 backdrop-blur-md border-b border-base-content/5 z-50 relative {prefs.config.navbarSticky ? 'sticky top-0' : ''}"
   >
-    <div class="flex items-center justify-center gap-2 sm:gap-5">
-      <!-- Home Link -->
+    <!-- Mobile: compact 3-column -->
+    <div class="flex sm:hidden items-center justify-between px-3 h-12">
+      <!-- Left: Navigation -->
+      <div class="flex items-center gap-1.5">
+        <a href="/book/{bookSlug}" class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Home">
+          <Icon icon="material-symbols:home-outline-rounded" class="size-6" />
+        </a>
+        <div class="w-px h-4 bg-base-content/10"></div>
+        <a
+          href={currentIndex > 0 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}` : '#'}
+          class="btn btn-ghost btn-sm btn-square rounded-xl {!currentIndex ? 'opacity-20 pointer-events-none' : ''}"
+          aria-label="Previous Chapter"
+        >
+          <Icon icon="mage:previous" class="size-5" />
+        </a>
+        <a
+          href={currentIndex < totalChapters - 1 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}` : '#'}
+          class="btn btn-ghost btn-sm btn-square rounded-xl {currentIndex >= totalChapters - 1 ? 'opacity-20 pointer-events-none' : ''}"
+          aria-label="Next Chapter"
+          data-sveltekit-preload-data="viewport"
+        >
+          <Icon icon="mage:next" class="size-5" />
+        </a>
+      </div>
+
+      <!-- Center: Contents -->
+        <button onclick={openTOC} class="btn btn-outline btn-sm rounded-xl gap-1.5 px-3">
+        <Icon icon="lucide:table-of-contents" class="size-5" />
+        <span class="text-xs font-semibold">Contents</span>
+      </button>
+
+      <!-- Right: Actions -->
+      <div class="flex items-center gap-1.5">
+        <button
+          onclick={() => document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" })}
+          class="btn btn-ghost btn-sm btn-square rounded-xl"
+          aria-label="Comments"
+        >
+          <Icon icon="iconamoon:comment" class="size-6" />
+        </button>
+        {#if bookSlug === "gsgw" || bookSlug === "debut"}
+          <button onclick={handleCapture} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Capture snippet">
+            <Icon icon="mdi:camera-outline" class="size-6" />
+          </button>
+        {/if}
+        <button onclick={openEdit} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Edit">
+          <Icon icon="material-symbols:edit-outline-rounded" class="size-6" />
+        </button>
+        <button onclick={openSettings} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Settings">
+          <Icon icon="material-symbols:settings-outline-rounded" class="size-6" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop: centered row with tooltips (original feel) -->
+    <div class="hidden sm:flex items-center justify-center gap-2 h-12">
       <div class="tooltip tooltip-bottom" data-tip="Home (H)">
-        <a href="/book/{bookSlug}" class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Home">
+        <a href="/book/{bookSlug}" class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Home">
           <Icon icon="material-symbols:home-outline-rounded" class="size-6" />
         </a>
       </div>
 
-      <!-- Previous Chapter -->
       <div class="tooltip tooltip-bottom" data-tip="Previous (P)">
-        {#if currentIndex > 0}
-          <a
-            href="/read/{bookSlug}/{currentTL}/{chaptersForTL[currentIndex - 1].slug}"
-            class="btn btn-ghost btn-sm btn-square rounded-btn"
-            aria-label="Previous Chapter"
-          >
-            <Icon icon="mage:previous" class="size-5" />
-          </a>
-        {:else}
-          <button class="btn btn-ghost btn-sm btn-square rounded-btn opacity-30" disabled aria-label="No previous chapter">
-            <Icon icon="mage:previous" class="size-5" />
-          </button>
-        {/if}
+        <a
+          href={currentIndex > 0 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}` : '#'}
+          class="btn btn-ghost btn-sm btn-square rounded-xl {!currentIndex ? 'opacity-20 pointer-events-none' : ''}"
+          aria-label="Previous Chapter"
+        >
+          <Icon icon="mage:previous" class="size-5" />
+        </a>
       </div>
 
-      <!-- Scroll to Comments -->
       <div class="tooltip tooltip-bottom" data-tip="Comments (C)">
         <button
           onclick={() => document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" })}
-          class="btn btn-ghost btn-sm btn-square rounded-btn"
+          class="btn btn-ghost btn-sm btn-square rounded-xl"
           aria-label="Comments"
         >
           <Icon icon="iconamoon:comment" class="size-6" />
         </button>
       </div>
 
-      <!-- Next Chapter -->
       <div class="tooltip tooltip-bottom" data-tip="Next (N)">
-        {#if currentIndex < totalChapters - 1}
-          <a
-            href="/read/{bookSlug}/{currentTL}/{chaptersForTL[currentIndex + 1].slug}"
-            class="btn btn-ghost btn-sm btn-square rounded-btn"
-            aria-label="Next Chapter"
-            data-sveltekit-preload-data="viewport"
-          >
-            <Icon icon="mage:next" class="size-5" />
-          </a>
-        {:else}
-          <button class="btn btn-ghost btn-sm btn-square rounded-btn opacity-30" disabled aria-label="No next chapter">
-            <Icon icon="mage:next" class="size-5" />
-          </button>
-        {/if}
+        <a
+          href={currentIndex < totalChapters - 1 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}` : '#'}
+          class="btn btn-ghost btn-sm btn-square rounded-xl {currentIndex >= totalChapters - 1 ? 'opacity-20 pointer-events-none' : ''}"
+          aria-label="Next Chapter"
+          data-sveltekit-preload-data="viewport"
+        >
+          <Icon icon="mage:next" class="size-5" />
+        </a>
       </div>
 
-      <!-- Table of Contents Toggle -->
+      <div class="w-px h-4 bg-base-content/10 mx-1"></div>
+
       <div class="tooltip tooltip-bottom" data-tip="Table of Contents (T)">
-        <button onclick={openTOC} class="btn btn-outline btn-sm rounded-btn">
+      <button onclick={openTOC} class="btn btn-outline btn-sm rounded-xl gap-1.5 px-3">
           <Icon icon="lucide:table-of-contents" class="size-5" />
-          <span class="hidden sm:inline">Contents</span>
+          <span class="text-xs font-semibold">Contents</span>
         </button>
       </div>
 
+      <div class="w-px h-4 bg-base-content/10 mx-1"></div>
+
       {#if bookSlug === "gsgw" || bookSlug === "debut"}
-        <!-- Camera -->
         <div class="tooltip tooltip-bottom" data-tip="Capture text snippet">
-          <button onclick={handleCapture} class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Camera">
+          <button onclick={handleCapture} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Capture snippet">
             <Icon icon="mdi:camera-outline" class="size-6" />
           </button>
         </div>
       {/if}
 
-      <!-- Edit/Contribute Toggle -->
       <div class="tooltip tooltip-bottom" data-tip="Edit (E)">
-        <button onclick={openEdit} class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Edit">
+        <button onclick={openEdit} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Edit">
           <Icon icon="material-symbols:edit-outline-rounded" class="size-6" />
         </button>
       </div>
 
-      <!-- Settings Toggle -->
       <div class="tooltip tooltip-bottom" data-tip="Settings (S)">
-        <button onclick={openSettings} class="btn btn-ghost btn-sm btn-square rounded-btn" aria-label="Settings">
+        <button onclick={openSettings} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Settings">
           <Icon icon="material-symbols:settings-outline-rounded" class="size-6" />
         </button>
       </div>
     </div>
-
   </nav>
 {:else}
   <!-- Mini Fab button when navbar is hidden -->
   <button
-    class="fixed top-4 right-4 z-50 btn btn-circle btn-ghost bg-base-100 shadow-md"
+    class="fixed top-4 right-4 z-50 btn btn-circle btn-ghost bg-base-100/80 backdrop-blur-md shadow-lg border border-base-content/10"
     onclick={() => (prefs.config.navbarVisible = true)}
   >
     <Icon icon="material-symbols:menu-rounded" class="size-6" />
@@ -370,43 +416,62 @@
 
 <!-- --- Modal: Table of Contents --- -->
 <dialog bind:this={modals.chapter} class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box bg-base-100 p-0 rounded-t-2xl sm:rounded-box max-h-[80vh] flex flex-col">
-    <div class="sticky top-0 z-10 bg-base-100/95 backdrop-blur border-b border-base-content/10 p-4 space-y-3">
-      <div class="flex justify-between items-center">
-        <h3 class="font-bold text-lg text-primary">Contents</h3>
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost">✕</button>
-        </form>
-      </div>
-      <div class="flex gap-2">
-        <input
-          type="search"
-          bind:value={navState.searchQuery}
-          placeholder="Search chapters..."
-          class="input input-bordered input-sm grow rounded-btn focus:input-primary"
-        />
-        <select
-          class="select select-bordered select-sm rounded-btn focus:select-primary"
-          bind:value={navState.selectedTL}
-        >
-          {#each Object.keys(bookData[bookSlug] || {}) as tl}
-            <option value={tl}>{tl.toUpperCase()}</option>
-          {/each}
-        </select>
+  <div class="modal-box bg-base-100 p-0 rounded-t-2xl sm:rounded-box max-h-[80vh] flex flex-col shadow-2xl overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+      <div class="relative sticky top-0 z-10 bg-base-100/95 backdrop-blur border-b border-base-content/10">
+        <div class="flex items-center justify-between px-5 pt-4 pb-3">
+          <span class="font-bold text-lg text-primary flex items-center gap-2"><Icon icon="lucide:table-of-contents" class="size-5" /> Contents</span>
+          <span class="text-xs font-mono text-base-content/30">
+            {#if isSearching}
+              {chapterList.length} found
+            {:else}
+              {totalCurrentTL}/{totalAllChapters} chapters
+            {/if}
+          </span>
+        </div>
+        <div class="flex gap-2 px-5 pb-4">
+          <input
+            type="search"
+            bind:value={navState.searchQuery}
+            placeholder="Search..."
+            class="input input-bordered input-sm shrink-0 grow rounded-full focus:input-primary"
+          />
+          <select
+            class="select select-bordered select-sm rounded-full focus:select-primary grow"
+            bind:value={navState.selectedTL}
+          >
+            {#each Object.keys(bookData[bookSlug] || {}) as tl}
+              <option value={tl}>{tl.toUpperCase()}</option>
+            {/each}
+          </select>
+        </div>
       </div>
     </div>
 
-    <div class="overflow-y-auto p-2">
-      {#each chapterList as ch}
+    <div class="overflow-y-auto overscroll-contain p-2">
+      {#each chapterList as ch, i}
+        {@const isActive = readerState.ch_meta.slug == ch.slug}
         <a
           href="/read/{bookSlug}/{navState.selectedTL}/{ch.slug}"
-          class="btn btn-sm justify-start w-full font-normal border-none mb-1 rounded-btn {readerState.ch_meta.slug == ch.slug ? 'btn-primary btn-soft' : 'btn-ghost'}"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 {isActive ? 'bg-primary/10 ring-1 ring-primary/20' : 'hover:bg-base-200/60'}"
           onclick={() => modals.chapter?.close()}
         >
-          <span class="w-10 font-mono text-xs opacity-50">#{ch.slug}</span>
-          <span class="truncate">{ch.title}</span>
+          <span class="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold {isActive ? 'bg-primary text-primary-content' : 'bg-base-200 text-base-content/40'}">
+            {ch.slug}
+          </span>
+          <span class="truncate text-base {isActive ? 'text-primary' : 'text-base-content/70'}">{ch.title}</span>
+          {#if isActive}
+            <Icon icon="mdi:play-circle" class="size-4 shrink-0 text-primary/50" />
+          {/if}
         </a>
       {/each}
+      {#if chapterList.length === 0}
+        <div class="py-12 text-center">
+          <Icon icon="mdi:magnify-close" class="size-8 mx-auto mb-2 text-base-content/20" />
+          <p class="text-sm text-base-content/40">No chapters found</p>
+        </div>
+      {/if}
     </div>
   </div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
@@ -414,88 +479,117 @@
 
 <!-- --- Modal: Settings --- -->
 <dialog bind:this={modals.settings} class="modal sm:modal-middle modal-bottom">
-  <div class="modal-box bg-base-100 rounded-box">
-    <div class="flex justify-between items-center mb-6 border-b border-base-content/10 pb-4">
-      <h3 class="font-bold text-lg flex items-center gap-2 text-primary pt-0.5">
-        <Icon icon="material-symbols:settings-outline-rounded" /> Settings
-      </h3>
-      <div class="flex gap-2">
-        <button class="btn btn-sm btn-ghost text-error rounded-btn" onclick={() => prefs.reset()}>Reset</button>
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost">✕</button>
-        </form>
+  <div class="modal-box bg-base-100 p-0 rounded-box shadow-2xl overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+      <div class="relative flex justify-between items-center px-6 py-4 border-b border-base-content/10">
+        <span class="font-bold text-lg flex items-center gap-2 text-primary">
+          <Icon icon="material-symbols:settings-outline-rounded" /> Settings
+        </span>
+        <div class="flex gap-2">
+          <button class="btn btn-sm btn-ghost text-error rounded-full" onclick={() => prefs.reset()}>Reset</button>
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+              <Icon icon="mdi:close" class="size-4" />
+            </button>
+          </form>
+        </div>
       </div>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-8">
-      <!-- Left Column: Visuals -->
-      <div class="space-y-4">
-        <h4 class="text-xs font-bold opacity-50 uppercase tracking-widest">Appearance</h4>
-        <div class="form-control">
-          <label class="label"><span class="label-text">Theme</span></label>
-          <select class="select select-bordered select-sm w-full rounded-btn focus:select-primary" bind:value={prefs.config.theme}>
-            <optgroup label="Recommended">
-              {#each PRIORITY_THEMES as t}
-                <option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
-              {/each}
-            </optgroup>
-            <optgroup label="Other">
-              {#each MISC_THEMES as t}
-                <option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
-              {/each}
-            </optgroup>
-          </select>
-        </div>
+    <div class="overflow-y-auto overscroll-contain max-h-[70vh]">
+      <div class="p-5 space-y-6">
+        <!-- Appearance -->
+        <div class="rounded-2xl bg-base-200/40 border border-base-content/5 p-4 space-y-4">
+          <div class="flex items-center gap-2">
+            <Icon icon="mdi:palette-outline" class="size-4 text-primary/60" />
+            <span class="text-xs font-bold uppercase tracking-widest text-base-content/40">Appearance</span>
+          </div>
 
-        <div class="form-control">
-          <label class="label"><span class="label-text">Font</span></label>
-          <select class="select select-bordered select-sm w-full rounded-btn focus:select-primary" bind:value={prefs.config.font}>
-            {#each [BOOK_FONTS, SYSTEM_FONTS] as group, i}
-              <optgroup label={i === 0 ? "Book Fonts" : "System Fonts"}>
-                {#each group as f}
-                  <option value={f} style="font-family: {f}">{f}</option>
+          <div class="form-control gap-1.5">
+            <label class="label-text text-xs font-medium">Theme</label>
+            <select class="select select-bordered select-sm w-full rounded-xl" bind:value={prefs.config.theme}>
+              <optgroup label="Recommended">
+                {#each PRIORITY_THEMES as t}
+                  <option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
                 {/each}
               </optgroup>
-            {/each}
-          </select>
-        </div>
-        <div class="form-control">
-          <label class="label cursor-pointer gap-3">
-            <span class="label-text text-xs">Minimal embeds</span>
-            <input type="checkbox" class="toggle toggle-primary toggle-xs" bind:checked={prefs.config.hideTweetMetadata} />
+              <optgroup label="Other">
+                {#each MISC_THEMES as t}
+                  <option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                {/each}
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-control gap-1.5">
+            <label class="label-text text-xs font-medium">Font</label>
+            <select class="select select-bordered select-sm w-full rounded-xl" bind:value={prefs.config.font}>
+              {#each [BOOK_FONTS, SYSTEM_FONTS] as group, i}
+                <optgroup label={i === 0 ? "Book Fonts" : "System Fonts"}>
+                  {#each group as f}
+                    <option value={f} style="font-family: {f}">{f}</option>
+                  {/each}
+                </optgroup>
+              {/each}
+            </select>
+          </div>
+
+          <label class="flex items-center justify-between cursor-pointer">
+            <span class="text-sm">Minimal embeds</span>
+            <input type="checkbox" class="toggle toggle-primary toggle-sm" bind:checked={prefs.config.hideTweetMetadata} />
           </label>
         </div>
-      </div>
 
-      <!-- Right Column: Text Formatting -->
-      <div class="space-y-4">
-        <h4 class="text-xs font-bold opacity-50 uppercase tracking-widest">Readability</h4>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="form-control">
-            <label class="label text-xs">Size ({prefs.config.fontSize}px)</label>
-            <input type="range" min="12" max="32" class="range range-xs range-primary" bind:value={prefs.config.fontSize} />
+        <!-- Readability -->
+        <div class="rounded-2xl bg-base-200/40 border border-base-content/5 p-4 space-y-4">
+          <div class="flex items-center gap-2">
+            <Icon icon="mdi:text-box-outline" class="size-4 text-primary/60" />
+            <span class="text-xs font-bold uppercase tracking-widest text-base-content/40">Readability</span>
           </div>
-          <div class="form-control">
-            <label class="label text-xs">Height ({prefs.config.lineHeight})</label>
-            <input type="range" min="1.2" max="2.5" step="0.1" class="range range-xs range-secondary" bind:value={prefs.config.lineHeight} />
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-control gap-1.5">
+              <label class="label-text text-xs font-medium flex justify-between">
+                <span>Size</span>
+                <span class="text-base-content/30 font-mono">{prefs.config.fontSize}px</span>
+              </label>
+              <input type="range" min="12" max="32" class="range range-xs range-primary" bind:value={prefs.config.fontSize} />
+            </div>
+            <div class="form-control gap-1.5">
+              <label class="label-text text-xs font-medium flex justify-between">
+                <span>Height</span>
+                <span class="text-base-content/30 font-mono">{prefs.config.lineHeight}</span>
+              </label>
+              <input type="range" min="1.2" max="2.5" step="0.1" class="range range-xs range-secondary" bind:value={prefs.config.lineHeight} />
+            </div>
+          </div>
+
+          <div class="form-control gap-1.5">
+            <label class="label-text text-xs font-medium">Alignment</label>
+            <div class="join w-full">
+              {#each ["left", "center", "right", "justify"] as align}
+                <button
+                  class="join-item btn btn-xs grow rounded-xl {prefs.config.textAlign === align ? 'btn-primary' : 'btn-ghost bg-base-200'}"
+                  onclick={() => (prefs.config.textAlign = align)}
+                >
+                  <Icon icon="material-symbols:format-align-{align}" />
+                </button>
+              {/each}
+            </div>
           </div>
         </div>
-        
-        <div class="join w-full">
-          {#each ["left", "center", "right", "justify"] as align}
-            <button
-              class="join-item btn btn-xs grow {prefs.config.textAlign === align ? 'btn-primary' : 'btn-ghost bg-base-200'}"
-              onclick={() => (prefs.config.textAlign = align)}
-            >
-              <Icon icon="material-symbols:format-align-{align}" />
-            </button>
-          {/each}
-        </div>
 
-        <div class="divider my-2"></div>
-        <button class="btn btn-outline btn-primary btn-sm w-full rounded-btn" onclick={toggleFullscreen}>
-          <Icon icon="material-symbols:fullscreen" class="size-5" /> Fullscreen
-        </button>
+        <!-- Display -->
+        <div class="rounded-2xl bg-base-200/40 border border-base-content/5 p-4 space-y-3">
+          <div class="flex items-center gap-2">
+            <Icon icon="mdi:fullscreen-outline" class="size-4 text-primary/60" />
+            <span class="text-xs font-bold uppercase tracking-widest text-base-content/40">Display</span>
+          </div>
+          <button class="btn btn-outline btn-primary btn-sm w-full rounded-xl gap-2" onclick={toggleFullscreen}>
+            <Icon icon="material-symbols:fullscreen" class="size-4" /> Toggle Fullscreen
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -504,21 +598,44 @@
 
 <!-- --- Modal: Contribute --- -->
 <dialog bind:this={modals.edit} class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box bg-base-100 rounded-box">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-    </form>
-    <h3 class="font-bold text-lg mb-4 text-primary">Contribute</h3>
-    <div class="flex flex-col gap-3">
-      <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" class="btn btn-outline btn-primary w-full rounded-btn">
-        <Icon icon="mdi:book-open-page-variant" class="size-5 mr-2" /> Read Guide
+  <div class="modal-box bg-base-100 p-0 rounded-box shadow-2xl overflow-hidden max-w-sm mx-auto">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+      <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+        <span class="font-bold text-lg text-primary flex items-center gap-2">
+          <Icon icon="material-symbols:edit-outline-rounded" class="size-5" /> Contribute
+        </span>
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="p-5 space-y-3">
+      <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors">
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+          <Icon icon="mdi:book-open-page-variant" class="size-5 text-primary" />
+        </div>
+        <div class="min-w-0">
+          <span class="block text-sm font-semibold">Read the Guide</span>
+          <span class="block text-xs text-base-content/40 mt-0.5">Learn how to make edits to chapters</span>
+        </div>
+
       </a>
       <a
         href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{tlDir(bookSlug, navState.selectedTL)}/{(Number(readerState.ch_meta.slug) + 1).toString().padStart(4, '0')}.md"
         target="_blank"
-        class="btn btn-secondary w-full rounded-btn"
+        class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors"
       >
-        <Icon icon="mdi:github" class="size-5 mr-2" /> Edit on GitHub
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+          <Icon icon="mdi:github" class="size-5 text-secondary" />
+        </div>
+        <div class="min-w-0">
+          <span class="block text-sm font-semibold">Edit on GitHub</span>
+          <span class="block text-xs text-base-content/40 mt-0.5">Make changes to this chapter</span>
+        </div>
+
       </a>
     </div>
   </div>
@@ -527,7 +644,7 @@
 
 <!-- --- Modal: Captured Snippet --- -->
 <dialog bind:this={modals.snippet} class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box bg-base-100 rounded-box p-0 overflow-hidden shadow-2xl max-w-lg snippet-reset">
+  <div class="modal-box bg-base-100 rounded-box p-0 overflow-hidden shadow-2xl max-w-lg">
 
     <!-- Header -->
     <div class="relative overflow-hidden">
@@ -649,20 +766,3 @@
     </button>
   </div>
 {/if}
-
-<style>
-  :global(dialog.snippet-reset) h1,
-  :global(dialog.snippet-reset) h2,
-  :global(dialog.snippet-reset) h3 {
-    text-align: left;
-    position: static;
-    padding-bottom: 0;
-    margin-bottom: 0;
-    font-variant: normal;
-  }
-  :global(dialog.snippet-reset) h1::after,
-  :global(dialog.snippet-reset) h2::after,
-  :global(dialog.snippet-reset) h3::after {
-    display: none;
-  }
-</style>

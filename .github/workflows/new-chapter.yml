@@ -1,0 +1,51 @@
+name: New MTL Chapter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-chapter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create next chapter file
+        run: |
+          MTL_DIR="chapters/gsgw/MTL"
+          LAST_FILE=$(ls "$MTL_DIR"/*.md 2>/dev/null | grep -oP '\d{4}(?=\.md$)' | sort -n | tail -1)
+
+          if [ -z "$LAST_FILE" ]; then
+            NEXT_NUM=373
+          else
+            NEXT_NUM=$(printf "%04d" $((10#$LAST_FILE + 1)))
+          fi
+
+          SLUG=$((10#$NEXT_NUM - 1))
+          INDEX=$((SLUG - 1))
+          FILE="$MTL_DIR/$NEXT_NUM.md"
+
+          printf '%s\n' \
+            '---' \
+            "title: \"Chapter $SLUG\"" \
+            'category: "Part 3"' \
+            "discussion: $SLUG" \
+            "index: $INDEX" \
+            "section: \"Chapter $SLUG\"" \
+            "slug: \"$SLUG\"" \
+            '---' \
+            '' \
+            "# Chapter $SLUG" \
+            > "$FILE"
+
+          echo "Created $FILE (Chapter $SLUG)"
+
+      - name: Commit new chapter
+        run: |
+          MTL_DIR="chapters/gsgw/MTL"
+          LAST_FILE=$(ls "$MTL_DIR"/*.md | grep -oP '\d{4}(?=\.md$)' | sort -n | tail -1)
+          SLUG=$((10#$LAST_FILE - 1))
+          git add "$MTL_DIR/$LAST_FILE.md"
+          git commit -m "Add MTL Chapter $SLUG"
+          git push
