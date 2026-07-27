@@ -53,7 +53,7 @@ jobs:
 
       - name: Upload EPUBs
         run: |
-          for epub in scripts/epub/*.epub; do
+          find scripts/epub -name '*.epub' -print0 | while IFS= read -r -d '' epub; do
             gh release upload "latest" "$epub" --clobber
           done
         env:
