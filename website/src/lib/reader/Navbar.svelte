@@ -624,7 +624,7 @@
 
       </a>
       <a
-        href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{tlDir(bookSlug, navState.selectedTL)}/{(Number(readerState.ch_meta.slug) + 1).toString().padStart(4, '0')}.md"
+        href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{tlDir(bookSlug, navState.selectedTL)}/{(Number(readerState.ch_meta.slug) + (bookSlug === 'debut' ? 0 : 1)).toString().padStart(4, '0')}.md"
         target="_blank"
         class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors"
       >
