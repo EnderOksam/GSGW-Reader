@@ -32,14 +32,11 @@ jobs:
           LAST_BODY=$(gh release view "latest" --json body -q .body 2>/dev/null || true)
 
           if [ -n "$LAST_TAG" ]; then
-            LAST_DATE=$(echo "$LAST_TAG" | grep -oP '(?<=latest - )\d{4}-\d{2}-\d{2}' || true)
-            if [ -z "$LAST_DATE" ]; then
-              LAST_DATE=$(echo "$LAST_TAG" | grep -oP '\d{4}-\d{2}-\d{2}' || true)
-            fi
+            LAST_DATE=$(echo "$LAST_TAG" | grep -oP '\d{4}-\d{2}-\d{2}' || true)
 
             gh release delete "last" --yes --cleanup-tag 2>/dev/null || true
 
-            gh release create "last - ${LAST_DATE:-unknown}" \
+            gh release create "last-${LAST_DATE:-unknown}" \
               --title "last - ${LAST_DATE:-unknown}" \
               --notes "${LAST_BODY:-}" \
               --prerelease
@@ -47,8 +44,9 @@ jobs:
             gh release delete "$LAST_TAG" --yes --cleanup-tag 2>/dev/null || true
           fi
 
-          gh release create "latest - $DATE" \
+          gh release create "latest" \
             --title "latest - $DATE" \
+            --tag "latest" \
             --notes "EPUB build from $DATE" \
             --latest
         env:
@@ -56,9 +54,8 @@ jobs:
 
       - name: Upload EPUBs
         run: |
-          DATE=$(date -u +"%Y-%m-%d")
           for epub in scripts/epub/*.epub; do
-            gh release upload "latest - $DATE" "$epub" --clobber
+            gh release upload "latest" "$epub" --clobber
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

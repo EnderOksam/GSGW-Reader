@@ -291,17 +291,38 @@
 </div>
 
 <dialog bind:this={contributeModal} class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box bg-base-100 rounded-box">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-    </form>
-    <h3 class="font-bold text-lg mb-4" style="color:#fb8462">Contribute</h3>
-    <div class="flex flex-col gap-3">
-      <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" rel="noopener noreferrer" class="btn btn-outline w-full rounded-btn gap-2" style="border-color:#fb8462; color:#fb8462; hover:background:#fb8462/10">
-        <Icon icon="mdi:book-open-page-variant" class="size-5" /> Read Guide
+  <div class="modal-box bg-base-100 p-0 rounded-box shadow-2xl overflow-hidden max-w-sm mx-auto">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+      <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+        <span class="font-bold text-lg text-primary flex items-center gap-2">
+          <Icon icon="material-symbols:edit-outline-rounded" class="size-5" /> Contribute
+        </span>
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="p-5 space-y-3">
+      <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors">
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+          <Icon icon="mdi:book-open-page-variant" class="size-5 text-primary" />
+        </div>
+        <div class="min-w-0">
+          <span class="block text-sm font-semibold">Read the Guide</span>
+          <span class="block text-xs text-base-content/40 mt-0.5">Learn how to make edits to chapters</span>
+        </div>
       </a>
-      <a href="/dev/editor" class="btn btn-outline w-full rounded-btn gap-2" style="border-color:#fb8462; color:#fb8462;">
-        <Icon icon="material-symbols:edit-note-rounded" class="size-5" /> Editor
+      <a href="/dev/editor" class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors">
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+          <Icon icon="material-symbols:edit-note-rounded" class="size-5 text-secondary" />
+        </div>
+        <div class="min-w-0">
+          <span class="block text-sm font-semibold">Open the Web Editor</span>
+          <span class="block text-xs text-base-content/40 mt-0.5">Preview how your changes would look in the reader</span>
+        </div>
       </a>
     </div>
   </div>
