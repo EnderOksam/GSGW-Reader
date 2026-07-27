@@ -53,8 +53,9 @@ jobs:
 
       - name: Upload EPUBs
         run: |
-          find scripts/epub -maxdepth 1 -name "*.epub" -print0 | while IFS= read -r -d '' epub; do
-            gh release upload latest --clobber "$epub"
+          set -o noglob
+          for epub in scripts/epub/*.epub; do
+            gh release upload latest --clobber -- "$epub"
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
