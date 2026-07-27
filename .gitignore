@@ -13,6 +13,7 @@ scripts/misc/_misc3/
 scripts/misc/discussions1.py
 website/src/routes/(reader)/read/**
 twitter_images
+scripts/epub/
 website/static/assets/images/**
 
 
