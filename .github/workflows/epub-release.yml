@@ -44,12 +44,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate date
+        id: date
+        run: echo "today=$(date -u +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
       - name: Create release and upload EPUBs
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: latest
-          body: "EPUB build from $(date -u +'%Y-%m-%d')"
+          name: latest - ${{ steps.date.outputs.today }}
+          body: "EPUB build from ${{ steps.date.outputs.today }}"
           files: |
             scripts/epub/*.epub
         env:
