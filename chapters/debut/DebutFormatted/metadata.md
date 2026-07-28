@@ -4,7 +4,7 @@ title:
     text: "Debut or Die"
 creator:
   - role: author
-    text: "Sibe"
+    text: "Baek Deoksoo"
 identifier:
   - scheme: URN
     text: "urn:uuid:gsgw-reader-debut-webnovel"
@@ -13,7 +13,7 @@ subject:
   - Comedy
   - Drama
   - Fantasy
-description: "A student preparing for the civil service exam suddenly finds himself in an unfamiliar body with a status window threatening his life. Challenged to become an idol or die, his ordinary life transforms into a extraordinary debut."
+description: "A student preparing for the civil service exam suddenly finds himself in an unfamiliar body with a status window threatening his life. Challenged to become an idol or die, his ordinary life transforms into an extraordinary debut."
 rights: "All rights belong to the original author and licensed platforms."
 publisher: "GSGW-Reader"
 
@@ -29,7 +29,7 @@ page-progression-direction: ltr
 
 # Debut or Die
 
-**Author:** Sibe
+**Author:** Baek Deoksoo
 
 **Last Updated:** {DATE}
 
