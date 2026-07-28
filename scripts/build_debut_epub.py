@@ -890,7 +890,7 @@ def render_window_to_webp(
         bbox = img.getbbox()
         if bbox:
             img = img.crop(bbox)
-        img.save(output_path, "WEBP", quality=90, method=6)
+        img.save(output_path, "WEBP", quality=90, method=4)
         return output_path.exists() and output_path.stat().st_size > 0
     except Exception as e:
         print(f"      Screenshot error: {e}")
@@ -930,7 +930,7 @@ async def _async_render_one(
             bbox = img.getbbox()
             if bbox:
                 img = img.crop(bbox)
-            img.save(webp_path, "WEBP", quality=90, method=6)
+            img.save(webp_path, "WEBP", quality=90, method=4)
             return idx, webp_path, webp_path.exists() and webp_path.stat().st_size > 0
         except Exception as e:
             print(f"      Screenshot error: {e}")
