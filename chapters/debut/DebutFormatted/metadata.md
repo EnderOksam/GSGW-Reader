@@ -29,7 +29,7 @@ page-progression-direction: ltr
 
 # Debut or Die
 
-**Author:** Sibe
+**Author:** Baek Deoksoo
 
 **Last Updated:** {DATE}
 
