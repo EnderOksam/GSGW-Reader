@@ -1,0 +1,34 @@
+name: Build Debut EPUB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pandoc
+        run: choco install pandoc -y
+
+      - name: Install Python dependencies
+        run: pip install playwright python-frontmatter imagesize Pillow
+
+      - name: Install Chromium
+        run: playwright install chromium
+
+      - name: Build Debut EPUB
+        run: python scripts/build_debut_epub.py
+
+      - name: Upload EPUB
+        uses: actions/upload-artifact@v4
+        with:
+          name: debut-epub
+          path: scripts/epub/*.epub
