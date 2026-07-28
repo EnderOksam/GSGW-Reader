@@ -26,8 +26,6 @@ jobs:
 
       - name: Rotate releases
         run: |
-          DATE=$(date -u +"%Y-%m-%d")
-
           LAST_TAG=$(gh release view "latest" --json tagName -q .tagName 2>/dev/null || true)
           LAST_BODY=$(gh release view "latest" --json body -q .body 2>/dev/null || true)
 
@@ -43,18 +41,16 @@ jobs:
 
             gh release delete "$LAST_TAG" --yes --cleanup-tag 2>/dev/null || true
           fi
-
-          gh release create latest \
-            --title "latest - $DATE" \
-            --notes "EPUB build from $DATE" \
-            --latest
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload EPUBs
-        run: |
-          for epub in scripts/epub/*.epub; do
-            gh release upload latest --clobber "$epub"
-          done
+      - name: Create release and upload EPUBs
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: latest
+          body: "EPUB build from $(date -u +'%Y-%m-%d')"
+          files: |
+            scripts/epub/*.epub
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
