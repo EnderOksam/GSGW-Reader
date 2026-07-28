@@ -198,32 +198,32 @@ del {
 }
 
 .text-red {
-  color: #cc2200;
+  color: #ff4d00;
   font-weight: bold;
 }
 
 .text-blue {
-  color: #2255cc;
+  color: #2244fa;
   font-weight: bold;
 }
 
 .text-yellow {
-  color: #8a7000;
+  color: #fff700;
   font-weight: bold;
 }
 
 .text-magenta {
-  color: #aa00aa;
+  color: #d946ef;
   font-weight: bold;
 }
 
 .text-green {
-  color: #228800;
+  color: #22c55e;
   font-weight: bold;
 }
 
 .text-orange {
-  color: #dd6600;
+  color: #fb8246;
   font-weight: bold;
 }
 

@@ -682,6 +682,56 @@ del { text-decoration: line-through; }
 .contaminated { font-family: 'Comic Sans MS', cursive; }
 .glitch-text { opacity: 0.8; text-shadow: 1px 0 0 #cc2200, -1px 0 0 #2255cc; }
 .glitch-subtle { opacity: 0.9; text-shadow: 0.5px 0.5px 0 #777; }
+
+/* Text effects missing from window CSS */
+.shake { display: inline-block; font-weight: 700; }
+.aurora-text {
+  display: inline-block; font-weight: 800;
+  background: linear-gradient(135deg, #00c2ff, #33ff8c, #ffc640, #e54cff, #00c2ff);
+  background-size: 300% 300%; background-position: 50% 50%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 6px rgba(0,194,255,0.2)) drop-shadow(0 0 15px rgba(229,76,255,0.1));
+}
+.smoke-text {
+  font-weight: 700; letter-spacing: 0.2em; color: black;
+  text-shadow: .06em 0 0 rgba(255,200,0,.9), -.06em 0 0 rgba(255,200,0,.9),
+    0 .06em 0 rgba(255,200,0,.9), 0 -.06em 0 rgba(255,200,0,.9),
+    .04em .04em 0 rgba(255,200,0,.9), -.04em .04em 0 rgba(255,200,0,.9),
+    .04em -.04em 0 rgba(255,200,0,.9), -.04em -.04em 0 rgba(255,200,0,.9),
+    .08em 0 0 rgba(255,200,0,.9), -.08em 0 0 rgba(255,200,0,.9),
+    0 .08em 0 rgba(255,200,0,.9), 0 -.08em 0 rgba(255,200,0,.9);
+}
+.gold-text {
+  position: relative; display: inline-block; font-weight: 800;
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.3) 46%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 54%, transparent 75%),
+    repeating-linear-gradient(65deg, transparent 0px, transparent 3px, rgba(255,215,100,0.08) 3px, rgba(255,215,100,0.08) 5px),
+    #E8C24A;
+  background-size: 200px 100%, auto, auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  -webkit-text-stroke: 1.2px #5b3912; text-stroke: 1.2px #5b3912;
+  filter: drop-shadow(0 0 5px rgba(212,160,23,0.35));
+}
+.silver-text {
+  position: relative; display: inline-block; font-weight: 800;
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.3) 46%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 54%, transparent 75%),
+    repeating-linear-gradient(65deg, transparent 0px, transparent 3px, rgba(192,192,192,0.08) 3px, rgba(192,192,192,0.08) 5px),
+    #C0C0C0;
+  background-size: 200px 100%, auto, auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  -webkit-text-stroke: 1.2px #666; text-stroke: 1.2px #666;
+  filter: drop-shadow(0 0 5px rgba(160,160,160,0.35));
+}
+.sparkle-text { position: relative; display: inline-block; }
+.moon-text {
+  position: relative; display: inline-block; font-weight: 800;
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.35) 46%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.35) 54%, transparent 75%),
+    repeating-linear-gradient(65deg, transparent 0px, transparent 3px, rgba(180,220,255,0.08) 3px, rgba(180,220,255,0.08) 5px),
+    linear-gradient(135deg, #8ab8e0 0%, #c0dff5 35%, #e8f4ff 65%, #ffffff 100%);
+  background-size: 200px 100%, auto, auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  -webkit-text-stroke: 1.2px #6aacdf; text-stroke: 1.2px #6aacdf;
+  filter: drop-shadow(0 0 5px rgba(100,180,230,0.35));
+}
 """
 
 
@@ -766,7 +816,7 @@ def convert_chapter_debut(content: str) -> str:
 
     try:
         proc = subprocess.run(
-            ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],
+            ["pandoc", "--from", "markdown-superscript", "--to", "html", "--quiet"],
             input=content.encode("utf-8"),
             capture_output=True,
             timeout=120,
@@ -840,7 +890,7 @@ def render_window_to_webp(
         bbox = img.getbbox()
         if bbox:
             img = img.crop(bbox)
-        img.save(output_path, "WEBP", quality=80, method=4)
+        img.save(output_path, "WEBP", quality=90, method=6)
         return output_path.exists() and output_path.stat().st_size > 0
     except Exception as e:
         print(f"      Screenshot error: {e}")
@@ -880,7 +930,7 @@ async def _async_render_one(
             bbox = img.getbbox()
             if bbox:
                 img = img.crop(bbox)
-            img.save(webp_path, "WEBP", quality=80, method=4)
+            img.save(webp_path, "WEBP", quality=90, method=6)
             return idx, webp_path, webp_path.exists() and webp_path.stat().st_size > 0
         except Exception as e:
             print(f"      Screenshot error: {e}")
@@ -910,7 +960,9 @@ def _resolve_chapter_images(
         candidates = [
             chapter_path.parent / src_path,
             IMAGES_ROOT / book_id / "illustrations" / src_path,
+            IMAGES_ROOT / "dod" / "illustrations" / src_path,
             IMAGES_ROOT / book_id / src_path,
+            IMAGES_ROOT / "dod" / src_path,
             IMAGES_ROOT / src_path,
         ]
 
@@ -968,7 +1020,7 @@ def build_debut_epub(args: argparse.Namespace) -> Path | None:
 
     cover_asset: epub.EpubAsset | None = None
     cover_item: epub.EpubItem | None = None
-    cover_image_path = IMAGES_ROOT / book_id / "cover.webp"
+    cover_image_path = IMAGES_ROOT / "dod" / "cover.webp"
     if cover_image_path.exists():
         cover_name = epub.unique_asset_name(cover_image_path, "cover.webp", asset_names)
         cover_asset = epub.EpubAsset(
