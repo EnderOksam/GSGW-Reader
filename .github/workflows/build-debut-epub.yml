@@ -26,6 +26,8 @@ jobs:
 
       - name: Build Debut EPUB
         run: python scripts/build_debut_epub.py
+        env:
+          PYTHONUNBUFFERED: "1"
 
       - name: Upload EPUB
         uses: actions/upload-artifact@v4

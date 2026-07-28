@@ -20,6 +20,9 @@ import zipfile
 from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
+import asyncio
+import os
+import urllib.parse
 from typing import Any
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
@@ -791,24 +794,113 @@ def render_window_to_webp(
 </body>
 </html>"""
     try:
-        page.set_content(html_page, wait_until="networkidle")
-        png_path = output_path.with_suffix(".png")
-        page.screenshot(path=str(png_path), full_page=True, omit_background=True)
-        if not png_path.exists() or png_path.stat().st_size == 0:
+        page.set_content(html_page, wait_until="domcontentloaded")
+        png_bytes = page.screenshot(full_page=True, omit_background=True)
+        if not png_bytes:
             return False
         if Image is None:
-            png_path.rename(output_path)
+            output_path.write_bytes(png_bytes)
             return True
-        img = Image.open(png_path)
+        img = Image.open(BytesIO(png_bytes))
         bbox = img.getbbox()
         if bbox:
             img = img.crop(bbox)
-        img.save(output_path, "WEBP", quality=90, method=6)
-        png_path.unlink(missing_ok=True)
+        img.save(output_path, "WEBP", quality=70, method=4)
         return output_path.exists() and output_path.stat().st_size > 0
     except Exception as e:
         print(f"      Screenshot error: {e}")
         return False
+
+
+async def _async_render_one(
+    semaphore: asyncio.Semaphore,
+    browser: Any,
+    idx: int,
+    window: WindowInfo,
+    webp_path: Path,
+) -> tuple[int, Path, bool]:
+    async with semaphore:
+        page = await browser.new_page(device_scale_factor=1)
+        try:
+            html_page = f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>{WINDOW_CSS}</style>
+</head>
+<body>
+<div class="reader-container">
+<div class="{html.escape(window.class_name)}">{window.inner_html}</div>
+</div>
+</body>
+</html>"""
+            await page.set_content(html_page, wait_until="domcontentloaded")
+            png_bytes = await page.screenshot(full_page=True, omit_background=True)
+            if not png_bytes:
+                return idx, webp_path, False
+            if Image is None:
+                webp_path.write_bytes(png_bytes)
+                return idx, webp_path, True
+            img = Image.open(BytesIO(png_bytes))
+            bbox = img.getbbox()
+            if bbox:
+                img = img.crop(bbox)
+            img.save(webp_path, "WEBP", quality=70, method=4)
+            return idx, webp_path, webp_path.exists() and webp_path.stat().st_size > 0
+        except Exception as e:
+            print(f"      Screenshot error: {e}")
+            return idx, webp_path, False
+        finally:
+            await page.close()
+
+
+IMG_SRC_RE = re.compile(r'<img\s+src="([^"]+)"', re.IGNORECASE)
+
+
+def _resolve_chapter_images(
+    chapter_html: str,
+    chapter_path: Path,
+    book_id: str,
+    assets: dict[Path, epub.EpubAsset],
+    asset_names: set[str],
+) -> str:
+    """Resolve bare image filenames to actual files and register as EPUB assets."""
+    def replace_img(m: re.Match) -> str:
+        src = m.group(1)
+        if re.match(r'https?://', src, re.IGNORECASE) or src.startswith('../') or src.startswith('/'):
+            return m.group(0)
+
+        clean_src = urllib.parse.unquote(src.split("#", 1)[0].split("?", 1)[0])
+        src_path = Path(clean_src.replace("/", "\\"))
+        candidates = [
+            chapter_path.parent / src_path,
+            IMAGES_ROOT / book_id / "illustrations" / src_path,
+            IMAGES_ROOT / book_id / src_path,
+            IMAGES_ROOT / src_path,
+        ]
+
+        image_path = None
+        for candidate in candidates:
+            if candidate.exists() and candidate.is_file():
+                image_path = candidate
+                break
+
+        if not image_path:
+            print(f"      Warning: image not found: {src}")
+            return m.group(0)
+
+        image_path_resolved = image_path.resolve()
+        if image_path_resolved not in assets:
+            name = epub.unique_asset_name(image_path, src, asset_names)
+            assets[image_path_resolved] = epub.EpubAsset(
+                source_path=image_path_resolved,
+                href=f"Images/{name}",
+                media_type=epub.media_type_for(image_path),
+            )
+        asset = assets[image_path_resolved]
+        return f'<img src="../{epub.escape_attr(asset.href)}"'
+
+    return IMG_SRC_RE.sub(replace_img, chapter_html)
 
 
 def build_debut_epub(args: argparse.Namespace) -> Path | None:
@@ -832,7 +924,6 @@ def build_debut_epub(args: argparse.Namespace) -> Path | None:
         return None
 
     print(f"Building {book_title}: {len(chapter_files)} chapters")
-    print("Rendering windows as WebP images...")
 
     window_dir = OUTPUT_DIR / "window_images"
     window_dir.mkdir(parents=True, exist_ok=True)
@@ -878,66 +969,124 @@ def build_debut_epub(args: argparse.Namespace) -> Path | None:
         )
     ]
 
+    # ── Phase 1: Collect ──────────────────────────────────────────────
+    print("Phase 1: Converting chapters and collecting windows...")
+
+    @dataclass
+    class ChapterInfo:
+        position: int
+        chapter_path: Path
+        meta: Any
+        content: str
+        title: str
+        chapter_html: str
+        windows: list[WindowInfo]
+
+    chapters: list[ChapterInfo] = []
+    render_tasks: list[tuple[int, WindowInfo, Path]] = []
     window_counter = 0
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page(device_scale_factor=2)
+    for position, chapter_path in enumerate(chapter_files, start=1):
+        print(f"  [{position}/{len(chapter_files)}] {chapter_path.stem}")
+        meta, content = epub.load_markdown(chapter_path)
+        title = epub.first_heading(content) or epub.metadata_text(meta.get("title"), chapter_path.stem)
+        chapter_html = convert_chapter_debut(content)
+        chapter_html = _resolve_chapter_images(chapter_html, chapter_path, book_id, assets, asset_names)
+        windows = find_window_divs(chapter_html)
 
-        for position, chapter_path in enumerate(chapter_files, start=1):
-            print(f"  [{position}/{len(chapter_files)}] {chapter_path.stem}")
-            meta, content = epub.load_markdown(chapter_path)
-            title = epub.first_heading(content) or epub.metadata_text(meta.get("title"), chapter_path.stem)
+        if windows:
+            print(f"    {len(windows)} window(s) to render")
 
-            chapter_html = convert_chapter_debut(content)
-            windows = find_window_divs(chapter_html)
+        chapters.append(ChapterInfo(position, chapter_path, meta, content, title, chapter_html, windows))
 
-            if windows:
-                print(f"    {len(windows)} window(s) to render")
+        for window in windows:
+            webp_path = window_dir / f"window_{window_counter:04d}.webp"
+            render_tasks.append((window_counter, window, webp_path))
+            window_counter += 1
 
-            parts: list[str] = []
-            last_end = 0
-            for window in windows:
-                parts.append(chapter_html[last_end:window.start])
+    total_windows = len(render_tasks)
+    print(f"  {len(chapters)} chapters, {total_windows} windows to render")
 
-                webp_name = f"window_{window_counter:04d}.webp"
-                webp_path = window_dir / webp_name
-                success = render_window_to_webp(page, window, webp_path)
+    # ── Phase 2: Render windows in parallel ──────────────────────────
+    render_results: dict[int, tuple[Path, bool]] = {}
 
-                if success and webp_path.exists():
-                    webp_path_resolved = webp_path.resolve()
-                    if webp_path_resolved not in assets:
-                        name = epub.unique_asset_name(webp_path, webp_name, asset_names)
-                        assets[webp_path_resolved] = epub.EpubAsset(
-                            source_path=webp_path_resolved,
-                            href=f"Images/{name}",
-                            media_type="image/webp",
-                        )
-                    asset = assets[webp_path_resolved]
-                    alt_text = html.escape(window.class_name.replace("-", " "))
-                    parts.append(
-                        f'<div class="image-block">'
-                        f'<img src="../{epub.escape_attr(asset.href)}" alt="{alt_text}" />'
-                        f'</div>'
+    if total_windows > 0:
+        num_workers = min(os.cpu_count() or 4, 8)
+        print(f"Phase 2: Rendering {total_windows} windows with {num_workers} workers...")
+
+        async def _render_all() -> dict[int, tuple[Path, bool]]:
+            from playwright.async_api import async_playwright
+
+            results: dict[int, tuple[Path, bool]] = {}
+            semaphore = asyncio.Semaphore(num_workers)
+            async with async_playwright() as ap:
+                browser = await ap.chromium.launch()
+                coros = [
+                    _async_render_one(semaphore, browser, idx, window, webp_path)
+                    for idx, window, webp_path in render_tasks
+                ]
+                done_count = 0
+                for coro in asyncio.as_completed(coros):
+                    idx, webp_path, success = await coro
+                    results[idx] = (webp_path, success)
+                    done_count += 1
+                    if done_count % 50 == 0 or done_count == total_windows:
+                        print(f"  Rendered {done_count}/{total_windows}")
+                await browser.close()
+            return results
+
+        render_results = asyncio.run(_render_all())
+        print("Phase 2 complete")
+    else:
+        print("Phase 2: No windows to render")
+
+    # ── Phase 3: Assemble ────────────────────────────────────────────
+    print("Phase 3: Assembling EPUB...")
+    window_counter = 0
+
+    for ch in chapters:
+        parts: list[str] = []
+        last_end = 0
+
+        for window in ch.windows:
+            parts.append(ch.chapter_html[last_end:window.start])
+
+            idx = window_counter
+            webp_path, success = render_results.get(idx, (None, False))
+
+            if success and webp_path and webp_path.exists():
+                webp_name = webp_path.name
+                webp_path_resolved = webp_path.resolve()
+                if webp_path_resolved not in assets:
+                    name = epub.unique_asset_name(webp_path, webp_name, asset_names)
+                    assets[webp_path_resolved] = epub.EpubAsset(
+                        source_path=webp_path_resolved,
+                        href=f"Images/{name}",
+                        media_type="image/webp",
                     )
-                    window_counter += 1
-                else:
-                    parts.append(f'<div class="{epub.escape_attr(window.class_name)}">{window.inner_html}</div>')
+                asset = assets[webp_path_resolved]
+                alt_text = html.escape(window.class_name.replace("-", " "))
+                parts.append(
+                    f'<div class="image-block">'
+                    f'<img src="../{epub.escape_attr(asset.href)}" alt="{alt_text}" />'
+                    f'</div>'
+                )
+            else:
+                parts.append(f'<div class="{epub.escape_attr(window.class_name)}">{window.inner_html}</div>')
 
-                last_end = window.end
+            last_end = window.end
+            window_counter += 1
 
-            parts.append(chapter_html[last_end:])
-            chapter_html = "".join(parts)
+        parts.append(ch.chapter_html[last_end:])
+        assembled_html = "".join(parts)
 
-            href = f"Text/{epub.chapter_output_name(position, epub.Chapter(chapter_path, meta, content, title, position, chapter_path.stem))}"
-            items.append(epub.EpubItem(
-                item_id=f"xhtml{position:04d}",
-                href=href,
-                title=title,
-                body=chapter_html,
-            ))
-
-        browser.close()
+        href = f"Text/{epub.chapter_output_name(ch.position, epub.Chapter(ch.chapter_path, ch.meta, ch.content, ch.title, ch.position, ch.chapter_path.stem))}"
+        items.append(epub.EpubItem(
+            item_id=f"xhtml{ch.position:04d}",
+            href=href,
+            title=ch.title,
+            body=assembled_html,
+        ))
 
     output_name = f"{book_title} - {tl_name} [Default].epub"
     epub_path = OUTPUT_DIR / output_name
