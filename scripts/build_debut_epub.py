@@ -241,6 +241,38 @@ del { text-decoration: line-through; }
   --outline: rgba(255,50,80,.35);
   background: linear-gradient(180deg, #d03050 0%, #b01030 40%, #8a0a25 100%);
 }
+.alert-sub-left { margin-right: .5rem; }
+.alert-sub-right { margin-left: .5rem; }
+
+.debut-achievement-sub-left::before,
+.debut-achievement-sub-right::before,
+.alert-sub-left::before,
+.alert-sub-right::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 22px;
+  height: 22px;
+  border-top: 3px solid var(--border);
+  border-left: 3px solid var(--border);
+  opacity: .9;
+}
+
+.debut-achievement-sub-left::after,
+.debut-achievement-sub-right::after,
+.alert-sub-left::after,
+.alert-sub-right::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  width: 22px;
+  height: 22px;
+  border-right: 3px solid var(--border);
+  border-bottom: 3px solid var(--border);
+  opacity: .9;
+}
 
 /* SMS Window */
 .sms-window {
@@ -628,20 +660,23 @@ del { text-decoration: line-through; }
 .window-small { font-size: 0.85em; }
 
 /* Inline text effects */
-.text-large { font-size: 1.25em; font-weight: bold; }
-.text-large-centered { display: block; text-align: center; font-size: 1.2em; font-weight: bold; }
-.text-red { color: #cc2200; font-weight: bold; }
-.text-blue { color: #2255cc; font-weight: bold; }
-.text-yellow { color: #8a7000; font-weight: bold; }
-.text-magenta { color: #aa00aa; font-weight: bold; }
-.text-green { color: #228800; font-weight: bold; }
-.text-orange { color: #dd6600; font-weight: bold; }
+.text-large { font-size: 1.04em; font-weight: bold; }
+.text-large-centered { display: block; text-align: center; font-size: 1.04em; font-weight: bold; }
+.text-red { color: #ff4d00; font-weight: bold; }
+.text-blue { color: #2244fa; font-weight: bold; }
+.text-yellow { color: #fff700; font-weight: bold; }
+.text-magenta { color: #d946ef; font-weight: bold; }
+.text-green { color: #22c55e; font-weight: bold; }
+.text-orange { color: #fb8246; font-weight: bold; }
+.text-light-purple { color: #a78bfa; font-weight: bold; }
+.text-cyan { color: #22d3ee; font-weight: bold; }
 .text-sub { font-size: 0.75em; opacity: 0.6; }
-.text-faded { opacity: 0.25; }
+.text-faded { opacity: 0.35; }
 .mono { font-family: "Courier New", Courier, monospace; font-weight: bold; }
 .mono-left { display: block; text-align: left; }
 .mono-right { display: block; text-align: right; }
 .align-left { display: block; text-align: left; }
+.align-center { display: block; text-align: center; }
 .align-right { display: block; text-align: right; }
 .handwritten { font-family: 'Caveat', cursive; font-size: 1.2em; }
 .contaminated { font-family: 'Comic Sans MS', cursive; }
