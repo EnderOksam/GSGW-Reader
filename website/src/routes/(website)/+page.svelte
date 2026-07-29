@@ -7,6 +7,7 @@
   import imgCoi from "$lib/assets/web-coi-cover.jpg";
   import imgManwha from "$lib/assets/webtoon-cover.webp";
   import imgDebut from "$lib/assets/debut.webp";
+  import imgBanner from "$lib/assets/web-gsgw-banner.jpg";
 
   let showBanner = $state(false);
   let ackCount = $state(0);
@@ -87,6 +88,30 @@
 
 <svelte:head>
   <title>GSGW-Reader</title>
+  <meta
+    name="description"
+    content="A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.
+
+On that day, I ended up transmigrating as a character in that very fantasy world."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GSGW-Reader" />
+  <meta property="og:image" content={imgBanner} />
+  <meta
+    property="og:description"
+    content="A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.
+
+On that day, I ended up transmigrating as a character in that very fantasy world."
+  />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GSGW-Reader" />
+  <meta name="twitter:image" content={imgBanner} />
+  <meta
+    name="twitter:description"
+    content="A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.
+
+On that day, I ended up transmigrating as a character in that very fantasy world."
+  />
 </svelte:head>
 
 <button onclick={() => showBannerAgain()} class="fixed top-4 left-4 z-50 text-white/5 hover:text-white/20 transition-colors text-sm font-mono" title="Show banner">
