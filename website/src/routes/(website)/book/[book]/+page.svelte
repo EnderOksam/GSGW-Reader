@@ -8,6 +8,7 @@
   import imgManwhaCover from "$lib/assets/webtoon-cover.webp";
   import imgDebutCover from "$lib/assets/debut.webp";
   import imgDebutBanner from "$lib/assets/debut-banner.png";
+  import imgGsgwBanner from "$lib/assets/web-gsgw-banner.jpg";
   import book_meta from "$lib/meta.json";
   import { searchChapterContent, renderSnippet, storeSnippetTarget } from "$lib/content-search";
   import type { Chapter, ContentMatch } from "$lib/content-search";
@@ -115,7 +116,7 @@
   const book = $derived(bookConfigs[bookSlug] || bookConfigs["gsgw"]);
   const isTemp = $derived(bookSlug === "temp");
   const isManwha = $derived(bookSlug === "manwha");
-  const embedImage = $derived(bookSlug === "debut" ? imgDebutBanner : book.cover);
+  const embedImage = $derived(bookSlug === "debut" ? imgDebutBanner : bookSlug === "gsgw" ? imgGsgwBanner : book.cover);
   const embedTitle = $derived(bookSlug === "debut" ? "Debut or Die" : book.title);
   const embedDescription = $derived(bookSlug === "debut"
     ? "An aspiring civil servant passes out and awakens 3 years in the past in an unfamiliar body.\n\nBefore he can even assess the situation, he's given a mission: Debut or Die!"
