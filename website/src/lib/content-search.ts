@@ -29,6 +29,74 @@ async function fetchChapterContent(book: string, tl: string, index: number, sign
   return res.text();
 }
 
+function cleanContentForSearch(text: string): string {
+  let t = text.replace(/^---[\s\S]*?---\n?/, "");
+  // Strip block delimiters but keep inner content
+  t = t
+    .replace(/★[\-=!:$]\n?([\s\S]*?)\n?[\-=!:$]★/g, "$1")
+    .replace(/\$★\n?([\s\S]*?)\n?★\$/g, "$1")
+    .replace(/\+[-=~\$]+\n?([\s\S]*?)\n?[-=~\$]+\+/g, "$1")
+    .replace(/[&][-\$]+\n?([\s\S]*?)\n?[-\$]+[&]/g, "$1")
+    .replace(/[!][-\$[\]]+\n?([\s\S]*?)\n?[\-\$[\]]+!/g, "$1");
+  // Strip standalone delimiter lines (scene breaks)
+  t = t
+    .replace(/^[\-\u2013\u2014~=]{3,}$/gm, "")
+    .replace(/^\*\s\*\s\*$/gm, "")
+    .replace(/^\*{3,}$/gm, "")
+    .replace(/^[\+\=&!~#\^v]+$/gm, "")
+    .replace(/^\[.*?\]$/gm, "")
+    .replace(/^@[\w.]+$/gm, "")
+    .replace(/^- (?:BSJ|LSJ|PMD|SAH|KRB|CE|RCW):.*/gim, "")
+    .replace(/^(?:BSJ|LSJ|PMD|SAH|KRB|CE|RCW):.*/gim, "");
+  // Strip inline delimiter markers but keep inner text
+  t = t
+    .replace(/#\^[>f<]?\^#([\s\S]*?)#\^[>f<]?\^#/g, "$1")
+    .replace(/#v[>f<]?v#([\s\S]*?)#v[>f<]?v#/g, "$1")
+    .replace(/#f[><]?#\(.*?\)#f[><]?#/g, "")
+    .replace(/#\*(.*?)\*#/g, "$1")
+    .replace(/#><(.*?)><#/g, "$1")
+    .replace(/#r(.*?)r#/g, "$1")
+    .replace(/#o(.*?)o#/g, "$1")
+    .replace(/#y(.*?)y#/g, "$1")
+    .replace(/#g(.*?)g#/g, "$1")
+    .replace(/#cy(.*?)cy#/g, "$1")
+    .replace(/#b(.*?)b#/g, "$1")
+    .replace(/#lp(.*?)lp#/g, "$1")
+    .replace(/#p(.*?)p#/g, "$1")
+    .replace(/;r(.*?)r;/g, "$1")
+    .replace(/;o(.*?)o;/g, "$1")
+    .replace(/;y(.*?)y;/g, "$1")
+    .replace(/;g(.*?)g;/g, "$1")
+    .replace(/;b(.*?)b;/g, "$1")
+    .replace(/;p(.*?)p;/g, "$1")
+    .replace(/\$c(.*?)c\$/g, "$1")
+    .replace(/\$\$(.*?)\$\$/g, "$1")
+    .replace(/~~(.*?)~~/g, "$1")
+    .replace(/%%(.*?)%%/g, "$1")
+    .replace(/%~(.*?)~%/g, "$1")
+    .replace(/%\^(.*?)\^%/g, "$1")
+    .replace(/@@(.*?)@@/g, "$1")
+    .replace(/@_@(.*?)@_@/g, "$1")
+    .replace(/\$\*(.*?)\*\$/g, "$1")
+    .replace(/\$\((.*?)\)\$/g, "$1")
+    .replace(/\$s(.*?)s\$/g, "$1")
+    .replace(/\$a(.*?)a\$/g, "$1")
+    .replace(/\$g(.*?)g\$/g, "$1")
+    .replace(/\$ag(.*?)ag\$/g, "$1")
+    .replace(/\$\[★\](.*?)\[★\]\$/g, "$1")
+    .replace(/\}[!]?([^\n}]+)\}/g, "$1")
+    .replace(/\{[!]?([^\n{]+)\{/g, "$1")
+    .replace(/@ll@|@rr@|@cc@|@l@|@r@|@c@/g, "")
+    .replace(/^\\(.*)$/gm, "$1")
+    .replace(/\{style="[^"]*"\}/g, "");
+  // Collapse whitespace
+  t = t
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]+/g, " ")
+    .trim();
+  return t;
+}
+
 function cleanSnippet(raw: string): string {
   let t = raw
     .replace(/★[\-=!:$][\s\S]*?[\-=!:$]★/g, "")
@@ -162,9 +230,10 @@ export function searchChapterContent(
       const results = await Promise.allSettled(
         batch.map(async (ch) => {
           const content = await fetchChapterContent(bookSlug, selectedTL, ch.index ?? 0, signal);
-          const idx = content.toLowerCase().indexOf(lowerQuery);
+          const cleaned = cleanContentForSearch(content);
+          const idx = cleaned.toLowerCase().indexOf(lowerQuery);
           if (idx === -1) return null;
-          const allLines = content.split("\n");
+          const allLines = cleaned.split("\n");
           let matchLine = 0;
           let pos = 0;
           for (let l = 0; l < allLines.length; l++) {
