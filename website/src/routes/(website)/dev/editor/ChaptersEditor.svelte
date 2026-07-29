@@ -499,8 +499,6 @@
   }
 
   const colorsItems = [
-    { syntax: "**text**", text: "bold text", cls: "font-bold" },
-    { syntax: "*text*", text: "italic text", cls: "italic" },
     { syntax: "$$text$$", text: "handwritten text", cls: "handwritten", expandable: true },
     { syntax: "#rtextr#", text: "red text", cls: "text-red" },
     { syntax: "#otexto#", text: "orange text", cls: "text-orange" },
@@ -516,6 +514,8 @@
     { syntax: ";gtextg;", text: "green highlight", cls: "hl-green" },
     { syntax: ";btextb;", text: "blue highlight", cls: "hl-blue" },
     { syntax: ";ptextp;", text: "magenta highlight", cls: "hl-magenta" },
+    { syntax: "**text**", text: "bold text", cls: "font-bold" },
+    { syntax: "*text*", text: "italic text", cls: "italic" },
     { syntax: "_text_", text: "underline text", cls: "underline" },
     { syntax: "~~text~~", text: "strikethrough text", cls: "line-through text-base-content/50" },
     { syntax: "$agtextag$", text: "silver text", cls: "silver-text", expandable: true },
@@ -539,6 +539,7 @@
     { syntax: "@c@text@c@", text: "center align", cls: "text-center", expandable: true },
     { syntax: "@r@text@r@", text: "right align", cls: "text-right", expandable: true },
     { syntax: "@ll@text@ll@", text: "mono left", cls: "mono mono-left", expandable: true },
+    { syntax: "@cc@text@cc@", text: "mono center", cls: "mono mono-center", expandable: true },
     { syntax: "@rr@text@rr@", text: "mono right", cls: "mono mono-right", expandable: true },
     { syntax: "%%text%%", text: "shake block", cls: "shake", expandable: true },
     { syntax: "%~text~%", text: "shake per-char", cls: "shake", expandable: true, previewHtml: shakePerCharPreview() },

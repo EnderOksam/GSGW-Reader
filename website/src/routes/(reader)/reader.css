@@ -33,7 +33,7 @@ img {
     font-size: 1.15em;
   }
   .text-large-centered {
-    font-size: 1.4em;
+    font-size: 1.82em;
   }
 }
 
@@ -618,13 +618,13 @@ hr.invisible-hr {
 }
 
 .text-large {
-  font-size: 1.04em;
+  font-size: 1.5em;
   font-weight: 700;
 }
 
 .text-large-centered {
   display: block;
-  font-size: 1.04em;
+  font-size: 1.35em;
   font-weight: 700;
   text-align: center;
 }
@@ -653,6 +653,10 @@ hr.invisible-hr {
 .mono-right {
   display: block;
   text-align: right;
+}
+.mono-center {
+  display: block;
+  text-align: center;
 }
 .align-left {
   display: block;

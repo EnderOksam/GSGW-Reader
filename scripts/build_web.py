@@ -103,6 +103,7 @@ SIMPLE_REPLACEMENTS = [
 
 
     (re.compile(r"@ll@(.*?)@ll@", re.DOTALL), r'<span class="mono mono-left">\1</span>'),
+    (re.compile(r"@cc@(.*?)@cc@", re.DOTALL), r'<span class="mono mono-center">\1</span>'),
     (re.compile(r"@rr@(.*?)@rr@", re.DOTALL), r'<span class="mono mono-right">\1</span>'),
 
     (re.compile(r"@l@(.*?)@l@", re.DOTALL), r'<span class="align-left">\1</span>'),

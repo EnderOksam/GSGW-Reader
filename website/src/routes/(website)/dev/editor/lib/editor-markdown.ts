@@ -75,6 +75,7 @@ export function preprocessMarkdown(text: string): string {
     [/(?<!\\)_(.*?)(?<!\\)_/gs, '<span class="underline">$1</span>'],
 
     [/@ll@(.*?)@ll@/gs, '<span class="mono mono-left">$1</span>'],
+    [/@cc@(.*?)@cc@/gs, '<span class="mono mono-center">$1</span>'],
     [/@rr@(.*?)@rr@/gs, '<span class="mono mono-right">$1</span>'],
     [/@l@(.*?)@l@/gs, '<span class="align-left">$1</span>'],
     [/@c@(.*?)@c@/gs, '<span class="align-center">$1</span>'],

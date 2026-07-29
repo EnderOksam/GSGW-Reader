@@ -259,7 +259,7 @@ del {
 .text-large-centered {
   display: block;
   text-align: center;
-  font-size: 1.2em;
+  font-size: 1.56em;
   font-weight: bold;
   line-height: 1.35;
 }
@@ -279,6 +279,11 @@ del {
 .align-right {
   display: block;
   text-align: right;
+}
+
+.mono-center {
+  display: block;
+  text-align: center;
 }
 
 .text-faded {

@@ -153,6 +153,7 @@
     { syntax: "@c@text@c@", text: "center align", cls: "text-center", expandable: true },
     { syntax: "@r@text@r@", text: "right align", cls: "text-right", expandable: true },
     { syntax: "@ll@text@ll@", text: "mono left", cls: "mono mono-left", expandable: true },
+    { syntax: "@cc@text@cc@", text: "mono center", cls: "mono mono-center", expandable: true },
     { syntax: "@rr@text@rr@", text: "mono right", cls: "mono mono-right", expandable: true },
     { syntax: "%%text%%", text: "shake block", cls: "shake", expandable: true },
     { syntax: "%~text~%", text: "shake per-char", cls: "shake", expandable: true, previewHtml: shakePerCharPreview() },

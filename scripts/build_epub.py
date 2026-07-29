@@ -583,6 +583,7 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"@_@(.+?)@_@", '<span class="glitch-subtle">{inner}</span>'),
         (r"\$s(.+?)s\$", '<span class="smoke-text">{inner}</span>'),
         (r"@ll@(.+?)@ll@", '<span class="mono mono-left">{inner}</span>'),
+        (r"@cc@(.+?)@cc@", '<span class="mono mono-center">{inner}</span>'),
         (r"@rr@(.+?)@rr@", '<span class="mono mono-right">{inner}</span>'),
         (r"@l@(.+?)@l@", '<span class="align-left">{inner}</span>'),
         (r"@r@(.+?)@r@", '<span class="align-right">{inner}</span>'),

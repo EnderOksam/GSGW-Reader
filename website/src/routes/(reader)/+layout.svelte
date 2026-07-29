@@ -33,6 +33,7 @@
       navbarSticky: true,
       solidBackground: true,
       hideTweetMetadata: false,
+      scrollGradient: "low",
     });
 
     constructor() {
@@ -69,6 +70,7 @@
       navbarSticky: true,
       solidBackground: true,
       hideTweetMetadata: false,
+      scrollGradient: "low",
         };
       }
     }
@@ -80,6 +82,8 @@
   const prefs = new UserPreferences();
   let mainContainer: HTMLDivElement;
   let navbarRef: any;
+  let readProgress = $state(0);
+  let mainEl: HTMLElement | undefined = $state();
 
   // 1. Parse URL manually (since page.params is empty)
   // Split path, filter out empty strings to handle trailing slashes
@@ -143,13 +147,20 @@
   });
 
   function handleScroll() {
+    const scrollTop = window.scrollY;
+    if (mainEl) {
+      const mainHeight = mainEl.offsetHeight;
+      const mainOffsetTop = mainEl.offsetTop;
+      const scrollable = mainHeight - window.innerHeight;
+      readProgress = scrollable > 0 ? Math.min(Math.max(((scrollTop - mainOffsetTop) / scrollable) * 100, 0), 100) : 100;
+    }
     localStorage.setItem(
       "lastRead",
       JSON.stringify({
         book: bookSlug,
         tl: currentTL,
         slug: currentChapter,
-        scroll: window.scrollY,
+        scroll: scrollTop,
         timestamp: Date.now(),
       }),
     );
@@ -229,10 +240,18 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
+<!-- Reading progress bar -->
+<div
+  class="fixed top-0 z-[60] h-[3px] w-screen pointer-events-none"
+  style="opacity: {readProgress > 0 ? 1 : 0}; transition: opacity 0.3s;"
+>
+  <div class="h-full rounded-full bg-gradient-to-r from-primary/60 to-accent/60 transition-all duration-150 ease-out" style="width: {readProgress}%"></div>
+</div>
+
 <div
   bind:this={mainContainer}
   data-hide-tweet-meta={prefs.config.hideTweetMetadata}
-  class="min-h-screen w-full bg-base-100 text-base-content relative transition-colors duration-200"
+  class="min-h-screen w-full text-base-content relative transition-colors duration-200"
   style="
     --chapter-font: {prefs.config.font}, serif; 
     --chapter-size: {prefs.config.fontSize}px; 
@@ -244,62 +263,79 @@
     --card-bg-opacity: {prefs.config.solidBackground ? 1 : 0};
   "
 >
+  <div class="fixed inset-0 -z-10 bg-[oklch(var(--b1))]"></div>
+  <!-- Scroll gradient -->
+  <div
+    class="scroll-gradient fixed inset-0 pointer-events-none"
+    style="opacity: {Math.min(Math.max(readProgress - 35, 0) / 35, { low: 0.035, medium: 0.07, high: 0.15 }[prefs.config.scrollGradient] ?? 0.035)}; transition: opacity 0.8s ease-out;"
+  ></div>
   <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {chaptersForTL} {currentIndex} {currentTL} />
 
-  <main class="mx-auto my-3 max-w-4xl w-full px-4 py-8 sm:px-6 md:px-12 sm:py-12 z-0 relative transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
-    <div
-      class="absolute inset-0 bg-base-200 -z-10 rounded-box transition-opacity duration-300"
-      style="opacity: var(--card-bg-opacity);"
-    ></div>
+  <main bind:this={mainEl} class="mx-auto my-0 sm:my-6 max-w-4xl w-full z-0 relative transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
+    <div class="relative rounded-2xl border-0 sm:border border-base-content/10 bg-base-200 shadow-none sm:shadow-xl sm:shadow-base-content/5 overflow-hidden">
+      <div
+        class="absolute inset-0 bg-base-300 -z-10 transition-opacity duration-300"
+        style="opacity: var(--card-bg-opacity);"
+      ></div>
 
-    <article
-      class="chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word"
-    >
-      {@render children()}
-    </article>
+      <div class="px-5 py-8 sm:px-8 sm:py-10 md:px-12 md:py-12">
+        <article
+          class="chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word"
+        >
+          {@render children()}
+        </article>
+      </div>
 
-    <div class="mt-16 flex items-center justify-between border-t border-base-content/10 pt-8">
-      <a
-        href={currentIndex <= 0 
-            ? `/book/${bookSlug}` 
-            : `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}`}
-        class="btn btn-soft btn-sm gap-2"
-        aria-label={currentIndex <= 0 ? "Go Home" : "Previous Chapter"}
+      <div class="border-t border-base-content/5 px-5 sm:px-8 md:px-12 py-5 flex items-center justify-between bg-base-200/40">
+        <a
+          href={currentIndex <= 0 
+              ? `/book/${bookSlug}` 
+              : `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}`}
+          class="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
+          aria-label={currentIndex <= 0 ? "Go Home" : "Previous Chapter"}
+        >
+          <Icon icon={currentIndex <= 0 ? "iconamoon:home-light" : "mage:previous"} class="size-5" />
+          <span class="hidden sm:inline">{currentIndex <= 0 ? "Home" : "Prev"}</span>
+        </a>
 
-      >
-        <Icon icon={currentIndex <= 0 ? "iconamoon:home-light" : "mage:previous"} class="size-5" />
-        <span class="hidden sm:inline">{currentIndex <= 0 ? "Home" : "Prev"}</span>
-      </a>
+        <span class="text-xs font-mono font-bold text-base-content/40 tracking-wider">
+          CH. {currentChMeta.slug}
+        </span>
 
-      <span class="text-xs font-mono font-bold opacity-50 tracking-wider">
-        CH. {currentChMeta.slug}
-      </span>
-
-      <a
-        href={currentIndex >= totalChapters - 1
-            ? `/book/${bookSlug}`
-            : `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}`}
-        class="btn btn-soft btn-sm gap-2"
-        aria-label={currentIndex >= totalChapters - 1 ? "Go Home" : "Next Chapter"}
-        data-sveltekit-preload-data="viewport"
-      >
-        <span class="hidden sm:inline">{currentIndex >= totalChapters - 1 ? "Home" : "Next"}</span>
-        <Icon icon={currentIndex >= totalChapters - 1 ? "iconamoon:home-light" : "mage:next"} class="size-5" />
-      </a>
+        <a
+          href={currentIndex >= totalChapters - 1
+              ? `/book/${bookSlug}`
+              : `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}`}
+          class="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
+          aria-label={currentIndex >= totalChapters - 1 ? "Go Home" : "Next Chapter"}
+          data-sveltekit-preload-data="viewport"
+        >
+          <span class="hidden sm:inline">{currentIndex >= totalChapters - 1 ? "Home" : "Next"}</span>
+          <Icon icon={currentIndex >= totalChapters - 1 ? "iconamoon:home-light" : "mage:next"} class="size-5" />
+        </a>
+      </div>
     </div>
   </main>
 
   {#if bookSlug === "gsgw"}
     <button
       onclick={() => readerState.refPanelOpen = !readerState.refPanelOpen}
-      class="fixed right-0 top-1/2 -translate-y-1/2 z-40 btn btn-ghost btn-square btn-sm rounded-l-full bg-base-100/80 shadow-md hover:bg-base-100 border border-base-content/20 border-r-0"
+      class="group fixed right-0 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center size-9 rounded-l-xl bg-base-100/90 backdrop-blur-md shadow-lg shadow-base-content/10 border border-base-content/15 border-r-0 cursor-pointer hover:bg-base-100 hover:shadow-xl hover:border-primary/30 transition-all duration-200"
       aria-label="Toggle Reference Panel"
     >
-      <Icon icon={readerState.refPanelOpen ? "material-symbols:chevron-right-rounded" : "material-symbols:chevron-left-rounded"} class="size-5" />
+      <Icon icon={readerState.refPanelOpen ? "material-symbols:chevron-right-rounded" : "material-symbols:chevron-left-rounded"} class="size-5 text-base-content/40 group-hover:text-primary transition-colors" />
     </button>
   {/if}
 
-  <div id="comments" class="mx-auto max-w-4xl px-4 pb-16 transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
+  <div id="comments" class="mx-auto mt-8 mb-0 sm:mb-8 max-w-4xl transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
+    <div class="rounded-2xl border-0 sm:border border-base-content/10 bg-base-200 shadow-none sm:shadow-xl sm:shadow-base-content/5 overflow-hidden">
+      <div class="px-4 sm:px-8 pt-6 pb-2">
+        <div class="flex items-center gap-2">
+          <Icon icon="lucide:message-square-text" class="size-4 text-base-content/30 shrink-0" />
+          <span class="text-xs font-mono font-bold text-base-content/30 uppercase tracking-widest">Comments</span>
+        </div>
+      </div>
+      <div class="px-4 sm:px-8 pb-8">
     {#key page.url.pathname}
       {#if readerState.ch_meta.discussion}
         <Giscus
@@ -334,6 +370,8 @@
         />
       {/if}
     {/key}
+    </div>
+  </div>
   </div>
 
 </div>
@@ -365,5 +403,20 @@
     overflow-y: auto;
     overflow-x: hidden;
     background-color: var(--fallback-b1, oklch(var(--b1) / 1));
+  }
+
+  :global(html) {
+    overflow-y: overlay;
+  }
+  :global(.scroll-gradient) {
+    --grad-top: color-mix(in oklch, var(--color-primary) 100%, transparent);
+    --grad-mid: color-mix(in oklch, var(--color-accent) 100%, transparent);
+    background: linear-gradient(180deg, var(--color-base-100) 0%, var(--grad-mid) 50%, var(--grad-top) 100%);
+  }
+  :global(.giscus-frame-wrapper) {
+    width: 100%;
+  }
+  :global(.giscus) {
+    width: 100%;
   }
 </style>

@@ -261,7 +261,7 @@
     modals.chapter?.showModal();
     setTimeout(() => {
       modals.chapter
-        ?.querySelector(".btn-primary")
+        ?.querySelector(".ch-active")
         ?.scrollIntoView({ block: "center" });
       (modals.chapter?.querySelector("input[type=search]") as HTMLInputElement)?.blur();
     }, 0);
@@ -454,7 +454,7 @@
         {@const isActive = readerState.ch_meta.slug == ch.slug}
         <a
           href="/read/{bookSlug}/{navState.selectedTL}/{ch.slug}"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 {isActive ? 'bg-primary/10 ring-1 ring-primary/20' : 'hover:bg-base-200/60'}"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 {isActive ? 'ch-active bg-primary/10 ring-1 ring-primary/20' : 'hover:bg-base-200/60'}"
           onclick={() => modals.chapter?.close()}
         >
           <span class="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold {isActive ? 'bg-primary text-primary-content' : 'bg-base-200 text-base-content/40'}">
@@ -589,6 +589,19 @@
           <button class="btn btn-outline btn-primary btn-sm w-full rounded-xl gap-2" onclick={toggleFullscreen}>
             <Icon icon="material-symbols:fullscreen" class="size-4" /> Toggle Fullscreen
           </button>
+          <div class="form-control gap-1.5">
+            <label class="label-text text-xs font-medium">Scroll Gradient</label>
+            <div class="join w-full">
+              {#each ["low", "medium", "high"] as level}
+                <button
+                  class="join-item btn btn-xs grow rounded-xl {prefs.config.scrollGradient === level ? 'btn-primary' : 'btn-ghost bg-base-200'}"
+                  onclick={() => (prefs.config.scrollGradient = level)}
+                >
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </button>
+              {/each}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -661,7 +661,7 @@ del { text-decoration: line-through; }
 
 /* Inline text effects */
 .text-large { font-size: 1.04em; font-weight: bold; }
-.text-large-centered { display: block; text-align: center; font-size: 1.04em; font-weight: bold; }
+.text-large-centered { display: block; text-align: center; font-size: 1.35em; font-weight: bold; }
 .text-red { color: #ff4d00; font-weight: bold; }
 .text-blue { color: #2244fa; font-weight: bold; }
 .text-yellow { color: #fff700; font-weight: bold; }
@@ -674,6 +674,7 @@ del { text-decoration: line-through; }
 .text-faded { opacity: 0.35; }
 .mono { font-family: "Courier New", Courier, monospace; font-weight: bold; }
 .mono-left { display: block; text-align: left; }
+.mono-center { display: block; text-align: center; }
 .mono-right { display: block; text-align: right; }
 .align-left { display: block; text-align: left; }
 .align-center { display: block; text-align: center; }
