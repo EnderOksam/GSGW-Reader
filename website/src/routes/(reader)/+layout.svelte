@@ -114,6 +114,13 @@
 
 
   let navState = $state({ searchQuery: "", selectedTL: "webnovel" });
+  let nextInfoDialog: HTMLDialogElement | undefined = $state();
+
+  const TL_INFO = [
+    { name: "FanTL", desc: "This translation is the recommended one, has all the features made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
+    { name: "UnfinishedTL", desc: "The base story with no special features — equivalent of reading an epub. Once chapters here get formatted they get put under FanTL.", icon: "mdi:book-outline", color: "text-blue-400" },
+    { name: "MTL", desc: "Currently released part three chapters. Translated by ZestysDaddy on Discord, kept separate because they'd break the order of FanTL (jumping to part three since part two isn't fully formatted yet).", icon: "mdi:auto-fix", color: "text-purple-400" },
+  ];
 
   // 4. Sync internal state with URL
   $effect(() => {
@@ -121,6 +128,10 @@
   });
 
   // --- Handlers ---
+
+  afterNavigate(() => {
+    nextInfoDialog?.close();
+  });
 
   afterNavigate(async () => {
     const { littlefoot } = await import("littlefoot");
@@ -143,7 +154,9 @@
   });
 
   onDestroy(() => {
-    if (browser) window.removeEventListener("scroll", handleScroll);
+    if (browser) {
+      window.removeEventListener("scroll", handleScroll);
+    }
   });
 
   function handleScroll() {
@@ -168,9 +181,13 @@
 
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(console.error);
+      document.documentElement.requestFullscreen().then(() => {
+        screen.orientation?.lock?.("portrait").catch(() => {});
+      }).catch(console.error);
     } else {
-      document.exitFullscreen();
+      document.exitFullscreen().then(() => {
+        screen.orientation?.unlock?.();
+      }).catch(console.error);
     }
   }
 
@@ -266,10 +283,10 @@
   <div class="fixed inset-0 -z-10 bg-[oklch(var(--b1))]"></div>
   <!-- Scroll gradient -->
   <div
-    class="scroll-gradient fixed inset-0 pointer-events-none"
-    style="opacity: {Math.min(Math.max(readProgress - 35, 0) / 35, { low: 0.035, medium: 0.07, high: 0.15 }[prefs.config.scrollGradient] ?? 0.035)}; transition: opacity 0.8s ease-out;"
+    class="scroll-gradient fixed inset-0 pointer-events-none hidden sm:block"
+    style="opacity: {Math.min(Math.max(readProgress - 35, 0) / 35, { none: 0, low: 0.035, medium: 0.07, high: 0.15 }[prefs.config.scrollGradient] ?? 0.035)}; transition: opacity 0.8s ease-out;"
   ></div>
-  <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {chaptersForTL} {currentIndex} {currentTL} />
+  <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {chaptersForTL} {currentIndex} {currentTL} {nextInfoDialog} />
 
   <main bind:this={mainEl} class="mx-auto my-0 sm:my-6 max-w-4xl w-full z-0 relative transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
     <div class="relative rounded-2xl border-0 sm:border border-base-content/10 bg-base-200 shadow-none sm:shadow-xl sm:shadow-base-content/5 overflow-hidden">
@@ -302,17 +319,22 @@
           CH. {currentChMeta.slug}
         </span>
 
-        <a
-          href={currentIndex >= totalChapters - 1
-              ? `/book/${bookSlug}`
-              : `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}`}
-          class="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
-          aria-label={currentIndex >= totalChapters - 1 ? "Go Home" : "Next Chapter"}
-          data-sveltekit-preload-data="viewport"
-        >
-          <span class="hidden sm:inline">{currentIndex >= totalChapters - 1 ? "Home" : "Next"}</span>
-          <Icon icon={currentIndex >= totalChapters - 1 ? "iconamoon:home-light" : "mage:next"} class="size-5" />
-        </a>
+        <div class="relative">
+          <button
+            onclick={() => {
+              if (currentIndex >= totalChapters - 1) {
+                nextInfoDialog?.showModal();
+              } else {
+                goto(`/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}`);
+              }
+            }}
+            class="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
+            aria-label={currentIndex >= totalChapters - 1 ? "No Next Chapter" : "Next Chapter"}
+          >
+            <span class="hidden sm:inline">Next</span>
+            <Icon icon="mage:next" class="size-5" />
+          </button>
+        </div>
       </div>
     </div>
   </main>
@@ -375,6 +397,56 @@
   </div>
 
 </div>
+
+<!-- --- Modal: No Next Chapter --- -->
+<dialog bind:this={nextInfoDialog} class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-base-100 p-0 rounded-t-2xl sm:rounded-box shadow-2xl overflow-hidden max-h-[85vh]">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+      <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+        <span class="font-bold text-lg flex items-center gap-2 text-primary">
+          <Icon icon="material-symbols:info-outline" class="size-5" />
+          No next chapter found
+        </span>
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="overflow-y-auto overscroll-contain max-h-[70vh]">
+      <div class="p-5 space-y-4">
+        <p class="text-sm text-base-content/60 leading-relaxed">
+          There is no next chapter here, but it probably is on the site under a different translation folder.
+        </p>
+
+        <div class="space-y-2.5">
+          {#each TL_INFO as item}
+            <div class="flex gap-3 p-3 rounded-xl bg-base-200/50 border border-base-content/5">
+              <Icon icon={item.icon} class="size-5 shrink-0 mt-0.5 {item.color}" />
+              <div class="space-y-0.5 min-w-0">
+                <div class="text-xs font-bold tracking-wide">{item.name}</div>
+                <p class="text-[11px] text-base-content/50 leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          {/each}
+        </div>
+
+        <a
+          href="https://discord.gg/HHnSjeGN4d"
+          target="_blank"
+          class="btn btn-primary btn-sm w-full rounded-xl gap-2"
+        >
+          <Icon icon="mdi:discord" class="size-4" />
+          <span class="text-xs">Chapters are still releasing — join the Discord</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
 
 <style>
   @media (max-width: 639px) {

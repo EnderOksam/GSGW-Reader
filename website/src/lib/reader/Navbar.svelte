@@ -16,7 +16,7 @@
 
   // --- Props ---
   // Using Svelte 5 $props for reactive input
-  let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, chaptersForTL = [], currentIndex = 0, currentTL = "" } = $props();
+  let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, chaptersForTL = [], currentIndex = 0, currentTL = "", nextInfoDialog = undefined as HTMLDialogElement | undefined } = $props();
   const totalChapters = $derived(chaptersForTL.length);
 
   // --- State ---
@@ -261,9 +261,13 @@
       modals.chapter?.close();
       modals.settings?.close();
       modals.edit?.close();
-      document.documentElement.requestFullscreen().catch(console.error);
+      document.documentElement.requestFullscreen().then(() => {
+        screen.orientation?.lock?.("portrait").catch(() => {});
+      }).catch(console.error);
     } else {
-      document.exitFullscreen();
+      document.exitFullscreen().then(() => {
+        screen.orientation?.unlock?.();
+      }).catch(console.error);
     }
   }
 
@@ -303,14 +307,19 @@
         >
           <Icon icon="mage:previous" class="size-5" />
         </a>
-        <a
-          href={currentIndex < totalChapters - 1 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}` : '#'}
-          class="btn btn-ghost btn-sm btn-square rounded-xl {currentIndex >= totalChapters - 1 ? 'opacity-20 pointer-events-none' : ''}"
+        <button
+          onclick={() => {
+            if (currentIndex < totalChapters - 1) {
+              goto(`/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}`);
+            } else {
+              nextInfoDialog?.showModal();
+            }
+          }}
+          class="btn btn-ghost btn-sm btn-square rounded-xl"
           aria-label="Next Chapter"
-          data-sveltekit-preload-data="viewport"
         >
           <Icon icon="mage:next" class="size-5" />
-        </a>
+        </button>
       </div>
 
       <!-- Center: Contents -->
@@ -371,14 +380,19 @@
       </div>
 
       <div class="tooltip tooltip-bottom" data-tip="Next (N)">
-        <a
-          href={currentIndex < totalChapters - 1 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}` : '#'}
-          class="btn btn-ghost btn-sm btn-square rounded-xl {currentIndex >= totalChapters - 1 ? 'opacity-20 pointer-events-none' : ''}"
+        <button
+          onclick={() => {
+            if (currentIndex < totalChapters - 1) {
+              goto(`/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex + 1].slug}`);
+            } else {
+              nextInfoDialog?.showModal();
+            }
+          }}
+          class="btn btn-ghost btn-sm btn-square rounded-xl"
           aria-label="Next Chapter"
-          data-sveltekit-preload-data="viewport"
         >
           <Icon icon="mage:next" class="size-5" />
-        </a>
+        </button>
       </div>
 
       <div class="w-px h-4 bg-base-content/10 mx-1"></div>
@@ -604,7 +618,7 @@
           <div class="form-control gap-1.5">
             <label class="label-text text-xs font-medium">Scroll Gradient</label>
             <div class="join w-full">
-              {#each ["low", "medium", "high"] as level}
+              {#each ["none", "low", "medium", "high"] as level}
                 <button
                   class="join-item btn btn-xs grow rounded-xl {prefs.config.scrollGradient === level ? 'btn-primary' : 'btn-ghost bg-base-200'}"
                   onclick={() => (prefs.config.scrollGradient = level)}
