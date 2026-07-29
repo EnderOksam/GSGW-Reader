@@ -73,7 +73,7 @@ TWITTER_URL_RE = re.compile(
     r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
 )
 
-VISIBLE_HR_RE = re.compile(r"^~~~\s*$", re.MULTILINE)
+VISIBLE_HR_RE = re.compile(r"^(~~~|---|\*\*\*|\*\s\*\s\*)\s*$", re.MULTILINE)
 INVISIBLE_HR_RE = re.compile(r"^~\^~\s*$", re.MULTILINE)
 
 STYLE_BLOCK_RE = re.compile(r'^[ \t]*\{style="([^"]*)"\}\s*$')
