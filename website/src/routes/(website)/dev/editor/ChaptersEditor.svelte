@@ -51,12 +51,13 @@
     const replacement = hasPlaceholder ? syntax.replace("text", selected || "text") : syntax;
     const before = current.slice(0, start);
     const after = current.slice(end);
+    const mdTop = mdScroll?.scrollTop ?? 0;
     const readerTop = readerScroll?.scrollTop ?? 0;
     input = before + replacement + after;
     await tick();
     el.focus();
-    const pos = start + replacement.length;
-    el.setSelectionRange(pos, pos);
+    el.setSelectionRange(start + replacement.length, start + replacement.length);
+    if (mdScroll) mdScroll.scrollTop = mdTop;
     if (readerScroll) readerScroll.scrollTop = readerTop;
   }
   let newTranslationName = $state("");
