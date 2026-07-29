@@ -835,7 +835,7 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
             continue
 
         if is_hr_line(line):
-            out.append('<br /><hr class="visible-hr" /><br />')
+            out.append("<br /><hr /><br />")
             i += 1
             continue
 

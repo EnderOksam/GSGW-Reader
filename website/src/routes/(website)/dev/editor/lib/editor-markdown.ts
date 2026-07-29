@@ -35,9 +35,6 @@ export function preprocessMarkdown(text: string): string {
   });
 
   s = s.replace(/^~~~\s*$/gm, '<hr class="visible-hr">');
-  s = s.replace(/^---\s*$/gm, '<hr class="visible-hr">');
-  s = s.replace(/^\*\*\*\s*$/gm, '<hr class="visible-hr">');
-  s = s.replace(/^\*\s\*\s\*\s*$/gm, '<hr class="visible-hr">');
   s = s.replace(/^~\^~\s*$/gm, '<hr class="invisible-hr">');
 
   s = s.replace(/@_@(.+?)@_@/gs, (_: string, inner: string) => {
