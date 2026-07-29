@@ -37,6 +37,7 @@
   let snippetLoading = $state(false);
   let snippetShowDomain = $state(true);
   let snippetShowChapter = $state(true);
+  let snippetShowShadow = $state(true);
   let snippetCopied = $state(false);
   let snippetPrimaryColor = $state("oklch(var(--p))");
 
@@ -112,6 +113,7 @@
     snippetCopied = false;
     snippetShowDomain = true;
     snippetShowChapter = true;
+    snippetShowShadow = true;
     modals.snippet?.showModal();
 
     await tick();
@@ -145,7 +147,17 @@
     if (!styleEl) {
       styleEl = document.createElement("style");
       styleEl.id = "snippet-injected-css";
-      styleEl.textContent = readerCss + "\n" + readerWindowsCss;
+      styleEl.textContent = readerCss + "\n" + readerWindowsCss + "\n" + `
+        /* html2canvas text-shadow fallback: use -webkit-text-stroke */
+        .smoke-text {
+          -webkit-text-stroke: 0.06em rgba(255, 200, 0, 0.9);
+          -webkit-text-fill-color: black;
+          paint-order: stroke fill;
+        }
+        .glitch-text {
+          -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.14);
+        }
+      `;
       snippetPreviewEl.prepend(styleEl);
     }
   }
@@ -682,13 +694,17 @@
       <!-- Outer wrapper: controls padding + rounding of the final image -->
       <div
         bind:this={snippetOuterEl}
-        style="padding: 20px; border-radius: 16px; width: 640px;"
+        style="padding: 20px; border-radius: 16px; width: 640px; position: relative;"
       >
+        {#if snippetShowShadow}
+          <!-- DOM shadow element (replaces CSS box-shadow for html2canvas compatibility) -->
+          <div style="position: absolute; inset: 20px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2); pointer-events: none;"></div>
+        {/if}
         <!-- Inner card: the actual content card with shadow -->
         <div
           bind:this={snippetPreviewEl}
           class="reader-container"
-          style="width: 600px; padding: 2em 2.25em 1.25em; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2); --chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 2.2; font-family: var(--chapter-font); font-size: var(--chapter-size); font-weight: var(--chapter-weight); line-height: var(--chapter-lh);"
+          style="position: relative; z-index: 1; width: 600px; padding: 2em 2.25em 1.25em; border-radius: 12px; --chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 2.2; font-family: var(--chapter-font); font-size: var(--chapter-size); font-weight: var(--chapter-weight); line-height: var(--chapter-lh);"
         >
           {@html capturedHtml}
 
@@ -747,6 +763,13 @@
         >
           <Icon icon="mdi:book-open-page-variant" class="size-3.5" />
           Chapter
+        </button>
+        <button
+          onclick={() => { snippetShowShadow = !snippetShowShadow; onSnippetToggle(); }}
+          class="btn btn-xs rounded-full gap-1.5 {snippetShowShadow ? 'btn-primary' : 'btn-ghost bg-base-200/80 text-base-content/60'}"
+        >
+          <Icon icon="material-symbols:shadow" class="size-3.5" />
+          Shadow
         </button>
         <div class="flex-1"></div>
         <button
