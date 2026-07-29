@@ -133,8 +133,8 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 {/if}
 
 <div class="relative h-dvh flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden">
-  <div class="flex flex-col items-center gap-4 md:gap-8 w-full max-w-7xl">
-    <h1 class="crt-title text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight text-center whitespace-nowrap filter drop-shadow-[0_0_10px_#fb8462]" style="color:#fb8462">
+    <div class="flex flex-col items-center gap-4 md:gap-8 w-full max-w-7xl">
+    <h1 class="crt-title text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight text-center whitespace-nowrap">
       GSGW-Reader
     </h1>
 
@@ -356,14 +356,21 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 
 <style>
   .crt-title {
-    -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5);
-    paint-order: stroke fill;
-    text-shadow:
-      0 0 3px rgba(251, 132, 98, 0.3),
-      0 0 8px rgba(251, 132, 98, 0.1),
-      -0.5px 0 rgba(255, 0, 0, 0.1),
-      0.5px 0 rgba(0, 0, 255, 0.1);
-    animation: crt-flicker 4s infinite;
+    display: inline-block;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff2a00 0%, #ff7b00 15%, #ffcc00 30%, #ff2a6d 50%, #c213e0 70%, #ff2a00 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: aurora-flow 8s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 42, 0, 0.4)) drop-shadow(0 0 25px rgba(255, 42, 109, 0.3)) drop-shadow(0 0 50px rgba(194, 19, 224, 0.12));
+    will-change: background-position;
+  }
+
+  @keyframes aurora-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
   }
 
   @keyframes crt-flicker {

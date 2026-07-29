@@ -9,6 +9,7 @@
   import readerWindowsCss from "./reader-windows.css?inline";
   import { searchChapterContent, renderSnippet as renderSearchSnippet, storeSnippetTarget } from "$lib/content-search";
   import type { ContentMatch } from "$lib/content-search";
+  import { browser } from "$app/environment";
 
   // --- Types ---
   interface Chapter {
@@ -37,9 +38,21 @@
   let snippetOuterEl: HTMLElement | null = $state(null);
   let snippetImageUrl = $state("");
   let snippetLoading = $state(false);
-  let snippetShowDomain = $state(true);
-  let snippetShowChapter = $state(true);
-  let snippetShowShadow = $state(true);
+  function loadSnippetPref<T>(key: string, fallback: T): T {
+    if (!browser) return fallback;
+    try {
+      const saved = localStorage.getItem("snippetPrefs");
+      if (saved) return (JSON.parse(saved)[key] ?? fallback) as T;
+    } catch { /* ignore */ }
+    return fallback;
+  }
+  let snippetShowDomain = $state(loadSnippetPref("showDomain", true));
+  let snippetShowChapter = $state(loadSnippetPref("showChapter", true));
+  let snippetShowShadow = $state(loadSnippetPref("showShadow", true));
+  $effect(() => {
+    const d = snippetShowDomain, c = snippetShowChapter, s = snippetShowShadow;
+    if (browser) localStorage.setItem("snippetPrefs", JSON.stringify({ showDomain: d, showChapter: c, showShadow: s }));
+  });
   let snippetCopied = $state(false);
   let snippetPrimaryColor = $state("oklch(var(--p))");
 
@@ -113,9 +126,6 @@
     snippetLoading = true;
     snippetImageUrl = "";
     snippetCopied = false;
-    snippetShowDomain = true;
-    snippetShowChapter = true;
-    snippetShowShadow = true;
     modals.snippet?.showModal();
 
     await tick();

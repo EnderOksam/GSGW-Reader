@@ -368,7 +368,7 @@
       0 0 8px rgba(251, 132, 98, 0.1),
       -0.5px 0 rgba(255, 0, 0, 0.1),
       0.5px 0 rgba(0, 0, 255, 0.1);
-    animation: crt-flicker 4s infinite;
+    animation: none;
   }
 
   @keyframes crt-flicker {
