@@ -118,8 +118,8 @@
   const embedImage = $derived(bookSlug === "debut" ? imgDebutBanner : book.cover);
   const embedTitle = $derived(bookSlug === "debut" ? "Debut or Die" : book.title);
   const embedDescription = $derived(bookSlug === "debut"
-    ? "Aspiring civil servant Ryu Gunwoo passes out, only to awaken three years in the past in the body of a young man named Park Moondae.\nBefore he can even assess the situation, he's given a mission: Debut or Die!"
-    : "");
+    ? "An aspiring civil servant passes out and awakens three years in the past in the body of a young man.\nBefore he can even assess the situation, he's given a mission: Debut or Die!"
+    : "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\nOn that day, I ended up transmigrating as a character in that very fantasy world.");
 
   let searchQuery = $state("");
   let selectedTags = $state<string[]>([]);
