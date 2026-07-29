@@ -7,6 +7,7 @@
   import imgtempCover from "$lib/assets/web-coi-cover.jpg";
   import imgManwhaCover from "$lib/assets/webtoon-cover.webp";
   import imgDebutCover from "$lib/assets/debut.webp";
+  import imgDebutBanner from "$lib/assets/debut-banner.png";
   import book_meta from "$lib/meta.json";
   import { searchChapterContent, renderSnippet, storeSnippetTarget } from "$lib/content-search";
   import type { Chapter, ContentMatch } from "$lib/content-search";
@@ -114,6 +115,11 @@
   const book = $derived(bookConfigs[bookSlug] || bookConfigs["gsgw"]);
   const isTemp = $derived(bookSlug === "temp");
   const isManwha = $derived(bookSlug === "manwha");
+  const embedImage = $derived(bookSlug === "debut" ? imgDebutBanner : book.cover);
+  const embedTitle = $derived(bookSlug === "debut" ? "Debut or Die" : book.title);
+  const embedDescription = $derived(bookSlug === "debut"
+    ? "Aspiring civil servant Ryu Gunwoo passes out, only to awaken three years in the past in the body of a young man named Park Moondae.\n\nBefore he can even assess the situation, he's given a mission: Debut or Die!"
+    : "");
 
   let searchQuery = $state("");
   let selectedTags = $state<string[]>([]);
@@ -255,6 +261,14 @@
 <svelte:head>
   <title>{book.title}</title>
   <meta name="description" content={book.synopsis} />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={embedTitle} />
+  <meta property="og:description" content={embedDescription} />
+  <meta property="og:image" content={embedImage} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={embedTitle} />
+  <meta name="twitter:description" content={embedDescription} />
+  <meta name="twitter:image" content={embedImage} />
 </svelte:head>
 
 <main class="flex flex-col md:flex-row min-h-dvh">
