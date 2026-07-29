@@ -7,6 +7,8 @@
   import ReferencePanel from "./ReferencePanel.svelte";
   import readerCss from "../../routes/(reader)/reader.css?inline";
   import readerWindowsCss from "./reader-windows.css?inline";
+  import { searchChapterContent, renderSnippet as renderSearchSnippet, storeSnippetTarget } from "$lib/content-search";
+  import type { ContentMatch } from "$lib/content-search";
 
   // --- Types ---
   interface Chapter {
@@ -254,6 +256,58 @@
   );
   const isSearching = $derived(navState.searchQuery.trim().length > 0);
 
+  let contentMatches = $state<Map<string, ContentMatch>>(new Map());
+  let isSearchingContent = $state(false);
+  let contentSearchAbort: AbortController | null = null;
+  let contentSearchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  const isTempBook = $derived(bookSlug === "temp" || bookSlug === "manwha");
+
+  const displayList = $derived.by(() => {
+    if (!isSearching) return chapterList;
+    const seen = new Set(chapterList.map((c) => c.slug.toString()));
+    const allChapters: Chapter[] = bookData[bookSlug]?.[navState.selectedTL] || [];
+    const extra: Chapter[] = [];
+    for (const slug of contentMatches.keys()) {
+      if (!seen.has(slug)) {
+        const ch = allChapters.find((c) => c.slug.toString() === slug);
+        if (ch) extra.push(ch);
+      }
+    }
+    return [...chapterList, ...extra];
+  });
+
+  $effect(() => {
+    const q = navState.searchQuery;
+    const chapters: Chapter[] = bookData[bookSlug]?.[navState.selectedTL] || [];
+    const titleSlugMatches = chapters.filter(
+      (ch) => ch.title.toLowerCase().includes(q.toLowerCase()) || ch.slug.toString().includes(q)
+    );
+    if (contentSearchAbort) contentSearchAbort.abort();
+    if (contentSearchTimeout) clearTimeout(contentSearchTimeout);
+    contentMatches = new Map();
+    isSearchingContent = false;
+
+    if (q.length >= 3 && titleSlugMatches.length < 3 && !isTempBook) {
+      const timeout = setTimeout(() => {
+        contentSearchAbort = new AbortController();
+        isSearchingContent = true;
+        searchChapterContent(
+          q, chapters, titleSlugMatches, bookSlug, navState.selectedTL,
+          (matches) => { contentMatches = matches; },
+          () => { isSearchingContent = true; },
+          () => { isSearchingContent = false; },
+          contentSearchAbort.signal,
+        );
+      }, 500);
+      contentSearchTimeout = timeout;
+    }
+    return () => {
+      if (contentSearchAbort) contentSearchAbort.abort();
+      if (contentSearchTimeout) clearTimeout(contentSearchTimeout);
+    };
+  });
+
   // --- UI Actions ---
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
@@ -450,7 +504,7 @@
           <span class="font-bold text-lg text-primary flex items-center gap-2"><Icon icon="lucide:table-of-contents" class="size-5" /> Contents</span>
           <span class="text-xs font-mono text-base-content/30">
             {#if isSearching}
-              {chapterList.length} found
+              {displayList.length} found
             {:else}
               {totalCurrentTL}/{totalAllChapters} chapters
             {/if}
@@ -476,8 +530,15 @@
     </div>
 
     <div class="overflow-y-auto overscroll-contain p-2">
-      {#each chapterList as ch, i}
+      {#if isSearchingContent}
+        <div class="flex items-center gap-2 px-3 py-2 text-xs text-base-content/50">
+          <span class="loading loading-spinner loading-xs"></span>
+          Searching chapter content...
+        </div>
+      {/if}
+      {#each displayList as ch, i}
         {@const isActive = readerState.ch_meta.slug == ch.slug}
+        {@const contentMatch = contentMatches.get(ch.slug.toString())}
         <a
           href="/read/{bookSlug}/{navState.selectedTL}/{ch.slug}"
           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 {isActive ? 'ch-active bg-primary/10 ring-1 ring-primary/20' : 'hover:bg-base-200/60'}"
@@ -491,8 +552,21 @@
             <Icon icon="mdi:play-circle" class="size-4 shrink-0 text-primary/50" />
           {/if}
         </a>
+        {#if contentMatch}
+          <button
+            type="button"
+            class="ml-10 mr-2 mb-2 mt-0.5 px-3 py-2 rounded-lg bg-base-200/40 border border-base-content/5 block transition-colors text-left cursor-pointer hover:bg-base-200/60"
+            onclick={(e) => {
+              e.stopPropagation();
+              storeSnippetTarget(contentMatch.snippet, navState.searchQuery);
+              window.location.href = `/read/${bookSlug}/${navState.selectedTL}/${ch.slug}`;
+            }}
+          >
+            <p class="text-[11px] leading-[1.7] text-base-content/50 whitespace-pre-line [&_strong]:text-base-content/65 [&_strong]:font-semibold [&_em]:italic [&_em]:text-base-content/50 [&_u]:decoration-base-content/25">{@html renderSearchSnippet(contentMatch.snippet, navState.searchQuery)}</p>
+          </button>
+        {/if}
       {/each}
-      {#if chapterList.length === 0}
+      {#if displayList.length === 0}
         <div class="py-12 text-center">
           <Icon icon="mdi:magnify-close" class="size-8 mx-auto mb-2 text-base-content/20" />
           <p class="text-sm text-base-content/40">No chapters found</p>

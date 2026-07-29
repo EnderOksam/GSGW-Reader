@@ -161,7 +161,7 @@ function cleanSnippet(raw: string): string {
 function highlightMatch(text: string, query: string): string {
   if (!query) return text;
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return text.replace(new RegExp(`(${escaped})`, "gi"), '<mark class="bg-accent/30 text-accent rounded px-0.5">$1</mark>');
+  return text.replace(new RegExp(`(${escaped})`, "gi"), '<mark style="background: rgba(168,85,247,0.2); color: #c084fc; border-radius: 4px; padding: 0 4px;">$1</mark>');
 }
 
 export function renderSnippet(raw: string, query: string): string {
