@@ -351,6 +351,11 @@ def convert_chapter(content):
 
     content = bw.SILVER_RE.sub(bw.silver_replacer, content)
 
+    content = bw.OUTLINE_WHITE_RE.sub(r'<span class="outline-white">\1</span>', content)
+    content = bw.OUTLINE_BLACK_RE.sub(r'<span class="outline-black">\1</span>', content)
+
+    content = bw.HEX_COLOR_RE.sub(lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>', content)
+
     # restore protected patterns
     for key, val in img_placeholders.items():
         content = content.replace(key, val)

@@ -30,12 +30,14 @@
 
 .reader-container .wiki-window {
   margin: 2.5rem auto;
-  background: var(--window-bg);
-  border: 1px solid var(--window-border);
-  border-radius: 8px;
+  background: linear-gradient(145deg, #1c1c30, #1e1e2e);
+  border: 1px solid rgba(140, 160, 255, 0.1);
+  border-radius: 10px;
   max-width: 98%;
   position: relative;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.02) inset;
   padding: 1em 1em 0.75em;
   text-align: left;
   color: var(--window-text) !important;
@@ -60,7 +62,7 @@
   letter-spacing: 0.375em;
   margin: -1em -1em 0.75em;
   border-bottom: 1px solid var(--window-border);
-  border-radius: 8px 8px 0 0;
+  border-radius: 10px 10px 0 0;
 }
 
 @media (min-width: 640px) {
@@ -71,16 +73,19 @@
 
 .reader-container .wiki-window p {
   color: var(--window-text) !important;
-  margin: 0.8em 0;
-  line-height: 1.6;
+  margin: 0.6em 0;
+  line-height: 1.7;
   text-align: left;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
 }
 
 .reader-container .wiki-window:not(.no-meta) p:first-of-type {
-  font-size: 0.8em;
-  opacity: 0.6;
+  font-size: 0.75em;
+  opacity: 0.5;
   text-align: right;
-  margin-bottom: 0.3em;
+  margin-bottom: 0.5em;
+  letter-spacing: 0.05em;
+  text-shadow: none;
 }
 
 .reader-container .wiki-window strong,
@@ -92,12 +97,15 @@
 .reader-container .wiki-window p strong:only-child,
 .reader-container .wiki-window p strong:first-child:not(b strong) {
   display: block;
-  font-size: 1.25em;
-  margin: 1em 0 0.8em;
+  font-size: 1.2em;
+  letter-spacing: 0.03em;
+  margin: 0.5em 0 0.4em;
+  color: rgba(200, 215, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .reader-container .wiki-window p:last-of-type {
-  margin-bottom: 0.5em;
+  margin-bottom: 0;
 }
 
 .reader-container .wiki-window p:empty {
@@ -108,12 +116,14 @@
 
 .reader-container .record-window {
   margin: 2.5rem auto;
-  background: #1d2350;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
+  background: linear-gradient(145deg, #121a3a, #1d2350);
+  border: 1px solid rgba(120, 180, 255, 0.1);
+  border-radius: 10px;
   max-width: 98%;
   position: relative;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.02) inset;
   padding: 1em 1em 0.75em;
   text-align: left;
   color: #ffffff !important;
@@ -138,7 +148,7 @@
   letter-spacing: 0.375em;
   margin: -1em -1em 0.75em;
   border-bottom: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px 8px 0 0;
+  border-radius: 10px 10px 0 0;
 }
 
 @media (min-width: 640px) {
@@ -149,16 +159,19 @@
 
 .reader-container .record-window p {
   color: #ffffff !important;
-  margin: 0.8em 0;
-  line-height: 1.6;
+  margin: 0.6em 0;
+  line-height: 1.7;
   text-align: left;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
 }
 
 .reader-container .record-window:not(.no-meta) p:first-of-type {
-  font-size: 0.8em;
-  opacity: 0.6;
+  font-size: 0.75em;
+  opacity: 0.5;
   text-align: right;
-  margin-bottom: 0.3em;
+  margin-bottom: 0.5em;
+  letter-spacing: 0.05em;
+  text-shadow: none;
 }
 
 .reader-container .record-window strong,
@@ -170,12 +183,15 @@
 .reader-container .record-window p strong:only-child,
 .reader-container .record-window p strong:first-child:not(b strong) {
   display: block;
-  font-size: 1.25em;
-  margin: 1em 0 0.8em;
+  font-size: 1.2em;
+  letter-spacing: 0.03em;
+  margin: 0.5em 0 0.4em;
+  color: rgba(160, 210, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .reader-container .record-window p:last-of-type {
-  margin-bottom: 0.5em;
+  margin-bottom: 0;
 }
 
 .reader-container .record-window p:empty {
@@ -186,12 +202,14 @@
 
 .reader-container .plain-window {
   margin: 2.5rem auto;
-  background: var(--window-bg);
-  border: 1px solid var(--window-border);
-  border-radius: 8px;
+  background: linear-gradient(145deg, #1c1c30, #1e1e2e);
+  border: 1px solid rgba(140, 160, 255, 0.1);
+  border-radius: 10px;
   max-width: 98%;
   position: relative;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.02) inset;
   padding: 1.5em 2em 1em;
   text-align: left;
   color: var(--window-text) !important;
@@ -222,13 +240,14 @@
 }
 
 .reader-container .plain-window p {
-  margin: 0.8em 0;
-  line-height: 1.6;
+  margin: 0.6em 0;
+  line-height: 1.7;
   text-align: left;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
 }
 
 .reader-container .plain-window p:last-of-type {
-  margin-bottom: 0.5em;
+  margin-bottom: 0;
 }
 
 .reader-container .plain-window p:empty {
@@ -239,12 +258,14 @@
 
 .reader-container .followup-window {
   margin: 2.5rem auto;
-  background: #1d2350;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
+  background: linear-gradient(145deg, #121a3a, #1d2350);
+  border: 1px solid rgba(120, 180, 255, 0.1);
+  border-radius: 10px;
   max-width: 98%;
   position: relative;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.02) inset;
   padding: 1.5em 2em 1em;
   text-align: left;
   color: #ffffff !important;
@@ -275,13 +296,14 @@
 }
 
 .reader-container .followup-window p {
-  margin: 0.8em 0;
-  line-height: 1.6;
+  margin: 0.6em 0;
+  line-height: 1.7;
   text-align: left;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
 }
 
 .reader-container .followup-window p:last-of-type {
-  margin-bottom: 0.5em;
+  margin-bottom: 0;
 }
 
 .reader-container .followup-window p:empty {

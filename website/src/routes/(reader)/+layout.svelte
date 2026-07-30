@@ -465,6 +465,12 @@
     word-break: break-word;
   }
 
+  .chapter-content :global(h1),
+  .chapter-content :global(h2),
+  .chapter-content :global(h3) {
+    text-wrap: balance;
+  }
+
   .chapter-content :global(p) {
     text-indent: var(--chapter-indent);
   }

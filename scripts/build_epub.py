@@ -620,6 +620,8 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"\$ag(.+?)ag\$", '<span class="silver-text">{inner}</span>'),
         (r"#lp(.+?)lp#", '<span class="text-light-purple">{inner}</span>'),
         (r"#cy(.+?)cy#", '<span class="text-cyan">{inner}</span>'),
+        (r"\$wo(.+?)wo\$", '<span class="outline-white">{inner}</span>'),
+        (r"\$bo(.+?)bo\$", '<span class="outline-black">{inner}</span>'),
     ]
 
     for pattern, wrapper in custom_wrappers:
@@ -635,6 +637,13 @@ def render_inline(text: str, ctx: RenderContext) -> str:
 
     for pattern, wrapper in markdown_wrappers:
         text = wrap_inline(text, pattern, wrapper, store, ctx)
+
+    hex_re = re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL)
+    def hex_repl(match: re.Match) -> str:
+        color = match.group(1)
+        inner = render_inline(match.group(2), ctx)
+        return stash_html(store, f'<span style="color:{color}">{inner}</span>')
+    text = hex_re.sub(hex_repl, text)
 
     escaped = escape_text(text)
     resolved: dict[str, str] = {}

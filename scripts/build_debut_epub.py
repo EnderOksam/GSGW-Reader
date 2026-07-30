@@ -382,9 +382,9 @@ del { text-decoration: line-through; }
 /* --- WIKI WINDOW --- */
 .wiki-window {
   margin: 2.5rem auto;
-  background: var(--window-bg);
-  border: 1px solid var(--window-border);
-  border-radius: 8px;
+  background: linear-gradient(145deg, #1c1c30, #1e1e2e);
+  border: 1px solid rgba(140, 160, 255, 0.1);
+  border-radius: 10px;
   max-width: 98%;
   position: relative;
   box-shadow: 0 4px 24px rgba(0,0,0,0.4);
@@ -393,7 +393,7 @@ del { text-decoration: line-through; }
   color: var(--window-text) !important;
 }
 .wiki-window::before {
-  content: "\\2014  \\25A1  X";
+  content: "\2014  \25A1  X";
   display: flex;
   justify-content: flex-end;
   background: var(--window-border);
@@ -404,32 +404,33 @@ del { text-decoration: line-through; }
   letter-spacing: 0.375em;
   margin: -1em -1em 0.75em;
   border-bottom: 1px solid var(--window-border);
-  border-radius: 8px 8px 0 0;
+  border-radius: 10px 10px 0 0;
 }
 .wiki-window p {
   color: var(--window-text) !important;
-  margin: 0.8em 0;
-  line-height: 1.6;
+  margin: 0.6em 0;
+  line-height: 1.7;
   text-align: left;
 }
 .wiki-window:not(.no-meta) p:first-of-type {
-  font-size: 0.8em;
-  opacity: 0.6;
+  font-size: 0.75em;
+  opacity: 0.5;
   text-align: right;
-  margin-bottom: 0.3em;
+  margin-bottom: 0.5em;
+  letter-spacing: 0.05em;
 }
 .wiki-window strong, .wiki-window b { color: inherit; font-weight: 700; }
 .wiki-window p strong:only-child,
 .wiki-window p strong:first-child:not(b strong) {
-  display: block; font-size: 1.25em; margin: 1em 0 0.8em;
+  display: block; font-size: 1.2em; letter-spacing: 0.03em; margin: 0.5em 0 0.4em; color: rgba(200, 215, 255, 0.9);
 }
 
 /* --- RECORD WINDOW --- */
 .record-window {
   margin: 2.5rem auto;
-  background: #1d2350;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
+  background: linear-gradient(145deg, #121a3a, #1d2350);
+  border: 1px solid rgba(120, 180, 255, 0.1);
+  border-radius: 10px;
   max-width: 98%;
   position: relative;
   box-shadow: 0 4px 24px rgba(0,0,0,0.4);
@@ -438,7 +439,7 @@ del { text-decoration: line-through; }
   color: #ffffff !important;
 }
 .record-window::before {
-  content: "\\2014  \\25A1  X";
+  content: "\2014  \25A1  X";
   display: flex;
   justify-content: flex-end;
   background: rgba(0,0,0,0.25);
@@ -449,28 +450,33 @@ del { text-decoration: line-through; }
   letter-spacing: 0.375em;
   margin: -1em -1em 0.75em;
   border-bottom: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px 8px 0 0;
+  border-radius: 10px 10px 0 0;
 }
 .record-window p {
   color: #ffffff !important;
-  margin: 0.8em 0;
-  line-height: 1.6;
+  margin: 0.6em 0;
+  line-height: 1.7;
   text-align: left;
 }
 .record-window:not(.no-meta) p:first-of-type {
-  font-size: 0.8em;
-  opacity: 0.6;
+  font-size: 0.75em;
+  opacity: 0.5;
   text-align: right;
-  margin-bottom: 0.3em;
+  margin-bottom: 0.5em;
+  letter-spacing: 0.05em;
 }
 .record-window strong, .record-window b { color: inherit; font-weight: 700; }
+.record-window p strong:only-child,
+.record-window p strong:first-child:not(b strong) {
+  display: block; font-size: 1.2em; letter-spacing: 0.03em; margin: 0.5em 0 0.4em; color: rgba(160, 210, 255, 0.9);
+}
 
 /* --- PLAIN WINDOW --- */
-.plain-window, .followup-window {
+.plain-window {
   margin: 2.5rem auto;
-  background: var(--window-bg);
-  border: 1px solid var(--window-border);
-  border-radius: 8px;
+  background: linear-gradient(145deg, #1c1c30, #1e1e2e);
+  border: 1px solid rgba(140, 160, 255, 0.1);
+  border-radius: 10px;
   max-width: 98%;
   position: relative;
   box-shadow: 0 4px 24px rgba(0,0,0,0.4);
@@ -478,10 +484,30 @@ del { text-decoration: line-through; }
   text-align: left;
   color: var(--window-text) !important;
 }
-.plain-window p, .followup-window p {
+.plain-window p {
   color: var(--window-text) !important;
-  margin: 0.8em 0;
-  line-height: 1.6;
+  margin: 0.6em 0;
+  line-height: 1.7;
+  text-align: left;
+}
+
+/* --- FOLLOWUP WINDOW --- */
+.followup-window {
+  margin: 2.5rem auto;
+  background: linear-gradient(145deg, #121a3a, #1d2350);
+  border: 1px solid rgba(120, 180, 255, 0.1);
+  border-radius: 10px;
+  max-width: 98%;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  padding: 1.5em 2em 1em;
+  text-align: left;
+  color: #ffffff !important;
+}
+.followup-window p {
+  color: #ffffff !important;
+  margin: 0.6em 0;
+  line-height: 1.7;
   text-align: left;
 }
 

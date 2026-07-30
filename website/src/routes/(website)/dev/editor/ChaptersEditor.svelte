@@ -501,6 +501,8 @@
 
   const colorsItems = [
     { syntax: "$$text$$", text: "handwritten text", cls: "handwritten", expandable: true },
+    { syntax: "$wotextwo$", text: "white outline", cls: "text-black outline-white", expandable: true, previewHtml: '<span class="text-black" style="-webkit-text-stroke:1px white;text-stroke:1px white;">text</span>' },
+    { syntax: "$botextbo$", text: "black outline", cls: "text-green outline-black", expandable: true, previewHtml: '<span class="text-green" style="-webkit-text-stroke:1px black;text-stroke:1px black;">text</span>' },
     { syntax: "#rtextr#", text: "red text", cls: "text-red" },
     { syntax: "#otexto#", text: "orange text", cls: "text-orange" },
     { syntax: "#ytexty#", text: "yellow text", cls: "text-yellow" },
@@ -509,6 +511,8 @@
     { syntax: "#btextb#", text: "blue text", cls: "text-blue" },
     { syntax: "#lptextlp#", text: "purple text", cls: "text-light-purple" },
     { syntax: "#ptextp#", text: "magenta text", cls: "text-magenta" },
+    { syntax: "#dtextd#", text: "black text", cls: "text-base-content" },
+    { syntax: "#hx(#ffffff)texthx#", text: "hex text", cls: "text-base-content", expandable: true, previewHtml: '<span class="hex-preview">hex color text</span>', meta: "replace #ffffff for a valid hex number to change the text to this specific color" },
     { syntax: ";rtextr;", text: "red highlight", cls: "hl-red" },
     { syntax: ";otexto;", text: "orange highlight", cls: "hl-orange" },
     { syntax: ";ytexty;", text: "yellow highlight", cls: "hl-yellow" },
@@ -606,6 +610,9 @@
             </div>
             {#if expandedSyntax[item.syntax]}
               <div class="px-3 py-3 bg-base-200/40 border-t border-base-content/5 {item.cls === 'text-left' ? 'text-left' : item.cls === 'text-right' ? 'text-right' : 'text-center'}">
+                {#if item.meta}
+                  <p class="text-[8px] font-mono text-base-content/30 mb-2 leading-relaxed text-left">{item.meta}</p>
+                {/if}
                 {#if item.previewHtml}
                   <span class="text-base">{@html item.previewHtml}</span>
                 {:else}

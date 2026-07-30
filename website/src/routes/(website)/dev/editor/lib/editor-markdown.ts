@@ -90,6 +90,7 @@ export function preprocessMarkdown(text: string): string {
     [/#o(.*?)o#/gs, '<span class="text-orange">$1</span>'],
     [/#lp(.*?)lp#/gs, '<span class="text-light-purple">$1</span>'],
     [/#cy(.*?)cy#/gs, '<span class="text-cyan">$1</span>'],
+    [/#d(.*?)d#/gs, '<span class="text-black">$1</span>'],
     [/#f#(.*?)#f#/gs, '<span class="text-faded">$1</span>'],
     [/(?<!\\)-#\s*(.+?)\s*#-(?!\\)/gs, '<span class="text-sub">$1</span>'],
     [/#f>#(.*?)#f>#/gs, '<span class="text-fade-right">$1</span>'],
@@ -102,6 +103,8 @@ export function preprocessMarkdown(text: string): string {
     [/;o(.*?)o;/gs, '<span class="hl-orange">$1</span>'],
     [/\$\$(.*?)\$\$/gs, '<span class="handwritten">$1</span>'],
     [/\$c(.*?)c\$/gs, '<span class="contaminated">$1</span>'],
+    [/\$wo(.*?)wo\$/gs, '<span class="outline-white">$1</span>'],
+    [/\$bo(.*?)bo\$/gs, '<span class="outline-black">$1</span>'],
   ];
   for (const [re, repl] of simple) {
     s = s.replace(re, repl);
@@ -110,6 +113,10 @@ export function preprocessMarkdown(text: string): string {
   for (const [key, val] of placeholders) {
     s = s.replace(key, val);
   }
+
+  s = s.replace(/#hx\(([^)]+)\)(.*?)hx#/gs, (_: string, color: string, content: string) => {
+    return `<span style="color:${color}">${content}</span>`;
+  });
 
   s = s.replace(/@@([^@]+)@@/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");

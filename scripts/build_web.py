@@ -68,6 +68,9 @@ GOLD_RE = re.compile(r"\$g(.+?)g\$", re.DOTALL)
 SPARKLE_RE = re.compile(r"\$\*(.+?)\*\$", re.DOTALL)
 MOON_RE = re.compile(r"\$\((.+?)\)\$", re.DOTALL)
 SILVER_RE = re.compile(r"\$ag(.+?)ag\$", re.DOTALL)
+OUTLINE_WHITE_RE = re.compile(r"\$wo(.+?)wo\$", re.DOTALL)
+OUTLINE_BLACK_RE = re.compile(r"\$bo(.+?)bo\$", re.DOTALL)
+HEX_COLOR_RE = re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL)
 
 TWITTER_URL_RE = re.compile(
     r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
@@ -134,6 +137,8 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r";o(.*?)o;", re.DOTALL), r'<span class="hl-orange">\1</span>'),
 
     (re.compile(r"\$c(.*?)c\$", re.DOTALL), r'<span class="contaminated">\1</span>'),
+    (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
+    (re.compile(r"\$bo(.*?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
 ]
 
 
@@ -794,6 +799,11 @@ def convert_chapter(content):
     content = MOON_RE.sub(r'<span class="moon-text">\1</span>', content)
 
     content = SILVER_RE.sub(silver_replacer, content)
+
+    content = OUTLINE_WHITE_RE.sub(r'<span class="outline-white">\1</span>', content)
+    content = OUTLINE_BLACK_RE.sub(r'<span class="outline-black">\1</span>', content)
+
+    content = HEX_COLOR_RE.sub(lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>', content)
 
     # restore protected patterns
     for key, val in img_placeholders.items():
