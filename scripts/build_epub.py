@@ -1725,8 +1725,8 @@ def render_windows_and_assemble(
     all_windows: list[list[WindowInfo]] = []
     window_counter = 0
 
-    for html in chapter_htmls:
-        windows = find_window_divs(html)
+    for ch_html in chapter_htmls:
+        windows = find_window_divs(ch_html)
         all_windows.append(windows)
         for window in windows:
             webp_path = window_dir / f"window_{window_counter:04d}.webp"
@@ -1809,11 +1809,11 @@ def render_windows_and_assemble(
 
     assembled_htmls: list[str] = []
     window_counter = 0
-    for html, windows in zip(chapter_htmls, all_windows):
+    for ch_html, windows in zip(chapter_htmls, all_windows):
         parts: list[str] = []
         last_end = 0
         for window in windows:
-            parts.append(html[last_end:window.start])
+            parts.append(ch_html[last_end:window.start])
             idx = window_counter
             webp_path, success = render_results.get(idx, (None, False))
             if success and webp_path and webp_path.exists():
@@ -1837,7 +1837,7 @@ def render_windows_and_assemble(
                 parts.append(f'<div class="{escape_attr(window.class_name)}">{window.inner_html}</div>')
             last_end = window.end
             window_counter += 1
-        parts.append(html[last_end:])
+        parts.append(ch_html[last_end:])
         assembled_htmls.append("".join(parts))
 
     save_tweet_cache(tweet_cache)

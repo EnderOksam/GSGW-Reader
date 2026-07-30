@@ -30,6 +30,9 @@ jobs:
       - name: Build GSGW EPUBs
         run: python scripts/build_epub.py
 
+      - name: Install Pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
       - name: Build Debut EPUB
         run: python scripts/build_debut_epub.py
 
