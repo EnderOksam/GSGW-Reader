@@ -40,6 +40,7 @@
     0 0 0 1px rgba(255,255,255,0.02) inset;
   padding: 1em 1em 0.75em;
   text-align: left;
+  font-size: 1em;
   color: var(--window-text) !important;
 }
 
@@ -97,7 +98,7 @@
 .reader-container .wiki-window p strong:only-child,
 .reader-container .wiki-window p strong:first-child:not(b strong) {
   display: block;
-  font-size: 1.2em;
+  font-size: 0.98em;
   letter-spacing: 0.03em;
   margin: 0.5em 0 0.4em;
   color: rgba(200, 215, 255, 0.9);
@@ -126,6 +127,7 @@
     0 0 0 1px rgba(255,255,255,0.02) inset;
   padding: 1em 1em 0.75em;
   text-align: left;
+  font-size: 1em;
   color: #ffffff !important;
 }
 
@@ -183,7 +185,7 @@
 .reader-container .record-window p strong:only-child,
 .reader-container .record-window p strong:first-child:not(b strong) {
   display: block;
-  font-size: 1.2em;
+  font-size: 0.98em;
   letter-spacing: 0.03em;
   margin: 0.5em 0 0.4em;
   color: rgba(160, 210, 255, 0.9);

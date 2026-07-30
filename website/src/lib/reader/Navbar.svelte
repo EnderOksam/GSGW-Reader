@@ -520,15 +520,15 @@
             {/if}
           </span>
         </div>
-        <div class="flex gap-2 px-5 pb-4">
+        <div class="flex gap-2 px-5 pb-4 flex-wrap">
           <input
             type="search"
             bind:value={navState.searchQuery}
             placeholder="Search..."
-            class="input input-bordered input-sm shrink-0 grow rounded-full focus:input-primary"
+            class="input input-bordered input-sm shrink rounded-full focus:input-primary min-w-0 flex-[2]"
           />
           <select
-            class="select select-bordered select-sm rounded-full focus:select-primary grow"
+            class="select select-bordered select-sm rounded-full focus:select-primary flex-1 min-w-[7rem]"
             bind:value={navState.selectedTL}
           >
             {#each Object.keys(bookData[bookSlug] || {}) as tl}

@@ -314,7 +314,6 @@ del { text-decoration: line-through; }
 }
 .braun-screen p { color: #ffffff; margin: 0.8em 0; line-height: 1.6; text-align: center; position: relative; z-index: 3; }
 
-.window-sep { text-align: center; margin: 1em 0; }
 .window-small { font-size: 0.85em; }
 .text-large { font-size: 1.04em; font-weight: bold; }
 .text-large-centered { display: block; text-align: center; font-size: 1.35em; font-weight: bold; }
@@ -1209,8 +1208,7 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
                         inner_lines[first_idx] = f"@rs@{stripped}@rs@"
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 inner_html = render_blocks(inner, ctx)
-                sep = '<p class="window-sep">----------------------------------------</p>'
-                out.append(f'<div class="{class_name}">{sep}\n{inner_html}\n{sep}</div>')
+                out.append(f'<div class="{class_name}">{inner_html}</div>')
                 continue
 
             if class_name in ("plain-window", "followup-window", "system-window"):

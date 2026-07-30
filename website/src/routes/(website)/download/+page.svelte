@@ -3,13 +3,9 @@
   import { fade, fly } from "svelte/transition";
   import Icon from "@iconify/svelte";
 
-  const releaseApiUrl = "https://api.github.com/repos/EnderOksam/GSGW-Reader/releases/tags/latest";
-
   interface Part {
     id: string;
     label: string;
-    range: string;
-    assetMatch: (name: string) => boolean;
   }
 
   interface Variant {
@@ -24,70 +20,31 @@
     title: string;
     short: string;
     badgeClass: string;
-    supportedVariants: string[];
     variants: Variant[];
   }
 
-  const allVariantDefs: { id: string; label: string; badge: string; description: string }[] = [
+  const variantDefs = [
     { id: "windows", label: "Windows", badge: "experimental", description: "Experimental — uses a html-to-image library to render windows inside the EPUB just as they appear on the website." },
     { id: "plaintext", label: "Plain Text", badge: "css", description: "All formatting is done through text — the best attempt to use CSS to make it look like the website." },
   ];
 
-  const gsgwVariant = (v: string, p: string) => (n: string) => n.startsWith(`Got Dropped into a Ghost Story, Still Gotta Work - Part ${p} [${v}]`);
-  const debutVariant = (p: string) => (n: string) => n.startsWith(`Debut or Die - Part ${p} [Windows]`);
-
-  const stories: Story[] = [
+  const defaultStories: Story[] = [
     {
-      id: "gsgw",
-      title: "Got Dropped into a Ghost Story, Still Gotta Work",
-      short: "GSGW",
-      badgeClass: "badge-primary",
-      supportedVariants: ["windows", "plaintext"],
+      id: "gsgw", title: "Got Dropped into a Ghost Story, Still Gotta Work", short: "GSGW", badgeClass: "badge-primary",
       variants: [
-        {
-          id: "windows",
-          label: "Windows",
-          description: "Experimental — uses a html-to-image library to render windows inside the EPUB just as they appear on the website.",
-          parts: [
-            { id: "part1", label: "Part 1", range: "Chapters 0–208", assetMatch: gsgwVariant("Windows", "1") },
-            { id: "part2", label: "Part 2", range: "Chapters 209–371", assetMatch: gsgwVariant("Windows", "2") },
-            { id: "part3", label: "Part 3", range: "Chapter 372 – Current", assetMatch: gsgwVariant("Windows", "3") },
-          ],
-        },
-        {
-          id: "plaintext",
-          label: "Plain Text",
-          description: "All formatting is done through text — the best attempt to use CSS to make it look like the website.",
-          parts: [
-            { id: "part1", label: "Part 1", range: "Chapters 0–208", assetMatch: gsgwVariant("PlainText", "1") },
-            { id: "part2", label: "Part 2", range: "Chapters 209–371", assetMatch: gsgwVariant("PlainText", "2") },
-            { id: "part3", label: "Part 3", range: "Chapter 372 – Current", assetMatch: gsgwVariant("PlainText", "3") },
-          ],
-        },
+        { id: "windows", label: "Windows", description: variantDefs[0].description, parts: [{ id: "part1", label: "Part 1" }, { id: "part2", label: "Part 2" }, { id: "part3", label: "Part 3" }] },
+        { id: "plaintext", label: "Plain Text", description: variantDefs[1].description, parts: [{ id: "part1", label: "Part 1" }, { id: "part2", label: "Part 2" }, { id: "part3", label: "Part 3" }] },
       ],
     },
     {
-      id: "debut",
-      title: "Debut or Die",
-      short: "Debut",
-      badgeClass: "badge-secondary",
-      supportedVariants: ["windows"],
+      id: "debut", title: "Debut or Die", short: "Debut", badgeClass: "badge-secondary",
       variants: [
-        {
-          id: "windows",
-          label: "Windows",
-          description: "Experimental — uses a html-to-image library to render windows inside the EPUB just as they appear on the website.",
-          parts: [
-            { id: "part1", label: "Part 1", range: "Chapters 1–147", assetMatch: debutVariant("1") },
-            { id: "part2", label: "Part 2", range: "Chapters 148–364", assetMatch: debutVariant("2") },
-            { id: "part3", label: "Part 3", range: "Chapters 365–451", assetMatch: debutVariant("3") },
-            { id: "part4", label: "Part 4", range: "Chapters 452–644", assetMatch: debutVariant("4") },
-          ],
-        },
+        { id: "windows", label: "Windows", description: variantDefs[0].description, parts: [{ id: "part1", label: "Part 1" }, { id: "part2", label: "Part 2" }, { id: "part3", label: "Part 3" }, { id: "part4", label: "Part 4" }] },
       ],
     },
   ];
 
+  let stories = $state<Story[]>(defaultStories);
   let selectedStory = $state("gsgw");
   let selectedVariant = $state("windows");
   let selectedPart = $state("part1");
@@ -97,27 +54,10 @@
   let downloading = $state(false);
   let storyAssets = $state<Record<string, { url: string; name: string; count: number }>>({});
 
-  onMount(async () => {
-    try {
-      const res = await fetch(releaseApiUrl);
-      if (!res.ok) return;
-      const data = await res.json();
-      releaseDate = data.published_at?.slice(0, 10) || "";
-
-      const assets: Record<string, { url: string; name: string; count: number }> = {};
-      for (const story of stories) {
-        for (const variant of story.variants) {
-          for (const part of variant.parts) {
-            const key = `${story.id}/${variant.id}/${part.id}`;
-            const asset = (data.assets || []).find((a: any) => part.assetMatch(a.name));
-            if (asset) assets[key] = { url: asset.browser_download_url, name: asset.name, count: asset.download_count || 0 };
-          }
-        }
-      }
-      storyAssets = assets;
-      updateDownload();
-    } catch {}
-  });
+  function makeAssetUrl(tag: string, story: string, variant: string, part: string) {
+    const v = variant === "windows" ? "Windows" : "PlainText";
+    return { url: `https://github.com/EnderOksam/GSGW-Reader/releases/download/${tag}/${story} - Part ${part} [${v}].epub`, name: `${story} - Part ${part} [${v}].epub` };
+  }
 
   function updateDownload() {
     const key = `${selectedStory}/${selectedVariant}/${selectedPart}`;
@@ -126,15 +66,82 @@
     epubName = asset?.name || "";
   }
 
+  onMount(async () => {
+    try {
+      const res = await fetch("https://api.github.com/repos/EnderOksam/GSGW-Reader/releases");
+      if (!res.ok) throw new Error("API error");
+      const releases = await res.json();
+      if (!releases.length) throw new Error("No releases");
+
+      const tag = releases[0].tag_name;
+      releaseDate = releases[0].published_at?.slice(0, 10) || "";
+
+      const assets: Record<string, { url: string; name: string; count: number }> = {};
+      const built: Story[] = [];
+
+      for (const def of defaultStories) {
+        const variants: Variant[] = [];
+        for (const v of def.variants) {
+          const parts: Part[] = [];
+          for (const p of v.parts) {
+            const num = p.id.replace("part", "");
+            const releaseAsset = releases[0].assets?.find((a: any) => a.name === `${def.title} - Part ${num} [${v.id === "windows" ? "Windows" : "PlainText"}].epub`);
+            if (releaseAsset) {
+              parts.push(p);
+              assets[`${def.id}/${v.id}/${p.id}`] = { url: releaseAsset.browser_download_url, name: releaseAsset.name, count: releaseAsset.download_count || 0 };
+            }
+          }
+          if (parts.length) variants.push({ ...v, parts });
+        }
+        if (variants.length) built.push({ ...def, variants });
+      }
+
+      if (built.length) {
+        stories = built;
+        storyAssets = assets;
+      } else {
+        for (const def of defaultStories) {
+          for (const v of def.variants) {
+            for (const p of v.parts) {
+              const num = p.id.replace("part", "");
+              const a = makeAssetUrl(tag, def.title, v.id, num);
+              assets[`${def.id}/${v.id}/${p.id}`] = { url: a.url, name: a.name, count: 0 };
+            }
+          }
+        }
+        storyAssets = assets;
+      }
+
+      if (!stories.find((s) => s.id === selectedStory)) {
+        selectedStory = stories[0].id;
+        selectedVariant = stories[0].variants[0].id;
+        selectedPart = stories[0].variants[0].parts[0].id;
+      }
+      updateDownload();
+    } catch {
+      for (const def of defaultStories) {
+        for (const v of def.variants) {
+          for (const p of v.parts) {
+            const num = p.id.replace("part", "");
+            const a = makeAssetUrl("latest", def.title, v.id, num);
+            storyAssets[`${def.id}/${v.id}/${p.id}`] = { url: a.url, name: a.name, count: 0 };
+          }
+        }
+      }
+      stories = defaultStories;
+      selectedStory = "gsgw";
+      selectedVariant = "windows";
+      selectedPart = "part1";
+      updateDownload();
+    }
+  });
+
   function selectStory(id: string) {
     selectedStory = id;
     const story = stories.find((s) => s.id === id);
     if (story) {
-      if (!story.supportedVariants.includes(selectedVariant)) {
-        selectedVariant = story.supportedVariants[0];
-      }
-      const variant = story.variants.find((v) => v.id === selectedVariant);
-      if (variant) selectedPart = variant.parts[0].id;
+      selectedVariant = story.variants[0].id;
+      selectedPart = story.variants[0].parts[0].id;
     }
     updateDownload();
   }
@@ -178,7 +185,6 @@
   const currentVariant = $derived(currentStory?.variants.find((v) => v.id === selectedVariant)!);
   const currentPart = $derived(currentVariant?.parts.find((p) => p.id === selectedPart)!);
   const currentAsset = $derived(storyAssets[`${selectedStory}/${selectedVariant}/${selectedPart}`]);
-  const partAvailable = $derived(!!currentAsset);
   const currentDownloadCount = $derived(currentAsset?.count ?? 0);
 </script>
 
@@ -223,8 +229,8 @@
 
           {#if currentStory}
             <div class="flex justify-center gap-3 flex-wrap">
-              {#each allVariantDefs as def}
-                {@const supported = currentStory.supportedVariants.includes(def.id)}
+              {#each variantDefs as def}
+                {@const supported = currentStory.variants.some((v) => v.id === def.id)}
                 <button
                   onclick={() => supported && selectVariant(def.id)}
                   disabled={!supported}
@@ -265,8 +271,8 @@
                 {/each}
               </div>
               <div class="flex-1 min-w-0 space-y-4">
-                {#each allVariantDefs as def}
-                  {@const variant = currentStory.variants.find((v) => v.id === def.id)}
+                {#each variantDefs as def}
+                  {@const variant = currentStory?.variants.find((v) => v.id === def.id)}
                   <div class="text-sm leading-relaxed pl-3 border-l-2 {variant ? (def.id === 'windows' ? 'border-purple-500/40' : 'border-green-500/40') : 'border-white/5'} {!variant ? 'opacity-25' : ''}">
                     <span class="font-semibold {variant ? 'text-white/80' : 'text-white/40'}">{def.label}</span>
                     <span class="{variant ? 'text-base-content/50' : 'text-base-content/30'}"> — {variant?.description || def.description}</span>
@@ -283,17 +289,14 @@
           <div class="flex flex-col md:flex-row gap-8 md:gap-12 items-center">
             <div class="flex-1 space-y-4">
               <div class="flex items-center gap-3">
-                <span class="badge {currentStory.badgeClass} badge-outline font-mono text-xs font-bold tracking-widest px-3 py-2">EPUB</span>
+                <span class="badge {currentStory?.badgeClass ?? 'badge-primary'} badge-outline font-mono text-xs font-bold tracking-widest px-3 py-2">EPUB</span>
                 <span class="badge badge-ghost font-mono text-xs tracking-wider px-3 py-2 bg-white/5">
                   {currentVariant?.label || ''}
                 </span>
-                {#if !partAvailable}
-                  <span class="badge badge-ghost font-mono text-xs tracking-wider px-3 py-2 bg-white/5 border border-dashed border-white/10">Coming Soon</span>
-                {/if}
               </div>
 
               <div>
-                <h2 class="text-2xl md:text-3xl font-bold text-white leading-tight">{currentStory.title}</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-white leading-tight">{currentStory?.title ?? ''}</h2>
               </div>
 
               <div class="flex items-center gap-2 text-xs font-mono opacity-40 uppercase tracking-widest">
@@ -325,11 +328,7 @@
               >
                 <div class="text-left">
                   <div class="font-bold flex items-center gap-2 text-lg">
-                    {downloading
-                      ? "Downloading…"
-                      : partAvailable
-                        ? "Download EPUB"
-                        : "Unavailable"}
+                    {downloading ? "Downloading…" : "Download EPUB"}
                     <Icon icon="mdi:star-four-points" class="size-4 text-yellow-300" />
                   </div>
                   <div class="text-xs opacity-70 font-normal mt-0.5">
@@ -338,16 +337,16 @@
                 </div>
                 <Icon icon="mdi:download" class="size-7 opacity-60 group-hover/btn:translate-y-0.5 transition-transform duration-300" />
               </button>
-              <button onclick={openRecommended} class="btn h-auto py-4 px-6 border border-white/10 bg-white/[0.03] text-base-content/70 hover:text-white hover:bg-white/10 hover:border-white/20 flex items-center justify-between group/btn text-sm rounded-2xl transition-all duration-300">
+              <button onclick={openRecommended} class="btn h-auto py-4 px-6 border border-accent/30 bg-accent/10 text-accent hover:bg-accent/20 hover:border-accent/50 flex items-center justify-between group/btn text-sm rounded-2xl transition-all duration-300">
                 <div class="text-left">
                   <div class="font-semibold flex items-center gap-2">
-                    Recommended Readers
+                    Recommended EPUB Readers
                   </div>
-                  <div class="text-[11px] opacity-50 font-normal mt-0.5">
+                  <div class="text-[11px] opacity-70 font-normal mt-0.5">
                     Best apps for any device
                   </div>
                 </div>
-                <Icon icon="mdi:book-open-outline" class="size-5 opacity-50 group-hover/btn:scale-110 transition-transform duration-300" />
+                <Icon icon="mdi:book-open-outline" class="size-5 opacity-60 group-hover/btn:scale-110 transition-transform duration-300" />
               </button>
             </div>
           </div>
@@ -362,31 +361,65 @@
   <div class="modal-box max-w-md bg-base-200/95 border border-white/10 p-0 overflow-hidden rounded-2xl shadow-2xl">
     <div class="p-6 border-b border-white/5 flex items-center justify-between">
       <div>
-        <h3 class="text-lg font-bold text-white">Recommended Readers</h3>
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <Icon icon="mdi:bookmark" class="size-5 text-accent" />
+          Recommended EPUB Readers
+        </h3>
         <p class="text-xs text-base-content/50 mt-0.5">Best apps for EPUB reading on any device</p>
       </div>
       <button onclick={() => recommendModal?.close()} class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-white">
         <Icon icon="mdi:close" class="size-4" />
       </button>
     </div>
-    <div class="p-6 space-y-3">
-      {#each [
-        { name: "Google Play Books", desc: "Cross-platform, syncs progress, great for Android & web.", icon: "mdi:google-play" },
-        { name: "Apple Books", desc: "Built into iOS/macOS, clean interface with iCloud sync.", icon: "mdi:apple" },
-        { name: "FBReader", desc: "Lightweight, customizable, supports many formats.", icon: "mdi:book-open-variant" },
-        { name: "Calibre", desc: "Desktop power-user tool for managing & converting libraries.", icon: "mdi:desktop-classic" },
-        { name: "Lithium", desc: "Minimalist Android reader with a focus on typography.", icon: "mdi:book-open-blank-variant" },
-      ] as reader}
-        <div class="flex items-center gap-4 p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-colors">
-          <div class="size-9 rounded-lg bg-linear-to-br from-primary/20 to-accent/20 flex items-center justify-center shrink-0">
-            <Icon icon={reader.icon} class="size-4 text-primary" />
+    <div class="p-6 space-y-3 text-sm text-base-content/80 leading-relaxed">
+      <p>Hey hey 👋, Ender here. A lot of people have issues with the story not looking how it should depending on their device.</p>
+      <p>I try to fix as much as I can with the epub but most of the fault lies in their epub reader so here are some recommended ones:</p>
+
+      <div class="space-y-2">
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+          <div class="flex items-center gap-2 text-sm font-semibold text-white mb-2">
+            <Icon icon="mdi:apple" class="size-5 text-accent/70" /> iOS
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm font-semibold text-white">{reader.name}</div>
-            <div class="text-xs text-base-content/50 truncate">{reader.desc}</div>
+          <div class="space-y-2">
+            <div>
+              <span class="font-semibold text-white">PocketBook</span>
+              <p class="text-xs text-base-content/60">I don't personally use iOS, but Lei and Destiny on the discord have said PocketBook is the best.</p>
+            </div>
+            <div class="opacity-50">
+              <span class="font-semibold text-white">Apple Books</span>
+              <p class="text-xs text-base-content/60">Apple Books works too but if you change the theme to dark mode it will mess up the css rules (what makes text look pretty).</p>
+            </div>
           </div>
         </div>
-      {/each}
+
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+          <div class="flex items-center gap-2 text-sm font-semibold text-white mb-2">
+            <Icon icon="mdi:android" class="size-5 text-accent/70" /> Android
+          </div>
+          <div class="space-y-2">
+            <div>
+              <span class="font-semibold text-white">Episteme</span>
+              <p class="text-xs text-base-content/60">I've discovered Episteme recently and it's been my favorite epub reader so far. Haven't had any issues people report on other epub readers.</p>
+            </div>
+            <div class="opacity-50">
+              <span class="font-semibold text-white">Moon Reader</span>
+              <p class="text-xs text-base-content/60">Good alternative, it works but it's not perfect.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+          <div class="flex items-center gap-2 text-sm font-semibold text-white mb-2">
+            <Icon icon="mdi:laptop" class="size-5 text-accent/70" /> PC / Desktop
+          </div>
+          <div class="space-y-2">
+            <div>
+              <span class="font-semibold text-white">Calibre</span>
+              <p class="text-xs text-base-content/60">I don't personally use epub readers on my pc but Calibre has worked best from my tests.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </dialog>
