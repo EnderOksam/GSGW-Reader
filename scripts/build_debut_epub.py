@@ -252,7 +252,9 @@ def build_debut_part_epub(
     variant_label = variant["label"]
     part_label = part_def["label"]
     full_name = epub.sanitize_filename(book_title)
-    output_name = f"{full_name} - {part_label} [{variant_label}].epub"
+    output_name = f"{full_name} - {part_label} [{variant_label}]"
+    output_name = re.sub(r'[ ,]', '.', output_name).replace('[', '').replace(']', '')
+    output_name = re.sub(r'\.+', '.', output_name) + '.epub'
     epub_path = OUTPUT_DIR / output_name
 
     print(f"  {part_label} ({part_def['range']}): {len(part_chapters)} chapters")

@@ -1916,7 +1916,9 @@ def build_book(args: argparse.Namespace) -> list[Path]:
             print(f"  {part_def['label']} ({part_def['range']}): {len(part_chapters)} chapters")
 
             full_name = sanitize_filename(book_title)
-            output_name = f"{full_name} - {part_def['label']} [{variant_label}].epub"
+            output_name = f"{full_name} - {part_def['label']} [{variant_label}]"
+            output_name = re.sub(r'[ ,]', '.', output_name).replace('[', '').replace(']', '')
+            output_name = re.sub(r'\.+', '.', output_name) + '.epub'
             epub_path = OUTPUT_DIR / output_name
 
             assets: dict[Path, EpubAsset] = {}

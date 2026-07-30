@@ -357,19 +357,15 @@
     class="w-full bg-base-100/80 backdrop-blur-md border-b border-base-content/5 z-50 relative {prefs.config.navbarSticky ? 'sticky top-0' : ''}"
   >
     <!-- Mobile: compact 3-column -->
-    <div class="flex sm:hidden items-center justify-between px-3 h-12">
+    <div class="flex sm:hidden items-center justify-between px-2 h-12 overflow-x-auto gap-0">
       <!-- Left: Navigation -->
-      <div class="flex items-center gap-1.5">
-        <a href="/book/{bookSlug}" class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Home">
-          <Icon icon="material-symbols:home-outline-rounded" class="size-6" />
-        </a>
-        <div class="w-px h-4 bg-base-content/10"></div>
+      <div class="flex items-center gap-0 shrink-0">
         <a
-          href={currentIndex > 0 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}` : '#'}
-          class="btn btn-ghost btn-sm btn-square rounded-xl {!currentIndex ? 'opacity-20 pointer-events-none' : ''}"
-          aria-label="Previous Chapter"
+          href={currentIndex > 0 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}` : `/book/${bookSlug}`}
+          class="btn btn-ghost btn-sm btn-square rounded-xl {currentIndex <= 0 ? 'opacity-40' : ''}"
+          aria-label={currentIndex > 0 ? "Previous Chapter" : "Home"}
         >
-          <Icon icon="mage:previous" class="size-5" />
+          <Icon icon={currentIndex > 0 ? "mage:previous" : "material-symbols:home-outline-rounded"} class="size-5" />
         </a>
         <button
           onclick={() => {
@@ -387,30 +383,30 @@
       </div>
 
       <!-- Center: Contents -->
-        <button onclick={openTOC} class="btn btn-outline btn-sm rounded-xl gap-1.5 px-3">
-        <Icon icon="lucide:table-of-contents" class="size-5" />
-        <span class="text-xs font-semibold">Contents</span>
+        <button onclick={openTOC} class="btn btn-outline btn-sm rounded-xl gap-1 px-2 shrink-0">
+        <Icon icon="lucide:table-of-contents" class="size-4.5" />
+        <span class="text-[11px] font-semibold">Contents</span>
       </button>
 
       <!-- Right: Actions -->
-      <div class="flex items-center gap-1.5">
+      <div class="flex items-center gap-0 shrink-0">
         <button
           onclick={() => document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" })}
           class="btn btn-ghost btn-sm btn-square rounded-xl"
           aria-label="Comments"
         >
-          <Icon icon="iconamoon:comment" class="size-6" />
+          <Icon icon="iconamoon:comment" class="size-5" />
         </button>
         {#if bookSlug === "gsgw" || bookSlug === "debut"}
           <button onclick={handleCapture} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Capture snippet">
-            <Icon icon="mdi:camera-outline" class="size-6" />
+            <Icon icon="mdi:camera-outline" class="size-5" />
           </button>
         {/if}
         <button onclick={openEdit} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Edit">
-          <Icon icon="material-symbols:edit-outline-rounded" class="size-6" />
+          <Icon icon="material-symbols:edit-outline-rounded" class="size-5" />
         </button>
         <button onclick={openSettings} class="btn btn-ghost btn-sm btn-square rounded-xl" aria-label="Settings">
-          <Icon icon="material-symbols:settings-outline-rounded" class="size-6" />
+          <Icon icon="material-symbols:settings-outline-rounded" class="size-5" />
         </button>
       </div>
     </div>

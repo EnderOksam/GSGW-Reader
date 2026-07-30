@@ -813,10 +813,10 @@
         <button onclick={() => leftTab = 'chapters'} class="flex-1 text-[11px] font-mono font-medium tracking-wider py-2 rounded-xl transition-all active:scale-[0.97] {leftTab === 'chapters' ? 'bg-primary/15 text-primary shadow-sm' : 'text-base-content/50 hover:text-base-content/70 hover:bg-base-content/5'}">Chapters</button>
         <button onclick={() => leftTab = 'formatting'} class="flex-1 text-[11px] font-mono font-medium tracking-wider py-2 rounded-xl transition-all active:scale-[0.97] {leftTab === 'formatting' ? 'bg-primary/15 text-primary shadow-sm' : 'text-base-content/50 hover:text-base-content/70 hover:bg-base-content/5'}">Formatting</button>
       </div>
-      <div class="flex-1 min-h-0 px-3 pb-3 pt-2">
+      <div class="flex-1 min-h-0 px-3 pb-3 pt-2 flex flex-col">
         {#if leftTab === 'chapters'}
-          <div class="h-full flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg">
-            <div class="flex flex-col border-b border-base-content/10">
+          <div class="flex-1 min-h-0 flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg">
+            <div class="flex-shrink-0 flex flex-col border-b border-base-content/10">
               <div class="flex gap-1.5 p-2 pb-1">
                 <select bind:value={currentBook}  class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-2 rounded-xl outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80 cursor-pointer">
                   {#each BOOKS as b}
@@ -860,7 +860,7 @@
           </div>
         </div>
       {:else}
-        <div class="h-full min-h-0 flex flex-col bg-base-200/60 rounded-xl border border-base-content/10 overflow-y-auto overflow-x-hidden scrollbar-thin p-2 space-y-2">
+        <div class="flex-1 min-h-0 flex flex-col bg-base-200/60 rounded-xl border border-base-content/10 overflow-y-auto overflow-x-hidden scrollbar-thin p-2 space-y-2">
 
           {@render section("Colors & Markdown", colorsItems)}
           {@render section("Changing Text", changingItems)}

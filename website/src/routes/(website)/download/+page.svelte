@@ -54,9 +54,14 @@
   let downloading = $state(false);
   let storyAssets = $state<Record<string, { url: string; name: string; count: number }>>({});
 
-  function makeAssetUrl(tag: string, story: string, variant: string, part: string) {
+  function releaseFilename(story: string, variant: string, part: string) {
     const v = variant === "windows" ? "Windows" : "PlainText";
-    return { url: `https://github.com/EnderOksam/GSGW-Reader/releases/download/${tag}/${story} - Part ${part} [${v}].epub`, name: `${story} - Part ${part} [${v}].epub` };
+    return `${story} - Part ${part} [${v}]`.replace(/[[\],]/g, '').replace(/ /g, '.').replace(/\.+/g, '.') + '.epub';
+  }
+
+  function makeAssetUrl(tag: string, story: string, variant: string, part: string) {
+    const name = releaseFilename(story, variant, part);
+    return { url: `https://github.com/EnderOksam/GSGW-Reader/releases/download/${tag}/${name}`, name };
   }
 
   function updateDownload() {
@@ -77,45 +82,29 @@
       releaseDate = releases[0].published_at?.slice(0, 10) || "";
 
       const assets: Record<string, { url: string; name: string; count: number }> = {};
-      const built: Story[] = [];
 
       for (const def of defaultStories) {
-        const variants: Variant[] = [];
         for (const v of def.variants) {
-          const parts: Part[] = [];
           for (const p of v.parts) {
             const num = p.id.replace("part", "");
-            const releaseAsset = releases[0].assets?.find((a: any) => a.name === `${def.title} - Part ${num} [${v.id === "windows" ? "Windows" : "PlainText"}].epub`);
+            const targetName = releaseFilename(def.title, v.id, num);
+            const releaseAsset = releases[0].assets?.find((a: any) => a.name === targetName);
             if (releaseAsset) {
-              parts.push(p);
               assets[`${def.id}/${v.id}/${p.id}`] = { url: releaseAsset.browser_download_url, name: releaseAsset.name, count: releaseAsset.download_count || 0 };
-            }
-          }
-          if (parts.length) variants.push({ ...v, parts });
-        }
-        if (variants.length) built.push({ ...def, variants });
-      }
-
-      if (built.length) {
-        stories = built;
-        storyAssets = assets;
-      } else {
-        for (const def of defaultStories) {
-          for (const v of def.variants) {
-            for (const p of v.parts) {
-              const num = p.id.replace("part", "");
+            } else {
               const a = makeAssetUrl(tag, def.title, v.id, num);
               assets[`${def.id}/${v.id}/${p.id}`] = { url: a.url, name: a.name, count: 0 };
             }
           }
         }
-        storyAssets = assets;
       }
 
-      if (!stories.find((s) => s.id === selectedStory)) {
-        selectedStory = stories[0].id;
-        selectedVariant = stories[0].variants[0].id;
-        selectedPart = stories[0].variants[0].parts[0].id;
+      storyAssets = assets;
+
+      if (!storyAssets[`${selectedStory}/${selectedVariant}/${selectedPart}`]?.url) {
+        selectedStory = defaultStories[0].id;
+        selectedVariant = defaultStories[0].variants[0].id;
+        selectedPart = defaultStories[0].variants[0].parts[0].id;
       }
       updateDownload();
     } catch {
@@ -188,7 +177,7 @@
   const currentDownloadCount = $derived(currentAsset?.count ?? 0);
 </script>
 
-<div class="relative min-h-dvh overflow-hidden">
+<div class="relative min-h-dvh overflow-x-hidden">
   
   <div class="relative flex flex-col items-center justify-center min-h-dvh p-4 md:p-8">
     <div class="max-w-4xl w-full">
@@ -358,8 +347,8 @@
 </div>
 
 <dialog bind:this={recommendModal} class="modal backdrop:!bg-black/60 backdrop:!backdrop-blur-sm">
-  <div class="modal-box max-w-md bg-base-200/95 border border-white/10 p-0 overflow-hidden rounded-2xl shadow-2xl">
-    <div class="p-6 border-b border-white/5 flex items-center justify-between">
+  <div class="modal-box max-w-md bg-base-200/95 border border-white/10 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
+    <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
       <div>
         <h3 class="text-lg font-bold text-white flex items-center gap-2">
           <Icon icon="mdi:bookmark" class="size-5 text-accent" />
@@ -371,7 +360,7 @@
         <Icon icon="mdi:close" class="size-4" />
       </button>
     </div>
-    <div class="p-6 space-y-3 text-sm text-base-content/80 leading-relaxed">
+    <div class="p-6 space-y-3 text-sm text-base-content/80 leading-relaxed overflow-y-auto">
       <p>Hey hey 👋, Ender here. A lot of people have issues with the story not looking how it should depending on their device.</p>
       <p>I try to fix as much as I can with the epub but most of the fault lies in their epub reader so here are some recommended ones:</p>
 
