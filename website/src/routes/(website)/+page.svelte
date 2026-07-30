@@ -358,13 +358,13 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   .crt-title {
     display: inline-block;
     font-weight: 800;
-    background: linear-gradient(135deg, #ff2a00 0%, #ff7b00 15%, #ffcc00 30%, #ff2a6d 50%, #c213e0 70%, #ff2a00 100%);
-    background-size: 200% 100%;
+    background: linear-gradient(135deg, #ff3a1a 0%, #ff8c3a 20%, #ffd644 40%, #ff3a7a 60%, #c820e0 80%, #ff3a1a 100%);
+    background-size: 250% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: aurora-flow 8s linear infinite;
-    filter: drop-shadow(0 0 10px rgba(255, 42, 0, 0.4)) drop-shadow(0 0 25px rgba(255, 42, 109, 0.3)) drop-shadow(0 0 50px rgba(194, 19, 224, 0.12));
+    animation: aurora-flow 12s linear infinite alternate;
+    filter: drop-shadow(0 0 8px rgba(255, 58, 26, 0.3)) drop-shadow(0 0 20px rgba(255, 58, 122, 0.18)) drop-shadow(0 0 40px rgba(200, 32, 224, 0.08));
     will-change: background-position;
   }
 
@@ -373,14 +373,6 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     100% { background-position: 100% 50%; }
   }
 
-  @keyframes crt-flicker {
-    0%, 100% { opacity: 1; }
-    92% { opacity: 1; }
-    93% { opacity: 0.85; }
-    94% { opacity: 1; }
-    96% { opacity: 0.92; }
-    97% { opacity: 1; }
-  }
   .info-glow {
     position: relative;
     overflow: hidden;

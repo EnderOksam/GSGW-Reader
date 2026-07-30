@@ -371,15 +371,6 @@
     animation: none;
   }
 
-  @keyframes crt-flicker {
-    0%, 100% { opacity: 1; }
-    92% { opacity: 1; }
-    93% { opacity: 0.85; }
-    94% { opacity: 1; }
-    96% { opacity: 0.92; }
-    97% { opacity: 1; }
-  }
-
   .aurora-text {
     font-weight: 800;
     background: linear-gradient(135deg, #00c2ff, #33ff8c, #ffc640, #e54cff, #00c2ff);
