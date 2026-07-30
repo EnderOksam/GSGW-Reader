@@ -448,6 +448,10 @@ del {
   text-shadow: 0.5px 0.5px 0 #777;
 }
 
+.wiki-window,
+.record-window,
+.plain-window,
+.followup-window,
 .system-window,
 .note-window,
 .sticky-window,
@@ -465,11 +469,26 @@ del {
   background: #f1f1f1;
 }
 
+.wiki-window,
+.record-window,
 .note-window,
 .sticky-window {
   border: 1px solid #d2b63f;
   background: #fff6c9;
   color: #000;
+}
+
+.plain-window {
+  border: 1px solid #888;
+  background: #f9f9f9;
+  color: #111;
+}
+
+.followup-window {
+  border: 1px solid #999;
+  background: #f0f0f0;
+  color: #111;
+  font-style: italic;
 }
 
 .black-window,
@@ -498,6 +517,10 @@ del {
   font-size: 0.85em;
 }
 
+.wiki-window p:first-child,
+.record-window p:first-child,
+.plain-window p:first-child,
+.followup-window p:first-child,
 .system-window p:first-child,
 .note-window p:first-child,
 .sticky-window p:first-child,
@@ -506,6 +529,10 @@ del {
   margin-top: 0;
 }
 
+.wiki-window p:last-child,
+.record-window p:last-child,
+.plain-window p:last-child,
+.followup-window p:last-child,
 .system-window p:last-child,
 .note-window p:last-child,
 .sticky-window p:last-child,

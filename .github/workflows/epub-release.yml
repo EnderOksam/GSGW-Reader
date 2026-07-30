@@ -18,11 +18,20 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Pillow
-        run: pip install Pillow
+      - name: Install Python dependencies
+        run: |
+          pip install Pillow playwright python-frontmatter imagesize
 
-      - name: Build EPUBs
+      - name: Install Chromium
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Build GSGW EPUBs
         run: python scripts/build_epub.py
+
+      - name: Build Debut EPUB
+        run: python scripts/build_debut_epub.py
 
       - name: Rotate releases
         run: |

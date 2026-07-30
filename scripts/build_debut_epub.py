@@ -244,7 +244,6 @@ def build_debut_part_epub(
     book_title: str,
     master_meta: dict[str, Any],
     master_content: str,
-    short_name: str,
     part_def: dict[str, Any],
     variant: dict[str, str],
     args: argparse.Namespace,
@@ -252,7 +251,8 @@ def build_debut_part_epub(
     """Build a single Debut part EPUB with windows rendered as WebP images."""
     variant_label = variant["label"]
     part_label = part_def["label"]
-    output_name = f"{short_name} - {part_label} [{variant_label}].epub"
+    full_name = epub.sanitize_filename(book_title)
+    output_name = f"{full_name} - {part_label} [{variant_label}].epub"
     epub_path = OUTPUT_DIR / output_name
 
     print(f"  {part_label} ({part_def['range']}): {len(part_chapters)} chapters")
@@ -421,7 +421,6 @@ def build_debut_epub(args: argparse.Namespace) -> list[Path]:
 
     master_meta, master_content = epub.load_markdown(metadata_path)
     book_title = epub.metadata_text(master_meta.get("title"), "Debut or Die")
-    short_name = epub.BOOK_SHORT_NAME.get(book_id, "Debut.or.Die")
     part_defs = epub.PART_DEFS.get(book_id, [])
 
     if not part_defs:
@@ -444,7 +443,7 @@ def build_debut_epub(args: argparse.Namespace) -> list[Path]:
 
         epub_path = build_debut_part_epub(
             part_chapters, book_title, master_meta, master_content,
-            short_name, part_def, {"id": "windows", "label": "Windows"}, args,
+            part_def, {"id": "windows", "label": "Windows"}, args,
         )
         if epub_path:
             built.append(epub_path)

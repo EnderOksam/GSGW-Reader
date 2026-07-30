@@ -1210,22 +1210,19 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 inner_html = render_blocks(inner, ctx)
                 sep = '<p class="window-sep">----------------------------------------</p>'
-                out.append(f"<br /><br />{sep}\n{inner_html}\n{sep}<br /><br />")
+                out.append(f'<div class="{class_name}">{sep}\n{inner_html}\n{sep}</div>')
                 continue
 
             if class_name in ("plain-window", "followup-window", "system-window"):
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 inner_html = render_blocks(inner, ctx)
-                if class_name in ("plain-window", "followup-window"):
-                    out.append(f"<br />\n{inner_html}\n<br />")
-                else:
-                    out.append(inner_html)
+                out.append(f'<div class="{class_name}">{inner_html}</div>')
                 continue
 
             if class_name == "braun-screen":
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 inner_html = render_blocks(inner, ctx)
-                out.append(f'<div class="braun-screen"><br /><br />\n{inner_html}\n<br /><br /></div>')
+                out.append(f'<div class="{class_name}">{inner_html}</div>')
                 continue
 
             inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
@@ -1920,7 +1917,8 @@ def build_book(args: argparse.Namespace) -> list[Path]:
 
             print(f"  {part_def['label']} ({part_def['range']}): {len(part_chapters)} chapters")
 
-            output_name = f"{short_name} - {part_def['label']} [{variant_label}].epub"
+            full_name = sanitize_filename(book_title)
+            output_name = f"{full_name} - {part_def['label']} [{variant_label}].epub"
             epub_path = OUTPUT_DIR / output_name
 
             assets: dict[Path, EpubAsset] = {}

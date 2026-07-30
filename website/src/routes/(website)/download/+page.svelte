@@ -33,8 +33,8 @@
     { id: "plaintext", label: "Plain Text", badge: "css", description: "All formatting is done through text — the best attempt to use CSS to make it look like the website." },
   ];
 
-  const gsgwVariant = (v: string, p: string) => (n: string) => n.startsWith(`Ghost.Story - Part ${p} [${v}]`);
-  const debutVariant = (p: string) => (n: string) => n.startsWith(`Debut.or.Die - Part ${p} [Windows]`);
+  const gsgwVariant = (v: string, p: string) => (n: string) => n.startsWith(`Got Dropped into a Ghost Story, Still Gotta Work - Part ${p} [${v}]`);
+  const debutVariant = (p: string) => (n: string) => n.startsWith(`Debut or Die - Part ${p} [Windows]`);
 
   const stories: Story[] = [
     {
