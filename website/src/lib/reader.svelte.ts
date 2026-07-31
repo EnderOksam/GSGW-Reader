@@ -9,4 +9,5 @@ export const readerState = $state({
     description: ""
   },
   refPanelOpen: false,
+  footnotes: "",
 });

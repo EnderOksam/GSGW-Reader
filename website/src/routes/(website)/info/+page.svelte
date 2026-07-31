@@ -124,7 +124,7 @@
   <div class="max-w-5xl w-full bg-[#0d0d0d]/80 border border-[#fb8462]/15 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
 
     <header class="text-center mb-10 relative z-10">
-      <h1 class="text-5xl font-bold mb-3 crt-title" style="color:#fb8462">GSGW-Reader</h1>
+      <h1 class="text-5xl font-bold mb-3 crt-title">GSGW-Reader</h1>
       <p class="text-white/50 italic text-base">
         A website for reading and editing GSGW translations and formatting
       </p>
@@ -363,12 +363,21 @@
 
 <style>
   .crt-title {
-    text-shadow:
-      0 0 3px rgba(251, 132, 98, 0.3),
-      0 0 8px rgba(251, 132, 98, 0.1),
-      -0.5px 0 rgba(255, 0, 0, 0.1),
-      0.5px 0 rgba(0, 0, 255, 0.1);
-    animation: none;
+    display: inline-block;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff3a1a 0%, #ff8c3a 20%, #ffd644 40%, #ff3a7a 60%, #c820e0 80%, #ff3a1a 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: crt-aurora-flow 12s linear infinite alternate;
+    filter: drop-shadow(0 0 8px rgba(255, 58, 26, 0.3)) drop-shadow(0 0 20px rgba(255, 58, 122, 0.18)) drop-shadow(0 0 40px rgba(200, 32, 224, 0.08));
+    will-change: background-position;
+  }
+
+  @keyframes crt-aurora-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
   }
 
   .aurora-text {

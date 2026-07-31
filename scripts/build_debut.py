@@ -305,6 +305,20 @@ def convert_chapter(content):
         )
     content = protect_twitter(content)
 
+    footnotes = {}
+
+    def footnote_ref_replacer(m):
+        num = int(m.group(1))
+        text = m.group(2)
+        tip_html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
+        tip_html = re.sub(r"\*(.+?)\*", r"<em>\1</em>", tip_html)
+        tip_html = tip_html.replace('\n\n', '<br><br>')
+        tip_html = tip_html.replace('\n', '<br>')
+        footnotes[num] = tip_html
+        return f'<span class="fn-ref" id="fn-ref-{num}" tabindex="0" role="button">[{num}]<span class="fn-tip"><strong>{num}.</strong> {tip_html}</span></span>'
+
+    content = bw.FOOTNOTE_RE.sub(footnote_ref_replacer, content)
+
     content = bw.SHAKE_RE.sub(r'<span class="shake">\1</span>', content)
 
     content = bw.SHAKE_CHAR_RE.sub(bw.shake_char_replacer, content)
@@ -411,6 +425,14 @@ def convert_chapter(content):
     content = SMS_WINDOW_RE.sub(bw.sms_window_replacer, content)
     content = COMMENT_WINDOW_RE.sub(bw.comment_window_replacer, content)
 
+    # build footnotes HTML separately (rendered as a card in the layout)
+    footnotes_html = ""
+    if footnotes:
+        lines = []
+        for num in sorted(footnotes):
+            lines.append(f'<li value="{num}" id="fn-{num}">{footnotes[num]} <a href="#fn-ref-{num}" class="fn-back" aria-label="Back to reference {num} in text">↩</a></li>')
+        footnotes_html = '<div class="footnotes">\n<ol>\n' + '\n'.join(lines) + '\n</ol>\n</div>\n'
+
     try:
         proc = subprocess.run(
             ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],
@@ -421,11 +443,11 @@ def convert_chapter(content):
         if proc.returncode != 0:
             err = proc.stderr.decode().strip()
             print(f"Pandoc error: {err}")
-            return f"<p>Error converting content: {err}</p>"
-        return bw.process_html_images(proc.stdout.decode("utf-8"))
+            return f"<p>Error converting content: {err}</p>", footnotes_html
+        return bw.process_html_images(proc.stdout.decode("utf-8")), footnotes_html
     except subprocess.TimeoutExpired:
         print("Pandoc timed out on a chapter — skipping")
-        return "<p>Chapter skipped due to conversion timeout.</p>"
+        return "<p>Chapter skipped due to conversion timeout.</p>", footnotes_html
 
 
 
@@ -434,10 +456,17 @@ def convert_chapter(content):
 # =========================================================
 
 def process_task(task, template_str):
-    html_content = convert_chapter(task["content"])
+    html_content, footnotes_html = convert_chapter(task["content"])
 
     safe_html = (
         html_content
+        .replace("\\", "\\\\")
+        .replace("`", "\\`")
+        .replace("${", "$\\{")
+    )
+
+    safe_footnotes = (
+        footnotes_html
         .replace("\\", "\\\\")
         .replace("`", "\\`")
         .replace("${", "$\\{")
@@ -456,6 +485,11 @@ def process_task(task, template_str):
     output = output.replace(
         'let html_content = "";',
         f'let html_content = `{safe_html}`;'
+    )
+
+    output = output.replace(
+        'let footnotes = "";',
+        f'let footnotes = `{safe_footnotes}`;'
     )
 
     task["dest"].write_text(

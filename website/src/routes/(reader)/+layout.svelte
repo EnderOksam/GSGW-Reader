@@ -339,6 +339,22 @@
     </div>
   </main>
 
+  {#if readerState.footnotes}
+    <div class="mx-auto mt-8 mb-0 sm:mb-8 max-w-4xl transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
+      <div class="rounded-2xl border-0 sm:border border-base-content/10 bg-base-200 shadow-none sm:shadow-xl sm:shadow-base-content/5 overflow-hidden">
+        <div class="px-4 sm:px-8 pt-6 pb-2">
+          <div class="flex items-center gap-2">
+            <Icon icon="lucide:book-open-text" class="size-4 text-base-content/30 shrink-0" />
+            <span class="text-xs font-mono font-bold text-base-content/30 uppercase tracking-widest">Footnotes</span>
+          </div>
+        </div>
+        <div class="px-4 sm:px-8 pb-8">
+          {@html readerState.footnotes}
+        </div>
+      </div>
+    </div>
+  {/if}
+
   {#if bookSlug === "gsgw"}
     <button
       onclick={() => readerState.refPanelOpen = !readerState.refPanelOpen}

@@ -71,6 +71,12 @@ SILVER_RE = re.compile(r"\$ag(.+?)ag\$", re.DOTALL)
 OUTLINE_WHITE_RE = re.compile(r"\$wo(.+?)wo\$", re.DOTALL)
 OUTLINE_BLACK_RE = re.compile(r"\$bo(.+?)bo\$", re.DOTALL)
 HEX_COLOR_RE = re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL)
+HEX_OUTLINE_RE = re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL)
+
+SCROLL_LEFT_RE = re.compile(r"\|<(.+?)<\|", re.DOTALL)
+SCROLL_RIGHT_RE = re.compile(r"\|>(.+?)>\|", re.DOTALL)
+
+FOOTNOTE_RE = re.compile(r"\[(\d+)\]\{([^}]+)\}", re.DOTALL)
 
 TWITTER_URL_RE = re.compile(
     r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
@@ -754,6 +760,20 @@ def convert_chapter(content):
         )
     content = protect_twitter(content)
 
+    footnotes = {}
+
+    def footnote_ref_replacer(m):
+        num = int(m.group(1))
+        text = m.group(2)
+        tip_html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
+        tip_html = re.sub(r"\*(.+?)\*", r"<em>\1</em>", tip_html)
+        tip_html = tip_html.replace('\n\n', '<br><br>')
+        tip_html = tip_html.replace('\n', '<br>')
+        footnotes[num] = tip_html
+        return f'<span class="fn-ref" id="fn-ref-{num}" tabindex="0" role="button">[{num}]<span class="fn-tip"><strong>{num}.</strong> {tip_html}</span></span>'
+
+    content = FOOTNOTE_RE.sub(footnote_ref_replacer, content)
+
     content = SHAKE_RE.sub(r'<span class="shake">\1</span>', content)
 
     content = SHAKE_CHAR_RE.sub(shake_char_replacer, content)
@@ -804,6 +824,27 @@ def convert_chapter(content):
     content = OUTLINE_BLACK_RE.sub(r'<span class="outline-black">\1</span>', content)
 
     content = HEX_COLOR_RE.sub(lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>', content)
+
+    content = HEX_OUTLINE_RE.sub(
+        lambda m: f'<span class="hex-outline" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>',
+        content
+    )
+
+    def scroll_replacer(match, direction):
+        inner = match.group(1)
+        inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+        cls = "scroll-left" if direction == "left" else "scroll-right"
+        return (
+            f'<span class="scroll-wrap {cls}">'
+            f'<span class="scroll-sizer"><span class="scroll-text">{inner}</span></span>'
+            f'<span class="scroll-track">'
+            f'<span class="scroll-text">{inner}</span>'
+            f'<span class="scroll-text">{inner}</span>'
+            f'</span></span>'
+        )
+
+    content = SCROLL_LEFT_RE.sub(lambda m: scroll_replacer(m, "left"), content)
+    content = SCROLL_RIGHT_RE.sub(lambda m: scroll_replacer(m, "right"), content)
 
     # restore protected patterns
     for key, val in img_placeholders.items():
@@ -860,6 +901,14 @@ def convert_chapter(content):
     content = SMS_WINDOW_RE.sub(sms_window_replacer, content)
     content = COMMENT_WINDOW_RE.sub(comment_window_replacer, content)
 
+    # build footnotes HTML separately (rendered as a card in the layout)
+    footnotes_html = ""
+    if footnotes:
+        lines = []
+        for num in sorted(footnotes):
+            lines.append(f'<li value="{num}" id="fn-{num}">{footnotes[num]} <a href="#fn-ref-{num}" class="fn-back" aria-label="Back to reference {num} in text">↩</a></li>')
+        footnotes_html = '<div class="footnotes">\n<ol>\n' + '\n'.join(lines) + '\n</ol>\n</div>\n'
+
     try:
         proc = subprocess.run(
             ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],
@@ -870,11 +919,11 @@ def convert_chapter(content):
         if proc.returncode != 0:
             err = proc.stderr.decode().strip()
             print(f"Pandoc error: {err}")
-            return f"<p>Error converting content: {err}</p>"
-        return process_html_images(proc.stdout.decode("utf-8"))
+            return f"<p>Error converting content: {err}</p>", footnotes_html
+        return process_html_images(proc.stdout.decode("utf-8")), footnotes_html
     except subprocess.TimeoutExpired:
         print("Pandoc timed out on a chapter — skipping")
-        return "<p>Chapter skipped due to conversion timeout.</p>"
+        return "<p>Chapter skipped due to conversion timeout.</p>", footnotes_html
 
 
 # =========================================================
@@ -883,10 +932,16 @@ def convert_chapter(content):
 
 def process_task(task, template_str):
 
-    html_content = convert_chapter(task["content"])
+    html_content, footnotes_html = convert_chapter(task["content"])
 
     safe_html = (
         html_content
+        .replace("`", "\\`")
+        .replace("${", "$\\{")
+    )
+
+    safe_footnotes = (
+        footnotes_html
         .replace("`", "\\`")
         .replace("${", "$\\{")
     )
@@ -904,6 +959,11 @@ def process_task(task, template_str):
     output = output.replace(
         'let html_content = "";',
         f'let html_content = `{safe_html}`;'
+    )
+
+    output = output.replace(
+        'let footnotes = "";',
+        f'let footnotes = `{safe_footnotes}`;'
     )
 
     task["dest"].write_text(

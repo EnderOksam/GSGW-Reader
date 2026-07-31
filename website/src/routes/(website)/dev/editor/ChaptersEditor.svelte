@@ -503,6 +503,7 @@
     { syntax: "$$text$$", text: "handwritten text", cls: "handwritten", expandable: true },
     { syntax: "$wotextwo$", text: "white outline", cls: "text-black outline-white", expandable: true, previewHtml: '<span class="text-black" style="-webkit-text-stroke:1px white;text-stroke:1px white;">text</span>' },
     { syntax: "$botextbo$", text: "black outline", cls: "text-green outline-black", expandable: true, previewHtml: '<span class="text-green" style="-webkit-text-stroke:1px black;text-stroke:1px black;">text</span>' },
+    { syntax: "$hxo(#ff)texthxo#", text: "hex outline", cls: "hex-outline", expandable: true, previewHtml: '<span class="hex-outline hex-preview" style="--hxo-color:#ff6600">text</span>', meta: "replace #ffffff with any valid hex color" },
     { syntax: "#rtextr#", text: "red text", cls: "text-red" },
     { syntax: "#otexto#", text: "orange text", cls: "text-orange" },
     { syntax: "#ytexty#", text: "yellow text", cls: "text-yellow" },
@@ -512,7 +513,7 @@
     { syntax: "#lptextlp#", text: "purple text", cls: "text-light-purple" },
     { syntax: "#ptextp#", text: "magenta text", cls: "text-magenta" },
     { syntax: "#dtextd#", text: "black text", cls: "text-base-content" },
-    { syntax: "#hx(#ffffff)texthx#", text: "hex text", cls: "text-base-content", expandable: true, previewHtml: '<span class="hex-preview">hex color text</span>', meta: "replace #ffffff for a valid hex number to change the text to this specific color" },
+    { syntax: "#hx(#ffffff)texthx#", text: "hex text", cls: "text-base-content", expandable: true, previewHtml: '<span class="hex-preview">hex color text</span>', meta: "replace #ffffff with any valid hex number to change the text to this specific color" },
     { syntax: ";rtextr;", text: "red highlight", cls: "hl-red" },
     { syntax: ";otexto;", text: "orange highlight", cls: "hl-orange" },
     { syntax: ";ytexty;", text: "yellow highlight", cls: "hl-yellow" },
@@ -551,6 +552,8 @@
     { syntax: "%^text^%", text: "wave up", cls: "wave-up", expandable: true, previewHtml: wavePreview() },
     { syntax: "@@text@@", text: "glitch heavy", cls: "glitch-text", expandable: true },
     { syntax: "@_@text@_@", text: "glitch subtle", cls: "glitch-subtle", expandable: true },
+    { syntax: "|<text<|", text: "scroll left", cls: "scroll-wrap scroll-left", expandable: true },
+    { syntax: "|>text>|", text: "scroll right", cls: "scroll-wrap scroll-right", expandable: true },
   ];
 
   const windowsItems = [
@@ -582,7 +585,7 @@
   {@const sectionId = title}
   {@const expandable = items.filter(i => i.expandable)}
   {@const regular = items.filter(i => !i.expandable)}
-  <div class="bg-base-300/40 rounded-xl border border-base-content/10 overflow-hidden">
+  <div class="bg-base-300/40 rounded-xl border border-base-content/10">
     <button onclick={() => formatSections[sectionId] = !formatSections[sectionId]} class="flex items-center gap-2 w-full px-3 py-2 text-left hover:bg-base-content/[3%] transition-colors">
       <Icon icon={formatSections[sectionId] ? "mdi:chevron-down" : "mdi:chevron-right"} class="size-3.5 text-base-content/30 shrink-0 transition-transform" />
       <span class="text-[10px] font-mono font-medium text-base-content/50 uppercase tracking-wider">{title}</span>
@@ -743,7 +746,7 @@
       {@render section("Colors & Markdown", colorsItems)}
       {@render section("Changing Text", changingItems)}
 
-      <div class="bg-base-300/40 rounded-xl border border-base-content/10 overflow-hidden">
+      <div class="bg-base-300/40 rounded-xl border border-base-content/10">
         <button onclick={() => formatSections['windows'] = !formatSections['windows']} class="flex items-center gap-2 w-full px-3 py-2 text-left hover:bg-base-content/[3%] transition-colors">
           <Icon icon={formatSections['windows'] ? "mdi:chevron-down" : "mdi:chevron-right"} class="size-3.5 text-base-content/30 shrink-0 transition-transform" />
           <span class="text-[10px] font-mono font-medium text-base-content/50 uppercase tracking-wider">Windows</span>
@@ -751,7 +754,7 @@
         {#if !formatSections['windows']}
           <div class="px-2 pb-2 space-y-0.5">
             {#each windowsItems as item}
-              <div class="rounded-lg overflow-hidden border border-base-content/5">
+              <div class="rounded-lg border border-base-content/5">
                 <button onclick={() => expandedSyntax[item.syntax] = !expandedSyntax[item.syntax]} class="flex items-center gap-2 w-full px-2 py-1.5 text-left hover:bg-base-content/[3%] transition-colors">
                   <Icon icon={expandedSyntax[item.syntax] ? "mdi:chevron-down" : "mdi:chevron-right"} class="size-3 text-base-content/20 shrink-0 transition-transform" />
                   <span class="text-[10px] font-mono text-base-content/70 whitespace-nowrap shrink-0">{item.syntax}</span>
@@ -800,7 +803,7 @@
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick={() => showMobileMenu = false} role="button" tabindex="-1"></div>
     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
     <div
-      class="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-base-300 border-r border-base-content/10 shadow-2xl shadow-black/30 flex flex-col animate-slide-in-left"
+      class="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-base-300 border-r border-base-content/10 shadow-2xl shadow-black/30 flex flex-col animate-slide-in-left overflow-hidden"
       onclick={(e) => e.stopPropagation()}
       role="dialog"
       tabindex="-1"
@@ -813,9 +816,9 @@
         <button onclick={() => leftTab = 'chapters'} class="flex-1 text-[11px] font-mono font-medium tracking-wider py-2 rounded-xl transition-all active:scale-[0.97] {leftTab === 'chapters' ? 'bg-primary/15 text-primary shadow-sm' : 'text-base-content/50 hover:text-base-content/70 hover:bg-base-content/5'}">Chapters</button>
         <button onclick={() => leftTab = 'formatting'} class="flex-1 text-[11px] font-mono font-medium tracking-wider py-2 rounded-xl transition-all active:scale-[0.97] {leftTab === 'formatting' ? 'bg-primary/15 text-primary shadow-sm' : 'text-base-content/50 hover:text-base-content/70 hover:bg-base-content/5'}">Formatting</button>
       </div>
-      <div class="flex-1 min-h-0 px-3 pb-3 pt-2 flex flex-col">
+      <div class="flex-1 min-h-0 px-3 pb-3 pt-2 flex flex-col overflow-hidden">
         {#if leftTab === 'chapters'}
-          <div class="flex-1 min-h-0 flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg">
+          <div class="flex-1 min-h-0 flex flex-col bg-base-200/80 backdrop-blur-sm rounded-xl border border-base-content/10 shadow-lg overflow-hidden">
             <div class="flex-shrink-0 flex flex-col border-b border-base-content/10">
               <div class="flex gap-1.5 p-2 pb-1">
                 <select bind:value={currentBook}  class="flex-1 bg-base-300/60 text-base-content/70 text-xs px-2.5 py-2 rounded-xl outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80 cursor-pointer">
@@ -865,7 +868,7 @@
           {@render section("Colors & Markdown", colorsItems)}
           {@render section("Changing Text", changingItems)}
 
-          <div class="bg-base-300/40 rounded-xl border border-base-content/10 overflow-hidden">
+          <div class="bg-base-300/40 rounded-xl border border-base-content/10 shrink-0">
             <button onclick={() => formatSections['windows'] = !formatSections['windows']} class="flex items-center gap-2 w-full px-3 py-2 text-left hover:bg-base-content/[3%] transition-colors">
               <Icon icon={formatSections['windows'] ? "mdi:chevron-down" : "mdi:chevron-right"} class="size-3.5 text-base-content/30 shrink-0 transition-transform" />
               <span class="text-[10px] font-mono font-medium text-base-content/50 uppercase tracking-wider">Windows</span>
@@ -873,7 +876,7 @@
             {#if !formatSections['windows']}
               <div class="px-2 pb-2 space-y-0.5">
                 {#each windowsItems as item}
-                  <div class="rounded-lg overflow-hidden border border-base-content/5">
+                  <div class="rounded-lg border border-base-content/5">
                     <button onclick={() => expandedSyntax[item.syntax] = !expandedSyntax[item.syntax]} class="flex items-center gap-2 w-full px-2 py-1.5 text-left hover:bg-base-content/[3%] transition-colors">
                       <Icon icon={expandedSyntax[item.syntax] ? "mdi:chevron-down" : "mdi:chevron-right"} class="size-3 text-base-content/20 shrink-0 transition-transform" />
                       <span class="text-[10px] font-mono text-base-content/70 whitespace-nowrap shrink-0">{item.syntax}</span>

@@ -10,6 +10,7 @@
   import { searchChapterContent, renderSnippet as renderSearchSnippet, storeSnippetTarget } from "$lib/content-search";
   import type { ContentMatch } from "$lib/content-search";
   import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
 
   // --- Types ---
   interface Chapter {
@@ -356,16 +357,23 @@
   <nav
     class="w-full bg-base-100/80 backdrop-blur-md border-b border-base-content/5 z-50 relative {prefs.config.navbarSticky ? 'sticky top-0' : ''}"
   >
-    <!-- Mobile: compact 3-column -->
-    <div class="flex sm:hidden items-center justify-between px-2 h-12 overflow-x-auto gap-0">
+    <!-- Mobile: 3-column layout -->
+    <div class="flex sm:hidden items-center justify-between px-1 h-12 gap-0.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
       <!-- Left: Navigation -->
-      <div class="flex items-center gap-0 shrink-0">
+      <div class="flex items-center gap-0.5 shrink-0">
+        <a
+          href="/book/{bookSlug}"
+          class="btn btn-ghost btn-sm btn-square rounded-xl"
+          aria-label="Home"
+        >
+          <Icon icon="material-symbols:home-outline-rounded" class="size-5" />
+        </a>
         <a
           href={currentIndex > 0 ? `/read/${bookSlug}/${currentTL}/${chaptersForTL[currentIndex - 1].slug}` : `/book/${bookSlug}`}
           class="btn btn-ghost btn-sm btn-square rounded-xl {currentIndex <= 0 ? 'opacity-40' : ''}"
           aria-label={currentIndex > 0 ? "Previous Chapter" : "Home"}
         >
-          <Icon icon={currentIndex > 0 ? "mage:previous" : "material-symbols:home-outline-rounded"} class="size-5" />
+          <Icon icon="mage:previous" class="size-5" />
         </a>
         <button
           onclick={() => {
@@ -383,13 +391,13 @@
       </div>
 
       <!-- Center: Contents -->
-        <button onclick={openTOC} class="btn btn-outline btn-sm rounded-xl gap-1 px-2 shrink-0">
-        <Icon icon="lucide:table-of-contents" class="size-4.5" />
+      <button onclick={openTOC} class="btn btn-outline btn-sm rounded-xl gap-1 px-2 shrink-0">
+        <Icon icon="lucide:table-of-contents" class="size-4" />
         <span class="text-[11px] font-semibold">Contents</span>
       </button>
 
       <!-- Right: Actions -->
-      <div class="flex items-center gap-0 shrink-0">
+      <div class="flex items-center gap-0.5 shrink-0">
         <button
           onclick={() => document.getElementById("comments")?.scrollIntoView({ behavior: "smooth" })}
           class="btn btn-ghost btn-sm btn-square rounded-xl"

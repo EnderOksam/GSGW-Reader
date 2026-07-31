@@ -5,10 +5,10 @@
    =========================================================== */
 
 :root {
-  --window-bg: #1e1e2e;
-  --window-border: #3a3a5c;
-  --window-text: #ffffff !important;
-  --window-accent: #ff4d00;
+  --window-bg: oklch(0.2 0.02 280);
+  --window-border: oklch(0.28 0.03 280);
+  --window-text: oklch(0.95 0 0) !important;
+  --window-accent: oklch(0.55 0.22 30);
 }
 
 .reader-container {
@@ -30,14 +30,14 @@
 
 .reader-container .wiki-window {
   margin: 2.5rem auto;
-  background: linear-gradient(145deg, #1c1c30, #1e1e2e);
-  border: 1px solid rgba(140, 160, 255, 0.1);
+  background: linear-gradient(145deg, oklch(0.18 0.02 280), oklch(0.2 0.02 280));
+  border: 1px solid oklch(0.55 0.06 270 / 0.15);
   border-radius: 10px;
   max-width: 98%;
   position: relative;
-  box-shadow:
-    0 4px 24px rgba(0,0,0,0.4),
-    0 0 0 1px rgba(255,255,255,0.02) inset;
+    box-shadow:
+      0 4px 24px oklch(0 0 0 / 0.4),
+      0 0 0 1px oklch(0.95 0 0 / 0.02) inset;
   padding: 1em 1em 0.75em;
   text-align: left;
   font-size: 1em;
@@ -56,7 +56,7 @@
   display: flex;
   justify-content: flex-end;
   background: var(--window-border);
-  color: #ffffff;
+  color: oklch(0.95 0 0);
   padding: 0.375em 0.875em;
   font-family: monospace;
   font-size: 1em;
@@ -77,7 +77,11 @@
   margin: 0.6em 0;
   line-height: 1.7;
   text-align: left;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+  text-shadow: 0 1px 1px oklch(0 0 0 / 0.15);
+}
+
+.reader-container .wiki-window p:first-of-type {
+  margin-top: 0;
 }
 
 .reader-container .wiki-window:not(.no-meta) p:first-of-type {
@@ -101,8 +105,8 @@
   font-size: 0.98em;
   letter-spacing: 0.03em;
   margin: 0.5em 0 0.4em;
-  color: rgba(200, 215, 255, 0.9);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  color: oklch(0.75 0.06 260 / 0.9);
+  text-shadow: 0 1px 2px oklch(0 0 0 / 0.3);
 }
 
 .reader-container .wiki-window p:last-of-type {
@@ -117,18 +121,18 @@
 
 .reader-container .record-window {
   margin: 2.5rem auto;
-  background: linear-gradient(145deg, #121a3a, #1d2350);
-  border: 1px solid rgba(120, 180, 255, 0.1);
+  background: linear-gradient(145deg, oklch(0.15 0.04 270), oklch(0.18 0.05 270));
+  border: 1px solid oklch(0.55 0.08 260 / 0.15);
   border-radius: 10px;
   max-width: 98%;
   position: relative;
   box-shadow:
-    0 4px 24px rgba(0,0,0,0.4),
-    0 0 0 1px rgba(255,255,255,0.02) inset;
+    0 4px 24px oklch(0 0 0 / 0.4),
+    0 0 0 1px oklch(0.95 0 0 / 0.02) inset;
   padding: 1em 1em 0.75em;
   text-align: left;
   font-size: 1em;
-  color: #ffffff !important;
+  color: oklch(0.95 0 0) !important;
 }
 
 @media (min-width: 640px) {
@@ -142,14 +146,14 @@
   content: "— ▢ X";
   display: flex;
   justify-content: flex-end;
-  background: rgba(0,0,0,0.25);
-  color: #ffffff;
+  background: oklch(0 0 0 / 0.25);
+  color: oklch(0.95 0 0);
   padding: 0.375em 0.875em;
   font-family: monospace;
   font-size: 1em;
   letter-spacing: 0.375em;
   margin: -1em -1em 0.75em;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid oklch(0.95 0 0 / 0.1);
   border-radius: 10px 10px 0 0;
 }
 
@@ -160,11 +164,15 @@
 }
 
 .reader-container .record-window p {
-  color: #ffffff !important;
+  color: oklch(0.95 0 0) !important;
   margin: 0.6em 0;
   line-height: 1.7;
   text-align: left;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+  text-shadow: 0 1px 1px oklch(0 0 0 / 0.15);
+}
+
+.reader-container .record-window p:first-of-type {
+  margin-top: 0;
 }
 
 .reader-container .record-window:not(.no-meta) p:first-of-type {
@@ -188,8 +196,8 @@
   font-size: 0.98em;
   letter-spacing: 0.03em;
   margin: 0.5em 0 0.4em;
-  color: rgba(160, 210, 255, 0.9);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  color: oklch(0.7 0.08 245 / 0.9);
+  text-shadow: 0 1px 2px oklch(0 0 0 / 0.3);
 }
 
 .reader-container .record-window p:last-of-type {
@@ -204,14 +212,14 @@
 
 .reader-container .plain-window {
   margin: 2.5rem auto;
-  background: linear-gradient(145deg, #1c1c30, #1e1e2e);
-  border: 1px solid rgba(140, 160, 255, 0.1);
+  background: linear-gradient(145deg, oklch(0.18 0.02 280), oklch(0.2 0.02 280));
+  border: 1px solid oklch(0.55 0.06 270 / 0.15);
   border-radius: 10px;
   max-width: 98%;
   position: relative;
-  box-shadow:
-    0 4px 24px rgba(0,0,0,0.4),
-    0 0 0 1px rgba(255,255,255,0.02) inset;
+    box-shadow:
+      0 4px 24px oklch(0 0 0 / 0.4),
+      0 0 0 1px oklch(0.95 0 0 / 0.02) inset;
   padding: 1.5em 2em 1em;
   text-align: left;
   color: var(--window-text) !important;
@@ -245,7 +253,11 @@
   margin: 0.6em 0;
   line-height: 1.7;
   text-align: left;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+  text-shadow: 0 1px 1px oklch(0 0 0 / 0.15);
+}
+
+.reader-container .plain-window p:first-of-type {
+  margin-top: 0;
 }
 
 .reader-container .plain-window p:last-of-type {
@@ -260,17 +272,17 @@
 
 .reader-container .followup-window {
   margin: 2.5rem auto;
-  background: linear-gradient(145deg, #121a3a, #1d2350);
-  border: 1px solid rgba(120, 180, 255, 0.1);
+  background: linear-gradient(145deg, oklch(0.15 0.04 270), oklch(0.18 0.05 270));
+  border: 1px solid oklch(0.55 0.08 260 / 0.15);
   border-radius: 10px;
   max-width: 98%;
   position: relative;
-  box-shadow:
-    0 4px 24px rgba(0,0,0,0.4),
-    0 0 0 1px rgba(255,255,255,0.02) inset;
+    box-shadow:
+      0 4px 24px oklch(0 0 0 / 0.4),
+      0 0 0 1px oklch(0.95 0 0 / 0.02) inset;
   padding: 1.5em 2em 1em;
   text-align: left;
-  color: #ffffff !important;
+  color: oklch(0.95 0 0) !important;
 }
 
 @media (min-width: 640px) {
@@ -294,14 +306,14 @@
 .reader-container .followup-window h6,
 .reader-container .followup-window code,
 .reader-container .followup-window blockquote {
-  color: #ffffff !important;
+  color: oklch(0.95 0 0) !important;
 }
 
 .reader-container .followup-window p {
   margin: 0.6em 0;
   line-height: 1.7;
   text-align: left;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
+  text-shadow: 0 1px 1px oklch(0 0 0 / 0.15);
 }
 
 .reader-container .followup-window p:last-of-type {
@@ -316,14 +328,14 @@
 
 .reader-container .note-window {
   margin: 2.5rem auto;
-  background: #fefce8;
-  border: 1px solid #e6dec0;
+  background: oklch(0.96 0.02 90);
+  border: 1px solid oklch(0.88 0.03 90);
   border-radius: 4px;
   max-width: 98%;
   position: relative;
   box-shadow:
-    -4px 4px 0 #d4c060,
-    0 4px 24px rgba(0,0,0,0.12);
+    -4px 4px 0 oklch(0.75 0.12 90),
+    0 4px 24px oklch(0 0 0 / 0.12);
   padding: 1em 1.25em 0.75em;
   text-align: left;
   overflow: hidden;
@@ -339,7 +351,7 @@
 .reader-container .note-window::before {
   content: "";
   display: block;
-  background: #edd44d;
+  background: oklch(0.8 0.1 90);
   height: 0.875em;
   margin: -1em -1.25em 0.75em;
   border-radius: 4px 4px 0 0;
@@ -361,8 +373,8 @@
   background-image: repeating-linear-gradient(
     transparent,
     transparent 1.6em,
-    rgba(160,160,160,0.35) 1.6em,
-    rgba(160,160,160,0.35) 1.65em
+    oklch(0.6 0 0 / 0.35) 1.6em,
+    oklch(0.6 0 0 / 0.35) 1.65em
   );
   filter: blur(0.05em);
   pointer-events: none;
@@ -370,7 +382,7 @@
 }
 
 .reader-container .note-window p {
-  color: #000000;
+  color: oklch(0 0 0);
   margin: 0.8em 0;
   line-height: 1.7;
   text-align: left;
@@ -379,7 +391,7 @@
 }
 
 .reader-container .note-window:not(.no-meta) p:first-of-type {
-  color: #4a6fa5;
+  color: oklch(0.45 0.08 260);
   font-size: 1.35em;
   font-weight: 600;
   text-align: left;
@@ -404,8 +416,8 @@
 
 .reader-container .sticky-window {
   margin: 2.5rem auto;
-  background: #fefce8;
-  border: 1px solid #e6dec0;
+  background: oklch(0.96 0.02 90);
+  border: 1px solid oklch(0.88 0.03 90);
   border-radius: 2px;
   max-width: 25em;
   min-height: 15.625em;
@@ -415,18 +427,18 @@
   align-items: center;
   position: relative;
   box-shadow:
-    -3px 3px 0 #d4c060,
-    0 4px 24px rgba(0,0,0,0.12);
+    -3px 3px 0 oklch(0.75 0.12 90),
+    0 4px 24px oklch(0 0 0 / 0.12);
   padding: 1.5em;
   text-align: center;
-  color: #000000 !important;
+  color: oklch(0 0 0) !important;
 }
 
 .reader-container .sticky-window p,
 .reader-container .sticky-window a,
 .reader-container .sticky-window strong,
 .reader-container .sticky-window b {
-  color: #000000 !important;
+  color: oklch(0 0 0) !important;
 }
 
 .reader-container .sticky-window p {
@@ -449,30 +461,30 @@
 
 .reader-container .black-window {
   margin: 2.5rem auto;
-  background: #000000;
-  border: 1px solid #333;
+  background: oklch(0 0 0);
+  border: 1px solid oklch(0.25 0 0);
   border-radius: 4px;
   max-width: 88%;
   position: relative;
-  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+  box-shadow: 0 0 20px oklch(0 0 0 / 0.6);
   padding: 1.5em 2em 1em;
   text-align: center;
   font-weight: 700;
   font-size: 1.3em;
-  color: #ffffff !important;
-  text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.4);
+  color: oklch(0.95 0 0) !important;
+  text-shadow: 0 0 10px oklch(0.95 0 0 / 0.7), 0 0 20px oklch(0.95 0 0 / 0.4);
   transition: text-shadow 0.3s;
   background-image: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(255,255,255,0.03) 2px,
-    rgba(255,255,255,0.03) 4px
+    oklch(0.95 0 0 / 0.03) 2px,
+    oklch(0.95 0 0 / 0.03) 4px
   );
 }
 
 .reader-container .black-window p {
-  color: #ffffff;
+  color: oklch(0.95 0 0);
   margin: 0.8em 0;
   line-height: 1.6;
   text-align: center;
@@ -499,10 +511,10 @@
 
 @keyframes black-window-glow {
   0% {
-    text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.4);
+    text-shadow: 0 0 10px oklch(0.95 0 0 / 0.7), 0 0 20px oklch(0.95 0 0 / 0.4);
   }
   100% {
-    text-shadow: 0 0 7px rgba(255,255,255,0.4), 0 0 14px rgba(255,255,255,0.2);
+    text-shadow: 0 0 7px oklch(0.95 0 0 / 0.4), 0 0 14px oklch(0.95 0 0 / 0.2);
   }
 }
 
@@ -511,22 +523,22 @@
 .reader-container .braun-screen {
   margin: 2.5rem auto;
   background:
-    radial-gradient(ellipse at center, #050504 0%, #030302 60%, #020201 100%);
-  border: 10px solid #4f4642;
+    radial-gradient(ellipse at center, oklch(0.04 0.005 90) 0%, oklch(0.03 0.003 90) 60%, oklch(0.02 0.002 90) 100%);
+  border: 10px solid oklch(0.3 0.02 50);
   border-radius: 36px;
   max-width: 90%;
   position: relative;
   box-shadow:
-    0 0 30px rgba(0,0,0,0.8),
-    inset 0 0 60px rgba(0,0,0,0.3);
+    0 0 30px oklch(0 0 0 / 0.8),
+    inset 0 0 60px oklch(0 0 0 / 0.3);
   padding: 6em 0.5em;
   text-align: center;
   font-family: 'Courier New', Courier, monospace;
   font-size: 2em;
-  color: #ffffff !important;
+  color: oklch(0.95 0 0) !important;
   text-shadow:
-    0 0 5px rgba(255, 255, 255, 0.4),
-    0 0 15px rgba(255, 255, 255, 0.15);
+    0 0 5px oklch(0.95 0 0 / 0.4),
+    0 0 15px oklch(0.95 0 0 / 0.15);
   overflow: hidden;
   transition: text-shadow 0.2s;
   animation: braun-idle 0.08s infinite;
@@ -542,8 +554,8 @@
       0deg,
       transparent,
       transparent 2px,
-      rgba(255, 255, 255, 0.02) 2px,
-      rgba(255, 255, 255, 0.02) 4px
+      oklch(0.95 0 0 / 0.02) 2px,
+      oklch(0.95 0 0 / 0.02) 4px
     ),
     radial-gradient(
       ellipse at center,
@@ -584,8 +596,8 @@
 
 .reader-container .braun-screen:hover {
   text-shadow:
-    0 0 8px rgba(255, 255, 255, 0.6),
-    0 0 20px rgba(255, 255, 255, 0.25);
+    0 0 8px oklch(0.95 0 0 / 0.6),
+    0 0 20px oklch(0.95 0 0 / 0.25);
   animation: braun-hover-shake 0.06s infinite;
 }
 
@@ -603,7 +615,7 @@
 }
 
 .reader-container .braun-screen p {
-  color: #ffffff;
+  color: oklch(0.95 0 0);
   margin: 0.8em 0;
   line-height: 1.6;
   text-align: center;
@@ -623,21 +635,21 @@
 
 .reader-container .system-window {
   margin: 2.5rem auto;
-  background: #1a1a1a;
-  border: 1px solid #444;
+  background: oklch(0.15 0 0);
+  border: 1px solid oklch(0.3 0 0);
   border-radius: 4px;
   max-width: 88%;
   position: relative;
-  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+  box-shadow: 0 0 20px oklch(0 0 0 / 0.6);
   padding: 1.5em 2em 1em;
   text-align: center;
   font-weight: 700;
   transition: box-shadow 0.3s;
-  color: #ffffff !important;
+  color: oklch(0.95 0 0) !important;
 }
 
 .reader-container .system-window:hover {
-  box-shadow: 0 0 20px rgba(0,0,0,0.6), 0 0 15px rgba(100, 100, 100, 0.3);
+  box-shadow: 0 0 20px oklch(0 0 0 / 0.6), 0 0 15px oklch(0.45 0 0 / 0.3);
 }
 
 .reader-container .system-window::before {
@@ -645,16 +657,16 @@
   position: absolute;
   inset: 8px;
   box-shadow:
-    inset 0 0 0 1px #888,
-    inset 0 0 0 5px #888;
+    inset 0 0 0 1px oklch(0.55 0 0),
+    inset 0 0 0 5px oklch(0.55 0 0);
   pointer-events: none;
   transition: box-shadow 0.3s;
 }
 
 .reader-container .system-window:hover::before {
   box-shadow:
-    inset 0 0 0 1px #aaa,
-    inset 0 0 0 5px #aaa;
+    inset 0 0 0 1px oklch(0.68 0 0),
+    inset 0 0 0 5px oklch(0.68 0 0);
 }
 
 .reader-container .system-window::after {
@@ -663,26 +675,26 @@
   inset: 17px;
   pointer-events: none;
   background:
-    linear-gradient(to right, #888, transparent) 0 0 / 20px 1px no-repeat,
-    linear-gradient(to bottom, #888, transparent) 0 0 / 1px 20px no-repeat,
-    linear-gradient(to left, #888, transparent) 100% 0 / 20px 1px no-repeat,
-    linear-gradient(to bottom, #888, transparent) 100% 0 / 1px 20px no-repeat,
-    linear-gradient(to left, #888, transparent) 100% 100% / 20px 1px no-repeat,
-    linear-gradient(to top, #888, transparent) 100% 100% / 1px 20px no-repeat,
-    linear-gradient(to right, #888, transparent) 0 100% / 20px 1px no-repeat,
-    linear-gradient(to top, #888, transparent) 0 100% / 1px 20px no-repeat;
+    linear-gradient(to right, oklch(0.55 0 0), transparent) 0 0 / 20px 1px no-repeat,
+    linear-gradient(to bottom, oklch(0.55 0 0), transparent) 0 0 / 1px 20px no-repeat,
+    linear-gradient(to left, oklch(0.55 0 0), transparent) 100% 0 / 20px 1px no-repeat,
+    linear-gradient(to bottom, oklch(0.55 0 0), transparent) 100% 0 / 1px 20px no-repeat,
+    linear-gradient(to left, oklch(0.55 0 0), transparent) 100% 100% / 20px 1px no-repeat,
+    linear-gradient(to top, oklch(0.55 0 0), transparent) 100% 100% / 1px 20px no-repeat,
+    linear-gradient(to right, oklch(0.55 0 0), transparent) 0 100% / 20px 1px no-repeat,
+    linear-gradient(to top, oklch(0.55 0 0), transparent) 0 100% / 1px 20px no-repeat;
 }
 
 .reader-container .system-window:hover::after {
   background:
-    linear-gradient(to right, #aaa, transparent) 0 0 / 20px 1px no-repeat,
-    linear-gradient(to bottom, #aaa, transparent) 0 0 / 1px 20px no-repeat,
-    linear-gradient(to left, #aaa, transparent) 100% 0 / 20px 1px no-repeat,
-    linear-gradient(to bottom, #aaa, transparent) 100% 0 / 1px 20px no-repeat,
-    linear-gradient(to left, #aaa, transparent) 100% 100% / 20px 1px no-repeat,
-    linear-gradient(to top, #aaa, transparent) 100% 100% / 1px 20px no-repeat,
-    linear-gradient(to right, #aaa, transparent) 0 100% / 20px 1px no-repeat,
-    linear-gradient(to top, #aaa, transparent) 0 100% / 1px 20px no-repeat;
+    linear-gradient(to right, oklch(0.68 0 0), transparent) 0 0 / 20px 1px no-repeat,
+    linear-gradient(to bottom, oklch(0.68 0 0), transparent) 0 0 / 1px 20px no-repeat,
+    linear-gradient(to left, oklch(0.68 0 0), transparent) 100% 0 / 20px 1px no-repeat,
+    linear-gradient(to bottom, oklch(0.68 0 0), transparent) 100% 0 / 1px 20px no-repeat,
+    linear-gradient(to left, oklch(0.68 0 0), transparent) 100% 100% / 20px 1px no-repeat,
+    linear-gradient(to top, oklch(0.68 0 0), transparent) 100% 100% / 1px 20px no-repeat,
+    linear-gradient(to right, oklch(0.68 0 0), transparent) 0 100% / 20px 1px no-repeat,
+    linear-gradient(to top, oklch(0.68 0 0), transparent) 0 100% / 1px 20px no-repeat;
 }
 
 .reader-container .system-window p,
@@ -700,7 +712,7 @@
 .reader-container .system-window h6,
 .reader-container .system-window code,
 .reader-container .system-window blockquote {
-  color: #ffffff !important;
+  color: oklch(0.95 0 0) !important;
 }
 
 .reader-container .system-window p {
@@ -713,8 +725,8 @@
   padding: 0.75em 0;
   font-size: 1.25em;
   background-image:
-    linear-gradient(90deg, transparent, #888, transparent),
-    linear-gradient(90deg, transparent, #888, transparent);
+    linear-gradient(90deg, transparent, oklch(0.55 0 0), transparent),
+    linear-gradient(90deg, transparent, oklch(0.55 0 0), transparent);
   background-repeat: no-repeat;
   background-size: 80% 1px;
   background-position: center top, center bottom;
@@ -741,12 +753,12 @@
 }
 
 .reader-container .twitter-embed-inner {
-  background: #16181c;
-  border: 1px solid rgba(255,255,255,0.08);
+  background: oklch(0.15 0.01 260);
+  border: 1px solid oklch(0.95 0 0 / 0.08);
   border-radius: 16px;
   overflow: hidden;
   padding: 0 0.75rem 0.75rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 24px oklch(0 0 0 / 0.4);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -758,29 +770,29 @@
 }
 
 .reader-container .twitter-embed-name {
-  color: #1d9bf0;
+  color: oklch(0.6 0.18 260);
   font-size: 0.9375rem;
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-shadow: 0 0 8px rgba(29,155,240,0.5);
+  text-shadow: 0 0 8px oklch(0.6 0.18 260 / 0.5);
 }
 
 .reader-container .twitter-embed-name:hover {
   text-decoration: underline;
-  text-shadow: 0 0 12px rgba(29,155,240,0.7);
+  text-shadow: 0 0 12px oklch(0.6 0.18 260 / 0.7);
 }
 
 .reader-container .twitter-embed-user {
-  color: #71767b;
+  color: oklch(0.5 0.02 260);
   font-size: 0.8125rem;
   font-weight: 400;
 }
 
 .reader-container .twitter-embed-x-icon {
-  color: #71767b;
+  color: oklch(0.5 0.02 260);
   margin-left: auto;
   flex-shrink: 0;
   opacity: 0.6;
@@ -826,7 +838,7 @@
 }
 
 .reader-container .twitter-embed-text {
-  color: #71767b;
+  color: oklch(0.5 0.02 260);
   font-size: 0.9375rem;
   line-height: 1.4;
   margin-top: 0.5rem;
@@ -841,8 +853,8 @@
   gap: 1rem;
   margin-top: 0.5rem;
   padding: 0.5rem 0.25rem 0;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  color: #71767b;
+  border-top: 1px solid oklch(0.95 0 0 / 0.08);
+  color: oklch(0.5 0.02 260);
   font-size: 0.8125rem;
 }
 
@@ -857,9 +869,34 @@
   padding: 1.25rem;
   text-align: center;
   font-size: 0.8rem;
-  color: #71767b;
-  background: #16181c;
-  border: 1px solid rgba(255,255,255,0.08);
+  color: oklch(0.5 0.02 260);
+  background: oklch(0.15 0.01 260);
+  border: 1px solid oklch(0.95 0 0 / 0.08);
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 24px oklch(0 0 0 / 0.4);
+}
+
+.reader-container .black-window p {
+  margin-top: 0;
+}
+.reader-container .black-window p + p {
+  margin-top: 0.6em;
+}
+
+/* Scroll text full-width inside windows — reach edges, no top margin */
+.reader-container .wiki-window .scroll-fill:first-child,
+.reader-container .record-window .scroll-fill:first-child,
+.reader-container .plain-window .scroll-fill:first-child,
+.reader-container .followup-window .scroll-fill:first-child,
+.reader-container .note-window .scroll-fill:first-child,
+.reader-container .sticky-window .scroll-fill:first-child,
+.reader-container .system-window .scroll-fill:first-child,
+.reader-container .black-window .scroll-fill:first-child,
+.reader-container .braun-screen .scroll-fill:first-child,
+.reader-container .debut-window .scroll-fill:first-child,
+.reader-container .debut-alert .scroll-fill:first-child,
+.reader-container .debut-achievement .scroll-fill:first-child,
+.reader-container .alert-window .scroll-fill:first-child,
+.reader-container .sms-window .scroll-fill:first-child {
+  margin-top: -0.5em;
 }

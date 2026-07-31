@@ -15,6 +15,8 @@
 
   let html_content = "";
 
+  let footnotes = "";
+
 
 
   $effect(() => {
@@ -29,6 +31,10 @@
 
     }
 
+  });
+
+  $effect(() => {
+    readerState.footnotes = footnotes;
   });
 
   onMount(() => {

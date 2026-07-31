@@ -66,6 +66,12 @@ export function preprocessMarkdown(text: string): string {
     return `<span class="text-grow">${chars.join("")}</span>`;
   });
 
+  // Footnotes — superscript reference with tooltip
+  s = s.replace(/\[(\d+)\]\{([^}]+)\}/gs, (_: string, num: string, text: string) => {
+    const tipHtml = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/\n\n/g, "<br><br>").replace(/\n/g, "<br>");
+    return `<span class="fn-ref" id="fn-ref-${num}" tabindex="0" role="button">[${num}]<span class="fn-tip"><strong>${num}.</strong> ${tipHtml}</span></span>`;
+  });
+
   const placeholders = new Map<string, string>();
   let pid = 0;
   s = s.replace(/!\[.*?\]\(.*?\)/g, (m: string) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
@@ -110,12 +116,26 @@ export function preprocessMarkdown(text: string): string {
     s = s.replace(re, repl);
   }
 
+  // Scroll text — duplicate content for seamless marquee loop
+  s = s.replace(/\|<(.+?)<\|/gs, (_: string, text: string) => {
+    const inner = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="scroll-wrap scroll-left"><span class="scroll-sizer"><span class="scroll-text">${inner}</span></span><span class="scroll-track"><span class="scroll-text">${inner}</span><span class="scroll-text">${inner}</span></span></span>`;
+  });
+  s = s.replace(/\|>(.+?)>\|/gs, (_: string, text: string) => {
+    const inner = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="scroll-wrap scroll-right"><span class="scroll-sizer"><span class="scroll-text">${inner}</span></span><span class="scroll-track"><span class="scroll-text">${inner}</span><span class="scroll-text">${inner}</span></span></span>`;
+  });
+
   for (const [key, val] of placeholders) {
     s = s.replace(key, val);
   }
 
   s = s.replace(/#hx\(([^)]+)\)(.*?)hx#/gs, (_: string, color: string, content: string) => {
     return `<span style="color:${color}">${content}</span>`;
+  });
+
+  s = s.replace(/\$hxo\(([^)]+)\)(.*?)hxo#/gs, (_: string, color: string, content: string) => {
+    return `<span class="hex-outline" style="--hxo-color:${color}">${content}</span>`;
   });
 
   s = s.replace(/@@([^@]+)@@/gs, (_: string, inner: string) => {
