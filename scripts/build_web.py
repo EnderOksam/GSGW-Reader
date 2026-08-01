@@ -159,6 +159,24 @@ SIMPLE_REPLACEMENTS = [
 IMG_STORAGE_DIR = REPO_ROOT / "website/static/assets/images/static-illustrations"
 IMG_PUBLIC_PREFIX = "/assets/images/static-illustrations"
 
+ILLUSTRATIONS_SRC = REPO_ROOT / "images" / "gsgw" / "illustrations"
+
+
+def copy_illustrations():
+    if not ILLUSTRATIONS_SRC.exists():
+        print(f"Illustrations source not found: {ILLUSTRATIONS_SRC}")
+        return
+    IMG_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+    count = 0
+    for img_file in ILLUSTRATIONS_SRC.glob("*.webp"):
+        dest = IMG_STORAGE_DIR / img_file.name
+        if not dest.exists() or img_file.stat().st_mtime > dest.stat().st_mtime:
+            shutil.copy2(str(img_file), str(dest))
+            count += 1
+    if count:
+        print(f"Copied {count} illustration(s) to {IMG_STORAGE_DIR}")
+
+
 def get_image_size_cached(path):
     cached = IMAGE_SIZE_CACHE.get(path)
 
@@ -1181,6 +1199,8 @@ def main():
     template_str = TEMPLATE_PATH.read_text(
         encoding="utf-8"
     )
+
+    copy_illustrations()
 
     paths = []
 
