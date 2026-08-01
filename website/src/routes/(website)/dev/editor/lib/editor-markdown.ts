@@ -1,4 +1,5 @@
 import { replaceTwitterUrls } from "$lib/reader/twitter-embeds";
+import { REPO, BRANCH } from "./github-api";
 
 function makeWindow(cls: string, inner: string, extra?: string): string {
   const cl = extra ? `${cls} ${extra}` : cls;
@@ -12,7 +13,23 @@ function escapeHtml(text: string): string {
   }).join("");
 }
 
-export function preprocessMarkdown(text: string): string {
+function fmtInline(text: string): string {
+  return text
+    .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>");
+}
+
+function imgInline(text: string, book: string): string {
+  return text.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, (_m: string, alt: string, href: string) => {
+    const src = href.startsWith("http") || href.startsWith("/")
+      ? href
+      : `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/${book === "debut" ? "dod" : "gsgw"}/illustrations/${href}`;
+    return `<img src="${src}" alt="${alt.replace(/"/g, "&quot;")}" loading="lazy" onerror="this.style.display='none'">`;
+  });
+}
+
+export function preprocessMarkdown(text: string, book: string = "gsgw"): string {
   let s = text.replace(/\r\n/g, "\n");
 
   // illustration tags are handled by the template, not here
@@ -138,6 +155,22 @@ export function preprocessMarkdown(text: string): string {
     return `<span class="hex-outline" style="--hxo-color:${color}">${content}</span>`;
   });
 
+  s = s.replace(/\$hxa\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxa\$/gs, (_: string, c1: string, c2: string, c3: string, content: string) => {
+    return `<span class="hex-aurora" style="--ha-c1:${c1};--ha-c2:${c2};--ha-c3:${c3}">${content}</span>`;
+  });
+
+  s = s.replace(/\$hxas\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxas\$/gs, (_: string, c1: string, c2: string, c3: string, content: string) => {
+    return `<span class="hex-aurora-static" style="--ha-c1:${c1};--ha-c2:${c2};--ha-c3:${c3}">${content}</span>`;
+  });
+
+  s = s.replace(/\$hxau\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxau\$/gs, (_: string, c1: string, c2: string, c3: string, content: string) => {
+    return `<span class="hex-aurora-up" style="--ha-c1:${c1};--ha-c2:${c2};--ha-c3:${c3}">${content}</span>`;
+  });
+
+  s = s.replace(/\$hxaus\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxaus\$/gs, (_: string, c1: string, c2: string, c3: string, content: string) => {
+    return `<span class="hex-aurora-up-static" style="--ha-c1:${c1};--ha-c2:${c2};--ha-c3:${c3}">${content}</span>`;
+  });
+
   s = s.replace(/@@([^@]+)@@/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
@@ -256,7 +289,7 @@ export function preprocessMarkdown(text: string): string {
       const style = color ? ` style="background:${color};color:#222"` : "";
       const align = isLeft ? "sms-left" : isRight ? "sms-right" : "sms-center";
 
-      return `<div class="sms-bubble ${align}"${style}>${escapeHtml(message)}</div>`;
+      return `<div class="sms-bubble ${align}"${style}>${escapeHtml(imgInline(fmtInline(message), book))}</div>`;
     }
 
     const bubbles = inner.split("\n").map(parseLine).filter(Boolean).join("\n");
@@ -273,13 +306,13 @@ export function preprocessMarkdown(text: string): string {
     for (const raw of lines) {
       const line = raw.trim();
       if (line.startsWith("[")) {
-        title = escapeHtml(line.trim());
+        title = escapeHtml(imgInline(fmtInline(line.trim()), book));
       } else if (line.startsWith(":")) {
-        desc = escapeHtml(line.replace(/^:/, "").trim());
+        desc = escapeHtml(imgInline(fmtInline(line.replace(/^:/, "").trim()), book));
       } else if (line.startsWith("-") || line.startsWith("\u2013") || line.startsWith("\u2014")) {
         inComments = true;
         const content = line.replace(/^[\u2014\u2013-]/, "").trim();
-        items.push({ text: escapeHtml(content), depth: 0 });
+        items.push({ text: escapeHtml(imgInline(fmtInline(content), book)), depth: 0 });
       } else if (line.startsWith("\u2937") || line.startsWith("\u2514") || line.startsWith("\u221F")) {
         inComments = true;
         let depth = 0;
@@ -289,9 +322,9 @@ export function preprocessMarkdown(text: string): string {
           content = content.replace(/^[⤷└∟]/, "").trimStart();
         }
         if (depth > 3) depth = 3;
-        items.push({ text: escapeHtml(content.trim()), depth });
+        items.push({ text: escapeHtml(imgInline(fmtInline(content.trim()), book)), depth });
       } else if (line && !inComments) {
-        desc += (desc ? "</p>\n<p>" : "<p>") + escapeHtml(line);
+        desc += (desc ? "</p>\n<p>" : "<p>") + escapeHtml(imgInline(fmtInline(line), book));
       }
     }
 

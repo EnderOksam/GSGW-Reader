@@ -147,7 +147,7 @@
 
 <div class="h-dvh bg-base-300 flex flex-col overflow-hidden selection:bg-primary/30">
   <div class="flex items-center justify-between px-2 sm:px-3 py-2 border-b border-base-content/10 bg-base-200/60 backdrop-blur-md shrink-0 relative z-10">
-    <div class="flex items-center gap-1 sm:gap-0.5 relative overflow-x-auto overflow-y-hidden min-w-0 scrollbar-thin">
+    <div class="flex items-center gap-1 sm:gap-0.5 overflow-x-auto overflow-y-hidden min-w-0 scrollbar-thin">
       {#if editorMode === "chapters"}
         <button onclick={() => showMobileMenu = true} class="lg:hidden text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Menu"><Icon icon="mdi:menu" class="size-5" /></button>
         <a href="/" class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-5" /></a>

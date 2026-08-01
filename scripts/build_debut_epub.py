@@ -105,6 +105,14 @@ def convert_chapter_debut(content: str) -> str:
     content = bw.MOON_RE.sub(r'<span class="moon-text">\1</span>', content)
     content = bw.SILVER_RE.sub(bw.silver_replacer, content)
 
+    content = bw.HEX_AURORA_RE.sub(bw.hex_aurora_replacer, content)
+
+    content = bw.HEX_AURORA_STATIC_RE.sub(bw.hex_aurora_static_replacer, content)
+
+    content = bw.HEX_AURORA_UP_RE.sub(bw.hex_aurora_up_replacer, content)
+
+    content = bw.HEX_AURORA_UP_STATIC_RE.sub(bw.hex_aurora_up_static_replacer, content)
+
     for key, val in img_placeholders.items():
         content = content.replace(key, val)
     for key, val in tw_placeholders.items():

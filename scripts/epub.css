@@ -342,6 +342,37 @@ del {
   font-weight: bold;
 }
 
+.hex-aurora {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 25%, var(--ha-c3) 50%, var(--ha-c2) 75%, var(--ha-c1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--ha-c2);
+  font-weight: bold;
+}
+
+.hex-aurora-up {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 25%, var(--ha-c3) 50%, var(--ha-c2) 75%, var(--ha-c1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--ha-c2);
+  font-weight: bold;
+}
+
+.hex-aurora-up-static,
+.hex-aurora-static {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 50%, var(--ha-c3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--ha-c2);
+  font-weight: bold;
+}
+
 .gold-text {
   position: relative;
   display: inline-block;

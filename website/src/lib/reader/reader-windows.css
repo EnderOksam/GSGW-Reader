@@ -41,7 +41,7 @@
   padding: 1em 1em 0.75em;
   text-align: left;
   font-size: 1em;
-  color: var(--window-text) !important;
+  color: oklch(0.75 0.06 260 / 0.9);
 }
 
 @media (min-width: 640px) {
@@ -73,7 +73,7 @@
 }
 
 .reader-container .wiki-window p {
-  color: var(--window-text) !important;
+  color: oklch(0.75 0.06 260 / 0.9);
   margin: 0.6em 0;
   line-height: 1.7;
   text-align: left;
@@ -99,16 +99,6 @@
   font-weight: 700;
 }
 
-.reader-container .wiki-window p strong:only-child,
-.reader-container .wiki-window p strong:first-child:not(b strong) {
-  display: block;
-  font-size: 0.98em;
-  letter-spacing: 0.03em;
-  margin: 0.5em 0 0.4em;
-  color: oklch(0.75 0.06 260 / 0.9);
-  text-shadow: 0 1px 2px oklch(0 0 0 / 0.3);
-}
-
 .reader-container .wiki-window p:last-of-type {
   margin-bottom: 0;
 }
@@ -132,7 +122,7 @@
   padding: 1em 1em 0.75em;
   text-align: left;
   font-size: 1em;
-  color: oklch(0.95 0 0) !important;
+  color: oklch(0.7 0.08 245 / 0.9);
 }
 
 @media (min-width: 640px) {
@@ -164,7 +154,7 @@
 }
 
 .reader-container .record-window p {
-  color: oklch(0.95 0 0) !important;
+  color: oklch(0.7 0.08 245 / 0.9);
   margin: 0.6em 0;
   line-height: 1.7;
   text-align: left;
@@ -188,16 +178,6 @@
 .reader-container .record-window b {
   color: inherit;
   font-weight: 700;
-}
-
-.reader-container .record-window p strong:only-child,
-.reader-container .record-window p strong:first-child:not(b strong) {
-  display: block;
-  font-size: 0.98em;
-  letter-spacing: 0.03em;
-  margin: 0.5em 0 0.4em;
-  color: oklch(0.7 0.08 245 / 0.9);
-  text-shadow: 0 1px 2px oklch(0 0 0 / 0.3);
 }
 
 .reader-container .record-window p:last-of-type {

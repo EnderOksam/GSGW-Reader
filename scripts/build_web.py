@@ -72,6 +72,10 @@ OUTLINE_WHITE_RE = re.compile(r"\$wo(.+?)wo\$", re.DOTALL)
 OUTLINE_BLACK_RE = re.compile(r"\$bo(.+?)bo\$", re.DOTALL)
 HEX_COLOR_RE = re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL)
 HEX_OUTLINE_RE = re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL)
+HEX_AURORA_RE = re.compile(r"\$hxa\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxa\$", re.DOTALL)
+HEX_AURORA_STATIC_RE = re.compile(r"\$hxas\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxas\$", re.DOTALL)
+HEX_AURORA_UP_RE = re.compile(r"\$hxau\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxau\$", re.DOTALL)
+HEX_AURORA_UP_STATIC_RE = re.compile(r"\$hxaus\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxaus\$", re.DOTALL)
 
 SCROLL_LEFT_RE = re.compile(r"\|<(.+?)<\|", re.DOTALL)
 SCROLL_RIGHT_RE = re.compile(r"\|>(.+?)>\|", re.DOTALL)
@@ -399,6 +403,58 @@ def aurora_replacer(match):
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
 
     return f'<span class="aurora-text">{inner}</span>'
+
+
+def hex_aurora_replacer(match):
+
+    inner = match.group(4)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    return (
+        f'<span class="hex-aurora" '
+        f'style="--ha-c1:{match.group(1)};--ha-c2:{match.group(2)};--ha-c3:{match.group(3)}">'
+        f'{inner}</span>'
+    )
+
+
+def hex_aurora_static_replacer(match):
+
+    inner = match.group(4)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    return (
+        f'<span class="hex-aurora-static" '
+        f'style="--ha-c1:{match.group(1)};--ha-c2:{match.group(2)};--ha-c3:{match.group(3)}">'
+        f'{inner}</span>'
+    )
+
+
+def hex_aurora_up_replacer(match):
+
+    inner = match.group(4)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    return (
+        f'<span class="hex-aurora-up" '
+        f'style="--ha-c1:{match.group(1)};--ha-c2:{match.group(2)};--ha-c3:{match.group(3)}">'
+        f'{inner}</span>'
+    )
+
+
+def hex_aurora_up_static_replacer(match):
+
+    inner = match.group(4)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    return (
+        f'<span class="hex-aurora-up-static" '
+        f'style="--ha-c1:{match.group(1)};--ha-c2:{match.group(2)};--ha-c3:{match.group(3)}">'
+        f'{inner}</span>'
+    )
 
 
 def silver_replacer(match):
@@ -829,6 +885,14 @@ def convert_chapter(content):
         lambda m: f'<span class="hex-outline" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>',
         content
     )
+
+    content = HEX_AURORA_RE.sub(hex_aurora_replacer, content)
+
+    content = HEX_AURORA_STATIC_RE.sub(hex_aurora_static_replacer, content)
+
+    content = HEX_AURORA_UP_RE.sub(hex_aurora_up_replacer, content)
+
+    content = HEX_AURORA_UP_STATIC_RE.sub(hex_aurora_up_static_replacer, content)
 
     def scroll_replacer(match, direction):
         inner = match.group(1)

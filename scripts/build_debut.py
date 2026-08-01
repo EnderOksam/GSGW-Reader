@@ -370,6 +370,14 @@ def convert_chapter(content):
 
     content = bw.HEX_COLOR_RE.sub(lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>', content)
 
+    content = bw.HEX_AURORA_RE.sub(bw.hex_aurora_replacer, content)
+
+    content = bw.HEX_AURORA_STATIC_RE.sub(bw.hex_aurora_static_replacer, content)
+
+    content = bw.HEX_AURORA_UP_RE.sub(bw.hex_aurora_up_replacer, content)
+
+    content = bw.HEX_AURORA_UP_STATIC_RE.sub(bw.hex_aurora_up_static_replacer, content)
+
     # restore protected patterns
     for key, val in img_placeholders.items():
         content = content.replace(key, val)

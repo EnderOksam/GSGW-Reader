@@ -235,6 +235,50 @@ hr.invisible-hr {
   filter: drop-shadow(0 0 6px oklch(0.55 0.18 210 / 0.35)) drop-shadow(0 0 15px oklch(0.55 0.25 320 / 0.2));
 }
 
+.hex-aurora {
+  display: inline-block;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 25%, var(--ha-c3) 50%, var(--ha-c2) 75%, var(--ha-c1) 100%);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: aurora-flow 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ha-c2) 40%, transparent)) drop-shadow(0 0 15px color-mix(in srgb, var(--ha-c3) 25%, transparent));
+}
+
+.hex-aurora-static {
+  display: inline-block;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 50%, var(--ha-c3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ha-c2) 40%, transparent));
+}
+
+.hex-aurora-up {
+  display: inline-block;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 25%, var(--ha-c3) 50%, var(--ha-c2) 75%, var(--ha-c1) 100%);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: aurora-flow-y 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ha-c2) 40%, transparent)) drop-shadow(0 0 15px color-mix(in srgb, var(--ha-c3) 25%, transparent));
+}
+
+.hex-aurora-up-static {
+  display: inline-block;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 50%, var(--ha-c3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ha-c2) 40%, transparent));
+}
+
 .hex-preview {
   animation: hex-cycle 4s ease-in-out infinite;
 }
@@ -253,6 +297,11 @@ hr.invisible-hr {
 @keyframes aurora-flow {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+@keyframes aurora-flow-y {
+  0%, 100% { background-position: 10% 0%; }
+  50% { background-position: 0% 100%; }
 }
 
 .gold-text {
@@ -736,7 +785,7 @@ hr.invisible-hr {
 }
 
 .contaminated {
-  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  font-family: 'Comic Neue', 'Comic Sans MS', 'Comic Sans', cursive;
 }
 
 .scroll-wrap {
@@ -776,6 +825,21 @@ hr.invisible-hr {
   white-space: nowrap;
   flex-shrink: 0;
   padding: 0 0.75em;
+}
+
+.scroll-wrap:hover {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.scroll-wrap:hover .scroll-track {
+  animation-play-state: paused;
+  display: none;
+}
+
+.scroll-wrap:hover .scroll-sizer {
+  visibility: visible;
+  white-space: normal;
 }
 
 @keyframes scroll-left {
@@ -823,13 +887,13 @@ hr.invisible-hr {
 body .reader-container .wiki-window.wiki-window,
 body .reader-container .wiki-window.wiki-window p,
 body .reader-container .wiki-window.wiki-window li {
-  color: oklch(0.95 0 0) !important;
+  color: oklch(0.75 0.06 260 / 0.9) !important;
 }
 
 body .reader-container .record-window.record-window,
 body .reader-container .record-window.record-window p,
 body .reader-container .record-window.record-window li {
-  color: oklch(0.95 0 0) !important;
+  color: oklch(0.7 0.08 245 / 0.9) !important;
 }
 
 body .reader-container .plain-window.plain-window,

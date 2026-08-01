@@ -346,6 +346,32 @@ del { text-decoration: line-through; }
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   filter: drop-shadow(0 0 6px rgba(0,194,255,0.2)) drop-shadow(0 0 15px rgba(229,76,255,0.1));
 }
+.hex-aurora {
+  display: inline-block; font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 25%, var(--ha-c3) 50%, var(--ha-c2) 75%, var(--ha-c1) 100%);
+  background-size: 300% 300%; background-position: 50% 50%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 6px var(--ha-c2)) drop-shadow(0 0 15px var(--ha-c3));
+}
+.hex-aurora-static {
+  display: inline-block; font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 50%, var(--ha-c3) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 6px var(--ha-c2));
+}
+.hex-aurora-up {
+  display: inline-block; font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 25%, var(--ha-c3) 50%, var(--ha-c2) 75%, var(--ha-c1) 100%);
+  background-size: 300% 300%; background-position: 50% 50%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 6px var(--ha-c2)) drop-shadow(0 0 15px var(--ha-c3));
+}
+.hex-aurora-up-static {
+  display: inline-block; font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 50%, var(--ha-c3) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 6px var(--ha-c2));
+}
 .smoke-text {
   font-weight: 700; letter-spacing: 0.2em; color: black;
   text-shadow: .06em 0 0 rgba(255,200,0,.9), -.06em 0 0 rgba(255,200,0,.9), 0 .06em 0 rgba(255,200,0,.9), 0 -.06em 0 rgba(255,200,0,.9), .04em .04em 0 rgba(255,200,0,.9), -.04em .04em 0 rgba(255,200,0,.9), .04em -.04em 0 rgba(255,200,0,.9), -.04em -.04em 0 rgba(255,200,0,.9), .08em 0 0 rgba(255,200,0,.9), -.08em 0 0 rgba(255,200,0,.9), 0 .08em 0 rgba(255,200,0,.9), 0 -.08em 0 rgba(255,200,0,.9);
@@ -1049,6 +1075,46 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         inner = render_inline(match.group(2), ctx)
         return stash_html(store, f'<span style="color:{color}">{inner}</span>')
     text = hex_re.sub(hex_repl, text)
+
+    hxa_re = re.compile(r"\$hxa\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxa\$", re.DOTALL)
+    def hxa_repl(match: re.Match) -> str:
+        c1, c2, c3 = match.group(1), match.group(2), match.group(3)
+        inner = render_inline(match.group(4), ctx)
+        return stash_html(
+            store,
+            f'<span class="hex-aurora" style="--ha-c1:{c1};--ha-c2:{c2};--ha-c3:{c3}">{inner}</span>',
+        )
+    text = hxa_re.sub(hxa_repl, text)
+
+    hxas_re = re.compile(r"\$hxas\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxas\$", re.DOTALL)
+    def hxas_repl(match: re.Match) -> str:
+        c1, c2, c3 = match.group(1), match.group(2), match.group(3)
+        inner = render_inline(match.group(4), ctx)
+        return stash_html(
+            store,
+            f'<span class="hex-aurora-static" style="--ha-c1:{c1};--ha-c2:{c2};--ha-c3:{c3}">{inner}</span>',
+        )
+    text = hxas_re.sub(hxas_repl, text)
+
+    hxau_re = re.compile(r"\$hxau\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxau\$", re.DOTALL)
+    def hxau_repl(match: re.Match) -> str:
+        c1, c2, c3 = match.group(1), match.group(2), match.group(3)
+        inner = render_inline(match.group(4), ctx)
+        return stash_html(
+            store,
+            f'<span class="hex-aurora-up" style="--ha-c1:{c1};--ha-c2:{c2};--ha-c3:{c3}">{inner}</span>',
+        )
+    text = hxau_re.sub(hxau_repl, text)
+
+    hxaus_re = re.compile(r"\$hxaus\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxaus\$", re.DOTALL)
+    def hxaus_repl(match: re.Match) -> str:
+        c1, c2, c3 = match.group(1), match.group(2), match.group(3)
+        inner = render_inline(match.group(4), ctx)
+        return stash_html(
+            store,
+            f'<span class="hex-aurora-up-static" style="--ha-c1:{c1};--ha-c2:{c2};--ha-c3:{c3}">{inner}</span>',
+        )
+    text = hxaus_re.sub(hxaus_repl, text)
 
     escaped = escape_text(text)
     resolved: dict[str, str] = {}
