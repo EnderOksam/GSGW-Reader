@@ -710,13 +710,35 @@ def render_footnote_text(text):
     """Render footnote content with the same formatting as chapter text."""
     text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"\*(.+?)\*", r"<em>\1</em>", text)
+
+    # Protect link URLs (which may contain _ [ ] ( ) etc.) from the tag
+    # replacements below, then restore the built <a> tags afterwards.
+    link_placeholders = {}
+
+    def save_markdown_link(m):
+        key = f"\x00FN-L{len(link_placeholders)}\x00"
+        link_placeholders[key] = f'<a href="{m.group(2).strip()}">{m.group(1).strip()}</a>'
+        return key
+
+    def save_bare_url(m):
+        key = f"\x00FN-L{len(link_placeholders)}\x00"
+        url = m.group(1)
+        link_placeholders[key] = f'<a href="{url}">{url}</a>'
+        return key
+
+    text = re.sub(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)", save_markdown_link, text)
+    text = re.sub(r"(?<![\"'>])(https?://[^\s<>\"')]+)", save_bare_url, text)
+
     for pattern, repl in SIMPLE_REPLACEMENTS:
         text = pattern.sub(repl, text)
     for pattern, repl in FOOTNOTE_TAG_REPLACEMENTS:
         text = pattern.sub(repl, text)
-    text = re.sub(r"\[([^\]\n]*)\]\{\.underline\}", r'<span class="underline">\1</span>', text)
+    text = fix_underline(text)
     text = text.replace('\n\n', '<br><br>')
     text = text.replace('\n', '<br>')
+
+    for key, val in link_placeholders.items():
+        text = text.replace(key, val)
     return text
 
 
@@ -845,6 +867,20 @@ def comment_window_replacer(match):
 # MAIN CONVERTER
 # =========================================================
 
+def scroll_replacer(match, direction):
+    inner = match.group(1)
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+    cls = "scroll-left" if direction == "left" else "scroll-right"
+    return (
+        f'<span class="scroll-wrap {cls}">'
+        f'<span class="scroll-sizer"><span class="scroll-text">{inner}</span></span>'
+        f'<span class="scroll-track">'
+        f'<span class="scroll-text">{inner}</span>'
+        f'<span class="scroll-text">{inner}</span>'
+        f'</span></span>'
+    )
+
+
 def convert_chapter(content):
 
     content = process_twitter_urls(content)
@@ -865,16 +901,19 @@ def convert_chapter(content):
     content = protect_twitter(content)
 
     footnotes = {}
+    fn_placeholders = {}
 
     def footnote_ref_replacer(m):
         num = int(m.group(1))
         text = m.group(2)
-        tip_html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
-        tip_html = re.sub(r"\*(.+?)\*", r"<em>\1</em>", tip_html)
-        tip_html = tip_html.replace('\n\n', '<br><br>')
-        tip_html = tip_html.replace('\n', '<br>')
+        tip_html = render_footnote_text(text)
+        key = f"\x00FN{len(fn_placeholders)}\x00"
         footnotes[num] = tip_html
-        return f'<span class="fn-ref" id="fn-ref-{num}" tabindex="0" role="button">[{num}]<span class="fn-tip"><strong>{num}.</strong> {tip_html}</span></span>'
+        fn_placeholders[key] = (
+            f'<span class="fn-ref" id="fn-ref-{num}" tabindex="0" role="button">'
+            f'[{num}]<span class="fn-tip"><strong>{num}.</strong> {tip_html}</span></span>'
+        )
+        return key
 
     content = FOOTNOTE_RE.sub(footnote_ref_replacer, content)
 
@@ -942,19 +981,6 @@ def convert_chapter(content):
 
     content = HEX_AURORA_UP_STATIC_RE.sub(hex_aurora_up_static_replacer, content)
 
-    def scroll_replacer(match, direction):
-        inner = match.group(1)
-        inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
-        cls = "scroll-left" if direction == "left" else "scroll-right"
-        return (
-            f'<span class="scroll-wrap {cls}">'
-            f'<span class="scroll-sizer"><span class="scroll-text">{inner}</span></span>'
-            f'<span class="scroll-track">'
-            f'<span class="scroll-text">{inner}</span>'
-            f'<span class="scroll-text">{inner}</span>'
-            f'</span></span>'
-        )
-
     content = SCROLL_LEFT_RE.sub(lambda m: scroll_replacer(m, "left"), content)
     content = SCROLL_RIGHT_RE.sub(lambda m: scroll_replacer(m, "right"), content)
 
@@ -1012,6 +1038,10 @@ def convert_chapter(content):
     # sms and comment windows
     content = SMS_WINDOW_RE.sub(sms_window_replacer, content)
     content = COMMENT_WINDOW_RE.sub(comment_window_replacer, content)
+
+    # restore footnote placeholders (tooltip HTML) before pandoc
+    for key, val in fn_placeholders.items():
+        content = content.replace(key, val)
 
     # build footnotes HTML separately (rendered as a card in the layout)
     footnotes_html = ""

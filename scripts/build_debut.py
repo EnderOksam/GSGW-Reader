@@ -306,16 +306,19 @@ def convert_chapter(content):
     content = protect_twitter(content)
 
     footnotes = {}
+    fn_placeholders = {}
 
     def footnote_ref_replacer(m):
         num = int(m.group(1))
         text = m.group(2)
-        tip_html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
-        tip_html = re.sub(r"\*(.+?)\*", r"<em>\1</em>", tip_html)
-        tip_html = tip_html.replace('\n\n', '<br><br>')
-        tip_html = tip_html.replace('\n', '<br>')
+        tip_html = bw.render_footnote_text(text)
+        key = f"\x00FN{len(fn_placeholders)}\x00"
         footnotes[num] = tip_html
-        return f'<span class="fn-ref" id="fn-ref-{num}" tabindex="0" role="button">[{num}]<span class="fn-tip"><strong>{num}.</strong> {tip_html}</span></span>'
+        fn_placeholders[key] = (
+            f'<span class="fn-ref" id="fn-ref-{num}" tabindex="0" role="button">'
+            f'[{num}]<span class="fn-tip"><strong>{num}.</strong> {tip_html}</span></span>'
+        )
+        return key
 
     content = bw.FOOTNOTE_RE.sub(footnote_ref_replacer, content)
 
@@ -432,6 +435,10 @@ def convert_chapter(content):
     # sms and comment windows
     content = SMS_WINDOW_RE.sub(bw.sms_window_replacer, content)
     content = COMMENT_WINDOW_RE.sub(bw.comment_window_replacer, content)
+
+    # restore footnote placeholders (tooltip HTML) before pandoc
+    for key, val in fn_placeholders.items():
+        content = content.replace(key, val)
 
     # build footnotes HTML separately (rendered as a card in the layout)
     footnotes_html = ""

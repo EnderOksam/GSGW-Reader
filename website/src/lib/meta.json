@@ -420,7 +420,7 @@
         "slug": "26"
       },
       {
-        "title": "\"watch out for serial killers-\"",
+        "title": "watch out for serial killers",
         "category": "Part 1",
         "discussion": 11,
         "index": 27,
@@ -2170,9 +2170,7 @@
         "index": 245,
         "section": "Chapter 245",
         "slug": "245"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
         "title": "Sekwang Station [Forest of Final Moments], III",
         "category": "Part 2",
@@ -2182,13 +2180,15 @@
         "slug": "246"
       },
       {
-        "title": "Chapter 247",
+        "title": "Sekwang Station [Forest of Final Moments], IV",
         "category": "Part 2",
         "discussion": 0,
         "index": 247,
         "section": "Chapter 247",
         "slug": "247"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "Chapter 248",
         "category": "Part 2",
@@ -2422,7 +2422,7 @@
         "slug": "276"
       },
       {
-        "title": "Chapter 277",
+        "title": "Midnight Station [Hanbit Library], III",
         "category": "Part 2",
         "discussion": 0,
         "index": 277,

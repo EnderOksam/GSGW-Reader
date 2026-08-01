@@ -29,6 +29,120 @@ function imgInline(text: string, book: string): string {
   });
 }
 
+const simpleInlineTags: [RegExp, string][] = [
+  [/(?<!\\)_(.*?)(?<!\\)_/gs, '<span class="underline">$1</span>'],
+
+  [/@ll@(.*?)@ll@/gs, '<span class="mono mono-left">$1</span>'],
+  [/@cc@(.*?)@cc@/gs, '<span class="mono mono-center">$1</span>'],
+  [/@rr@(.*?)@rr@/gs, '<span class="mono mono-right">$1</span>'],
+  [/@l@(.*?)@l@/gs, '<span class="align-left">$1</span>'],
+  [/@c@(.*?)@c@/gs, '<span class="align-center">$1</span>'],
+  [/@r@(.*?)@r@/gs, '<span class="align-right">$1</span>'],
+  [/#\*(.*?)\*#/gs, '<span class="text-large">$1</span>'],
+  [/#><(.*?)><#/gs, '<span class="text-large-centered">$1</span>'],
+  [/#r(.*?)r#/gs, '<span class="text-red">$1</span>'],
+  [/#b(.*?)b#/gs, '<span class="text-blue">$1</span>'],
+  [/#y(.*?)y#/gs, '<span class="text-yellow">$1</span>'],
+  [/#p(.*?)p#/gs, '<span class="text-magenta">$1</span>'],
+  [/#g(.*?)g#/gs, '<span class="text-green">$1</span>'],
+  [/#o(.*?)o#/gs, '<span class="text-orange">$1</span>'],
+  [/#lp(.*?)lp#/gs, '<span class="text-light-purple">$1</span>'],
+  [/#cy(.*?)cy#/gs, '<span class="text-cyan">$1</span>'],
+  [/#d(.*?)d#/gs, '<span class="text-black">$1</span>'],
+  [/#f#(.*?)#f#/gs, '<span class="text-faded">$1</span>'],
+  [/(?<!\\)-#\s*(.+?)\s*#-(?!\\)/gs, '<span class="text-sub">$1</span>'],
+  [/#f>#(.*?)#f>#/gs, '<span class="text-fade-right">$1</span>'],
+  [/#f<#(.*?)#f<#/gs, '<span class="text-fade-left">$1</span>'],
+  [/;r(.*?)r;/gs, '<span class="hl-red">$1</span>'],
+  [/;b(.*?)b;/gs, '<span class="hl-blue">$1</span>'],
+  [/;y(.*?)y;/gs, '<span class="hl-yellow">$1</span>'],
+  [/;p(.*?)p;/gs, '<span class="hl-magenta">$1</span>'],
+  [/;g(.*?)g;/gs, '<span class="hl-green">$1</span>'],
+  [/;o(.*?)o;/gs, '<span class="hl-orange">$1</span>'],
+  [/\$\$(.*?)\$\$/gs, '<span class="handwritten">$1</span>'],
+  [/\$c(.*?)c\$/gs, '<span class="contaminated">$1</span>'],
+  [/\$wo(.*?)wo\$/gs, '<span class="outline-white">$1</span>'],
+  [/\$bo(.*?)bo\$/gs, '<span class="outline-black">$1</span>'],
+];
+
+function renderFootnoteText(text: string): string {
+  let s = text
+    .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>");
+
+  const links: Record<string, string> = {};
+  let linkId = 0;
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_: string, label: string, url: string) => {
+    const key = `\u0000FN-L${linkId++}\u0000`;
+    links[key] = `<a href="${url.trim()}">${label.trim()}</a>`;
+    return key;
+  });
+  s = s.replace(/(?<!["'>])(https?:\/\/[^\s<>"')]+)/g, (url: string) => {
+    const key = `\u0000FN-L${linkId++}\u0000`;
+    links[key] = `<a href="${url}">${url}</a>`;
+    return key;
+  });
+
+  for (const [re, repl] of simpleInlineTags) {
+    s = s.replace(re, repl);
+  }
+  s = s.replace(/\$s(.+?)s\$/gs, (_: string, inner: string) => {
+    inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="smoke-text">${inner}</span>`;
+  });
+  s = s.replace(/\$a(.+?)a\$/gs, (_: string, inner: string) => {
+    inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="aurora-text">${inner}</span>`;
+  });
+  s = s.replace(/\$g(.+?)g\$/gs, (_: string, inner: string) => {
+    inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="gold-text">${inner}</span>`;
+  });
+  s = s.replace(/\$\*(.+?)\*\$/gs, (_: string, inner: string) => {
+    inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="sparkle-text">${inner}</span>`;
+  });
+  s = s.replace(/\$\((.+?)\)\$/gs, (_: string, inner: string) => {
+    inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="moon-wrap"><span class="moon-text">${inner}</span></span>`;
+  });
+  s = s.replace(/\$ag(.+?)ag\$/gs, (_: string, inner: string) => {
+    inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="silver-text">${inner}</span>`;
+  });
+  s = s.replace(/#hx\(([^)]+)\)(.*?)hx#/gs, (_: string, color: string, content: string) => {
+    return `<span style="color:${color}">${content}</span>`;
+  });
+  s = s.replace(/\$hxo\(([^)]+)\)(.*?)hxo#/gs, (_: string, color: string, content: string) => {
+    return `<span class="hex-outline" style="--hxo-color:${color}">${content}</span>`;
+  });
+  s = s.replace(/\$hxa\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxa\$/gs, (_: string, c1: string, c2: string, c3: string, content: string) => {
+    return `<span class="hex-aurora" style="--ha-c1:${c1};--ha-c2:${c2};--ha-c3:${c3}">${content}</span>`;
+  });
+  s = s.replace(/\$hxas\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxas\$/gs, (_: string, c1: string, c2: string, c3: string, content: string) => {
+    return `<span class="hex-aurora-static" style="--ha-c1:${c1};--ha-c2:${c2};--ha-c3:${c3}">${content}</span>`;
+  });
+  s = s.replace(/\$hxau\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxau\$/gs, (_: string, c1: string, c2: string, c3: string, content: string) => {
+    return `<span class="hex-aurora-up" style="--ha-c1:${c1};--ha-c2:${c2};--ha-c3:${c3}">${content}</span>`;
+  });
+  s = s.replace(/\$hxaus\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxaus\$/gs, (_: string, c1: string, c2: string, c3: string, content: string) => {
+    return `<span class="hex-aurora-up-static" style="--ha-c1:${c1};--ha-c2:${c2};--ha-c3:${c3}">${content}</span>`;
+  });
+  s = s.replace(/\|<(.+?)<\|/gs, (_: string, text: string) => {
+    const inner = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="scroll-wrap scroll-left"><span class="scroll-sizer"><span class="scroll-text">${inner}</span></span><span class="scroll-track"><span class="scroll-text">${inner}</span><span class="scroll-text">${inner}</span></span></span>`;
+  });
+  s = s.replace(/\|>(.+?)>\|/gs, (_: string, text: string) => {
+    const inner = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return `<span class="scroll-wrap scroll-right"><span class="scroll-sizer"><span class="scroll-text">${inner}</span></span><span class="scroll-track"><span class="scroll-text">${inner}</span><span class="scroll-text">${inner}</span></span></span>`;
+  });
+  for (const [key, val] of Object.entries(links)) {
+    s = s.replace(key, val);
+  }
+  return s.replace(/\n\n/g, "<br><br>").replace(/\n/g, "<br>");
+}
+
 export function preprocessMarkdown(text: string, book: string = "gsgw"): string {
   let s = text.replace(/\r\n/g, "\n");
 
@@ -85,7 +199,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   // Footnotes — superscript reference with tooltip
   s = s.replace(/\[(\d+)\]\{([^}]+)\}/gs, (_: string, num: string, text: string) => {
-    const tipHtml = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/\n\n/g, "<br><br>").replace(/\n/g, "<br>");
+    const tipHtml = renderFootnoteText(text);
     return `<span class="fn-ref" id="fn-ref-${num}" tabindex="0" role="button">[${num}]<span class="fn-tip"><strong>${num}.</strong> ${tipHtml}</span></span>`;
   });
 
@@ -94,42 +208,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   s = s.replace(/!\[.*?\]\(.*?\)/g, (m: string) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
   s = s.replace(/~~[^~]+?~~/g, (m: string) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
 
-  const simple: [RegExp, string][] = [
-    [/(?<!\\)_(.*?)(?<!\\)_/gs, '<span class="underline">$1</span>'],
-
-    [/@ll@(.*?)@ll@/gs, '<span class="mono mono-left">$1</span>'],
-    [/@cc@(.*?)@cc@/gs, '<span class="mono mono-center">$1</span>'],
-    [/@rr@(.*?)@rr@/gs, '<span class="mono mono-right">$1</span>'],
-    [/@l@(.*?)@l@/gs, '<span class="align-left">$1</span>'],
-    [/@c@(.*?)@c@/gs, '<span class="align-center">$1</span>'],
-    [/@r@(.*?)@r@/gs, '<span class="align-right">$1</span>'],
-    [/#\*(.*?)\*#/gs, '<span class="text-large">$1</span>'],
-    [/#><(.*?)><#/gs, '<span class="text-large-centered">$1</span>'],
-    [/#r(.*?)r#/gs, '<span class="text-red">$1</span>'],
-    [/#b(.*?)b#/gs, '<span class="text-blue">$1</span>'],
-    [/#y(.*?)y#/gs, '<span class="text-yellow">$1</span>'],
-    [/#p(.*?)p#/gs, '<span class="text-magenta">$1</span>'],
-    [/#g(.*?)g#/gs, '<span class="text-green">$1</span>'],
-    [/#o(.*?)o#/gs, '<span class="text-orange">$1</span>'],
-    [/#lp(.*?)lp#/gs, '<span class="text-light-purple">$1</span>'],
-    [/#cy(.*?)cy#/gs, '<span class="text-cyan">$1</span>'],
-    [/#d(.*?)d#/gs, '<span class="text-black">$1</span>'],
-    [/#f#(.*?)#f#/gs, '<span class="text-faded">$1</span>'],
-    [/(?<!\\)-#\s*(.+?)\s*#-(?!\\)/gs, '<span class="text-sub">$1</span>'],
-    [/#f>#(.*?)#f>#/gs, '<span class="text-fade-right">$1</span>'],
-    [/#f<#(.*?)#f<#/gs, '<span class="text-fade-left">$1</span>'],
-    [/;r(.*?)r;/gs, '<span class="hl-red">$1</span>'],
-    [/;b(.*?)b;/gs, '<span class="hl-blue">$1</span>'],
-    [/;y(.*?)y;/gs, '<span class="hl-yellow">$1</span>'],
-    [/;p(.*?)p;/gs, '<span class="hl-magenta">$1</span>'],
-    [/;g(.*?)g;/gs, '<span class="hl-green">$1</span>'],
-    [/;o(.*?)o;/gs, '<span class="hl-orange">$1</span>'],
-    [/\$\$(.*?)\$\$/gs, '<span class="handwritten">$1</span>'],
-    [/\$c(.*?)c\$/gs, '<span class="contaminated">$1</span>'],
-    [/\$wo(.*?)wo\$/gs, '<span class="outline-white">$1</span>'],
-    [/\$bo(.*?)bo\$/gs, '<span class="outline-black">$1</span>'],
-  ];
-  for (const [re, repl] of simple) {
+  for (const [re, repl] of simpleInlineTags) {
     s = s.replace(re, repl);
   }
 

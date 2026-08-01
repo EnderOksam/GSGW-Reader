@@ -1484,6 +1484,39 @@ body .reader-container .sms-center.sms-center {
   pointer-events: none;
 }
 
+.fn-tip a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  pointer-events: auto;
+}
+
+/* Tooltips stay inside the viewport: JS sets position:fixed + clamped
+   left/top/bottom on small screens; desktop keeps absolute positioning. */
+@media (max-width: 640px) {
+  .fn-tip {
+    max-width: calc(100vw - 1rem);
+  }
+}
+
+/* Footnote near the top of the page: flip the tooltip below the ref. */
+.fn-ref.fn-tip-flip .fn-tip {
+  bottom: auto;
+  top: calc(100% + 0.55em);
+}
+
+.fn-ref.fn-tip-flip .fn-tip::after {
+  top: auto;
+  bottom: 100%;
+  transform: translateX(-50%) rotate(45deg);
+  margin-top: 0;
+  margin-bottom: -5px;
+  border-right: none;
+  border-bottom: none;
+  border-left: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
+  border-top: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
+}
+
 .fn-tip strong {
   font-weight: 600;
   color: var(--color-primary);
@@ -1494,7 +1527,7 @@ body .reader-container .sms-center.sms-center {
   content: "";
   position: absolute;
   top: 100%;
-  left: 50%;
+  left: var(--fn-arrow-left, 50%);
   transform: translateX(-50%) rotate(45deg);
   width: 10px;
   height: 10px;
@@ -1504,11 +1537,40 @@ body .reader-container .sms-center.sms-center {
   border-bottom: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
 }
 
+/* Inline tooltips are always hidden; a single portal on <body> is shown by
+   JS so ancestor transforms/overflow never clip or misplace it. */
 .fn-ref:hover .fn-tip,
 .fn-ref:focus .fn-tip,
-.fn-ref:focus-visible .fn-tip {
-  display: block;
-  animation: fn-tip-in 0.15s ease-out;
+.fn-ref:focus-visible .fn-tip,
+.fn-ref.fn-open .fn-tip {
+  display: none;
+}
+
+.fn-tip-portal {
+  position: fixed;
+  z-index: 200;
+  left: auto;
+  transform: none;
+  animation: none;
+}
+
+.fn-tip-portal::after {
+  top: 100%;
+  bottom: auto;
+  border-right: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
+  border-bottom: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
+}
+
+.fn-tip-portal.fn-tip-flip::after {
+  top: auto;
+  bottom: 100%;
+  transform: translateX(-50%) rotate(45deg);
+  margin-top: 0;
+  margin-bottom: -5px;
+  border-right: none;
+  border-bottom: none;
+  border-left: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
+  border-top: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
 }
 
 @keyframes fn-tip-in {
@@ -1528,6 +1590,14 @@ body .reader-container .sms-center.sms-center {
   font-size: calc(var(--chapter-size, 1rem) * 0.85);
   line-height: var(--chapter-lh, 1.6);
   color: oklch(0.6 0 0);
+}
+
+.footnotes a:not(.fn-back) {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .footnotes ol {
