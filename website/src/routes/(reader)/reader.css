@@ -957,6 +957,24 @@ body .reader-container .black-window.black-window {
   color: oklch(0.95 0 0) !important;
 }
 
+body .reader-container .black-window.black-window p,
+body .reader-container .black-window.black-window a,
+body .reader-container .black-window.black-window strong,
+body .reader-container .black-window.black-window b,
+body .reader-container .black-window.black-window em,
+body .reader-container .black-window.black-window i,
+body .reader-container .black-window.black-window li,
+body .reader-container .black-window.black-window h1,
+body .reader-container .black-window.black-window h2,
+body .reader-container .black-window.black-window h3,
+body .reader-container .black-window.black-window h4,
+body .reader-container .black-window.black-window h5,
+body .reader-container .black-window.black-window h6,
+body .reader-container .black-window.black-window code,
+body .reader-container .black-window.black-window blockquote {
+  color: oklch(0.95 0 0) !important;
+}
+
 body .reader-container .braun-screen.braun-screen {
   color: oklch(0.95 0 0) !important;
 }

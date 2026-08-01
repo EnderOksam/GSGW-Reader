@@ -107,6 +107,11 @@ def convert_chapter_debut(content: str) -> str:
 
     content = bw.HEX_AURORA_RE.sub(bw.hex_aurora_replacer, content)
 
+    content = bw.HEX_OUTLINE_RE.sub(
+        lambda m: f'<span class="hex-outline" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>',
+        content,
+    )
+
     content = bw.HEX_AURORA_STATIC_RE.sub(bw.hex_aurora_static_replacer, content)
 
     content = bw.HEX_AURORA_UP_RE.sub(bw.hex_aurora_up_replacer, content)
@@ -159,7 +164,7 @@ async def _async_render_one(
     browser: Any,
     idx: int,
     window: WindowInfo,
-    webp_path: Path,
+    img_path: Path,
 ) -> tuple[int, Path, bool]:
     async with semaphore:
         page = await browser.new_page(device_scale_factor=1)
@@ -179,19 +184,19 @@ async def _async_render_one(
             await page.set_content(html_page, wait_until="domcontentloaded")
             png_bytes = await page.screenshot(full_page=True, omit_background=True)
             if not png_bytes:
-                return idx, webp_path, False
+                return idx, img_path, False
             if Image is None:
-                webp_path.write_bytes(png_bytes)
-                return idx, webp_path, True
+                img_path.write_bytes(png_bytes)
+                return idx, img_path, True
             img = Image.open(BytesIO(png_bytes))
             bbox = img.getbbox()
             if bbox:
                 img = img.crop(bbox)
-            img.save(webp_path, "WEBP", quality=90, method=4)
-            return idx, webp_path, webp_path.exists() and webp_path.stat().st_size > 0
+            img.save(img_path, "WEBP", quality=85, method=4)
+            return idx, img_path, img_path.exists() and img_path.stat().st_size > 0
         except Exception as e:
             print(f"      Screenshot error: {e}")
-            return idx, webp_path, False
+            return idx, img_path, False
         finally:
             await page.close()
 
@@ -232,6 +237,11 @@ def _resolve_chapter_images(
         if not image_path:
             print(f"      Warning: image not found: {src}")
             return m.group(0)
+
+        if image_path.suffix.lower() == ".webp":
+            png = epub.convert_to_png(image_path, OUTPUT_DIR / "converted_images")
+            if png:
+                image_path = png
 
         image_path_resolved = image_path.resolve()
         if image_path_resolved not in assets:
@@ -276,13 +286,14 @@ def build_debut_part_epub(
     cover_item: epub.EpubItem | None = None
     cover_image_path = IMAGES_ROOT / "dod" / "cover.webp"
     if cover_image_path.exists():
-        cover_name = epub.unique_asset_name(cover_image_path, "cover.webp", asset_names)
+        cover_src = epub.convert_to_png(cover_image_path, OUTPUT_DIR / "cover_images") or cover_image_path
+        cover_name = epub.unique_asset_name(cover_src, "cover.png" if cover_src.suffix.lower() == ".png" else cover_src.name, asset_names)
         cover_asset = epub.EpubAsset(
-            source_path=cover_image_path,
+            source_path=cover_src,
             href=f"Images/{cover_name}",
-            media_type=epub.media_type_for(cover_image_path),
+            media_type=epub.media_type_for(cover_src),
         )
-        assets[cover_image_path] = cover_asset
+        assets[cover_src] = cover_asset
         cover_body = (
             '<div class="cover-page">'
             f'<img src="../{epub.escape_attr(cover_asset.href)}" alt="Cover" class="cover-image" />'
@@ -334,8 +345,8 @@ def build_debut_part_epub(
             print(f"      {len(windows)} window(s) to render")
         chapter_infos.append(ChapterInfo(position, chapter.path, chapter.metadata, chapter.content, chapter.title, chapter_html, windows))
         for window in windows:
-            webp_path = window_dir / f"window_{window_counter:04d}.webp"
-            render_tasks.append((window_counter, window, webp_path))
+            img_path = window_dir / f"window_{window_counter:04d}.webp"
+            render_tasks.append((window_counter, window, img_path))
             window_counter += 1
 
     total_windows = len(render_tasks)
@@ -355,13 +366,13 @@ def build_debut_part_epub(
             async with async_playwright() as ap:
                 browser = await ap.chromium.launch()
                 coros = [
-                    _async_render_one(semaphore, browser, idx, window, webp_path)
-                    for idx, window, webp_path in render_tasks
+                    _async_render_one(semaphore, browser, idx, window, img_path)
+                    for idx, window, img_path in render_tasks
                 ]
                 done_count = 0
                 for coro in asyncio.as_completed(coros):
-                    idx, webp_path, success = await coro
-                    results[idx] = (webp_path, success)
+                    idx, img_path, success = await coro
+                    results[idx] = (img_path, success)
                     done_count += 1
                     if done_count % 50 == 0 or done_count == total_windows:
                         print(f"      Rendered {done_count}/{total_windows}")
@@ -378,18 +389,18 @@ def build_debut_part_epub(
         for window in ch.windows:
             parts.append(ch.chapter_html[last_end:window.start])
             idx = window_counter
-            webp_path, success = render_results.get(idx, (None, False))
-            if success and webp_path and webp_path.exists():
-                webp_name = webp_path.name
-                webp_path_resolved = webp_path.resolve()
-                if webp_path_resolved not in assets:
-                    name = epub.unique_asset_name(webp_path, webp_name, asset_names)
-                    assets[webp_path_resolved] = epub.EpubAsset(
-                        source_path=webp_path_resolved,
+            img_path, success = render_results.get(idx, (None, False))
+            if success and img_path and img_path.exists():
+                img_name = img_path.name
+                img_path_resolved = img_path.resolve()
+                if img_path_resolved not in assets:
+                    name = epub.unique_asset_name(img_path, img_name, asset_names)
+                    assets[img_path_resolved] = epub.EpubAsset(
+                        source_path=img_path_resolved,
                         href=f"Images/{name}",
-                        media_type="image/webp",
+                        media_type=epub.media_type_for(img_path),
                     )
-                asset = assets[webp_path_resolved]
+                asset = assets[img_path_resolved]
                 alt_text = html.escape(window.class_name.replace("-", " "))
                 parts.append(
                     f'<div class="image-block">'

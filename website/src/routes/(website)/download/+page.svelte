@@ -347,7 +347,7 @@
 </div>
 
 <dialog bind:this={recommendModal} class="modal backdrop:!bg-black/60 backdrop:!backdrop-blur-sm">
-  <div class="modal-box max-w-md bg-base-200/95 border border-white/10 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
+  <div class="modal-box max-w-md bg-[#0d0d0d]/95 border border-primary/15 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
     <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
       <div>
         <h3 class="text-lg font-bold text-white flex items-center gap-2">

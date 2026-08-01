@@ -95,7 +95,7 @@ class WindowInfo:
     width: int = 430
 
 
-WINDOW_CSS = """
+WINDOW_CSS_FALLBACK = """
 :root {
   --window-bg: #1e1e2e;
   --window-border: #3a3a5c;
@@ -281,6 +281,7 @@ del { text-decoration: line-through; }
   background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
 }
 .black-window p { color: #ffffff; margin: 0.8em 0; line-height: 1.6; text-align: center; }
+.black-window p, .black-window a, .black-window strong, .black-window b, .black-window em, .black-window i, .black-window li, .black-window h1, .black-window h2, .black-window h3, .black-window h4, .black-window h5, .black-window h6, .black-window code, .black-window blockquote { color: #ffffff !important; }
 
 .system-window {
   margin: 2.5rem auto; background: #1a1a1a; border: 1px solid #444; border-radius: 4px;
@@ -372,6 +373,12 @@ del { text-decoration: line-through; }
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   filter: drop-shadow(0 0 6px var(--ha-c2));
 }
+.hex-outline {
+  display: inline-block; font-weight: 700; letter-spacing: 0.2em;
+  -webkit-text-stroke: 1.5px var(--hxo-color); text-stroke: 1.5px var(--hxo-color);
+  color: var(--hxo-color);
+  text-shadow: .08em 0 0 var(--hxo-color), -.08em 0 0 var(--hxo-color), 0 .08em 0 var(--hxo-color), 0 -.08em 0 var(--hxo-color), .06em .06em 0 var(--hxo-color), -.06em .06em 0 var(--hxo-color), .06em -.06em 0 var(--hxo-color), -.06em -.06em 0 var(--hxo-color);
+}
 .smoke-text {
   font-weight: 700; letter-spacing: 0.2em; color: black;
   text-shadow: .06em 0 0 rgba(255,200,0,.9), -.06em 0 0 rgba(255,200,0,.9), 0 .06em 0 rgba(255,200,0,.9), 0 -.06em 0 rgba(255,200,0,.9), .04em .04em 0 rgba(255,200,0,.9), -.04em .04em 0 rgba(255,200,0,.9), .04em -.04em 0 rgba(255,200,0,.9), -.04em -.04em 0 rgba(255,200,0,.9), .08em 0 0 rgba(255,200,0,.9), -.08em 0 0 rgba(255,200,0,.9), 0 .08em 0 rgba(255,200,0,.9), 0 -.08em 0 rgba(255,200,0,.9);
@@ -402,6 +409,55 @@ del { text-decoration: line-through; }
   filter: drop-shadow(0 0 5px rgba(100,180,230,0.35));
 }
 """
+
+READER_CSS_PATH = REPO_ROOT / "website" / "src" / "routes" / "(reader)" / "reader.css"
+READER_WINDOWS_CSS_PATH = REPO_ROOT / "website" / "src" / "lib" / "reader" / "reader-windows.css"
+
+WINDOW_CSS_PREAMBLE = """\
+/* Screenshot page base: mirrors the website reader so window images match 1:1. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --window-bg: oklch(0.2 0.02 280);
+  --window-border: oklch(0.28 0.03 280);
+  --window-text: oklch(0.95 0 0);
+  --window-accent: oklch(0.55 0.22 30);
+  --bc: oklch(0.95 0 0);
+  --chapter-font: 'Alegreya', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --chapter-size: 18px;
+  --chapter-weight: 450;
+  --chapter-lh: 1.8;
+  --chapter-indent: 0;
+  --chapter-align: left;
+  --chapter-hyphens: none;
+}
+body {
+  background: transparent;
+  color: oklch(0.95 0 0);
+  font-family: var(--chapter-font, 'Inter', system-ui, sans-serif);
+  font-size: var(--chapter-size, 18px);
+  font-weight: var(--chapter-weight, 450);
+  line-height: var(--chapter-lh, 1.8);
+}
+"""
+
+
+def build_screenshot_css() -> str:
+    """Assemble the CSS used to screenshot windows, matching the website 1:1.
+
+    Uses the site's real reader stylesheets (reader.css + reader-windows.css)
+    so the rendered window images are identical to the website. Falls back to
+    the embedded WINDOW_CSS_FALLBACK if the website files are unavailable.
+    """
+    try:
+        reader_css = READER_CSS_PATH.read_text(encoding="utf-8")
+        windows_css = READER_WINDOWS_CSS_PATH.read_text(encoding="utf-8")
+    except OSError:
+        return WINDOW_CSS_FALLBACK
+    return "\n".join((WINDOW_CSS_PREAMBLE, reader_css, windows_css))
+
+
+WINDOW_CSS = build_screenshot_css()
+
 
 ALL_WINDOW_CLASSES = (
     "debut-window(?!-)|debut-alert(?!-)|debut-achievement(?!-)|sms-window|alert-window|"
@@ -471,7 +527,7 @@ def render_window_to_webp(
         bbox = img.getbbox()
         if bbox:
             img = img.crop(bbox)
-        img.save(output_path, "WEBP", quality=90, method=4)
+        img.save(output_path, "WEBP", quality=85, method=4)
         return output_path.exists() and output_path.stat().st_size > 0
     except Exception as e:
         print(f"      Screenshot error: {e}")
@@ -729,6 +785,24 @@ def safe_id(value: str, fallback: str) -> str:
     return value or fallback
 
 
+def valid_identifier(value: str, book_title: str) -> str:
+    """Return a valid dc:identifier for the OPF/NCX.
+
+    urn:uuid values must be well-formed UUIDs; anything else falls back to a
+    deterministic UUID derived from the book title.
+    """
+    value = (value or "").strip()
+    if not value:
+        return f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, book_title)}"
+    if value.lower().startswith("urn:uuid:"):
+        try:
+            uuid.UUID(value[len("urn:uuid:"):])
+            return value
+        except ValueError:
+            pass
+    return f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, book_title)}"
+
+
 def media_type_for(path: Path) -> str:
     suffix = path.suffix.lower()
     return {
@@ -742,6 +816,20 @@ def media_type_for(path: Path) -> str:
         ".xhtml": "application/xhtml+xml",
         ".ncx": "application/x-dtbncx+xml",
     }.get(suffix, "application/octet-stream")
+
+
+def convert_to_png(source_path: Path, output_dir: Path) -> Path | None:
+    """Convert an image to PNG (a core EPUB media type). Returns the PNG path, or None on failure."""
+    if Image is None:
+        return None
+    try:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_path = output_dir / f"{source_path.stem}.png"
+        with Image.open(source_path) as img:
+            img.save(output_path, "PNG", optimize=True)
+        return output_path if output_path.exists() and output_path.stat().st_size > 0 else None
+    except Exception:
+        return None
 
 
 def unique_asset_name(source_path: Path, preferred: str, used: set[str]) -> str:
@@ -868,7 +956,8 @@ def twitter_image_html(match: re.Match[str], ctx: RenderContext) -> str:
             print(f"      Warning: failed to fetch tweet {tweet_id}: {exc}")
 
     if webp_path.exists():
-        asset = register_asset(ctx, webp_path, webp_path.name)
+        png_path = convert_to_png(webp_path, TWITTER_IMG_DIR / "png") or webp_path
+        asset = register_asset(ctx, png_path, "twitter_image.png" if png_path.suffix.lower() == ".png" else png_path.name)
         display_name = screen_name or username
         alt = f"Illustration from @{display_name} on X"
         return image_block_html(f"../{asset.href}", alt)
@@ -931,6 +1020,10 @@ def markdown_image_html(alt: str, src: str, ctx: RenderContext) -> str:
         print(f"      Warning: image not found for {ctx.chapter_path.name}: {src}")
         return f'<p>{escape_text(alt or src)}</p>'
 
+    if image_path.suffix.lower() == ".webp":
+        png = convert_to_png(image_path, OUTPUT_DIR / "converted_images")
+        if png:
+            image_path = png
     asset = register_asset(ctx, image_path)
     return image_block_html(f"../{asset.href}", alt)
 
@@ -1017,6 +1110,7 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"@cc@(.+?)@cc@", '<span class="mono mono-center">{inner}</span>'),
         (r"@rr@(.+?)@rr@", '<span class="mono mono-right">{inner}</span>'),
         (r"@l@(.+?)@l@", '<span class="align-left">{inner}</span>'),
+        (r"@c@(.+?)@c@", '<span class="align-center">{inner}</span>'),
         (r"@r@(.+?)@r@", '<span class="align-right">{inner}</span>'),
         (r"@rs@(.+?)@rs@", '<span class="align-right window-small">{inner}</span>'),
         (r"#><(.+?)><#", '<span class="text-large-centered">{inner}</span>'),
@@ -1075,6 +1169,16 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         inner = render_inline(match.group(2), ctx)
         return stash_html(store, f'<span style="color:{color}">{inner}</span>')
     text = hex_re.sub(hex_repl, text)
+
+    hxo_re = re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL)
+    def hxo_repl(match: re.Match) -> str:
+        color = match.group(1)
+        inner = render_inline(match.group(2), ctx)
+        return stash_html(
+            store,
+            f'<span class="hex-outline" style="--hxo-color:{color}">{inner}</span>',
+        )
+    text = hxo_re.sub(hxo_repl, text)
 
     hxa_re = re.compile(r"\$hxa\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxa\$", re.DOTALL)
     def hxa_repl(match: re.Match) -> str:
@@ -1157,6 +1261,8 @@ WINDOW_PATTERNS = [
     ("note-window", re.compile(r"^!-+$"), re.compile(r"^-+!$")),
     ("sticky-window", re.compile(r"^!\$$"), re.compile(r"^\$!$")),
     ("braun-screen", re.compile(r"^!\[$"), re.compile(r"^\]!$")),
+    ("sms-window", re.compile(r"^★:$"), re.compile(r"^:★$")),
+    ("alert-window", re.compile(r"^★\$$"), re.compile(r"^\$★$")),
 ]
 
 
@@ -1173,6 +1279,102 @@ def strip_leading_escape(inner: str) -> str:
     if match and inner[match.start()] == "\\":
         return inner[: match.start()] + inner[match.start() + 1 :]
     return inner
+
+
+SMS_SPEAKER_COLORS = {
+    "PMD": "#FFF8D9",
+    "SAH": "#FFF0E1",
+    "BSJ": "#EDF5FF",
+    "LSJ": "#F2ECFF",
+    "KRB": "#FDE8F1",
+    "CE": "#FFE5E5",
+    "RCW": "#EAF8F2",
+}
+
+
+def render_sms_window(inner_lines: list[str], ctx: RenderContext) -> str:
+    parts: list[str] = []
+    for raw in inner_lines:
+        trimmed = raw.strip()
+        if not trimmed:
+            continue
+        dash_left = re.match(r"^[-–—]\s*(.+)", trimmed)
+        dash_right = re.match(r"(.+)\s*[-–—]$", trimmed)
+        if dash_left:
+            content = dash_left.group(1).strip()
+            sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
+            body = render_inline(content[sp.end() :] if sp else content, ctx)
+            style = (
+                f' style="background:{SMS_SPEAKER_COLORS[sp.group(1)]};color:#222"'
+                if sp
+                else ""
+            )
+            parts.append(f'<div class="sms-bubble sms-left"{style}>{body}</div>')
+        elif dash_right:
+            content = dash_right.group(1).strip()
+            sp = re.match(r"^(PMD|SAH|BSJ|LSJ|KRB|CE|RCW):\s*", content)
+            body = render_inline(content[sp.end() :] if sp else content, ctx)
+            style = (
+                f' style="background:{SMS_SPEAKER_COLORS[sp.group(1)]};color:#222"'
+                if sp
+                else ""
+            )
+            parts.append(f'<div class="sms-bubble sms-right"{style}>{body}</div>')
+        else:
+            parts.append(f'<div class="sms-bubble sms-center">{render_inline(trimmed, ctx)}</div>')
+    return "\n\n".join(parts)
+
+
+def render_comment_window(inner_lines: list[str], ctx: RenderContext) -> str:
+    title = ""
+    desc = ""
+    items: list[tuple[str, int]] = []
+    in_comments = False
+
+    for raw in inner_lines:
+        line = raw.strip()
+        if line.startswith("["):
+            title = render_inline(line.strip(), ctx)
+        elif line.startswith(":"):
+            desc = render_inline(line.replace(":", "", 1).strip(), ctx)
+        elif line.startswith(("-", "\u2013", "\u2014")):
+            in_comments = True
+            content = re.sub(r"^[\u2014\u2013-]", "", line).strip()
+            items.append((render_inline(content, ctx), 0))
+        elif line.startswith(("\u2937", "\u2514", "\u221F")):
+            in_comments = True
+            depth = 0
+            content = line
+            while content.startswith(("\u2937", "\u2514", "\u221F")):
+                depth += 1
+                content = re.sub(r"^[\u2937\u2514\u221F]", "", content).lstrip()
+            if depth > 3:
+                depth = 3
+            items.append((render_inline(content.strip(), ctx), depth))
+        elif line and not in_comments:
+            desc += ("" if not desc else "</p>\n<p>") + render_inline(line, ctx)
+
+    parts: list[str] = []
+    if title or desc:
+        parts.append('<div class="comment-post-header">')
+        if title:
+            parts.append(f'<div class="comment-post-title">{title}</div>')
+        if desc:
+            parts.append(f'<div class="comment-post-desc"><p>{desc}</p></div>')
+        parts.append("</div>")
+    if items:
+        parts.append('<div class="comment-section">')
+        for text, depth in items:
+            if depth == 0:
+                parts.append(f'<div class="comment">{text}</div>')
+            else:
+                parts.append(
+                    f'<div class="comment-reply depth-{depth}">'
+                    f'<span class="reply-icon">\u2937</span>'
+                    f'<span class="reply-body">{text}</span></div>'
+                )
+        parts.append("</div>")
+    return "\n\n".join(parts)
 
 
 def is_block_start(line: str) -> bool:
@@ -1255,14 +1457,26 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
         spec = window_spec(line)
         if spec:
             class_name, end_re = spec
+            opener_idx = i
             i += 1
             inner_lines: list[str] = []
             while i < len(lines) and not end_re.match(lines[i].strip()):
                 inner_lines.append(lines[i])
                 i += 1
-            if i < len(lines):
-                i += 1
+            if i >= len(lines):
+                # Unmatched opener: never swallow the rest of the chapter as one
+                # giant window. Drop the dangling delimiter and keep rendering
+                # the remaining content as normal blocks.
+                print(
+                    f"  Warning: unclosed {class_name} window near line "
+                    f"{opener_idx + 1} (no closing delimiter '{end_re.pattern}' "
+                    f"found); rendering the rest normally"
+                )
+                i = opener_idx + 1
+                continue
+            i += 1
 
+            extra_cls = ""
             if class_name in ("wiki-window", "record-window"):
                 first_idx = next(
                     (idx for idx, il in enumerate(inner_lines) if il.strip()),
@@ -1270,28 +1484,33 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
                 )
                 if first_idx >= 0:
                     stripped = inner_lines[first_idx].strip()
-                    if not stripped.startswith("\\"):
+                    if stripped.startswith("\\"):
+                        extra_cls = " no-meta"
+                    else:
                         inner_lines[first_idx] = f"@rs@{stripped}@rs@"
+            elif class_name == "note-window":
+                first_idx = next(
+                    (idx for idx, il in enumerate(inner_lines) if il.strip()),
+                    -1,
+                )
+                if first_idx >= 0 and inner_lines[first_idx].strip().startswith("\\"):
+                    extra_cls = " no-meta"
+            elif class_name == "system-window":
+                first_idx = next(
+                    (idx for idx, il in enumerate(inner_lines) if il.strip()),
+                    -1,
+                )
+                if first_idx >= 0 and inner_lines[first_idx].strip().startswith("\\"):
+                    extra_cls = " no-fl-dividers"
+
+            if class_name == "sms-window":
+                inner_html = render_sms_window(inner_lines, ctx)
+            elif class_name == "alert-window":
+                inner_html = render_comment_window(inner_lines, ctx)
+            else:
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 inner_html = render_blocks(inner, ctx)
-                out.append(f'<div class="{class_name}">{inner_html}</div>')
-                continue
-
-            if class_name in ("plain-window", "followup-window", "system-window"):
-                inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
-                inner_html = render_blocks(inner, ctx)
-                out.append(f'<div class="{class_name}">{inner_html}</div>')
-                continue
-
-            if class_name == "braun-screen":
-                inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
-                inner_html = render_blocks(inner, ctx)
-                out.append(f'<div class="{class_name}">{inner_html}</div>')
-                continue
-
-            inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
-            inner_html = render_blocks(inner, ctx)
-            out.append(f'<div class="{class_name}">{inner_html}</div>')
+            out.append(f'<div class="{class_name}{extra_cls}">{inner_html}</div>')
             continue
 
         heading = re.match(r"^(#{1,6})\s+(.+?)\s*$", line)
@@ -1347,8 +1566,7 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
 def xhtml_page(title: str, body: str) -> str:
     return (
         '<?xml version="1.0" encoding="utf-8"?>\n'
-        '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" '
-        '"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n'
+        '<!DOCTYPE html>\n'
         '<html xmlns="http://www.w3.org/1999/xhtml">'
         f"<head><title>{escape_text(title)}</title>"
         '<link href="../Styles/stylesheet.css" type="text/css" rel="stylesheet" />'
@@ -1363,6 +1581,7 @@ def nav_xhtml(book_title: str, items: list[EpubItem]) -> str:
     )
     return (
         '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<!DOCTYPE html>\n'
         '<html xmlns="http://www.w3.org/1999/xhtml" '
         'xmlns:epub="http://www.idpf.org/2007/ops">'
         f"<head><title>{escape_text(book_title)} Table of Contents</title>"
@@ -1389,8 +1608,7 @@ def content_opf(
     description = metadata_text(metadata.get("description"), "")
     rights = metadata_text(metadata.get("rights"), "")
     identifier = metadata_text(metadata.get("identifier"), "")
-    if not identifier:
-        identifier = f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, book_title)}"
+    identifier = valid_identifier(identifier, book_title)
 
     manifest_items = [
         '<item href="Styles/stylesheet.css" id="stylesheet" media-type="text/css"/>',
@@ -1505,8 +1723,7 @@ def write_epub(
     css = CSS_PATH.read_text(encoding="utf-8")
     modified = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     identifier = metadata_text(metadata.get("identifier"), "")
-    if not identifier:
-        identifier = f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, book_title)}"
+    identifier = valid_identifier(identifier, book_title)
     asset_list = sorted(assets.values(), key=lambda asset: asset.href)
 
     epub_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1585,13 +1802,14 @@ def build_translation(tl_path: Path, args: argparse.Namespace) -> Path | None:
     cover_item: EpubItem | None = None
     cover_image_path = IMAGES_ROOT / book_id / "cover.webp"
     if cover_image_path.exists():
-        cover_name = unique_asset_name(cover_image_path, "cover.webp", asset_names)
+        cover_src = convert_to_png(cover_image_path, OUTPUT_DIR / "cover_images") or cover_image_path
+        cover_name = unique_asset_name(cover_src, "cover.png" if cover_src.suffix.lower() == ".png" else cover_src.name, asset_names)
         cover_asset = EpubAsset(
-            source_path=cover_image_path,
+            source_path=cover_src,
             href=f"Images/{cover_name}",
-            media_type=media_type_for(cover_image_path),
+            media_type=media_type_for(cover_src),
         )
-        assets[cover_image_path] = cover_asset
+        assets[cover_src] = cover_asset
         cover_body = (
             '<div class="cover-page">'
             f'<img src="../{escape_attr(cover_asset.href)}" alt="Cover" class="cover-image" />'
@@ -1702,8 +1920,7 @@ def build_plaintext_part_epub(
     css = CSS_PATH.read_text(encoding="utf-8")
     modified = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     identifier = metadata_text(metadata.get("identifier"), "")
-    if not identifier:
-        identifier = f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, book_title)}"
+    identifier = valid_identifier(identifier, book_title)
     asset_list = sorted(assets.values(), key=lambda asset: asset.href)
 
     epub_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1744,8 +1961,7 @@ def build_windows_part_epub(
     css = CSS_PATH.read_text(encoding="utf-8")
     modified = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     identifier = metadata_text(metadata.get("identifier"), "")
-    if not identifier:
-        identifier = f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, book_title)}"
+    identifier = valid_identifier(identifier, book_title)
     asset_list = sorted(assets.values(), key=lambda asset: asset.href)
 
     epub_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1793,8 +2009,8 @@ def render_windows_and_assemble(
         windows = find_window_divs(ch_html)
         all_windows.append(windows)
         for window in windows:
-            webp_path = window_dir / f"window_{window_counter:04d}.webp"
-            render_tasks.append((window_counter, window, webp_path))
+            img_path = window_dir / f"window_{window_counter:04d}.webp"
+            render_tasks.append((window_counter, window, img_path))
             window_counter += 1
 
     total_windows = len(render_tasks)
@@ -1817,7 +2033,7 @@ def render_windows_and_assemble(
                 browser: Any,
                 idx: int,
                 window: WindowInfo,
-                webp_path: Path,
+                img_path: Path,
             ) -> tuple[int, Path, bool]:
                 async with sem:
                     page = await browser.new_page(device_scale_factor=1)
@@ -1837,29 +2053,29 @@ def render_windows_and_assemble(
                         await page.set_content(html_page, wait_until="domcontentloaded")
                         png_bytes = await page.screenshot(full_page=True, omit_background=True)
                         if not png_bytes:
-                            return idx, webp_path, False
+                            return idx, img_path, False
                         if Image is None:
-                            webp_path.write_bytes(png_bytes)
-                            return idx, webp_path, True
+                            img_path.write_bytes(png_bytes)
+                            return idx, img_path, True
                         img = Image.open(BytesIO(png_bytes))
                         bbox = img.getbbox()
                         if bbox:
                             img = img.crop(bbox)
-                        img.save(webp_path, "WEBP", quality=90, method=4)
-                        return idx, webp_path, webp_path.exists() and webp_path.stat().st_size > 0
+                        img.save(img_path, "WEBP", quality=85, method=4)
+                        return idx, img_path, img_path.exists() and img_path.stat().st_size > 0
                     except Exception as e:
                         print(f"      Screenshot error: {e}")
-                        return idx, webp_path, False
+                        return idx, img_path, False
                     finally:
                         await page.close()
 
             async with _async_playwright() as ap:
                 browser = await ap.chromium.launch()
-                coros = [_render_one(semaphore, browser, idx, window, webp_path) for idx, window, webp_path in render_tasks]
+                coros = [_render_one(semaphore, browser, idx, window, img_path) for idx, window, img_path in render_tasks]
                 done_count = 0
                 for coro in _asyncio.as_completed(coros):
-                    idx, webp_path, success = await coro
-                    results[idx] = (webp_path, success)
+                    idx, img_path, success = await coro
+                    results[idx] = (img_path, success)
                     done_count += 1
                     if done_count % 50 == 0 or done_count == total_windows:
                         print(f"    Rendered {done_count}/{total_windows}")
@@ -1879,18 +2095,18 @@ def render_windows_and_assemble(
         for window in windows:
             parts.append(ch_html[last_end:window.start])
             idx = window_counter
-            webp_path, success = render_results.get(idx, (None, False))
-            if success and webp_path and webp_path.exists():
-                webp_name = webp_path.name
-                webp_path_resolved = webp_path.resolve()
-                if webp_path_resolved not in assets:
-                    name = unique_asset_name(webp_path, webp_name, asset_names)
-                    assets[webp_path_resolved] = EpubAsset(
-                        source_path=webp_path_resolved,
+            img_path, success = render_results.get(idx, (None, False))
+            if success and img_path and img_path.exists():
+                img_name = img_path.name
+                img_path_resolved = img_path.resolve()
+                if img_path_resolved not in assets:
+                    name = unique_asset_name(img_path, img_name, asset_names)
+                    assets[img_path_resolved] = EpubAsset(
+                        source_path=img_path_resolved,
                         href=f"Images/{name}",
-                        media_type="image/webp",
+                        media_type=media_type_for(img_path),
                     )
-                asset = assets[webp_path_resolved]
+                asset = assets[img_path_resolved]
                 alt_text = html.escape(window.class_name.replace("-", " "))
                 parts.append(
                     f'<div class="image-block">'
@@ -1947,12 +2163,13 @@ def build_book(args: argparse.Namespace) -> list[Path]:
     cover_image_path_base = IMAGES_ROOT / book_id / "cover.webp"
 
     if cover_image_path_base.exists():
+        cover_src = convert_to_png(cover_image_path_base, OUTPUT_DIR / "cover_images") or cover_image_path_base
         asset_names_cover: set[str] = set()
-        cover_name = unique_asset_name(cover_image_path_base, "cover.webp", asset_names_cover)
+        cover_name = unique_asset_name(cover_src, "cover.png" if cover_src.suffix.lower() == ".png" else cover_src.name, asset_names_cover)
         cover_asset_base = EpubAsset(
-            source_path=cover_image_path_base,
+            source_path=cover_src,
             href=f"Images/{cover_name}",
-            media_type=media_type_for(cover_image_path_base),
+            media_type=media_type_for(cover_src),
         )
         cover_body = (
             '<div class="cover-page">'

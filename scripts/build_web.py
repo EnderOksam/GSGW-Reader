@@ -672,6 +672,54 @@ def safe_html(text):
     return ''.join(result)
 
 
+# =========================================================
+# FOOTNOTES
+# =========================================================
+
+# The same custom-tag replacements the main pipeline applies to
+# chapter text, kept here so footnote content gets identical
+# formatting when it is rendered into the tooltip and the bottom card.
+FOOTNOTE_TAG_REPLACEMENTS = [
+    (re.compile(r"\$\$(.*?)\$\$", re.DOTALL), r'<span class="handwritten">\1</span>'),
+    (re.compile(r"\$s(.+?)s\$", re.DOTALL), lambda m: smoke_replacer(m)),
+    (re.compile(r"\$a(.+?)a\$", re.DOTALL), lambda m: aurora_replacer(m)),
+    (re.compile(r"\$g(.+?)g\$", re.DOTALL), r'<span class="gold-text">\1</span>'),
+    (re.compile(r"\$\*(.+?)\*\$", re.DOTALL), r'<span class="sparkle-text">\1</span>'),
+    (re.compile(r"\$\((.+?)\)\$", re.DOTALL), r'<span class="moon-text">\1</span>'),
+    (re.compile(r"\$ag(.+?)ag\$", re.DOTALL), lambda m: silver_replacer(m)),
+    (re.compile(r"\$wo(.+?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
+    (re.compile(r"\$bo(.+?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
+    (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),
+     lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>'),
+    (re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL),
+     lambda m: f'<span class="hex-outline" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>'),
+    (re.compile(r"\$hxa\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxa\$", re.DOTALL),
+     lambda m: hex_aurora_replacer(m)),
+    (re.compile(r"\$hxas\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxas\$", re.DOTALL),
+     lambda m: hex_aurora_static_replacer(m)),
+    (re.compile(r"\$hxau\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxau\$", re.DOTALL),
+     lambda m: hex_aurora_up_replacer(m)),
+    (re.compile(r"\$hxaus\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxaus\$", re.DOTALL),
+     lambda m: hex_aurora_up_static_replacer(m)),
+    (re.compile(r"\|<(.+?)<\|", re.DOTALL), lambda m: scroll_replacer(m, "left")),
+    (re.compile(r"\|>(.+?)>\|", re.DOTALL), lambda m: scroll_replacer(m, "right")),
+]
+
+
+def render_footnote_text(text):
+    """Render footnote content with the same formatting as chapter text."""
+    text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"\*(.+?)\*", r"<em>\1</em>", text)
+    for pattern, repl in SIMPLE_REPLACEMENTS:
+        text = pattern.sub(repl, text)
+    for pattern, repl in FOOTNOTE_TAG_REPLACEMENTS:
+        text = pattern.sub(repl, text)
+    text = re.sub(r"\[([^\]\n]*)\]\{\.underline\}", r'<span class="underline">\1</span>', text)
+    text = text.replace('\n\n', '<br><br>')
+    text = text.replace('\n', '<br>')
+    return text
+
+
 def fix_underline(text):
     """Convert [text]{.underline} to <span class="underline">text</span>.
     Uses bracket-depth counting to correctly handle nested brackets."""
