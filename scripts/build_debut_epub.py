@@ -201,7 +201,13 @@ async def _async_render_one(
             await page.close()
 
 
-IMG_SRC_RE = re.compile(r'<img\s+src="([^"]+)"', re.IGNORECASE)
+IMG_SRC_RE = re.compile(r'src="([^"]+)"', re.IGNORECASE)
+IMG_ALT_RE = re.compile(r'alt="([^"]*)"', re.IGNORECASE)
+CHAPTER_IMG_RE = re.compile(
+    r"<figure>\s*(<img\b[^>]*>)\s*(?:<figcaption[^>]*>.*?</figcaption>)?\s*</figure>"
+    r"|<img\b[^>]*>",
+    re.IGNORECASE | re.DOTALL,
+)
 
 
 def _resolve_chapter_images(
@@ -211,11 +217,23 @@ def _resolve_chapter_images(
     assets: dict[Path, epub.EpubAsset],
     asset_names: set[str],
 ) -> str:
-    """Resolve bare image filenames to actual files and register as EPUB assets."""
-    def replace_img(m: re.Match) -> str:
-        src = m.group(1)
-        if re.match(r'https?://', src, re.IGNORECASE) or src.startswith('../') or src.startswith('/'):
-            return m.group(0)
+    """Resolve chapter images like build_epub.py does for the Windows EPUBS.
+
+    Standalone pandoc <figure>/<figcaption> blocks and inline <img> tags are
+    converted to the same <div class="image-block"> + <div class="thumbcaption">
+    markup used by the gsgw Windows build. Local files are converted to PNG and
+    registered as EPUB assets; remote URLs are kept as-is.
+    """
+    def resolve_img_tag(tag: str) -> str:
+        src_match = IMG_SRC_RE.search(tag)
+        if not src_match:
+            return tag
+        src = src_match.group(1)
+        alt_match = IMG_ALT_RE.search(tag)
+        alt = alt_match.group(1) if alt_match else ""
+
+        if re.match(r'https?://', src, re.IGNORECASE):
+            return epub.image_block_html(src, alt)
 
         clean_src = urllib.parse.unquote(src.split("#", 1)[0].split("?", 1)[0])
         src_path = Path(clean_src.replace("/", "\\"))
@@ -236,7 +254,7 @@ def _resolve_chapter_images(
 
         if not image_path:
             print(f"      Warning: image not found: {src}")
-            return m.group(0)
+            return f'<p>{epub.escape_text(alt or src)}</p>'
 
         if image_path.suffix.lower() == ".webp":
             png = epub.convert_to_png(image_path, OUTPUT_DIR / "converted_images")
@@ -245,16 +263,20 @@ def _resolve_chapter_images(
 
         image_path_resolved = image_path.resolve()
         if image_path_resolved not in assets:
-            name = epub.unique_asset_name(image_path, src, asset_names)
+            name = epub.unique_asset_name(image_path, image_path.name, asset_names)
             assets[image_path_resolved] = epub.EpubAsset(
                 source_path=image_path_resolved,
                 href=f"Images/{name}",
                 media_type=epub.media_type_for(image_path),
             )
         asset = assets[image_path_resolved]
-        return f'<img src="../{epub.escape_attr(asset.href)}"'
+        return epub.image_block_html(f"../{asset.href}", alt)
 
-    return IMG_SRC_RE.sub(replace_img, chapter_html)
+    def replace_match(m: re.Match) -> str:
+        tag = m.group(1) or m.group(0)
+        return resolve_img_tag(tag)
+
+    return CHAPTER_IMG_RE.sub(replace_match, chapter_html)
 
 
 def build_debut_part_epub(

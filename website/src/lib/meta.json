@@ -200,6 +200,30 @@
         "index": 396,
         "section": "Chapter 396",
         "slug": "396"
+      },
+      {
+        "title": "Chapter 397",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 397,
+        "section": "Chapter 397",
+        "slug": "397"
+      },
+      {
+        "title": "Chapter 398",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 398,
+        "section": "Chapter 398",
+        "slug": "398"
+      },
+      {
+        "title": "Chapter 399",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 399,
+        "section": "Chapter 399",
+        "slug": "399"
       }
     ],
     "fantl": [
@@ -2186,11 +2210,9 @@
         "index": 247,
         "section": "Chapter 247",
         "slug": "247"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
-        "title": "Chapter 248",
+        "title": "Sekwang Station [Forest of Final Moments], V",
         "category": "Part 2",
         "discussion": 0,
         "index": 248,
@@ -2198,7 +2220,7 @@
         "slug": "248"
       },
       {
-        "title": "Chapter 249",
+        "title": "Idle Speculation",
         "category": "Part 2",
         "discussion": 0,
         "index": 249,
@@ -2206,7 +2228,7 @@
         "slug": "249"
       },
       {
-        "title": "Chapter 250",
+        "title": "Trade Secrets",
         "category": "Part 2",
         "discussion": 0,
         "index": 250,
@@ -2214,7 +2236,7 @@
         "slug": "250"
       },
       {
-        "title": "Chapter 251",
+        "title": "Gathering the Pieces",
         "category": "Part 2",
         "discussion": 0,
         "index": 251,
@@ -2222,7 +2244,7 @@
         "slug": "251"
       },
       {
-        "title": "Chapter 252",
+        "title": "Reconnaissance Preparations",
         "category": "Part 2",
         "discussion": 0,
         "index": 252,
@@ -2230,7 +2252,7 @@
         "slug": "252"
       },
       {
-        "title": "Chapter 253",
+        "title": "[Now, You May Kiss the Bride] , I",
         "category": "Part 2",
         "discussion": 0,
         "index": 253,
@@ -2238,13 +2260,15 @@
         "slug": "253"
       },
       {
-        "title": "Chapter 254",
+        "title": "[Now, You May Kiss the Bride] , II",
         "category": "Part 2",
         "discussion": 0,
         "index": 254,
         "section": "Chapter 254",
         "slug": "254"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "Chapter 255",
         "category": "Part 2",
@@ -3380,6 +3404,13 @@
         "index": 27,
         "slug": "27",
         "thumb": "/chapters/manwha/thumbnails/27.webp"
+      },
+      {
+        "title": "Chapter 28",
+        "category": "Chapter 28",
+        "index": 28,
+        "slug": "28",
+        "thumb": "/chapters/manwha/thumbnails/28.webp"
       }
     ],
     "vortex scans": [
