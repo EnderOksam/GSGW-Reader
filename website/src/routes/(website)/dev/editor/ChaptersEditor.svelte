@@ -8,6 +8,7 @@
   import { REPO, BRANCH, BOOKS, tlDir, fetchChapterList, fetchChapterFile, fetchChapterPreview, extractMeta } from "./lib/github-api";
   import { loadCache as loadChapterCache, saveCache as saveChapterCache, saveChapterEdit } from "./lib/chapter-cache";
   import { hydrateTwitterEmbeds } from "$lib/reader/twitter-embeds";
+  import { initFootnoteTooltips } from "$lib/reader/footnote-tooltips";
   import { loadCustomTranslations, saveCustomTranslations, loadCustomChapterList, loadCustomChapterContent, saveCustomChapter, deleteCustomChapter, renameCustomTranslation, deleteCustomTranslation } from "./lib/custom-translations";
   import { importZip, createZip, downloadBlob } from "./lib/zip-tools";
 
@@ -354,6 +355,17 @@
     if (rightTab === 'reader' && previewHtml) {
       hydrateTwitterEmbeds();
     }
+  });
+
+  $effect(() => {
+    const scrollEls = [mdScroll, readerScroll];
+    const cleanups: (() => void)[] = [];
+    for (const el of scrollEls) {
+      if (!el) continue;
+      const article = el.querySelector("article.reader-container");
+      if (article) cleanups.push(initFootnoteTooltips(article));
+    }
+    return () => cleanups.forEach((c) => c());
   });
 
   onMount(() => {
