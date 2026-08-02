@@ -362,7 +362,7 @@
     const cleanups: (() => void)[] = [];
     for (const el of scrollEls) {
       if (!el) continue;
-      const article = el.querySelector("article.reader-container");
+      const article = el.querySelector<HTMLElement>("article.reader-container");
       if (article) cleanups.push(initFootnoteTooltips(article));
     }
     return () => cleanups.forEach((c) => c());
