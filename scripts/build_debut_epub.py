@@ -72,6 +72,8 @@ def convert_chapter_debut(content: str) -> str:
         return re.sub(r'<div class="twitter-embed"[^>]*>.*?</div>\s*</div>', save, text, flags=re.DOTALL)
     content = protect_twitter(content)
 
+    content = bw.TRANSITION_TEXT_RE.sub(bw.transition_replacer, content)
+
     content = bw.SHAKE_RE.sub(r'<span class="shake">\1</span>', content)
     content = bw.SHAKE_CHAR_RE.sub(bw.shake_char_replacer, content)
     content = bw.WAVE_RE.sub(bw.wave_char_replacer, content)
@@ -138,6 +140,7 @@ def convert_chapter_debut(content: str) -> str:
 
     content = bw.BRAUN_TV_TEXT_RE.sub(bw.braun_text_replacer("braun-tv-text"), content)
     content = bw.BRAUN_DOLL_TEXT_RE.sub(bw.braun_text_replacer("braun-doll-text"), content)
+    content = bw.PADDING_WINDOW_RE.sub(bw.braun_text_replacer("padding-window"), content)
 
     # Star windows
     content = DEBUT_ALERT_RE.sub(bw.debut_alert_replacer, content)

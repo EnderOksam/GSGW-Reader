@@ -79,6 +79,7 @@ HEX_AURORA_UP_STATIC_RE = re.compile(r"\$hxaus\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(
 
 SCROLL_LEFT_RE = re.compile(r"\|<(.+?)<\|", re.DOTALL)
 SCROLL_RIGHT_RE = re.compile(r"\|>(.+?)>\|", re.DOTALL)
+TRANSITION_TEXT_RE = re.compile(r"\|t\s*(?:\(([^)]*)\))?\s*(.*?)\s*t\|", re.DOTALL)
 
 FOOTNOTE_RE = re.compile(r"\[(\d+)\]\{([^}]+)\}", re.DOTALL)
 
@@ -106,6 +107,7 @@ STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
 BRAUN_WINDOW_RE = re.compile(r"!\[\n(.*?)\n\]!", re.DOTALL)
 BRAUN_TV_TEXT_RE = re.compile(r"\$Brt\n(.*?)\nBrt\$", re.DOTALL)
 BRAUN_DOLL_TEXT_RE = re.compile(r"\$Brd\n(.*?)\nBrd\$", re.DOTALL)
+PADDING_WINDOW_RE = re.compile(r"\$p\n(.*?)\np\$", re.DOTALL)
 
 DEBUT_WINDOW_RE = re.compile(r"★-\n(.*?)\n-★", re.DOTALL)
 DEBUT_ALERT_RE = re.compile(r"★!\n(.*?)\n!★", re.DOTALL)
@@ -115,6 +117,8 @@ COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
 
 SIMPLE_REPLACEMENTS = [
+    (TRANSITION_TEXT_RE, lambda m: transition_replacer(m)),
+
     (re.compile(r"(?<!\\)_(.*?)(?<!\\)_", re.DOTALL), r"[\1]{.underline}"),
 
 
@@ -911,6 +915,27 @@ def scroll_replacer(match, direction):
     )
 
 
+def transition_replacer(match):
+    duration = match.group(1)
+    parts = [p.strip() for p in match.group(2).split(">")]
+    if len(parts) > 6:
+        return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", parts[0])
+    dur_style = ""
+    if duration and re.fullmatch(r"\d+(\.\d+)?(ms|s)", duration):
+        dur_style = f"--tt-slot:{duration};"
+    items = "".join(
+        '<span class="transition-item" style="--tt-i:%d">%s</span>' % (
+            i,
+            re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", p),
+        )
+        for i, p in enumerate(parts)
+    )
+    return (
+        '<span class="transition-text" data-count="%d" style="%s--tt-count:%d">%s</span>'
+        % (len(parts), dur_style, len(parts), items)
+    )
+
+
 def convert_chapter(content):
 
     content = process_twitter_urls(content)
@@ -929,6 +954,10 @@ def convert_chapter(content):
             flags=re.DOTALL
         )
     content = protect_twitter(content)
+
+    # transition text must be processed before any formatting tag is converted
+    # to HTML (their <span> output contains ">" which would break the split)
+    content = TRANSITION_TEXT_RE.sub(transition_replacer, content)
 
     footnotes = {}
     fn_placeholders = {}
@@ -1067,6 +1096,7 @@ def convert_chapter(content):
 
     content = BRAUN_TV_TEXT_RE.sub(braun_text_replacer("braun-tv-text"), content)
     content = BRAUN_DOLL_TEXT_RE.sub(braun_text_replacer("braun-doll-text"), content)
+    content = PADDING_WINDOW_RE.sub(braun_text_replacer("padding-window"), content)
 
     # star windows (debut-specific)
     content = DEBUT_ALERT_RE.sub(debut_alert_replacer, content)

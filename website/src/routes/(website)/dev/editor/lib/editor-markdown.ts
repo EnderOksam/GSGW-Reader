@@ -147,6 +147,21 @@ function renderFootnoteText(text: string): string {
 export function preprocessMarkdown(text: string, book: string = "gsgw"): string {
   let s = text.replace(/\r\n/g, "\n");
 
+  // transition text — must run first so it splits on ">" before formatting
+  // tags convert to HTML (which also contains ">")
+  s = s.replace(/\|t\s*(?:\(([^)]*)\))?\s*(.*?)\s*t\|/gs, (_: string, dur: string, text: string) => {
+    const parts = text.split(">").map(p => p.trim()).filter(Boolean);
+    if (parts.length > 6) {
+      return parts[0].replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    }
+    const validDur = dur !== undefined && dur !== null && /^\d+(\.\d+)?(ms|s)$/.test(dur);
+    const durStyle = validDur ? `--tt-slot:${dur};` : "";
+    const items = parts
+      .map((p, i) => `<span class="transition-item" style="--tt-i:${i}">${p.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")}</span>`)
+      .join("");
+    return `<span class="transition-text" data-count="${parts.length}" style="${durStyle}--tt-count:${parts.length}">${items}</span>`;
+  });
+
   // illustration tags are handled by the template, not here
 
   s = s.replace(/%%(.*?)%%/gs, '<span class="shake">$1</span>');
@@ -339,6 +354,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/\$Brt\n(.*?)\nBrt\$/gs, (_: string, inner: string) => makeWindow("braun-tv-text", inner.replace(/\n+/g, "<br>")));
   s = s.replace(/\$Brd\n(.*?)\nBrd\$/gs, (_: string, inner: string) => makeWindow("braun-doll-text", inner.replace(/\n+/g, "<br>")));
+  s = s.replace(/\$p\n(.*?)\np\$/gs, (_: string, inner: string) => makeWindow("padding-window", inner.replace(/\n+/g, "<br>")));
 
   s = s.replace(/★!\n(.*?)\n!★/gs, (_: string, inner: string) => makeWindow("debut-alert", inner));
 

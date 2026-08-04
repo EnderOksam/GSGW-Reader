@@ -1111,6 +1111,26 @@ def render_inline(text: str, ctx: RenderContext) -> str:
 
     text = LINK_RE.sub(link_repl, text)
 
+    transition_re = re.compile(r"\|t\s*(?:\(([^)]*)\))?\s*(.*?)\s*t\|", re.DOTALL)
+    def transition_repl(match: re.Match) -> str:
+        duration = match.group(1)
+        parts = [p.strip() for p in match.group(2).split(">")]
+        if len(parts) > 6:
+            return render_inline(parts[0], ctx)
+        dur_style = ""
+        if duration and re.fullmatch(r"\d+(\.\d+)?(ms|s)", duration):
+            dur_style = f"--tt-slot:{duration};"
+        items = "".join(
+            f'<span class="transition-item" style="--tt-i:{i}">{render_inline(p, ctx)}</span>'
+            for i, p in enumerate(parts)
+        )
+        return stash_html(
+            store,
+            f'<span class="transition-text" data-count="{len(parts)}" '
+            f'style="{dur_style}--tt-count:{len(parts)}">{items}</span>',
+        )
+    text = transition_re.sub(transition_repl, text)
+
     custom_wrappers = [
         (r"@@(.+?)@@", '<span class="glitch-text">{inner}</span>'),
         (r"@_@(.+?)@_@", '<span class="glitch-subtle">{inner}</span>'),
@@ -1274,6 +1294,7 @@ WINDOW_PATTERNS = [
     ("braun-screen", re.compile(r"^!\[$"), re.compile(r"^\]!$")),
     ("braun-tv-text", re.compile(r"^\$Brt$"), re.compile(r"^Brt\$$")),
     ("braun-doll-text", re.compile(r"^\$Brd$"), re.compile(r"^Brd\$$")),
+    ("padding-window", re.compile(r"^\$p$"), re.compile(r"^p\$$")),
     ("sms-window", re.compile(r"^★:$"), re.compile(r"^:★$")),
     ("alert-window", re.compile(r"^★\$$"), re.compile(r"^\$★$")),
 ]
@@ -1520,7 +1541,7 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
                 inner_html = render_sms_window(inner_lines, ctx)
             elif class_name == "alert-window":
                 inner_html = render_comment_window(inner_lines, ctx)
-            elif class_name in ("braun-tv-text", "braun-doll-text"):
+            elif class_name in ("braun-tv-text", "braun-doll-text", "padding-window"):
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 parts = [p for p in re.split(r"\n+", inner) if p.strip()]
                 inner_html = "<br />".join(render_inline(p, ctx) for p in parts)
