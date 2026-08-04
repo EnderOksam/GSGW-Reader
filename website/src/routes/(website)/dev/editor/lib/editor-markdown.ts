@@ -60,6 +60,7 @@ const simpleInlineTags: [RegExp, string][] = [
   [/;g(.*?)g;/gs, '<span class="hl-green">$1</span>'],
   [/;o(.*?)o;/gs, '<span class="hl-orange">$1</span>'],
   [/\$\$(.*?)\$\$/gs, '<span class="handwritten">$1</span>'],
+  [/\$Eb(.*?)Eb\$/gs, '<span class="eb-garamond">$1</span>'],
   [/\$c(.*?)c\$/gs, '<span class="contaminated">$1</span>'],
   [/\$wo(.*?)wo\$/gs, '<span class="outline-white">$1</span>'],
   [/\$bo(.*?)bo\$/gs, '<span class="outline-black">$1</span>'],
@@ -316,6 +317,8 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/\+\$\n(.*?)\n\$\+/gs, (_: string, inner: string) => makeWindow("plain-window", inner));
 
+  s = s.replace(/\+\.\n(.*?)\n\.\+/gs, (_: string, inner: string) => makeWindow("bare-window", inner));
+
   s = s.replace(/&[-]+\n(.*?)\n[-]+&/gs, (_: string, inner: string) => {
     const noMeta = inner.trimStart().startsWith("\\");
     if (noMeta) inner = inner.replace("\\", "");
@@ -333,6 +336,9 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   s = s.replace(/!\$\n(.*?)\n\$!/gs, (_: string, inner: string) => makeWindow("sticky-window", inner));
 
   s = s.replace(/!\[\n(.*?)\n\]!/gs, (_: string, inner: string) => makeWindow("braun-screen", inner));
+
+  s = s.replace(/\$Brt\n(.*?)\nBrt\$/gs, (_: string, inner: string) => makeWindow("braun-tv-text", inner.replace(/\n+/g, "<br>")));
+  s = s.replace(/\$Brd\n(.*?)\nBrd\$/gs, (_: string, inner: string) => makeWindow("braun-doll-text", inner.replace(/\n+/g, "<br>")));
 
   s = s.replace(/★!\n(.*?)\n!★/gs, (_: string, inner: string) => makeWindow("debut-alert", inner));
 

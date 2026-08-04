@@ -95,6 +95,7 @@ WIKI_WINDOW_RE = re.compile(r"\+[-+]+\n(.*?)\n[-+]+\+", re.DOTALL)
 BLACK_WINDOW_RE = re.compile(r"\+[=]+\n(.*?)\n[=]+\+", re.DOTALL)
 SYSTEM_WINDOW_RE = re.compile(r"\+[~]+\n(.*?)\n[~]+\+", re.DOTALL)
 PLAIN_WINDOW_RE = re.compile(r"\+\$\n(.*?)\n\$\+", re.DOTALL)
+BARE_WINDOW_RE = re.compile(r"\+\.\n(.*?)\n\.\+", re.DOTALL)
 
 RECORD_WINDOW_RE = re.compile(r"&[-]+\n(.*?)\n[-]+&", re.DOTALL)
 FOLLOWUP_WINDOW_RE = re.compile(r"\+\$\n(.*?)\n-\$", re.DOTALL)
@@ -103,6 +104,8 @@ AMPERSAND_WINDOW_RE = re.compile(r"&\$\n(.*?)\n\$&", re.DOTALL)
 NOTE_WINDOW_RE = re.compile(r"![-]+\n(.*?)\n[-]+!", re.DOTALL)
 STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
 BRAUN_WINDOW_RE = re.compile(r"!\[\n(.*?)\n\]!", re.DOTALL)
+BRAUN_TV_TEXT_RE = re.compile(r"\$Brt\n(.*?)\nBrt\$", re.DOTALL)
+BRAUN_DOLL_TEXT_RE = re.compile(r"\$Brd\n(.*?)\nBrd\$", re.DOTALL)
 
 DEBUT_WINDOW_RE = re.compile(r"★-\n(.*?)\n-★", re.DOTALL)
 DEBUT_ALERT_RE = re.compile(r"★!\n(.*?)\n!★", re.DOTALL)
@@ -148,6 +151,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r";o(.*?)o;", re.DOTALL), r'<span class="hl-orange">\1</span>'),
 
     (re.compile(r"\$c(.*?)c\$", re.DOTALL), r'<span class="contaminated">\1</span>'),
+    (re.compile(r"\$Eb(.*?)Eb\$", re.DOTALL), r'<span class="eb-garamond">\1</span>'),
     (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
     (re.compile(r"\$bo(.*?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
 ]
@@ -550,6 +554,13 @@ def make_window(class_name, inner, extra_class=None):
     dotted = " ".join(f".{c.lstrip('.')}" for c in cls.split())
 
     return f'\n::: {{{dotted}}}\n{inner}\n:::\n'
+
+
+def braun_text_replacer(class_name):
+    def replacer(match):
+        inner = re.sub(r"\n+", "<br>", match.group(1))
+        return make_window(class_name, inner)
+    return replacer
 
 
 def wiki_window_replacer(match):
@@ -1025,6 +1036,11 @@ def convert_chapter(content):
         content
     )
 
+    content = BARE_WINDOW_RE.sub(
+        lambda m: make_window("bare-window", m.group(1)),
+        content
+    )
+
     content = RECORD_WINDOW_RE.sub(record_window_replacer, content)
 
     content = FOLLOWUP_WINDOW_RE.sub(
@@ -1048,6 +1064,9 @@ def convert_chapter(content):
         lambda m: make_window("braun-screen", m.group(1)),
         content
     )
+
+    content = BRAUN_TV_TEXT_RE.sub(braun_text_replacer("braun-tv-text"), content)
+    content = BRAUN_DOLL_TEXT_RE.sub(braun_text_replacer("braun-doll-text"), content)
 
     # star windows (debut-specific)
     content = DEBUT_ALERT_RE.sub(debut_alert_replacer, content)

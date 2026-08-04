@@ -148,6 +148,7 @@
       snippetPreviewEl.style.fontFamily = cs.fontFamily;
       snippetPreviewEl.style.fontSize = cs.fontSize;
       snippetPreviewEl.style.fontWeight = cs.fontWeight;
+      snippetPreviewEl.style.lineHeight = cs.lineHeight;
       snippetPreviewEl.style.color = cs.color;
     }
 
@@ -169,6 +170,17 @@
         }
         .glitch-text {
           -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.14);
+        }
+        .glitch-subtle {
+          -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.10);
+        }
+        .outline-white {
+          -webkit-text-stroke: 0.08em white;
+          paint-order: stroke fill;
+        }
+        .outline-black {
+          -webkit-text-stroke: 0.08em black;
+          paint-order: stroke fill;
         }
       `;
       snippetPreviewEl.prepend(styleEl);
@@ -799,8 +811,13 @@
         style="padding: 20px; border-radius: 16px; width: 640px; position: relative;"
       >
         {#if snippetShowShadow}
-          <!-- DOM shadow element (replaces CSS box-shadow for html2canvas compatibility) -->
-          <div style="position: absolute; inset: 20px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2); pointer-events: none;"></div>
+          <!-- Gradient shadow layers (html-to-image drops box-shadow when rasterizing on iOS, gradients render) -->
+          <div style="position: absolute; inset: 0; pointer-events: none;">
+            <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 34px; border-radius: 0 0 16px 16px; background: linear-gradient(to top, rgba(0,0,0,0.32), rgba(0,0,0,0.14) 55%, transparent);"></div>
+            <div style="position: absolute; left: 0; right: 0; top: 0; height: 20px; border-radius: 16px 16px 0 0; background: linear-gradient(to bottom, rgba(0,0,0,0.10), transparent);"></div>
+            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 34px; border-radius: 0 16px 16px 0; background: linear-gradient(to left, rgba(0,0,0,0.14), transparent);"></div>
+            <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 34px; border-radius: 16px 0 0 16px; background: linear-gradient(to right, rgba(0,0,0,0.14), transparent);"></div>
+          </div>
         {/if}
         <!-- Inner card: the actual content card with shadow -->
         <div

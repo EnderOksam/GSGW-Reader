@@ -128,12 +128,16 @@ def convert_chapter_debut(content: str) -> str:
     content = bw.BLACK_WINDOW_RE.sub(lambda m: bw.make_window("black-window", m.group(1)), content)
     content = bw.SYSTEM_WINDOW_RE.sub(bw.system_window_replacer, content)
     content = bw.PLAIN_WINDOW_RE.sub(lambda m: bw.make_window("plain-window", m.group(1)), content)
+    content = bw.BARE_WINDOW_RE.sub(lambda m: bw.make_window("bare-window", m.group(1)), content)
     content = bw.RECORD_WINDOW_RE.sub(bw.record_window_replacer, content)
     content = bw.FOLLOWUP_WINDOW_RE.sub(lambda m: bw.make_window("plain-window", m.group(1)), content)
     content = bw.AMPERSAND_WINDOW_RE.sub(lambda m: bw.make_window("followup-window", m.group(1)), content)
     content = bw.NOTE_WINDOW_RE.sub(bw.note_window_replacer, content)
     content = bw.STICKY_WINDOW_RE.sub(lambda m: bw.make_window("sticky-window", m.group(1)), content)
     content = bw.BRAUN_WINDOW_RE.sub(lambda m: bw.make_window("braun-screen", m.group(1)), content)
+
+    content = bw.BRAUN_TV_TEXT_RE.sub(bw.braun_text_replacer("braun-tv-text"), content)
+    content = bw.BRAUN_DOLL_TEXT_RE.sub(bw.braun_text_replacer("braun-doll-text"), content)
 
     # Star windows
     content = DEBUT_ALERT_RE.sub(bw.debut_alert_replacer, content)

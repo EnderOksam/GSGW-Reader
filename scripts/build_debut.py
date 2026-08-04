@@ -404,6 +404,11 @@ def convert_chapter(content):
         content
     )
 
+    content = bw.BARE_WINDOW_RE.sub(
+        lambda m: bw.make_window("bare-window", m.group(1)),
+        content
+    )
+
     content = bw.RECORD_WINDOW_RE.sub(bw.record_window_replacer, content)
 
     content = bw.FOLLOWUP_WINDOW_RE.sub(
@@ -426,6 +431,9 @@ def convert_chapter(content):
         lambda m: bw.make_window("braun-screen", m.group(1)),
         content
     )
+
+    content = bw.BRAUN_TV_TEXT_RE.sub(bw.braun_text_replacer("braun-tv-text"), content)
+    content = bw.BRAUN_DOLL_TEXT_RE.sub(bw.braun_text_replacer("braun-doll-text"), content)
 
     # star windows (debut-specific)
     content = DEBUT_ALERT_RE.sub(bw.debut_alert_replacer, content)

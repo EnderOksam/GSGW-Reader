@@ -249,6 +249,14 @@ del { text-decoration: line-through; }
 }
 .plain-window p { color: var(--window-text) !important; margin: 0.6em 0; line-height: 1.7; text-align: left; }
 
+.bare-window {
+  margin: 2.5rem auto; background: transparent; border: 1px solid rgba(220, 220, 220, 0.55);
+  border-radius: 4px; max-width: 90%; padding: 1.5em 2em; text-align: center;
+  position: relative; box-shadow: 0 0 0 1px rgba(240, 240, 240, 0.05) inset, 0 4px 24px rgba(0,0,0,0.35);
+  color: var(--window-text) !important;
+}
+.bare-window p { color: var(--window-text) !important; margin: 0.5em 0; line-height: 1.7; text-align: center; }
+
 .followup-window {
   margin: 2.5rem auto; background: linear-gradient(145deg, #121a3a, #1d2350);
   border: 1px solid rgba(120, 180, 255, 0.1); border-radius: 10px; max-width: 98%;
@@ -337,6 +345,7 @@ del { text-decoration: line-through; }
 .align-right { display: block; text-align: right; }
 .handwritten { font-family: 'Caveat', cursive; font-size: 1.2em; }
 .contaminated { font-family: 'Comic Sans MS', cursive; }
+.eb-garamond { font-family: 'EB Garamond', serif; }
 .glitch-text { opacity: 0.8; text-shadow: 1px 0 0 #cc2200, -1px 0 0 #2255cc; }
 .glitch-subtle { opacity: 0.9; text-shadow: 0.5px 0.5px 0 #777; }
 .shake { display: inline-block; font-weight: 700; }
@@ -461,7 +470,7 @@ WINDOW_CSS = build_screenshot_css()
 
 ALL_WINDOW_CLASSES = (
     "debut-window(?!-)|debut-alert(?!-)|debut-achievement(?!-)|sms-window|alert-window|"
-    "wiki-window|record-window|black-window|system-window|plain-window|"
+    "wiki-window|record-window|black-window|system-window|plain-window|bare-window|"
     "followup-window|note-window|sticky-window|braun-screen"
 )
 
@@ -1138,6 +1147,7 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"#v#(.+?)#v#", '<span class="text-grow">{inner}</span>'),
         (r"\$\$(.+?)\$\$", '<span class="handwritten">{inner}</span>'),
         (r"\$c(.+?)c\$", '<span class="contaminated">{inner}</span>'),
+        (r"\$Eb(.+?)Eb\$", '<span class="eb-garamond">{inner}</span>'),
         (r"\$a(.+?)a\$", '<span class="aurora-text">{inner}</span>'),
         (r"\$g(.+?)g\$", '<span class="gold-text">{inner}</span>'),
         (r"\$\*(.+?)\*\$", '<span class="sparkle-text">{inner}</span>'),
@@ -1257,10 +1267,13 @@ WINDOW_PATTERNS = [
     ("black-window", re.compile(r"^\+=$"), re.compile(r"^=\+$")),
     ("system-window", re.compile(r"^\+~$"), re.compile(r"^~\+$")),
     ("plain-window", re.compile(r"^\+\$$"), re.compile(r"^\$\+$")),
+    ("bare-window", re.compile(r"^\+\.$"), re.compile(r"^\.\+$")),
     ("followup-window", re.compile(r"^&\$$"), re.compile(r"^\$&$")),
     ("note-window", re.compile(r"^!-+$"), re.compile(r"^-+!$")),
     ("sticky-window", re.compile(r"^!\$$"), re.compile(r"^\$!$")),
     ("braun-screen", re.compile(r"^!\[$"), re.compile(r"^\]!$")),
+    ("braun-tv-text", re.compile(r"^\$Brt$"), re.compile(r"^Brt\$$")),
+    ("braun-doll-text", re.compile(r"^\$Brd$"), re.compile(r"^Brd\$$")),
     ("sms-window", re.compile(r"^★:$"), re.compile(r"^:★$")),
     ("alert-window", re.compile(r"^★\$$"), re.compile(r"^\$★$")),
 ]
@@ -1507,6 +1520,10 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
                 inner_html = render_sms_window(inner_lines, ctx)
             elif class_name == "alert-window":
                 inner_html = render_comment_window(inner_lines, ctx)
+            elif class_name in ("braun-tv-text", "braun-doll-text"):
+                inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
+                parts = [p for p in re.split(r"\n+", inner) if p.strip()]
+                inner_html = "<br />".join(render_inline(p, ctx) for p in parts)
             else:
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 inner_html = render_blocks(inner, ctx)

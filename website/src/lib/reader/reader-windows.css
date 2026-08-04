@@ -15,7 +15,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 1.25rem;
-  line-height: 1.6;
+  line-height: var(--chapter-lh, 1.6);
   color: oklch(from var(--bc) l 0 h);
   font-family: var(--chapter-font, 'Inter', system-ui, sans-serif);
 }
@@ -245,6 +245,57 @@
 }
 
 .reader-container .plain-window p:empty {
+  display: none;
+}
+
+/* --- BARE WINDOW --- */
+
+.reader-container .bare-window {
+  margin: 2.5rem auto;
+  background: transparent;
+  border: 1px solid oklch(0.85 0 0 / 0.55);
+  border-radius: 4px;
+  max-width: 90%;
+  padding: 1.5em 2em;
+  text-align: center;
+  color: var(--window-text) !important;
+  box-shadow:
+    0 0 0 1px oklch(0.95 0 0 / 0.05) inset,
+    0 4px 24px oklch(0 0 0 / 0.35);
+}
+
+@media (min-width: 640px) {
+  .reader-container .bare-window {
+    max-width: 75%;
+  }
+}
+
+.reader-container .bare-window p,
+.reader-container .bare-window a,
+.reader-container .bare-window strong,
+.reader-container .bare-window b,
+.reader-container .bare-window em,
+.reader-container .bare-window i,
+.reader-container .bare-window li,
+.reader-container .bare-window code {
+  color: var(--window-text) !important;
+}
+
+.reader-container .bare-window p {
+  margin: 0.5em 0;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.reader-container .bare-window p:first-of-type {
+  margin-top: 0;
+}
+
+.reader-container .bare-window p:last-of-type {
+  margin-bottom: 0;
+}
+
+.reader-container .bare-window p:empty {
   display: none;
 }
 
