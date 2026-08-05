@@ -514,8 +514,8 @@
   const colorsItems = [
     { syntax: "$$text$$", text: "handwritten text", cls: "handwritten", expandable: true },
     { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
-    { syntax: "$wotextwo$", text: "white outline", cls: "text-black outline-white", expandable: true, previewHtml: '<span class="text-black" style="-webkit-text-stroke:1px white;text-stroke:1px white;">text</span>' },
-    { syntax: "$botextbo$", text: "black outline", cls: "text-green outline-black", expandable: true, previewHtml: '<span class="text-green" style="-webkit-text-stroke:1px black;text-stroke:1px black;">text</span>' },
+    { syntax: "$wotextwo$", text: "white outline", cls: "text-black outline-white", expandable: true, previewHtml: '<span class="text-black" style="-webkit-text-stroke:0.15em white;text-stroke:0.15em white;paint-order:stroke fill;">text</span>' },
+    { syntax: "$botextbo$", text: "black outline", cls: "text-green outline-black", expandable: true, previewHtml: '<span class="text-green" style="-webkit-text-stroke:0.15em black;text-stroke:0.15em black;paint-order:stroke fill;">text</span>' },
     { syntax: "$hxo(#ff)texthxo#", text: "hex outline", cls: "hex-outline", expandable: true, previewHtml: '<span class="hex-outline hex-preview" style="--hxo-color:#ff6600">text</span>', meta: "replace #ffffff with any valid hex color" },
     { syntax: "#rtextr#", text: "red text", cls: "text-red" },
     { syntax: "#otexto#", text: "orange text", cls: "text-orange" },

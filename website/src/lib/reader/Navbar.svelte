@@ -2,7 +2,7 @@
   import Icon from "@iconify/svelte";
   import { fade } from "svelte/transition";
   import { tick } from "svelte";
-  import { toPng } from "html-to-image";
+  import { domToPng } from "modern-screenshot";
   import { readerState } from "$lib/reader.svelte";
   import ReferencePanel from "./ReferencePanel.svelte";
   import readerCss from "../../routes/(reader)/reader.css?inline";
@@ -148,8 +148,14 @@
       snippetPreviewEl.style.fontFamily = cs.fontFamily;
       snippetPreviewEl.style.fontSize = cs.fontSize;
       snippetPreviewEl.style.fontWeight = cs.fontWeight;
-      snippetPreviewEl.style.lineHeight = cs.lineHeight;
       snippetPreviewEl.style.color = cs.color;
+      const chapterLh = cs.getPropertyValue("--chapter-lh").trim();
+      if (chapterLh) {
+        snippetPreviewEl.style.setProperty("--chapter-lh", chapterLh);
+        snippetPreviewEl.style.lineHeight = "calc(var(--chapter-lh) * 1.5)";
+      } else {
+        snippetPreviewEl.style.lineHeight = cs.lineHeight;
+      }
     }
 
     const primaryEl = document.querySelector<HTMLElement>(".text-primary");
@@ -175,12 +181,14 @@
           -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.10);
         }
         .outline-white {
-          -webkit-text-stroke: 0.08em white;
+          -webkit-text-stroke: 0.15em white;
           paint-order: stroke fill;
+          line-height: calc(var(--chapter-lh) * 1.5);
         }
         .outline-black {
-          -webkit-text-stroke: 0.08em black;
+          -webkit-text-stroke: 0.15em black;
           paint-order: stroke fill;
+          line-height: calc(var(--chapter-lh) * 1.5);
         }
       `;
       snippetPreviewEl.prepend(styleEl);
@@ -196,10 +204,9 @@
       const readerBgEl = document.querySelector<HTMLElement>(".bg-base-100");
       const bg = readerBgEl ? getComputedStyle(readerBgEl).backgroundColor : "#0d0d0d";
 
-      snippetImageUrl = await toPng(snippetOuterEl, {
-        pixelRatio: 2,
+      snippetImageUrl = await domToPng(snippetOuterEl, {
+        scale: 2,
         backgroundColor: bg,
-        skipAutoScale: true,
         style: { borderRadius: "0" },
       });
     } catch (e) {
@@ -823,7 +830,7 @@
         <div
           bind:this={snippetPreviewEl}
           class="reader-container"
-          style="position: relative; z-index: 1; width: 600px; padding: 2em 2.25em 1.25em; border-radius: 12px; --chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 2.2; font-family: var(--chapter-font); font-size: var(--chapter-size); font-weight: var(--chapter-weight); line-height: var(--chapter-lh);"
+          style="position: relative; z-index: 1; width: 600px; padding: 2em 2.25em 1.25em; border-radius: 12px; --chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; font-family: var(--chapter-font); font-size: var(--chapter-size); font-weight: var(--chapter-weight); line-height: calc(var(--chapter-lh) * 1.5);"
         >
           {@html capturedHtml}
 

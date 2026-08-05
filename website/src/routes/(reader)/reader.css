@@ -572,37 +572,17 @@ hr.invisible-hr {
   }
 
 .outline-white {
-  display: inline-block;
-  filter:
-    drop-shadow(.06em 0 0 white)
-    drop-shadow(-.06em 0 0 white)
-    drop-shadow(0 .06em 0 white)
-    drop-shadow(0 -.06em 0 white)
-    drop-shadow(.04em .04em 0 white)
-    drop-shadow(-.04em .04em 0 white)
-    drop-shadow(.04em -.04em 0 white)
-    drop-shadow(-.04em -.04em 0 white)
-    drop-shadow(.08em 0 0 white)
-    drop-shadow(-.08em 0 0 white)
-    drop-shadow(0 .08em 0 white)
-    drop-shadow(0 -.08em 0 white);
+  line-height: inherit;
+  -webkit-text-stroke: 0.15em white;
+  text-stroke: 0.15em white;
+  paint-order: stroke fill;
 }
 
 .outline-black {
-  display: inline-block;
-  filter:
-    drop-shadow(.06em 0 0 black)
-    drop-shadow(-.06em 0 0 black)
-    drop-shadow(0 .06em 0 black)
-    drop-shadow(0 -.06em 0 black)
-    drop-shadow(.04em .04em 0 black)
-    drop-shadow(-.04em .04em 0 black)
-    drop-shadow(.04em -.04em 0 black)
-    drop-shadow(-.04em -.04em 0 black)
-    drop-shadow(.08em 0 0 black)
-    drop-shadow(-.08em 0 0 black)
-    drop-shadow(0 .08em 0 black)
-    drop-shadow(0 -.08em 0 black);
+  line-height: inherit;
+  -webkit-text-stroke: 0.15em black;
+  text-stroke: 0.15em black;
+  paint-order: stroke fill;
 }
 
 .hex-outline {
