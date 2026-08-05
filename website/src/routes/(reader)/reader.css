@@ -572,35 +572,37 @@ hr.invisible-hr {
   }
 
 .outline-white {
-  text-shadow:
-    .06em 0 0 white,
-    -.06em 0 0 white,
-    0 .06em 0 white,
-    0 -.06em 0 white,
-    .04em .04em 0 white,
-    -.04em .04em 0 white,
-    .04em -.04em 0 white,
-    -.04em -.04em 0 white,
-    .08em 0 0 white,
-    -.08em 0 0 white,
-    0 .08em 0 white,
-    0 -.08em 0 white;
+  display: inline-block;
+  filter:
+    drop-shadow(.06em 0 0 white)
+    drop-shadow(-.06em 0 0 white)
+    drop-shadow(0 .06em 0 white)
+    drop-shadow(0 -.06em 0 white)
+    drop-shadow(.04em .04em 0 white)
+    drop-shadow(-.04em .04em 0 white)
+    drop-shadow(.04em -.04em 0 white)
+    drop-shadow(-.04em -.04em 0 white)
+    drop-shadow(.08em 0 0 white)
+    drop-shadow(-.08em 0 0 white)
+    drop-shadow(0 .08em 0 white)
+    drop-shadow(0 -.08em 0 white);
 }
 
 .outline-black {
-  text-shadow:
-    .06em 0 0 black,
-    -.06em 0 0 black,
-    0 .06em 0 black,
-    0 -.06em 0 black,
-    .04em .04em 0 black,
-    -.04em .04em 0 black,
-    .04em -.04em 0 black,
-    -.04em -.04em 0 black,
-    .08em 0 0 black,
-    -.08em 0 0 black,
-    0 .08em 0 black,
-    0 -.08em 0 black;
+  display: inline-block;
+  filter:
+    drop-shadow(.06em 0 0 black)
+    drop-shadow(-.06em 0 0 black)
+    drop-shadow(0 .06em 0 black)
+    drop-shadow(0 -.06em 0 black)
+    drop-shadow(.04em .04em 0 black)
+    drop-shadow(-.04em .04em 0 black)
+    drop-shadow(.04em -.04em 0 black)
+    drop-shadow(-.04em -.04em 0 black)
+    drop-shadow(.08em 0 0 black)
+    drop-shadow(-.08em 0 0 black)
+    drop-shadow(0 .08em 0 black)
+    drop-shadow(0 -.08em 0 black);
 }
 
 .hex-outline {
