@@ -93,8 +93,8 @@
   text-shadow: none;
 }
 
-.reader-container .wiki-window strong,
-.reader-container .wiki-window b {
+.reader-container .wiki-window strong:not([class^="text-"]),
+.reader-container .wiki-window b:not([class^="text-"]) {
   color: inherit;
   font-weight: 700;
 }
@@ -174,8 +174,8 @@
   text-shadow: none;
 }
 
-.reader-container .record-window strong,
-.reader-container .record-window b {
+.reader-container .record-window strong:not([class^="text-"]),
+.reader-container .record-window b:not([class^="text-"]) {
   color: inherit;
   font-weight: 700;
 }
@@ -202,7 +202,7 @@
       0 0 0 1px oklch(0.95 0 0 / 0.02) inset;
   padding: 1.5em 2em 1em;
   text-align: left;
-  color: var(--window-text) !important;
+  color: oklch(0.75 0.06 260 / 0.9);
 }
 
 @media (min-width: 640px) {
@@ -213,10 +213,6 @@
 
 .reader-container .plain-window p,
 .reader-container .plain-window a,
-.reader-container .plain-window strong,
-.reader-container .plain-window b,
-.reader-container .plain-window em,
-.reader-container .plain-window i,
 .reader-container .plain-window li,
 .reader-container .plain-window h1,
 .reader-container .plain-window h2,
@@ -226,7 +222,18 @@
 .reader-container .plain-window h6,
 .reader-container .plain-window code,
 .reader-container .plain-window blockquote {
-  color: var(--window-text) !important;
+  color: oklch(0.75 0.06 260 / 0.9);
+}
+
+.reader-container .plain-window strong:not([class^="text-"]),
+.reader-container .plain-window b:not([class^="text-"]) {
+  color: inherit;
+  font-weight: 700;
+}
+
+.reader-container .plain-window em:not([class^="text-"]),
+.reader-container .plain-window i:not([class^="text-"]) {
+  color: inherit;
 }
 
 .reader-container .plain-window p {
@@ -258,7 +265,7 @@
   max-width: 90%;
   padding: 1.5em 2em;
   text-align: center;
-  color: var(--window-text) !important;
+  color: inherit;
   box-shadow:
     0 0 0 1px oklch(0.95 0 0 / 0.05) inset,
     0 4px 24px oklch(0 0 0 / 0.35);
@@ -278,7 +285,7 @@
 .reader-container .bare-window i,
 .reader-container .bare-window li,
 .reader-container .bare-window code {
-  color: var(--window-text) !important;
+  color: inherit;
 }
 
 .reader-container .bare-window p {
@@ -313,7 +320,7 @@
       0 0 0 1px oklch(0.95 0 0 / 0.02) inset;
   padding: 1.5em 2em 1em;
   text-align: left;
-  color: oklch(0.95 0 0) !important;
+  color: oklch(0.7 0.08 245 / 0.9);
 }
 
 @media (min-width: 640px) {
@@ -324,10 +331,6 @@
 
 .reader-container .followup-window p,
 .reader-container .followup-window a,
-.reader-container .followup-window strong,
-.reader-container .followup-window b,
-.reader-container .followup-window em,
-.reader-container .followup-window i,
 .reader-container .followup-window li,
 .reader-container .followup-window h1,
 .reader-container .followup-window h2,
@@ -337,7 +340,18 @@
 .reader-container .followup-window h6,
 .reader-container .followup-window code,
 .reader-container .followup-window blockquote {
-  color: oklch(0.95 0 0) !important;
+  color: oklch(0.7 0.08 245 / 0.9);
+}
+
+.reader-container .followup-window strong:not([class^="text-"]),
+.reader-container .followup-window b:not([class^="text-"]) {
+  color: inherit;
+  font-weight: 700;
+}
+
+.reader-container .followup-window em:not([class^="text-"]),
+.reader-container .followup-window i:not([class^="text-"]) {
+  color: inherit;
 }
 
 .reader-container .followup-window p {
@@ -678,6 +692,24 @@
 
 .reader-container .braun-screen p:empty {
   display: none;
+}
+
+.reader-container .padding-window,
+.reader-container .braun-tv-text,
+.reader-container .braun-doll-text {
+  padding: 1em 0;
+}
+
+.reader-container .padding-window p,
+.reader-container .braun-tv-text p,
+.reader-container .braun-doll-text p {
+  margin: 0 0 1em;
+}
+
+.reader-container .padding-window p:last-child,
+.reader-container .braun-tv-text p:last-child,
+.reader-container .braun-doll-text p:last-child {
+  margin-bottom: 0;
 }
 
 /* --- SYSTEM WINDOW --- */

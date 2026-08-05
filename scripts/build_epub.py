@@ -1544,7 +1544,7 @@ def render_blocks(text: str, ctx: RenderContext) -> str:
             elif class_name in ("braun-tv-text", "braun-doll-text", "padding-window"):
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 parts = [p for p in re.split(r"\n+", inner) if p.strip()]
-                inner_html = "<br />".join(render_inline(p, ctx) for p in parts)
+                inner_html = "\n".join(f"<p>{render_inline(p, ctx)}</p>" for p in parts)
             else:
                 inner = strip_leading_escape("\n".join(inner_lines).strip("\n"))
                 inner_html = render_blocks(inner, ctx)

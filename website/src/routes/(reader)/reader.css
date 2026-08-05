@@ -939,10 +939,6 @@ body .reader-container .record-window.record-window li {
 body .reader-container .plain-window.plain-window,
 body .reader-container .plain-window.plain-window p,
 body .reader-container .plain-window.plain-window a,
-body .reader-container .plain-window.plain-window strong,
-body .reader-container .plain-window.plain-window b,
-body .reader-container .plain-window.plain-window em,
-body .reader-container .plain-window.plain-window i,
 body .reader-container .plain-window.plain-window li,
 body .reader-container .plain-window.plain-window h1,
 body .reader-container .plain-window.plain-window h2,
@@ -952,16 +948,12 @@ body .reader-container .plain-window.plain-window h5,
 body .reader-container .plain-window.plain-window h6,
 body .reader-container .plain-window.plain-window code,
 body .reader-container .plain-window.plain-window blockquote {
-  color: oklch(0.95 0 0) !important;
+  color: oklch(0.75 0.06 260 / 0.9) !important;
 }
 
 body .reader-container .followup-window.followup-window,
 body .reader-container .followup-window.followup-window p,
 body .reader-container .followup-window.followup-window a,
-body .reader-container .followup-window.followup-window strong,
-body .reader-container .followup-window.followup-window b,
-body .reader-container .followup-window.followup-window em,
-body .reader-container .followup-window.followup-window i,
 body .reader-container .followup-window.followup-window li,
 body .reader-container .followup-window.followup-window h1,
 body .reader-container .followup-window.followup-window h2,
@@ -971,7 +963,7 @@ body .reader-container .followup-window.followup-window h5,
 body .reader-container .followup-window.followup-window h6,
 body .reader-container .followup-window.followup-window code,
 body .reader-container .followup-window.followup-window blockquote {
-  color: oklch(0.95 0 0) !important;
+  color: oklch(0.7 0.08 245 / 0.9) !important;
 }
 
 body .reader-container .system-window.system-window,

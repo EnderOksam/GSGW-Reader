@@ -87,8 +87,8 @@ TWITTER_URL_RE = re.compile(
     r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
 )
 
-VISIBLE_HR_RE = re.compile(r"^~~~\s*$", re.MULTILINE)
-INVISIBLE_HR_RE = re.compile(r"^~\^~\s*$", re.MULTILINE)
+VISIBLE_HR_RE = re.compile(r"^~~~(?=\s*$)", re.MULTILINE)
+INVISIBLE_HR_RE = re.compile(r"^~\^~(?=\s*$)", re.MULTILINE)
 
 STYLE_BLOCK_RE = re.compile(r'^[ \t]*\{style="([^"]*)"\}\s*$')
 
@@ -562,8 +562,8 @@ def make_window(class_name, inner, extra_class=None):
 
 def braun_text_replacer(class_name):
     def replacer(match):
-        inner = re.sub(r"\n+", "<br>", match.group(1))
-        return make_window(class_name, inner)
+        inner = re.sub(r"\n+", "\n\n", match.group(1))
+        return f"\n{make_window(class_name, inner)}\n"
     return replacer
 
 
@@ -991,7 +991,7 @@ def convert_chapter(content):
 
     content = SHRINK_RE.sub(shrink_replacer, content)
 
-    # protect markdown image syntax and double-tilde strikethrough from SIMPLE_REPLACEMENTS
+    # protect markdown image syntax from SIMPLE_REPLACEMENTS
     img_placeholders = {}
     def protect_patterns(text):
         def save(key_store):
@@ -1001,7 +1001,6 @@ def convert_chapter(content):
                 return key
             return save_inner
         text = re.sub(r'!\[.*?\]\(.*?\)', save(img_placeholders), text)
-        text = re.sub(r'~~[^~]+?~~', save(img_placeholders), text)
         return text
     content = protect_patterns(content)
 

@@ -6,6 +6,14 @@ function makeWindow(cls: string, inner: string, extra?: string): string {
   return `\n<div class="${cl}">\n\n${inner}\n\n</div>\n`;
 }
 
+function toParagraphs(inner: string): string {
+  return inner
+    .split(/\n+/)
+    .filter(l => l.trim() !== "")
+    .map(l => `<p>${l}</p>`)
+    .join("\n");
+}
+
 function escapeHtml(text: string): string {
   return text.split(/(<[^>]*>)/).map((part, i) => {
     if (i % 2 === 1) return part;
@@ -88,6 +96,7 @@ function renderFootnoteText(text: string): string {
   for (const [re, repl] of simpleInlineTags) {
     s = s.replace(re, repl);
   }
+  s = s.replace(/~~(.+?)~~/g, "<del>$1</del>");
   s = s.replace(/\$s(.+?)s\$/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     return `<span class="smoke-text">${inner}</span>`;
@@ -181,8 +190,8 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     }).join("");
   });
 
-  s = s.replace(/^~~~\s*$/gm, '<hr class="visible-hr">');
-  s = s.replace(/^~\^~\s*$/gm, '<hr class="invisible-hr">');
+  s = s.replace(/^~~~(?=\s*$)/gm, '<hr class="visible-hr">');
+  s = s.replace(/^~\^~(?=\s*$)/gm, '<hr class="invisible-hr">');
 
   s = s.replace(/@_@(.+?)@_@/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
@@ -222,11 +231,13 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   const placeholders = new Map<string, string>();
   let pid = 0;
   s = s.replace(/!\[.*?\]\(.*?\)/g, (m: string) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
-  s = s.replace(/~~[^~]+?~~/g, (m: string) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
 
   for (const [re, repl] of simpleInlineTags) {
     s = s.replace(re, repl);
   }
+
+  // Strikethrough — after inline tags so color/format markers inside are already wrapped
+  s = s.replace(/~~(.+?)~~/g, "<del>$1</del>");
 
   // Scroll text — duplicate content for seamless marquee loop
   s = s.replace(/\|<(.+?)<\|/gs, (_: string, text: string) => {
@@ -352,9 +363,9 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/!\[\n(.*?)\n\]!/gs, (_: string, inner: string) => makeWindow("braun-screen", inner));
 
-  s = s.replace(/\$Brt\n(.*?)\nBrt\$/gs, (_: string, inner: string) => makeWindow("braun-tv-text", inner.replace(/\n+/g, "<br>")));
-  s = s.replace(/\$Brd\n(.*?)\nBrd\$/gs, (_: string, inner: string) => makeWindow("braun-doll-text", inner.replace(/\n+/g, "<br>")));
-  s = s.replace(/\$p\n(.*?)\np\$/gs, (_: string, inner: string) => makeWindow("padding-window", inner.replace(/\n+/g, "<br>")));
+  s = s.replace(/\$Brt\n(.*?)\nBrt\$/gs, (_: string, inner: string) => "\n" + makeWindow("braun-tv-text", toParagraphs(inner)) + "\n");
+  s = s.replace(/\$Brd\n(.*?)\nBrd\$/gs, (_: string, inner: string) => "\n" + makeWindow("braun-doll-text", toParagraphs(inner)) + "\n");
+  s = s.replace(/\$p\n(.*?)\np\$/gs, (_: string, inner: string) => "\n" + makeWindow("padding-window", toParagraphs(inner)) + "\n");
 
   s = s.replace(/★!\n(.*?)\n!★/gs, (_: string, inner: string) => makeWindow("debut-alert", inner));
 
