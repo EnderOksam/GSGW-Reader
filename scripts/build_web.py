@@ -105,8 +105,8 @@ AMPERSAND_WINDOW_RE = re.compile(r"&\$\n(.*?)\n\$&", re.DOTALL)
 NOTE_WINDOW_RE = re.compile(r"![-]+\n(.*?)\n[-]+!", re.DOTALL)
 STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
 BRAUN_WINDOW_RE = re.compile(r"!\[\n(.*?)\n\]!", re.DOTALL)
-BRAUN_TV_TEXT_RE = re.compile(r"\$Brt\n(.*?)\nBrt\$", re.DOTALL)
-BRAUN_DOLL_TEXT_RE = re.compile(r"\$Brd\n(.*?)\nBrd\$", re.DOTALL)
+BRAUN_TV_TEXT_RE = re.compile(r"\$[Bb][Rr][Tt]\n(.*?)\n[Bb][Rr][Tt]\$", re.DOTALL)
+BRAUN_DOLL_TEXT_RE = re.compile(r"\$[Bb][Rr][Dd]\n(.*?)\n[Bb][Rr][Dd]\$", re.DOTALL)
 PADDING_WINDOW_RE = re.compile(r"\$p\n(.*?)\np\$", re.DOTALL)
 
 DEBUT_WINDOW_RE = re.compile(r"★-\n(.*?)\n-★", re.DOTALL)
@@ -615,6 +615,27 @@ def note_window_replacer(match):
     return make_window("note-window", inner)
 
 
+def debut_subs_replacer(text):
+    """Convert }text} and {text{ sub markers (with optional [!] alert prefix)
+    into their debut-achievement / alert-sub spans. Used across all debut
+    star windows so clickable option entries render everywhere."""
+    def sub_left(match):
+        inner = match.group(1).strip()
+        if inner.startswith("[!]"):
+            return f'<span class="alert-sub alert-sub-left">{inner[3:].strip()}</span>'
+        return f'<span class="debut-achievement-sub debut-achievement-sub-left">{inner}</span>'
+
+    def sub_right(match):
+        inner = match.group(1).strip()
+        if inner.startswith("[!]"):
+            return f'<span class="alert-sub alert-sub-right">{inner[3:].strip()}</span>'
+        return f'<span class="debut-achievement-sub debut-achievement-sub-right">{inner}</span>'
+
+    text = re.sub(r"\}([^\n}]+)\}", sub_left, text)
+    text = re.sub(r"\{([^\n{]+)\{", sub_right, text)
+    return text
+
+
 def debut_window_replacer(match):
     inner = match.group(1)
     lines = inner.split("\n")
@@ -635,15 +656,15 @@ def debut_window_replacer(match):
                 body_lines.append(line)
     body = "\n".join(body_lines).strip()
     title_html = f'<div class="debut-window-title">{title}</div>\n\n' if title else ""
-    return make_window("debut-window", title_html + body)
+    return make_window("debut-window", debut_subs_replacer(title_html + body))
 
 
 def debut_alert_replacer(match):
     inner = match.group(1)
     if inner.lstrip().startswith("<p align="):
         inner = re.sub(r'^\s*<p\s+align="center">\s*', '', inner)
-        return make_window("debut-alert debut-alert-center", inner)
-    return make_window("debut-alert", inner)
+        return make_window("debut-alert debut-alert-center", debut_subs_replacer(inner))
+    return make_window("debut-alert", debut_subs_replacer(inner))
 
 
 def debut_achieve_replacer(match):
@@ -675,23 +696,8 @@ def debut_achieve_replacer(match):
         flags=re.MULTILINE,
     )
 
-    def sub_left(match):
-        text = match.group(1).strip()
-        if text.startswith("[!]"):
-            return f'<span class="alert-sub alert-sub-left">{text[3:].strip()}</span>'
-        return f'<span class="debut-achievement-sub debut-achievement-sub-left">{text}</span>'
-
-    def sub_right(match):
-        text = match.group(1).strip()
-        if text.startswith("[!]"):
-            return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
-        return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
-
-    body = re.sub(r"\}([^\n}]+)\}", sub_left, body)
-    body = re.sub(r"\{([^\n{]+)\{", sub_right, body)
-
     title_html = f'<div class="debut-achievement-title">{title}</div>\n\n' if title else ""
-    return make_window("debut-achievement", title_html + body)
+    return make_window("debut-achievement", debut_subs_replacer(title_html + body))
 
 
 def safe_html(text):

@@ -88,15 +88,15 @@ def debut_window_replacer(match):
                 body_lines.append(line)
     body = "\n".join(body_lines).strip()
     title_html = f'<div class="debut-window-title">{title}</div>\n\n' if title else ""
-    return bw.make_window("debut-window", title_html + body)
+    return bw.make_window("debut-window", bw.debut_subs_replacer(title_html + body))
 
 
 def debut_alert_replacer(match):
     inner = match.group(1)
     if inner.lstrip().startswith("<p align="):
         inner = re.sub(r'^\s*<p\s+align="center">\s*', '', inner)
-        return bw.make_window("debut-alert debut-alert-center", inner)
-    return bw.make_window("debut-alert", inner)
+        return bw.make_window("debut-alert debut-alert-center", bw.debut_subs_replacer(inner))
+    return bw.make_window("debut-alert", bw.debut_subs_replacer(inner))
 
 
 def debut_achieve_replacer(match):
@@ -129,23 +129,8 @@ def debut_achieve_replacer(match):
         flags=re.MULTILINE,
     )
 
-    def sub_left(match):
-        text = match.group(1).strip()
-        if text.startswith("[!]"):
-            return f'<span class="alert-sub alert-sub-left">{text[3:].strip()}</span>'
-        return f'<span class="debut-achievement-sub debut-achievement-sub-left">{text}</span>'
-
-    def sub_right(match):
-        text = match.group(1).strip()
-        if text.startswith("[!]"):
-            return f'<span class="alert-sub alert-sub-right">{text[3:].strip()}</span>'
-        return f'<span class="debut-achievement-sub debut-achievement-sub-right">{text}</span>'
-
-    body = re.sub(r"\}([^\n}]+)\}", sub_left, body)
-    body = re.sub(r"\{([^\n{]+)\{", sub_right, body)
-
     title_html = f'<div class="debut-achievement-title">{title}</div>\n\n' if title else ""
-    return bw.make_window("debut-achievement", title_html + body)
+    return bw.make_window("debut-achievement", bw.debut_subs_replacer(title_html + body))
 
 
 def safe_html(text):
