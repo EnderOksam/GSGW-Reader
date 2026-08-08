@@ -54,6 +54,7 @@
   });
 
   let patchNotes = [
+    { version: "v0.7", description: "- add import/export for U-DER records (.uder files)" },
     { version: "v0.6", description: "- cleaned up the editor code and reworked the formatting window" },
     { version: "v0.5", description: "- added character editor" },
     { version: "v0.4", description: "- bug fixing\n- themes\n- changed mobile editing ui to fit the smaller screen" },
@@ -139,6 +140,8 @@
 
   let chaptersRef: ChaptersEditor = $state()!;
   let charsRef: CharactersEditor = $state()!;
+  let uderRef: UderEditor = $state()!;
+  let uderImportRef: HTMLInputElement | undefined = $state();
 </script>
 
 <svelte:head>
@@ -175,6 +178,10 @@
         {/if}
       {:else if editorMode === "uder"}
         <a href="/" class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-5" /></a>
+        <span class="mx-0.5 w-px h-5 bg-base-content/10"></span>
+        <button onclick={() => uderRef?.handleExport()} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:active:scale-100 disabled:cursor-not-allowed" title="Export .uder"><Icon icon="mdi:export-variant" class="size-4 sm:size-5" /></button>
+        <button onclick={() => uderImportRef?.click()} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Import .uder"><Icon icon="mdi:file-import-outline" class="size-4 sm:size-5" /></button>
+        <input bind:this={uderImportRef} onchange={(e) => uderRef?.handleImport(e)} type="file" accept=".uder,.zip" class="hidden" />
       {:else}
         <button onclick={() => showMobileMenu = true} class="lg:hidden text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Menu"><Icon icon="mdi:menu" class="size-5" /></button>
         <a href="/" class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-5" /></a>
@@ -246,7 +253,7 @@
           </div>
         {/if}
       </div>
-      <button onclick={() => showInfo = true} class="version-btn text-[10px] sm:text-xs font-mono px-2 py-1 rounded-md bg-base-content/5">v0.6</button>
+      <button onclick={() => showInfo = true} class="version-btn text-[10px] sm:text-xs font-mono px-2 py-1 rounded-md bg-base-content/5">v0.7</button>
     </div>
   </div>
 
@@ -276,7 +283,7 @@
             bind:hasCharacters
           />
         {:else if editorMode === "uder"}
-          <UderEditor />
+          <UderEditor bind:this={uderRef} />
         {/if}
       </div>
     {/key}

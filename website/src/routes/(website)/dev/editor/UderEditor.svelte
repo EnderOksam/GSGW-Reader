@@ -1,6 +1,8 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { preprocessMarkdown } from "./lib/editor-markdown";
+  import { downloadBlob } from "./lib/zip-tools";
+  import { exportUderZip, importUderZip, sanitizeHtml } from "./lib/uder-format";
 
   type ViewMode = "edit" | "preview";
 
@@ -328,6 +330,51 @@
     URL.revokeObjectURL(assets[index].url);
     assets = assets.filter((_, i) => i !== index);
   }
+
+  // package everything up into one .uder zip file and download it
+  export async function handleExport() {
+    if (!title.trim()) { alert("Give the record a title first."); return; }
+    try {
+      const { blob, slug } = await exportUderZip({
+        title,
+        type: isExplorationRecord ? "exploration" : "record",
+        faction: selectedFaction,
+        code: identificationCode,
+        classification,
+        summary: shortDescription,
+        thumbnailUrl: thumbnail,
+        mediaUrls: mediaSlots,
+        content,
+        records,
+      });
+      downloadBlob(blob, `${slug}.uder`, "application/zip");
+    } catch (err) {
+      alert("Failed to export: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  // read a .uder (zip) file and put everything back into the editor
+  export async function handleImport(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    try {
+      const imported = await importUderZip(file);
+      title = imported.title;
+      selectedFaction = imported.faction;
+      isExplorationRecord = imported.type === "exploration";
+      identificationCode = imported.code;
+      classification = imported.classification;
+      shortDescription = imported.summary;
+      content = imported.content;
+      records = JSON.parse(JSON.stringify(imported.records));
+      thumbnail = imported.thumbnailUrl;
+      mediaSlots = imported.mediaUrls;
+      assets = imported.images.map((img) => ({ name: img.name, url: img.url }));
+    } catch (err) {
+      alert("Failed to import: " + (err instanceof Error ? err.message : String(err)));
+    }
+    (e.target as HTMLInputElement).value = "";
+  }
 </script>
 
 <!-- ===== DESKTOP LAYOUT ===== -->
@@ -470,7 +517,7 @@
                   {#if content}
                     {#each splitContent(content) as part}
                       {#if part.type === "html"}
-                        {@html preprocessMarkdown(part.value)}
+                        {@html sanitizeHtml(preprocessMarkdown(part.value))}
                       {:else}
                         <img src={part.value} alt="illustration" class="w-full max-w-md rounded-xl my-4" />
                       {/if}
@@ -548,7 +595,7 @@
                             {#if record.content}
                               {#each splitContent(record.content) as part}
                                 {#if part.type === "html"}
-                                  {@html preprocessMarkdown(part.value)}
+                                  {@html sanitizeHtml(preprocessMarkdown(part.value))}
                                 {:else}
                                   <img src={part.value} alt="illustration" class="w-full max-w-sm rounded-xl my-3" />
                                 {/if}
