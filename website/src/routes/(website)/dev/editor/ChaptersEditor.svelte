@@ -82,7 +82,10 @@
         const src = href.startsWith("http") || href.startsWith("/")
           ? href
           : `https://raw.githubusercontent.com/${REPO}/${BRANCH}/images/${currentBook === "debut" ? "dod" : "gsgw"}/illustrations/${href}`;
-        return `<img src="${src}" alt="${text}"${title ? ` title="${title}"` : ""}>`;
+        const size = title && /^\d+(\.\d+)?(px|%)$/.test(title) ? title : "";
+        const style = size ? ` style="width:${size}"` : "";
+        const titleAttr = title && !size ? ` title="${title}"` : "";
+        return `<img src="${src}" alt="${text}"${style}${titleAttr}>`;
       };
       return marked.parse(body, { renderer, html: true });
     } catch {
@@ -557,6 +560,8 @@
     { syntax: "@l@text@l@", text: "left align", cls: "text-left", expandable: true },
     { syntax: "@c@text@c@", text: "center align", cls: "text-center", expandable: true },
     { syntax: "@r@text@r@", text: "right align", cls: "text-right", expandable: true },
+    { syntax: "$lat text lat$", text: "Lato font", cls: "lato", expandable: true },
+    { syntax: "$fox text fox$", text: "Gowun Batang font", cls: "fox", expandable: true },
     { syntax: "@ll@text@ll@", text: "mono left", cls: "mono mono-left", expandable: true },
     { syntax: "@cc@text@cc@", text: "mono center", cls: "mono mono-center", expandable: true },
     { syntax: "@rr@text@rr@", text: "mono right", cls: "mono mono-right", expandable: true },

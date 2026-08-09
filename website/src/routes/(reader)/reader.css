@@ -766,6 +766,14 @@ hr.invisible-hr {
   font-weight: 500;
 }
 
+.lato {
+  font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+.fox {
+  font-family: 'Gowun Batang', 'Georgia', serif;
+}
+
 .eb-garamond {
   font-family: 'EB Garamond', 'Georgia', serif;
 }

@@ -52,6 +52,7 @@ IMAGE_SIZE_CACHE = {}
 
 IMG_TAG_RE = re.compile(r"<img [^>]+>")
 SRC_RE = re.compile(r'src="([^"]+)"')
+IMG_TITLE_SIZE_RE = re.compile(r'\btitle="(\d+(?:\.\d+)?(?:px|%))"', re.IGNORECASE)
 
 SHAKE_RE = re.compile(r"%%(.*?)%%", re.DOTALL)
 SHAKE_CHAR_RE = re.compile(r"%~(.*?)~%", re.DOTALL)
@@ -220,6 +221,14 @@ def process_html_images(html_content):
         new_src = f"{IMG_PUBLIC_PREFIX}/{webp_filename}"
 
         new_tag = full_tag.replace(original_src, new_src)
+
+        # optional resized illustration: title="40%" / title="240px"
+        title_size = IMG_TITLE_SIZE_RE.search(new_tag)
+        if title_size:
+            width = title_size.group(1)
+            new_tag = IMG_TITLE_SIZE_RE.sub("", new_tag)
+            new_tag = new_tag.replace("<img", f'<img style="width:{width}"', 1)
+            return new_tag
 
         if local_image_path.exists():
 

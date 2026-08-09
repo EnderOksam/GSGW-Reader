@@ -118,6 +118,102 @@ body {
   font-display: swap;
 }
 
+/* --- Lato (humanist sans-serif) --- */
+@font-face {
+  font-family: "Lato";
+  src:
+    local("Lato"),
+    local("Lato Regular"),
+    local("Lato-Regular"),
+    url("/fonts/Lato-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lato";
+  src:
+    local("Lato Italic"),
+    local("Lato-Italic"),
+    url("/fonts/Lato-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lato";
+  src:
+    local("Lato Bold"),
+    local("Lato-Bold"),
+    url("/fonts/Lato-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lato";
+  src:
+    local("Lato Bold Italic"),
+    local("Lato-BoldItalic"),
+    url("/fonts/Lato-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* --- Gowun Batang (Korean serif) --- */
+@font-face {
+  font-family: "Gowun Batang";
+  src:
+    local("Gowun Batang"),
+    local("Gowun Batang Regular"),
+    local("GowunBatang-Regular"),
+    url("/fonts/GowunBatang-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Gowun Batang";
+  src:
+    local("Gowun Batang"),
+    local("GowunBatang-Regular"),
+    url("/fonts/GowunBatang-Korean-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1100-11FF, U+3130-318F, U+A960-A97F, U+AC00-D7A3, U+D7B0-D7FF;
+}
+
+@font-face {
+  font-family: "Gowun Batang";
+  src:
+    local("Gowun Batang Bold"),
+    local("GowunBatang-Bold"),
+    url("/fonts/GowunBatang-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Gowun Batang";
+  src:
+    local("Gowun Batang Bold"),
+    local("GowunBatang-Bold"),
+    url("/fonts/GowunBatang-Korean-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1100-11FF, U+3130-318F, U+A960-A97F, U+AC00-D7A3, U+D7B0-D7FF;
+}
+
 /* --- Caveat (handwritten) --- */
 @font-face {
   font-family: "Caveat";
