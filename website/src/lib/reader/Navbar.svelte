@@ -2,7 +2,7 @@
   import Icon from "@iconify/svelte";
   import { fade } from "svelte/transition";
   import { tick } from "svelte";
-  import { domToPng } from "modern-screenshot";
+  import { toPng } from "html-to-image";
   import { readerState } from "$lib/reader.svelte";
   import ReferencePanel from "./ReferencePanel.svelte";
   import readerCss from "../../routes/(reader)/reader.css?inline";
@@ -61,6 +61,25 @@
   let cachedSelectionHtml = $state("");
   let selectionCacheExpiry: ReturnType<typeof setTimeout> | null = null;
 
+  function topLevelBlock(node: Node, root: HTMLElement): HTMLElement | null {
+    if (node === root) return null;
+    let el: HTMLElement | null =
+      node.nodeType === Node.ELEMENT_NODE ? node as HTMLElement : node.parentElement;
+    if (!el) return null;
+    while (el.parentElement && el.parentElement !== root) {
+      el = el.parentElement;
+    }
+    return el === root ? null : el;
+  }
+
+  function expandRangeToParagraphs(range: Range, root: HTMLElement): Range {
+    const startBlock = topLevelBlock(range.startContainer, root);
+    const endBlock = topLevelBlock(range.endContainer, root);
+    if (startBlock) range.setStart(startBlock, 0);
+    if (endBlock) range.setEnd(endBlock, endBlock.childNodes.length);
+    return range;
+  }
+
   $effect(() => {
     function onSelectionChange() {
       const selection = window.getSelection();
@@ -69,9 +88,11 @@
       const range = selection.getRangeAt(0);
       const container = range.commonAncestorContainer;
       const el = container.nodeType === 1 ? container as HTMLElement : container.parentElement;
-      if (!el?.closest("article")) return;
+      const article = el?.closest("article");
+      if (!article) return;
 
-      const cloned = range.cloneContents();
+      const expanded = expandRangeToParagraphs(range.cloneRange(), article);
+      const cloned = expanded.cloneContents();
       const wrapper = document.createElement("div");
       wrapper.appendChild(cloned);
       cachedSelectionHtml = wrapper.innerHTML;
@@ -142,19 +163,30 @@
       const cs = getComputedStyle(readerBgEl);
       snippetPreviewEl.style.background = cs.backgroundColor;
     }
-    const readerArticle = document.querySelector("article.chapter-content");
+    const readerArticle = document.querySelector("article.reader-container") ?? document.querySelector("article.chapter-content");
     if (readerArticle) {
       const cs = getComputedStyle(readerArticle);
       snippetPreviewEl.style.fontFamily = cs.fontFamily;
       snippetPreviewEl.style.fontSize = cs.fontSize;
       snippetPreviewEl.style.fontWeight = cs.fontWeight;
       snippetPreviewEl.style.color = cs.color;
+      snippetPreviewEl.style.lineHeight = cs.lineHeight;
+      const chapterSize = cs.getPropertyValue("--chapter-size").trim();
+      const chapterFont = cs.getPropertyValue("--chapter-font").trim();
+      const chapterWeight = cs.getPropertyValue("--chapter-weight").trim();
       const chapterLh = cs.getPropertyValue("--chapter-lh").trim();
-      if (chapterLh) {
-        snippetPreviewEl.style.setProperty("--chapter-lh", chapterLh);
-        snippetPreviewEl.style.lineHeight = "calc(var(--chapter-lh) * 1.5)";
-      } else {
-        snippetPreviewEl.style.lineHeight = cs.lineHeight;
+      if (chapterSize) snippetPreviewEl.style.setProperty("--chapter-size", chapterSize);
+      if (chapterFont) snippetPreviewEl.style.setProperty("--chapter-font", chapterFont);
+      if (chapterWeight) snippetPreviewEl.style.setProperty("--chapter-weight", chapterWeight);
+      if (chapterLh) snippetPreviewEl.style.setProperty("--chapter-lh", chapterLh);
+
+      snippetPreviewEl.style.paddingLeft = cs.paddingLeft;
+      snippetPreviewEl.style.paddingRight = cs.paddingRight;
+      const borderX = parseFloat(getComputedStyle(snippetPreviewEl).borderLeftWidth) + parseFloat(getComputedStyle(snippetPreviewEl).borderRightWidth);
+      snippetPreviewEl.style.maxWidth = "none";
+      snippetPreviewEl.style.width = `${Math.max(320, readerArticle.getBoundingClientRect().width + borderX)}px`;
+      if (snippetOuterEl) {
+        snippetOuterEl.style.width = `${parseFloat(getComputedStyle(snippetPreviewEl).width) + 40}px`;
       }
     }
 
@@ -167,32 +199,27 @@
     if (!styleEl) {
       styleEl = document.createElement("style");
       styleEl.id = "snippet-injected-css";
-      styleEl.textContent = readerCss + "\n" + readerWindowsCss + "\n" + `
-        /* html2canvas text-shadow fallback: use -webkit-text-stroke */
-        .smoke-text {
-          -webkit-text-stroke: 0.06em rgba(255, 200, 0, 0.9);
-          -webkit-text-fill-color: black;
-          paint-order: stroke fill;
-        }
-        .glitch-text {
-          -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.14);
-        }
-        .glitch-subtle {
-          -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.10);
-        }
-        .outline-white {
-          -webkit-text-stroke: 0.15em white;
-          paint-order: stroke fill;
-          line-height: calc(var(--chapter-lh) * 1.5);
-        }
-        .outline-black {
-          -webkit-text-stroke: 0.15em black;
-          paint-order: stroke fill;
-          line-height: calc(var(--chapter-lh) * 1.5);
-        }
-      `;
       snippetPreviewEl.prepend(styleEl);
     }
+    const winPins = ["bare-window", "wiki-window", "plain-window"]
+      .map((sel) => {
+        const w = readerArticle.querySelector(`.${sel}`);
+        return w ? `.snippet-preview .${sel} { max-width: ${w.getBoundingClientRect().width}px !important; }` : "";
+      })
+      .filter(Boolean)
+      .join("\n");
+    styleEl.textContent = readerCss + "\n" + readerWindowsCss + "\n" + `
+      .snippet-preview > :first-child { margin-top: 0 !important; padding-top: 0 !important; }
+      .snippet-preview > :last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+      ${winPins}
+      /* html-to-image drops box-shadow on iOS: replace window shadows with filter drop-shadow */
+      .snippet-preview .bare-window,
+      .snippet-preview .plain-window,
+      .snippet-preview .wiki-window {
+        box-shadow: none !important;
+        filter: drop-shadow(0 4px 24px oklch(0 0 0 / 0.4));
+      }
+    `;
   }
 
   async function renderSnippet() {
@@ -204,8 +231,8 @@
       const readerBgEl = document.querySelector<HTMLElement>(".bg-base-100");
       const bg = readerBgEl ? getComputedStyle(readerBgEl).backgroundColor : "#0d0d0d";
 
-      snippetImageUrl = await domToPng(snippetOuterEl, {
-        scale: 2,
+      snippetImageUrl = await toPng(snippetOuterEl, {
+        pixelRatio: 2,
         backgroundColor: bg,
         style: { borderRadius: "0" },
       });
@@ -788,6 +815,51 @@
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
 </dialog>
 
+<!-- Hidden renderer (off-screen, used by html-to-image). Kept OUTSIDE the <dialog> so the modal-box scale/transform and 512px max-width don't shrink the card. -->
+<div class="fixed left-[-9999px] top-0 pointer-events-none">
+  <!-- Outer wrapper: controls padding + rounding of the final image -->
+  <div
+    bind:this={snippetOuterEl}
+    style="padding: 20px; border-radius: 16px; width: 640px; position: relative;"
+  >
+    {#if snippetShowShadow}
+      <!-- Gradient shadow layers (html-to-image drops box-shadow when rasterizing on iOS, gradients render) -->
+      <div style="position: absolute; inset: 0; pointer-events: none;">
+        <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 20px; border-radius: 0 0 16px 16px; background: linear-gradient(to top, rgba(0,0,0,0.20), rgba(0,0,0,0.08) 55%, transparent);"></div>
+        <div style="position: absolute; left: 0; right: 0; top: 0; height: 20px; border-radius: 16px 16px 0 0; background: linear-gradient(to bottom, rgba(0,0,0,0.10), transparent);"></div>
+        <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 20px; border-radius: 0 16px 16px 0; background: linear-gradient(to left, rgba(0,0,0,0.10), transparent);"></div>
+        <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 20px; border-radius: 16px 0 0 16px; background: linear-gradient(to right, rgba(0,0,0,0.10), transparent);"></div>
+      </div>
+    {/if}
+    <!-- Inner card: the actual content card with shadow -->
+    <div
+      bind:this={snippetPreviewEl}
+      class="reader-container snippet-preview"
+      style="position: relative; z-index: 1; width: 600px; padding: 1.25em 2.25em 1.25em; border-radius: 12px; border: 1px solid color-mix(in oklch, currentColor 14%, transparent); --chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; font-family: var(--chapter-font); font-size: var(--chapter-size); font-weight: var(--chapter-weight); line-height: var(--chapter-lh);"
+    >
+      {@html capturedHtml}
+
+      {#if snippetShowDomain || snippetShowChapter}
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 1.25em; padding-top: 0.75em; border-top: 1px solid currentColor; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-size: 11px; letter-spacing: 0.01em; line-height: 1.3;">
+          {#if snippetShowDomain}
+            <span style="text-decoration: underline; text-underline-offset: 2px; color: {snippetPrimaryColor}; font-weight: 700;">ireum.pages.dev</span>
+          {:else}
+            <span></span>
+          {/if}
+          {#if snippetShowChapter}
+            <span style="text-align: right; font-weight: 700;">
+              {#if snippetShowDomain}
+                <span style="margin: 0 0.4em; opacity: 0.4;">/</span>
+              {/if}
+              {snippetBookName} &middot; {snippetChapterTitle}
+            </span>
+          {/if}
+        </div>
+      {/if}
+    </div>
+  </div>
+</div>
+
 <!-- --- Modal: Captured Snippet --- -->
 <dialog bind:this={modals.snippet} class="modal modal-bottom sm:modal-middle">
   <div class="modal-box bg-base-100 rounded-box p-0 overflow-hidden shadow-2xl max-w-lg">
@@ -807,51 +879,6 @@
             <Icon icon="mdi:close" class="size-4" />
           </button>
         </form>
-      </div>
-    </div>
-
-    <!-- Hidden renderer (off-screen, used by html-to-image) -->
-    <div class="fixed left-[-9999px] top-0 pointer-events-none">
-      <!-- Outer wrapper: controls padding + rounding of the final image -->
-      <div
-        bind:this={snippetOuterEl}
-        style="padding: 20px; border-radius: 16px; width: 640px; position: relative;"
-      >
-        {#if snippetShowShadow}
-          <!-- Gradient shadow layers (html-to-image drops box-shadow when rasterizing on iOS, gradients render) -->
-          <div style="position: absolute; inset: 0; pointer-events: none;">
-            <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 34px; border-radius: 0 0 16px 16px; background: linear-gradient(to top, rgba(0,0,0,0.32), rgba(0,0,0,0.14) 55%, transparent);"></div>
-            <div style="position: absolute; left: 0; right: 0; top: 0; height: 20px; border-radius: 16px 16px 0 0; background: linear-gradient(to bottom, rgba(0,0,0,0.10), transparent);"></div>
-            <div style="position: absolute; top: 0; bottom: 0; right: 0; width: 34px; border-radius: 0 16px 16px 0; background: linear-gradient(to left, rgba(0,0,0,0.14), transparent);"></div>
-            <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 34px; border-radius: 16px 0 0 16px; background: linear-gradient(to right, rgba(0,0,0,0.14), transparent);"></div>
-          </div>
-        {/if}
-        <!-- Inner card: the actual content card with shadow -->
-        <div
-          bind:this={snippetPreviewEl}
-          class="reader-container"
-          style="position: relative; z-index: 1; width: 600px; padding: 2em 2.25em 1.25em; border-radius: 12px; --chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; font-family: var(--chapter-font); font-size: var(--chapter-size); font-weight: var(--chapter-weight); line-height: calc(var(--chapter-lh) * 1.5);"
-        >
-          {@html capturedHtml}
-
-          {#if snippetShowDomain || snippetShowChapter}
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 1.25em; padding-top: 0.75em; border-top: 1px solid currentColor; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-size: 11px; letter-spacing: 0.01em; line-height: 1.3;">
-              {#if snippetShowDomain}
-                <span style="text-decoration: underline; text-underline-offset: 2px; color: {snippetPrimaryColor}; font-weight: 700;">ireum.pages.dev</span>
-              {:else}
-                <span></span>
-              {/if}
-              {#if snippetShowChapter}
-                <span style="text-align: right; font-weight: 700;">
-                  {#if snippetShowDomain}
-                    <span style="margin: 0 0.4em; opacity: 0.4;">/</span>
-                  {/if}
-                  {snippetBookName} &middot; {snippetChapterTitle}
-                </span>
-              {/if}
-            </div>
-          {/if}
-        </div>
       </div>
     </div>
 
@@ -875,7 +902,7 @@
     <!-- Toggle bar -->
     <!-- Toggle + action bar -->
     <div class="px-5 pt-3 pb-3 mt-1">
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <button
           onclick={() => { snippetShowDomain = !snippetShowDomain; onSnippetToggle(); }}
           class="btn btn-xs rounded-full gap-1.5 {snippetShowDomain ? 'btn-primary' : 'btn-ghost bg-base-200/80 text-base-content/60'}"
@@ -898,22 +925,24 @@
           Shadow
         </button>
         <div class="flex-1"></div>
-        <button
-          onclick={copySnippet}
-          class="btn btn-xs rounded-full gap-1.5 btn-ghost bg-base-200/80 text-base-content/60"
-          disabled={!snippetImageUrl || snippetLoading}
-        >
-          <Icon icon={snippetCopied ? "mdi:check" : "mdi:content-copy"} class="size-3.5 {snippetCopied ? 'text-success' : ''}" />
-          {snippetCopied ? "Copied" : "Copy"}
-        </button>
-        <button
-          onclick={downloadSnippet}
-          class="btn btn-xs rounded-full gap-1.5 btn-ghost bg-base-200/80 text-base-content/60"
-          disabled={!snippetImageUrl || snippetLoading}
-        >
-          <Icon icon="mdi:download" class="size-3.5" />
-          Save
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            onclick={copySnippet}
+            class="btn btn-xs rounded-full gap-1.5 btn-ghost bg-base-200/80 text-base-content/60"
+            disabled={!snippetImageUrl || snippetLoading}
+          >
+            <Icon icon={snippetCopied ? "mdi:check" : "mdi:content-copy"} class="size-3.5 {snippetCopied ? 'text-success' : ''}" />
+            {snippetCopied ? "Copied" : "Copy"}
+          </button>
+          <button
+            onclick={downloadSnippet}
+            class="btn btn-xs rounded-full gap-1.5 btn-ghost bg-base-200/80 text-base-content/60"
+            disabled={!snippetImageUrl || snippetLoading}
+          >
+            <Icon icon="mdi:download" class="size-3.5" />
+            Save
+          </button>
+        </div>
       </div>
     </div>
   </div>

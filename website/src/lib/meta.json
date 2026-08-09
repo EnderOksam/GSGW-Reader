@@ -224,6 +224,38 @@
         "index": 399,
         "section": "Chapter 399",
         "slug": "399"
+      },
+      {
+        "title": "Chapter 400",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 400,
+        "section": "Chapter 400",
+        "slug": "400"
+      },
+      {
+        "title": "Chapter 401",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 401,
+        "section": "Chapter 401",
+        "slug": "401"
+      },
+      {
+        "title": "Chapter 402",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 402,
+        "section": "Chapter 402",
+        "slug": "402"
+      },
+      {
+        "title": "Chapter 403",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 403,
+        "section": "Chapter 403",
+        "slug": "403"
       }
     ],
     "fantl": [
@@ -2266,11 +2298,9 @@
         "index": 254,
         "section": "Chapter 254",
         "slug": "254"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
-        "title": "Chapter 255",
+        "title": "[Now, You May Kiss the Bride] , III",
         "category": "Part 2",
         "discussion": 0,
         "index": 255,
@@ -2278,7 +2308,7 @@
         "slug": "255"
       },
       {
-        "title": "Chapter 256",
+        "title": "[Now, You May Kiss the Bride], IV",
         "category": "Part 2",
         "discussion": 0,
         "index": 256,
@@ -2286,7 +2316,7 @@
         "slug": "256"
       },
       {
-        "title": "Chapter 257",
+        "title": "[Now, You May Kiss the Bride], V",
         "category": "Part 2",
         "discussion": 0,
         "index": 257,
@@ -2294,7 +2324,7 @@
         "slug": "257"
       },
       {
-        "title": "Chapter 258",
+        "title": "The Talk-Show Host's Identity",
         "category": "Part 2",
         "discussion": 0,
         "index": 258,
@@ -2302,7 +2332,7 @@
         "slug": "258"
       },
       {
-        "title": "Chapter 259",
+        "title": "Project Recruitment",
         "category": "Part 2",
         "discussion": 0,
         "index": 259,
@@ -2310,7 +2340,7 @@
         "slug": "259"
       },
       {
-        "title": "Chapter 260",
+        "title": "[Sekwang Station] Clear",
         "category": "Part 2",
         "discussion": 0,
         "index": 260,
@@ -2318,7 +2348,7 @@
         "slug": "260"
       },
       {
-        "title": "Chapter 261",
+        "title": "[Sekwang Subway]",
         "category": "Part 2",
         "discussion": 0,
         "index": 261,
@@ -2326,7 +2356,7 @@
         "slug": "261"
       },
       {
-        "title": "Chapter 262",
+        "title": "Midnight Station [Royal Casino], I",
         "category": "Part 2",
         "discussion": 0,
         "index": 262,
@@ -2334,7 +2364,7 @@
         "slug": "262"
       },
       {
-        "title": "Chapter 263",
+        "title": "Midnight Station [Royal Casino], II",
         "category": "Part 2",
         "discussion": 0,
         "index": 263,
@@ -2342,7 +2372,7 @@
         "slug": "263"
       },
       {
-        "title": "Chapter 264",
+        "title": "Midnight Station [Royal Casino], III",
         "category": "Part 2",
         "discussion": 0,
         "index": 264,
@@ -2350,7 +2380,7 @@
         "slug": "264"
       },
       {
-        "title": "Chapter 265",
+        "title": "Midnight Station [Royal Casino], IV",
         "category": "Part 2",
         "discussion": 0,
         "index": 265,
@@ -2358,7 +2388,7 @@
         "slug": "265"
       },
       {
-        "title": "Chapter 266",
+        "title": "Midnight Station [Royal Casino], V",
         "category": "Part 2",
         "discussion": 0,
         "index": 266,
@@ -2366,7 +2396,7 @@
         "slug": "266"
       },
       {
-        "title": "Chapter 267",
+        "title": "Midnight Station [Royal Casino], V",
         "category": "Part 2",
         "discussion": 0,
         "index": 267,
@@ -2374,7 +2404,7 @@
         "slug": "267"
       },
       {
-        "title": "Chapter 268",
+        "title": "Midnight Station [Royal Casino], VI",
         "category": "Part 2",
         "discussion": 0,
         "index": 268,
@@ -2382,7 +2412,7 @@
         "slug": "268"
       },
       {
-        "title": "Chapter 269",
+        "title": "What Was Left Behind",
         "category": "Part 2",
         "discussion": 0,
         "index": 269,
@@ -2390,7 +2420,7 @@
         "slug": "269"
       },
       {
-        "title": "Chapter 270",
+        "title": "Annex Infiltration, I",
         "category": "Part 2",
         "discussion": 0,
         "index": 270,
@@ -2398,7 +2428,7 @@
         "slug": "270"
       },
       {
-        "title": "Chapter 271",
+        "title": "Annex Infiltration, II",
         "category": "Part 2",
         "discussion": 0,
         "index": 271,
@@ -2406,7 +2436,7 @@
         "slug": "271"
       },
       {
-        "title": "Chapter 272",
+        "title": "Annex Infiltration, III",
         "category": "Part 2",
         "discussion": 0,
         "index": 272,
@@ -2414,7 +2444,7 @@
         "slug": "272"
       },
       {
-        "title": "Chapter 273",
+        "title": "Annex Infiltration, IV",
         "category": "Part 2",
         "discussion": 0,
         "index": 273,
@@ -2422,7 +2452,7 @@
         "slug": "273"
       },
       {
-        "title": "Chapter 274",
+        "title": "Annex Infiltration, V",
         "category": "Part 2",
         "discussion": 0,
         "index": 274,
@@ -2430,7 +2460,7 @@
         "slug": "274"
       },
       {
-        "title": "Chapter 275",
+        "title": "Late Night Station [Hanbit Library], I",
         "category": "Part 2",
         "discussion": 0,
         "index": 275,
@@ -2438,7 +2468,7 @@
         "slug": "275"
       },
       {
-        "title": "Chapter 276",
+        "title": "Late Night Station [Hanbit Library], II",
         "category": "Part 2",
         "discussion": 0,
         "index": 276,
@@ -2446,13 +2476,15 @@
         "slug": "276"
       },
       {
-        "title": "Midnight Station [Hanbit Library], III",
+        "title": "Late Night Station [Hanbit Library], III",
         "category": "Part 2",
         "discussion": 0,
         "index": 277,
         "section": "Chapter 277",
         "slug": "277"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "Chapter 278",
         "category": "Part 2",
