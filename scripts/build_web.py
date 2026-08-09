@@ -105,6 +105,7 @@ AMPERSAND_WINDOW_RE = re.compile(r"&\$\n(.*?)\n\$&", re.DOTALL)
 
 NOTE_WINDOW_RE = re.compile(r"![-]+\n(.*?)\n[-]+!", re.DOTALL)
 STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
+PAPER_BOAT_WINDOW_RE = re.compile(r"!pb\n(.*?)\npb!", re.DOTALL)
 BRAUN_WINDOW_RE = re.compile(r"!\[\n(.*?)\n\]!", re.DOTALL)
 BRAUN_TV_TEXT_RE = re.compile(r"\$[Bb][Rr][Tt]\n(.*?)\n[Bb][Rr][Tt]\$", re.DOTALL)
 BRAUN_DOLL_TEXT_RE = re.compile(r"\$[Bb][Rr][Dd]\n(.*?)\n[Bb][Rr][Dd]\$", re.DOTALL)
@@ -1100,6 +1101,11 @@ def convert_chapter(content):
 
     content = STICKY_WINDOW_RE.sub(
         lambda m: make_window("sticky-window", m.group(1)),
+        content
+    )
+
+    content = PAPER_BOAT_WINDOW_RE.sub(
+        lambda m: make_window("paper-boat", m.group(1)),
         content
     )
 

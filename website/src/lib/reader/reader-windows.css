@@ -502,6 +502,93 @@
   display: none;
 }
 
+/* --- PAPER BOAT --- */
+
+.reader-container .paper-boat {
+  position: relative;
+  width: min(400px, 92%);
+  margin: 2.6rem auto;
+  padding: 2.5em 2.2em 2.2em;
+
+  background: #fff;
+
+  color: #000 !important;
+  text-align: left;
+
+  border: 1px solid #aaa;
+
+  /* Cut the single top-right corner */
+  clip-path: polygon(
+    0 0,
+    calc(100% - 36px) 0,
+    100% 36px,
+    100% 100%,
+    0 100%
+  );
+
+  filter: drop-shadow(0 7px 18px rgba(0, 0, 0, 0.10));
+}
+
+/* RIGHT DOG-EAR */
+
+.reader-container .paper-boat::after {
+  content: "";
+  position: absolute;
+
+  top: 0;
+  right: 0;
+
+  width: 36px;
+  height: 36px;
+
+  background: #f1f1f1;
+
+  clip-path: polygon(
+    0 0,
+    0 36px,
+    36px 36px
+  );
+
+  /* Creates the fold lines */
+  border-left: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+
+  z-index: 5;
+}
+
+/* TEXT */
+
+.reader-container .paper-boat p,
+.reader-container .paper-boat a,
+.reader-container .paper-boat strong,
+.reader-container .paper-boat b,
+.reader-container .paper-boat em,
+.reader-container .paper-boat i {
+  color: #000 !important;
+}
+
+.reader-container .paper-boat p {
+  position: relative;
+  z-index: 10;
+
+  margin: 0.6em 0;
+
+  line-height: 1.7;
+  text-align: left;
+}
+
+.reader-container .paper-boat p:first-child {
+  margin-top: 0;
+}
+
+.reader-container .paper-boat p:last-of-type {
+  margin-bottom: 0;
+}
+
+.reader-container .paper-boat p:empty {
+  display: none;
+}
+
 /* --- BLACK WINDOW --- */
 
 .reader-container .black-window {

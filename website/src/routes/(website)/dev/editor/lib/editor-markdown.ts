@@ -363,6 +363,8 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/!\$\n(.*?)\n\$!/gs, (_: string, inner: string) => makeWindow("sticky-window", inner));
 
+  s = s.replace(/!pb\n(.*?)\npb!/gs, (_: string, inner: string) => makeWindow("paper-boat", inner));
+
   s = s.replace(/!\[\n(.*?)\n\]!/gs, (_: string, inner: string) => makeWindow("braun-screen", inner));
 
   s = s.replace(/\$Brt\n(.*?)\nBrt\$/gis, (_: string, inner: string) => "\n" + makeWindow("braun-tv-text", toParagraphs(fmtInline(inner))) + "\n");

@@ -61,6 +61,35 @@
     if (mdScroll) mdScroll.scrollTop = mdTop;
     if (readerScroll) readerScroll.scrollTop = readerTop;
   }
+  let wrapBefore = $state(typeof localStorage !== "undefined" ? localStorage.getItem("gsgw-wrap-before") ?? "" : "");
+  let wrapAfter = $state(typeof localStorage !== "undefined" ? localStorage.getItem("gsgw-wrap-after") ?? "" : "");
+
+  $effect(() => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("gsgw-wrap-before", wrapBefore);
+      localStorage.setItem("gsgw-wrap-after", wrapAfter);
+    }
+  });
+
+  async function insertCustomWrap() {
+    if (!activeTextarea) return;
+    const el = activeTextarea;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const current = input;
+    const selected = current.slice(start, end);
+    const inner = selected || "text";
+    const before = current.slice(0, start);
+    const after = current.slice(end);
+    const mdTop = mdScroll?.scrollTop ?? 0;
+    const readerTop = readerScroll?.scrollTop ?? 0;
+    input = before + wrapBefore + inner + wrapAfter + after;
+    await tick();
+    el.focus();
+    el.setSelectionRange(start + wrapBefore.length, start + wrapBefore.length + inner.length);
+    if (mdScroll) mdScroll.scrollTop = mdTop;
+    if (readerScroll) readerScroll.scrollTop = readerTop;
+  }
   let newTranslationName = $state("");
   let showManageTL = $state(false);
   let renameTL: string | null = $state(null);
@@ -517,6 +546,9 @@
   const colorsItems = [
     { syntax: "$$text$$", text: "handwritten text", cls: "handwritten", expandable: true },
     { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
+    { syntax: "$lattextlat$", text: "lato text", cls: "lato", expandable: true },
+    { syntax: "$foxtextfox$", text: "fox counseling text", cls: "fox", expandable: true },
+    { syntax: "$ctextc$", text: "comic sans text", cls: "contaminated", expandable: true },
     { syntax: "$wotextwo$", text: "white outline", cls: "text-black outline-white", expandable: true, previewHtml: '<span class="text-black" style="-webkit-text-stroke:0.15em white;text-stroke:0.15em white;paint-order:stroke fill;">text</span>' },
     { syntax: "$botextbo$", text: "black outline", cls: "text-green outline-black", expandable: true, previewHtml: '<span class="text-green" style="-webkit-text-stroke:0.15em black;text-stroke:0.15em black;paint-order:stroke fill;">text</span>' },
     { syntax: "$hxo(#ff)texthxo#", text: "hex outline", cls: "hex-outline", expandable: true, previewHtml: '<span class="hex-outline hex-preview" style="--hxo-color:#ff6600">text</span>', meta: "replace #ffffff with any valid hex color" },
@@ -560,8 +592,6 @@
     { syntax: "@l@text@l@", text: "left align", cls: "text-left", expandable: true },
     { syntax: "@c@text@c@", text: "center align", cls: "text-center", expandable: true },
     { syntax: "@r@text@r@", text: "right align", cls: "text-right", expandable: true },
-    { syntax: "$lat text lat$", text: "Lato font", cls: "lato", expandable: true },
-    { syntax: "$fox text fox$", text: "Gowun Batang font", cls: "fox", expandable: true },
     { syntax: "@ll@text@ll@", text: "mono left", cls: "mono mono-left", expandable: true },
     { syntax: "@cc@text@cc@", text: "mono center", cls: "mono mono-center", expandable: true },
     { syntax: "@rr@text@rr@", text: "mono right", cls: "mono mono-right", expandable: true },
@@ -587,6 +617,7 @@
     { syntax: "&$...$&", name: "followup window", cls: "followup-window", code: "&$\\nfollowup window example\\n$&", html: '<p>followup window example</p>', expandable: true },
     { syntax: "!-...-!", name: "note window", cls: "note-window", code: "!-\\nheader\\n\\nnote window example\\n-!", html: '<p><strong>header</strong></p>\n<p>note window example</p>', expandable: true, meta: "the first line is metadata and can be canceled out if you put a \\ before it" },
     { syntax: "!$...$!", name: "sticky window", cls: "sticky-window", code: "!$\\nsticky window example\\n$!", html: '<p>sticky window example</p>', expandable: true },
+    { syntax: "!pb...pb!", name: "paper boat", cls: "paper-boat", code: "!pb\\npaper boat example\\npb!", html: '<p>paper boat example</p>', expandable: true },
     { syntax: "![...]!", name: "braun screen", cls: "braun-screen", code: "![\\nbraun screen example\\n]!", html: '<p>braun screen example</p>', expandable: true },
     { syntax: "$Brt...Brt$", name: "braun tv text", cls: "braun-tv-text", code: "$Brt\\nbraun tv text example\\nBrt$", html: '<p>braun tv text example</p>', expandable: true },
     { syntax: "$Brd...Brd$", name: "braun doll text", cls: "braun-doll-text", code: "$Brd\\nbraun doll text example\\nBrd$", html: '<p>braun doll text example</p>', expandable: true },
@@ -649,6 +680,42 @@
         {/each}
       </div>
     {/if}
+  </div>
+{/snippet}
+
+{#snippet customWrap()}
+  <div class="bg-base-300/40 rounded-xl border border-base-content/10">
+    <div class="px-3 py-2 flex items-center gap-2">
+      <Icon icon="mdi:ray-start-arrow" class="size-3.5 text-base-content/30 shrink-0" />
+      <span class="text-[10px] font-mono font-medium text-base-content/50 uppercase tracking-wider">Custom</span>
+    </div>
+    <div class="px-2 pb-2 space-y-1">
+      <div class="flex items-center gap-1">
+        <input
+          type="text"
+          bind:value={wrapBefore}
+          placeholder="before"
+          spellcheck="false"
+          class="flex-1 min-w-0 bg-base-300/60 text-base-content/70 text-[11px] font-mono px-2 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80"
+        />
+        <span class="text-[10px] font-mono text-base-content/30 shrink-0">text</span>
+        <input
+          type="text"
+          bind:value={wrapAfter}
+          placeholder="after"
+          spellcheck="false"
+          class="flex-1 min-w-0 bg-base-300/60 text-base-content/70 text-[11px] font-mono px-2 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80"
+        />
+      </div>
+      <button
+        onclick={insertCustomWrap}
+        class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-base-content/[3%] transition-colors cursor-pointer text-left"
+      >
+        <span class="text-[10px] font-mono text-base-content/15 shrink-0">{wrapBefore || '‹'} text {wrapAfter || '›'}</span>
+        <span class="text-[10px] text-base-content/15 shrink-0">→</span>
+        <span class="text-[11px] text-base-content/50 truncate">wrap selection</span>
+      </button>
+    </div>
   </div>
 {/snippet}
 
@@ -807,6 +874,8 @@
         {/if}
       </div>
 
+      {@render customWrap()}
+
     </div>
   </div>
 </div>
@@ -928,6 +997,8 @@
               </div>
             {/if}
           </div>
+
+          {@render customWrap()}
         </div>
       {/if}
       </div>

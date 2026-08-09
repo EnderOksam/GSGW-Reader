@@ -414,6 +414,10 @@ def convert_chapter(content):
         lambda m: bw.make_window("sticky-window", m.group(1)),
         content
     )
+    content = bw.PAPER_BOAT_WINDOW_RE.sub(
+        lambda m: bw.make_window("paper-boat", m.group(1)),
+        content
+    )
     content = bw.BRAUN_WINDOW_RE.sub(
         lambda m: bw.make_window("braun-screen", m.group(1)),
         content
