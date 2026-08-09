@@ -171,6 +171,7 @@
       snippetPreviewEl.style.fontWeight = cs.fontWeight;
       snippetPreviewEl.style.color = cs.color;
       snippetPreviewEl.style.lineHeight = cs.lineHeight;
+      snippetPreviewEl.style.textAlign = cs.textAlign;
       const chapterSize = cs.getPropertyValue("--chapter-size").trim();
       const chapterFont = cs.getPropertyValue("--chapter-font").trim();
       const chapterWeight = cs.getPropertyValue("--chapter-weight").trim();
@@ -211,6 +212,8 @@
     styleEl.textContent = readerCss + "\n" + readerWindowsCss + "\n" + `
       .snippet-preview > :first-child { margin-top: 0 !important; padding-top: 0 !important; }
       .snippet-preview > :last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+      .snippet-preview p { margin-bottom: 1.1em; }
+      .snippet-preview p:last-child { margin-bottom: 0; }
       ${winPins}
       /* html-to-image drops box-shadow on iOS: replace window shadows with filter drop-shadow */
       .snippet-preview .bare-window,
