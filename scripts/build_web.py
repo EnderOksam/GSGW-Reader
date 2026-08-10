@@ -158,6 +158,8 @@ SIMPLE_REPLACEMENTS = [
 
     (re.compile(r"\$c(.*?)c\$", re.DOTALL), r'<span class="contaminated">\1</span>'),
     (re.compile(r"\$Eb(.*?)Eb\$", re.DOTALL), r'<span class="eb-garamond">\1</span>'),
+    (re.compile(r"\$lat(.*?)lat\$", re.DOTALL), r'<span class="lato">\1</span>'),
+    (re.compile(r"\$fox(.*?)fox\$", re.DOTALL), r'<span class="fox">\1</span>'),
     (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
     (re.compile(r"\$bo(.*?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
 ]
@@ -392,6 +394,14 @@ def subtle_replacer(match):
     inner = match.group(1)
 
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    inner = re.sub(r"\$\$(.+?)\$\$", r'<span class="handwritten">\1</span>', inner)
+    inner = re.sub(r"\$lat(.+?)lat\$", r'<span class="lato">\1</span>', inner)
+    inner = re.sub(r"\$fox(.+?)fox\$", r'<span class="fox">\1</span>', inner)
+    inner = re.sub(r"\$Eb(.+?)Eb\$", r'<span class="eb-garamond">\1</span>', inner)
+    inner = re.sub(r"\$c(.+?)c\$", r'<span class="contaminated">\1</span>', inner)
+    inner = re.sub(r"\$wo(.+?)wo\$", r'<span class="outline-white">\1</span>', inner)
+    inner = re.sub(r"\$bo(.+?)bo\$", r'<span class="outline-black">\1</span>', inner)
 
     parts = re.split(r"(<[^>]+>)", inner)
 
@@ -739,6 +749,8 @@ FOOTNOTE_TAG_REPLACEMENTS = [
     (re.compile(r"\$ag(.+?)ag\$", re.DOTALL), lambda m: silver_replacer(m)),
     (re.compile(r"\$wo(.+?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
     (re.compile(r"\$bo(.+?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
+    (re.compile(r"\$lat(.+?)lat\$", re.DOTALL), r'<span class="lato">\1</span>'),
+    (re.compile(r"\$fox(.+?)fox\$", re.DOTALL), r'<span class="fox">\1</span>'),
     (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),
      lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL),

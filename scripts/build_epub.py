@@ -1168,6 +1168,8 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"\$\$(.+?)\$\$", '<span class="handwritten">{inner}</span>'),
         (r"\$c(.+?)c\$", '<span class="contaminated">{inner}</span>'),
         (r"\$Eb(.+?)Eb\$", '<span class="eb-garamond">{inner}</span>'),
+        (r"\$lat(.+?)lat\$", '<span class="lato">{inner}</span>'),
+        (r"\$fox(.+?)fox\$", '<span class="fox">{inner}</span>'),
         (r"\$a(.+?)a\$", '<span class="aurora-text">{inner}</span>'),
         (r"\$g(.+?)g\$", '<span class="gold-text">{inner}</span>'),
         (r"\$\*(.+?)\*\$", '<span class="sparkle-text">{inner}</span>'),

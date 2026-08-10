@@ -328,6 +328,15 @@ del {
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
 }
 
+.lato {
+  font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+  font-weight: 300;
+}
+
+.fox {
+  font-family: 'Gowun Batang', 'Georgia', serif;
+}
+
 .smoke-text {
   color: #000;
   letter-spacing: 0.2em;

@@ -197,6 +197,13 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/@_@(.+?)@_@/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    inner = inner.replace(/\$\$(.+?)\$\$/gs, '<span class="handwritten">$1</span>');
+    inner = inner.replace(/\$lat(.+?)lat\$/gs, '<span class="lato">$1</span>');
+    inner = inner.replace(/\$fox(.+?)fox\$/gs, '<span class="fox">$1</span>');
+    inner = inner.replace(/\$Eb(.+?)Eb\$/gs, '<span class="eb-garamond">$1</span>');
+    inner = inner.replace(/\$c(.+?)c\$/gs, '<span class="contaminated">$1</span>');
+    inner = inner.replace(/\$wo(.+?)wo\$/gs, '<span class="outline-white">$1</span>');
+    inner = inner.replace(/\$bo(.+?)bo\$/gs, '<span class="outline-black">$1</span>');
     const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
       if (part.startsWith("<") && part.endsWith(">")) return [part];
       return [...part].map(c => c === " " ? " " : `<span class="char">${c}</span>`);
