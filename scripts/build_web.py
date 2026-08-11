@@ -1153,7 +1153,7 @@ def convert_chapter(content):
 
     try:
         proc = subprocess.run(
-            ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],
+            ["pandoc", "--from", "markdown-definition_lists-smart-tex_math_dollars-subscript-superscript-citations-pipe_tables-grid_tables", "--to", "html", "--quiet"],
             input=content.encode("utf-8"),
             capture_output=True,
             timeout=120
