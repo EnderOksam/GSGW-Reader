@@ -6,6 +6,8 @@
   interface Part {
     id: string;
     label: string;
+    range?: string;
+    status: string;
   }
 
   interface Variant {
@@ -32,14 +34,19 @@
     {
       id: "gsgw", title: "Got Dropped into a Ghost Story, Still Gotta Work", short: "GSGW", badgeClass: "badge-primary",
       variants: [
-        { id: "windows", label: "Windows", description: variantDefs[0].description, parts: [{ id: "part1", label: "Part 1" }, { id: "part2", label: "Part 2" }, { id: "part3", label: "Part 3" }] },
-        { id: "plaintext", label: "Plain Text", description: variantDefs[1].description, parts: [{ id: "part1", label: "Part 1" }, { id: "part2", label: "Part 2" }, { id: "part3", label: "Part 3" }] },
+        { id: "windows", label: "Windows", description: variantDefs[0].description, parts: [{ id: "part1", label: "Part 1", status: "Formatted" }, { id: "part2", label: "Part 2", status: "WIP" }, { id: "part3", label: "Part 3", status: "Ongoing" }] },
+        { id: "plaintext", label: "Plain Text", description: variantDefs[1].description, parts: [{ id: "part1", label: "Part 1", status: "Formatted" }, { id: "part2", label: "Part 2", status: "WIP" }, { id: "part3", label: "Part 3", status: "Ongoing" }] },
       ],
     },
     {
       id: "debut", title: "Debut or Die", short: "Debut", badgeClass: "badge-secondary",
       variants: [
-        { id: "windows", label: "Windows", description: variantDefs[0].description, parts: [{ id: "part1", label: "Part 1" }, { id: "part2", label: "Part 2" }, { id: "part3", label: "Part 3" }, { id: "part4", label: "Part 4" }] },
+        { id: "windows", label: "Windows", description: variantDefs[0].description, parts: [
+          { id: "part1", label: "Part 1", range: "Chapters 1–147", status: "Formatted" },
+          { id: "part2", label: "Part 2", range: "Chapters 148–364", status: "WIP" },
+          { id: "part3", label: "Part 3", range: "Chapters 365–451", status: "Unformatted" },
+          { id: "part4", label: "Part 4", range: "Chapters 452–644", status: "Unformatted" },
+        ] },
       ],
     },
   ];
@@ -282,10 +289,18 @@
                 <span class="badge badge-ghost font-mono text-xs tracking-wider px-3 py-2 bg-white/5">
                   {currentVariant?.label || ''}
                 </span>
+                {#if currentPart?.status}
+                  <span class="badge badge-outline font-mono text-xs font-semibold tracking-wider px-3 py-2 text-yellow-300 border-yellow-500/30 bg-yellow-500/10">
+                    {currentPart.status}
+                  </span>
+                {/if}
               </div>
 
               <div>
-                <h2 class="text-2xl md:text-3xl font-bold text-white leading-tight">{currentStory?.title ?? ''}</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-white leading-tight">{currentStory?.title ?? ''} - {currentPart?.label ?? ''}</h2>
+              {#if currentPart?.range}
+                <p class="text-xs font-mono opacity-40 uppercase tracking-widest mt-1">{currentPart.range}</p>
+              {/if}
               </div>
 
               <div class="flex items-center gap-2 text-xs font-mono opacity-40 uppercase tracking-widest">
