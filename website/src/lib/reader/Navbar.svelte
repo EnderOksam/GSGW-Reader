@@ -2,7 +2,8 @@
   import Icon from "@iconify/svelte";
   import { fade } from "svelte/transition";
   import { tick } from "svelte";
-  import { toPng } from "html-to-image";
+  import { toCanvas } from "html-to-image";
+  import { needsShadowPass, paintShadows } from "./render-shadow";
   import { readerState } from "$lib/reader.svelte";
   import ReferencePanel from "./ReferencePanel.svelte";
   import readerCss from "../../routes/(reader)/reader.css?inline";
@@ -215,13 +216,6 @@
       .snippet-preview p { margin-bottom: 1.1em; }
       .snippet-preview p:last-child { margin-bottom: 0; }
       ${winPins}
-      /* html-to-image drops box-shadow on iOS: replace window shadows with filter drop-shadow */
-      .snippet-preview .bare-window,
-      .snippet-preview .plain-window,
-      .snippet-preview .wiki-window {
-        box-shadow: none !important;
-        filter: drop-shadow(0 4px 24px oklch(0 0 0 / 0.4));
-      }
     `;
   }
 
@@ -234,11 +228,16 @@
       const readerBgEl = document.querySelector<HTMLElement>(".bg-base-100");
       const bg = readerBgEl ? getComputedStyle(readerBgEl).backgroundColor : "#0d0d0d";
 
-      snippetImageUrl = await toPng(snippetOuterEl, {
+      const canvas = await toCanvas(snippetOuterEl, {
         pixelRatio: 2,
         backgroundColor: bg,
         style: { borderRadius: "0" },
       });
+
+      if (needsShadowPass()) {
+        await paintShadows(canvas, snippetOuterEl, { pixelRatio: 2 });
+      }
+      snippetImageUrl = canvas.toDataURL("image/png");
     } catch (e) {
       console.error("Failed to render snippet:", e);
     } finally {
