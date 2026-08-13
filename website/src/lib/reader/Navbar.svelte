@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { fade } from "svelte/transition";
-  import { tick } from "svelte";
+  import { tick, onDestroy } from "svelte";
   import { toCanvas } from "html-to-image";
   import { needsShadowPass, paintShadows } from "./render-shadow";
   import { readerState } from "$lib/reader.svelte";
@@ -40,6 +40,10 @@
   let snippetOuterEl: HTMLElement | null = $state(null);
   let snippetImageUrl = $state("");
   let snippetLoading = $state(false);
+  let snippetError = $state("");
+  let snippetForceError = $state(false);
+  let snippetForceToast = $state(false);
+  let snippetForceTimer: ReturnType<typeof setTimeout> | null = null;
   function loadSnippetPref<T>(key: string, fallback: T): T {
     if (!browser) return fallback;
     try {
@@ -148,6 +152,7 @@
 
     snippetLoading = true;
     snippetImageUrl = "";
+    snippetError = "";
     snippetCopied = false;
     modals.snippet?.showModal();
 
@@ -220,8 +225,23 @@
   }
 
   async function renderSnippet() {
+    if (snippetForceError) {
+      snippetLoading = false;
+      snippetImageUrl = "";
+      snippetError = "Simulated shadow-compositing failure. Press Ctrl+; to disable the test.";
+      return;
+    }
+    await renderSnippetToImage(needsShadowPass());
+  }
+
+  async function renderSnippetPlain() {
+    await renderSnippetToImage(false);
+  }
+
+  async function renderSnippetToImage(withShadows: boolean) {
     if (!snippetOuterEl) return;
     snippetLoading = true;
+    snippetError = "";
     await tick();
 
     try {
@@ -234,16 +254,39 @@
         style: { borderRadius: "0" },
       });
 
-      if (needsShadowPass()) {
-        await paintShadows(canvas, snippetOuterEl, { pixelRatio: 2 });
+      if (withShadows) {
+        try {
+          await paintShadows(canvas, snippetOuterEl, { pixelRatio: 2 });
+        } catch (e) {
+          console.error("Shadow pass failed:", e);
+          throw new Error(`Shadow compositing failed: ${e instanceof Error ? e.message : String(e)}`);
+        }
       }
       snippetImageUrl = canvas.toDataURL("image/png");
     } catch (e) {
       console.error("Failed to render snippet:", e);
+      snippetImageUrl = "";
+      snippetError = e instanceof Error ? e.message : "Failed to render snippet.";
     } finally {
       snippetLoading = false;
     }
   }
+
+  function onSnippetKeydown(event: KeyboardEvent) {
+    if (event.ctrlKey && !event.shiftKey && !event.altKey && event.key === ";") {
+      snippetForceError = !snippetForceError;
+      snippetForceToast = true;
+      if (snippetForceTimer) clearTimeout(snippetForceTimer);
+      snippetForceTimer = setTimeout(() => { snippetForceToast = false; }, 2500);
+      if (modals.snippet?.open) renderSnippet();
+      event.preventDefault();
+    }
+  }
+
+  onDestroy(() => {
+    if (snippetForceTimer) clearTimeout(snippetForceTimer);
+    if (snippetTimer) clearTimeout(snippetTimer);
+  });
 
   function onSnippetToggle() {
     snippetCopied = false;
@@ -401,8 +444,9 @@
 </script>
 
 <!-- --- Navbar View --- -->
-{#if prefs.config.navbarVisible}
-  <nav
+  <svelte:window onkeydown={onSnippetKeydown} />
+  {#if prefs.config.navbarVisible}
+    <nav
     class="w-full bg-base-100/80 backdrop-blur-md border-b border-base-content/5 z-50 relative {prefs.config.navbarSticky ? 'sticky top-0' : ''}"
   >
     <!-- Mobile: 3-column layout -->
@@ -898,6 +942,19 @@
         </div>
       {:else if snippetImageUrl}
         <img src={snippetImageUrl} alt="Captured snippet" class="w-full rounded-xl" />
+      {:else if snippetError}
+        <div class="flex flex-col items-center justify-center py-14 gap-3 text-center px-6">
+          <Icon icon="mdi:alert-circle-outline" class="size-7 text-warning" />
+          <span class="text-sm font-semibold text-base-content/80">Couldn't render the snippet</span>
+          <span class="text-xs text-base-content/40 max-w-sm break-words">{snippetError}</span>
+          <button
+            onclick={renderSnippetPlain}
+            class="btn btn-sm rounded-full gap-1.5 btn-primary mt-2"
+          >
+            <Icon icon="mdi:content-copy" class="size-3.5" />
+            Render anyway
+          </button>
+        </div>
       {/if}
     </div>
 
@@ -955,6 +1012,15 @@
     <Icon icon="mdi:alert-circle-outline" class="size-4 text-red-400 shrink-0" />
     <span>Highlight text to take a snippet</span>
     <button onclick={() => { snippetToast = false; if (snippetTimer) clearTimeout(snippetTimer); }} class="btn btn-ghost btn-xs btn-square rounded-btn text-base-content/40 hover:text-base-content hover:bg-base-content/5 -mr-1">
+      <Icon icon="mdi:close" class="size-3.5" />
+    </button>
+  </div>
+{/if}
+{#if snippetForceToast}
+  <div transition:fade={{ duration: 300 }} class="fixed top-14 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-base-200/90 backdrop-blur-md border border-info/40 text-base-content/80 text-xs font-medium px-5 py-3 rounded-2xl shadow-xl shadow-info/10">
+    <Icon icon="mdi:flask-outline" class="size-4 text-info shrink-0" />
+    <span>Snippet shadow-compositing error {snippetForceError ? "enabled" : "disabled"} (Ctrl+;)</span>
+    <button onclick={() => { snippetForceToast = false; if (snippetForceTimer) clearTimeout(snippetForceTimer); }} class="btn btn-ghost btn-xs btn-square rounded-btn text-base-content/40 hover:text-base-content hover:bg-base-content/5 -mr-1">
       <Icon icon="mdi:close" class="size-3.5" />
     </button>
   </div>

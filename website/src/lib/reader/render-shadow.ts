@@ -171,12 +171,13 @@ export async function paintShadows(
     gsctx.fillStyle = spec.color;
     roundRectPath(gsctx, x, y, w, h, Math.max(0, radius + spec.spread * scale));
     gsctx.fill();
-    // erase the offset shape AND the element's own box so the shadow that
-    // falls under the element (already painted opaquely in the base canvas)
-    // does not darken the element's border region.
+    // Erase ONLY the element's own box. The offset shape is the shadow itself
+    // and must stay (erasing it hollowed glows and wiped out hard/spread
+    // shadows like the sms/comment rings and the sticky-note offset shadow).
+    // Use an opaque fill so the erase is complete regardless of the shadow
+    // color's alpha (destination-out keeps dest * (1 - srcAlpha)).
     gsctx.globalCompositeOperation = "destination-out";
-    roundRectPath(gsctx, x, y, w, h, Math.max(0, radius + spec.spread * scale));
-    gsctx.fill();
+    gsctx.fillStyle = "rgba(0,0,0,1)";
     roundRectPath(gsctx, box.x, box.y, box.w, box.h, radius);
     gsctx.fill();
     gsctx.restore();
@@ -196,9 +197,21 @@ export async function paintShadows(
     gsctx.fillStyle = spec.color;
     roundRectPath(gsctx, sx, sy, box.w, box.h, radius);
     gsctx.fill();
-    gsctx.globalCompositeOperation = "destination-out";
-    roundRectPath(gsctx, sx, sy, box.w, box.h, radius);
-    gsctx.fill();
+    // Erase the interior so the shape fill (an opaque copy of the shadow
+    // color) and the middle of the halo don't wash out the whole box — the
+    // visible result is a ring just inside the edge. Opaque fill = full erase.
+    const ring = Math.max(0, (spec.spread + spec.blur) * scale);
+    if (ring * 2 < Math.min(box.w, box.h)) {
+      gsctx.globalCompositeOperation = "destination-out";
+      gsctx.fillStyle = "rgba(0,0,0,1)";
+      roundRectPath(
+        gsctx,
+        box.x + ring, box.y + ring,
+        box.w - ring * 2, box.h - ring * 2,
+        Math.max(0, radius - ring),
+      );
+      gsctx.fill();
+    }
     gsctx.restore();
     // only keep the part inside the box
     gctx.save();
