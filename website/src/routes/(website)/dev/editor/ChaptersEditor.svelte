@@ -572,6 +572,7 @@
     { syntax: "*text*", text: "italic text", cls: "italic" },
     { syntax: "_text_", text: "underline text", cls: "underline" },
     { syntax: "~~text~~", text: "strikethrough text", cls: "line-through text-base-content/50" },
+    { syntax: "<ts>text</ts>", text: "triple strikethrough", cls: "triple-strike", expandable: true },
     { syntax: "$agtextag$", text: "silver text", cls: "silver-text", expandable: true },
     { syntax: "$stexts$", text: "smoke text", cls: "smoke-text", expandable: true },
     { syntax: "$atexta$", text: "aurora text", cls: "aurora-text", expandable: true },

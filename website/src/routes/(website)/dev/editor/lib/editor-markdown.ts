@@ -248,6 +248,9 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   // Strikethrough — after inline tags so color/format markers inside are already wrapped
   s = s.replace(/~~(.+?)~~/g, "<del>$1</del>");
 
+  // Triple strikethrough — after inline tags so inner formatting is already wrapped
+  s = s.replace(/<ts>([\s\S]*?)<\/ts>/g, "<span class=\"triple-strike\">$1</span>");
+
   // Scroll text — duplicate content for seamless marquee loop
   s = s.replace(/\|<(.+?)<\|/gs, (_: string, text: string) => {
     const inner = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");

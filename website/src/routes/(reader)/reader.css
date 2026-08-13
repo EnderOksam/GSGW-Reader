@@ -17,6 +17,32 @@
 .reader-container del {
   text-decoration: line-through;
 }
+.reader-container .triple-strike {
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 0.1em;
+  background-repeat: no-repeat;
+  background-position: 0 48%;
+}
+
+.reader-container .triple-strike::before,
+.reader-container .triple-strike::after {
+  content: "";
+  position: absolute;
+  left: -1%;
+  width: 102%;
+  height: 0.1em;
+  background: currentColor;
+}
+
+.reader-container .triple-strike::after {
+  top: 35%;
+}
+
+.reader-container .triple-strike::before {
+  top: 57%;
+}
 
 img {
   border-radius: 0.5em;

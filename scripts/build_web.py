@@ -84,6 +84,8 @@ TRANSITION_TEXT_RE = re.compile(r"\|t\s*(?:\(([^)]*)\))?\s*(.*?)\s*t\|", re.DOTA
 
 FOOTNOTE_RE = re.compile(r"\[(\d+)\]\{([^}]+)\}", re.DOTALL)
 
+TRIPLE_STRIKE_RE = re.compile(r"<ts>([\s\S]*?)</ts>", re.DOTALL)
+
 TWITTER_URL_RE = re.compile(
     r'https?://(?:x|twitter)\.com/(\w+)/status/(\d+)(?:/photo/(\d+))?[^\s<>"\']*'
 )
@@ -132,9 +134,6 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"@c@(.*?)@c@", re.DOTALL), r'<span class="align-center">\1</span>'),
     (re.compile(r"@r@(.*?)@r@", re.DOTALL), r'<span class="align-right">\1</span>'),
 
-    (re.compile(r"#\*(.*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
-    (re.compile(r"#><(.*?)><#", re.DOTALL), r'<span class="text-large-centered">\1</span>'),
-
     (re.compile(r"#r(.*?)r#", re.DOTALL), r'<span class="text-red">\1</span>'),
     (re.compile(r"#b(.*?)b#", re.DOTALL), r'<span class="text-blue">\1</span>'),
     (re.compile(r"#y(.*?)y#", re.DOTALL), r'<span class="text-yellow">\1</span>'),
@@ -148,6 +147,9 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"(?<!\\)\-#\s*(.+?)\s*#-(?!\\)", re.DOTALL), r'<span class="text-sub">\1</span>'),
     (re.compile(r"#f>#(.*?)#f>#", re.DOTALL), r'<span class="text-fade-right">\1</span>'),
     (re.compile(r"#f<#(.*?)#f<#", re.DOTALL), r'<span class="text-fade-left">\1</span>'),
+
+    (re.compile(r"#\*(.*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
+    (re.compile(r"#><(.*?)><#", re.DOTALL), r'<span class="text-large-centered">\1</span>'),
 
     (re.compile(r";r(.*?)r;", re.DOTALL), r'<span class="hl-red">\1</span>'),
     (re.compile(r";b(.*?)b;", re.DOTALL), r'<span class="hl-blue">\1</span>'),
@@ -569,6 +571,8 @@ def make_window(class_name, inner, extra_class=None):
 
     inner = fix_underline(inner)
     inner = escape_markdown_except_bold(inner)
+    inner = re.sub(r"\*\*\*(.+?)\*\*\*", r"<strong><em>\1</em></strong>", inner, flags=re.DOTALL)
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner, flags=re.DOTALL)
 
     cls = class_name
 
@@ -1034,6 +1038,8 @@ def convert_chapter(content):
 
     for pattern, repl in SIMPLE_REPLACEMENTS:
         content = pattern.sub(repl, content)
+
+    content = TRIPLE_STRIKE_RE.sub(r'<span class="triple-strike">\1</span>', content)
 
     content = re.sub(r"\$\$(.*?)\$\$", r'<span class="handwritten">\1</span>', content)
 

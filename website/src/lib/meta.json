@@ -264,6 +264,14 @@
         "index": 404,
         "section": "Chapter 404",
         "slug": "404"
+      },
+      {
+        "title": "Chapter 405",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 405,
+        "section": "Chapter 405",
+        "slug": "405"
       }
     ],
     "fantl": [
@@ -2554,9 +2562,7 @@
         "index": 285,
         "section": "Chapter 285",
         "slug": "285"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
         "title": "[Sekwang Technical High School], I",
         "category": "Part 2",
@@ -2572,7 +2578,9 @@
         "index": 287,
         "section": "Chapter 287",
         "slug": "287"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "[Sekwang Technical High School], III",
         "category": "Part 2",
@@ -2622,7 +2630,7 @@
         "slug": "293"
       },
       {
-        "title": "Chapter 294",
+        "title": "[Gangryeong Town Tunnel], II",
         "category": "Part 2",
         "discussion": 0,
         "index": 294,
@@ -2638,7 +2646,7 @@
         "slug": "295"
       },
       {
-        "title": "Chapter 296",
+        "title": "Sekwang Station Office",
         "category": "Part 2",
         "discussion": 441,
         "index": 296,
@@ -2646,7 +2654,7 @@
         "slug": "296"
       },
       {
-        "title": "Chapter 297",
+        "title": "Cheerful Research Institute",
         "category": "Part 2",
         "discussion": 442,
         "index": 297,
