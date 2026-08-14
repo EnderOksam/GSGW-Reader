@@ -125,6 +125,7 @@
   let searchQuery = $state("");
   let selectedTags = $state<string[]>([]);
   let isReversed = $state(false);
+  let selectedPart = $state("");
 
   const allTags = ["Daydream Inc.", "Disaster Management Bureau", "Church of the Luminous Unknown", "Exploration Record"];
 
@@ -167,8 +168,36 @@
   let synopsisModal: HTMLDialogElement;
   let tlSelectionModal: HTMLDialogElement;
 
+  let nextInfoDialog: HTMLDialogElement | undefined = $state();
+
+  const TL_INFO = $derived(
+    bookSlug === "debut"
+      ? [
+          { name: "DEBUTFORMATTED", desc: "This is the recommended translation, with all the features and formatting made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
+          { name: "DEBUTPLAINTXT", desc: "The base story without any special features or formatting — essentially equivalent to reading an EPUB. Once chapters here are formatted, they are moved to DEBUTFORMATTED.", icon: "mdi:book-outline", color: "text-blue-400" },
+        ]
+      : [
+          { name: "FanTL", desc: "This translation is the recommended one, has all the features made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
+          { name: "UnfinishedTL", desc: "The base story with no special features — equivalent of reading an epub. Once chapters here get formatted they get put under FanTL.", icon: "mdi:book-outline", color: "text-blue-400" },
+          { name: "MTL", desc: "Currently released part three chapters. Translated by ZestysDaddy on Discord, kept separate because they'd break the order of FanTL (jumping to part three since part two isn't fully formatted yet).", icon: "mdi:auto-fix", color: "text-purple-400" },
+        ],
+  );
+
   const availableTLs = $derived(Object.keys(meta[bookSlug] || {}));
   const chapters = $derived(meta[bookSlug]?.[selectedTL] || []);
+
+  const availableParts = $derived(
+    Object.values(meta[bookSlug] || {})
+      .flat()
+      .map((c: Chapter) => c.category)
+      .filter((c): c is string => !!c)
+      .filter((v, i, a) => a.indexOf(v) === i)
+      .sort((a, b) => {
+        const na = parseInt(a.match(/\d+/)?.[0] || "0", 10);
+        const nb = parseInt(b.match(/\d+/)?.[0] || "0", 10);
+        return na - nb;
+      }),
+  );
 
   const titleSlugMatches = $derived(
     chapters.filter(
@@ -184,7 +213,10 @@
       .map((m) => m.chapter)
       .filter((c: Chapter) => !titleSlugSet.has(c.slug.toString()));
     const combined = [...titleSlugMatches, ...contentOnly];
-    return isReversed ? [...combined].reverse() : combined;
+    const byPart = selectedPart
+      ? combined.filter((c: Chapter) => c.category === selectedPart)
+      : combined;
+    return isReversed ? [...byPart].reverse() : byPart;
   });
 
   $effect(() => {
@@ -275,48 +307,77 @@
 <main class="flex flex-col md:flex-row min-h-dvh">
   <!-- Left: Book Info -->
   <aside class="relative md:h-dvh md:w-[35vw] w-full bg-base-200/70 md:sticky md:top-0 flex flex-col items-center border-b md:border-b-0 md:border-r border-base-content/10 overflow-hidden">
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--color-base-content)/3,transparent_70%)] pointer-events-none"></div>
     <div class="relative w-full flex flex-col items-center p-8 md:p-12">
-      <div class="relative group mb-8">
-        <div class="absolute -inset-4 rounded-3xl blur-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-700"
-          style="background: linear-gradient(135deg, color-mix(in srgb, var(--color-{book.accent_color}) 20%, transparent), transparent)"
-        ></div>
-        <div class="absolute -inset-2 bg-base-content/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <enhanced:img
-          src={book.cover}
-          alt="{book.title} cover"
-          class="relative w-44 md:w-56 rounded-2xl shadow-2xl ring-1 ring-base-content/10 transition-transform duration-500 group-hover:scale-[1.02]"
-        />
-      </div>
+      <div class="flex items-start gap-4">
+        <div class="relative w-56 md:w-72 aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
+          <enhanced:img
+            src={book.cover}
+            alt="{book.title} cover"
+            class="absolute inset-0 w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-60% to-black/10 to-100%"></div>
 
-      <div class="text-center space-y-3 max-w-sm">
-        <h1 class="text-xl md:text-2xl font-black leading-tight {book.title_accent}">
-          {book.title}
-        </h1>
-        <p class="text-xs font-bold opacity-50 uppercase tracking-[0.2em]">
-          {book.author}
-        </p>
-      </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <h1 class="text-sm font-black text-white drop-shadow leading-tight line-clamp-2">
+              {book.title}
+            </h1>
+            <p class="text-[11px] text-white/70 font-mono mt-1">
+              {book.author}
+            </p>
+          </div>
 
-      <div class="flex items-center gap-4 mt-6 text-xs font-mono opacity-40">
-        {#if isTemp}
-          <span class="flex items-center gap-1.5">
-            <Icon icon="material-symbols:auto-stories" class="size-3.5" />
-            {records.length} {records.length === 1 ? "record" : "records"}
-          </span>
-        {:else}
-          <span class="flex items-center gap-1.5">
-            <Icon icon="material-symbols:auto-stories" class="size-3.5" />
-            {chapters.length} {chapters.length === 1 ? "chapter" : "chapters"}
-          </span>
-          {#if availableTLs.length > 1}
-            <span class="w-px h-3 bg-base-content/20"></span>
-            <span class="flex items-center gap-1.5">
-              <Icon icon="material-symbols:translate" class="size-3.5" />
-              {availableTLs.length} {availableTLs.length === 1 ? "translation" : "translations"}
+          <div class="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none"></div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          {#if isTemp}
+            <span class="flex items-center gap-2.5">
+              <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
+                <Icon icon="material-symbols:auto-stories" class="size-4 opacity-50" />
+              </span>
+              <span class="flex flex-col leading-tight">
+                <span class="text-lg font-bold tabular-nums">{records.length}</span>
+                <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">{records.length === 1 ? "Record" : "Records"}</span>
+              </span>
             </span>
+          {:else}
+            <span class="flex items-center gap-2.5">
+              <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
+                <Icon icon="material-symbols:auto-stories" class="size-4 opacity-50" />
+              </span>
+              <span class="flex flex-col leading-tight">
+                <span class="text-lg font-bold tabular-nums">{chapters.length}</span>
+                <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">{chapters.length === 1 ? "Chapter" : "Chapters"}</span>
+              </span>
+            </span>
+            {#if availableTLs.length > 1}
+              <span class="flex items-center gap-2.5">
+                <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
+                  <Icon icon="material-symbols:translate" class="size-4 opacity-50" />
+                </span>
+                <span class="flex flex-col leading-tight">
+                  <span class="text-lg font-bold tabular-nums">{availableTLs.length}</span>
+                  <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">{availableTLs.length === 1 ? "Translation" : "Translations"}</span>
+                </span>
+              </span>
+            {/if}
           {/if}
-        {/if}
+          {#if book.external_link}
+            <a
+              href={book.external_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-2.5 mt-1 group"
+            >
+              <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
+                <Icon icon="material-symbols:open-in-new" class="size-4 opacity-50" />
+              </span>
+              <span class="flex flex-col leading-tight">
+                <span class="text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">Source</span>
+              </span>
+            </a>
+          {/if}
+        </div>
       </div>
     </div>
 
@@ -325,7 +386,7 @@
         <a
           href="#"
           onclick={(e) => e.preventDefault()}
-          class="btn {book.button_primary} grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5"
+          class="btn {book.button_primary} grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5 rounded-xl"
         >
           <Icon icon="material-symbols:menu-book-outline-rounded" class="size-5 shrink-0" />
           <span class="flex flex-col items-start leading-tight">
@@ -334,7 +395,7 @@
         </a>
         <button
           disabled
-          class="btn btn-ghost grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5 opacity-30 cursor-not-allowed"
+          class="btn btn-ghost grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5 rounded-xl opacity-30 cursor-not-allowed"
         >
           <Icon icon="material-symbols:resume" class="size-5 shrink-0" />
           <span class="flex flex-col items-start leading-tight">
@@ -347,28 +408,24 @@
             ? `../../read/${continueData.book}/${continueData.tl}/${continueData.slug}`
             : "#"}
           onclick={handleReadClick}
-          class="btn {book.button_primary} grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5"
+          class="btn {book.button_primary} grow shadow-lg font-bold gap-3 h-auto min-h-[2.75rem] py-2.5 rounded-xl"
           data-sveltekit-preload-data
         >
           <Icon icon={continueData ? "material-symbols:resume" : "material-symbols:menu-book-outline-rounded"} class="size-5 shrink-0" />
           <span class="flex flex-col items-start leading-tight">
             <span>{continueData ? "Continue" : "Start Reading"}</span>
             {#if continueData}
-              <span class="text-[10px] font-normal opacity-70">Chapter {continueData.slug}</span>
+              <span class="text-[10px] font-mono uppercase tracking-wider opacity-70">Chapter {continueData.slug}</span>
             {/if}
           </span>
         </a>
-        {#if book.external_link}
-          <a href={book.external_link} target="_blank" rel="noopener noreferrer" class="btn {book.button_secondary} shadow-lg shrink-0 h-auto min-h-[2.75rem] py-2.5 aspect-square" aria-label="Official source">
-            <Icon icon="material-symbols:open-in-new" class="size-5" />
-          </a>
-        {/if}
       {/if}
     </div>
 
     <div class="relative grow w-full px-6 md:px-8 pb-6 overflow-hidden">
       <div class="hidden md:block h-full">
         <div class="h-full overflow-y-auto pr-2 custom-scrollbar">
+          <h2 class="text-[10px] font-mono uppercase tracking-wider opacity-40 mb-3 text-center">Synopsis</h2>
           <p class="text-sm leading-relaxed text-center opacity-60 whitespace-pre-line">
             {book.synopsis}
           </p>
@@ -376,9 +433,10 @@
       </div>
 
       <button
-        class="md:hidden btn btn-ghost btn-sm w-full h-auto py-3.5 bg-base-300/20 hover:bg-base-300/40 rounded-xl"
+        class="md:hidden btn btn-ghost btn-sm w-full h-auto py-3.5 bg-base-300/20 hover:bg-base-300/40 rounded-xl flex-col gap-1"
         onclick={() => synopsisModal.showModal()}
       >
+        <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">Synopsis</span>
         <p class="line-clamp-2 text-xs italic opacity-50 text-center leading-relaxed">
           {book.synopsis}
         </p>
@@ -440,19 +498,86 @@
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
   </dialog>
 
+  <!-- --- Modal: No Next Chapter Found --- -->
+  <dialog bind:this={nextInfoDialog} class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box bg-base-100 p-0 rounded-t-2xl sm:rounded-box shadow-2xl overflow-hidden max-h-[85vh]">
+      <div class="relative">
+        <div
+          class="absolute inset-0"
+          style="background: linear-gradient(135deg, color-mix(in srgb, var(--color-{book.accent_color}) 12%, transparent), transparent)"
+        ></div>
+        <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg flex items-center gap-2 text-{book.accent_color}">
+            <Icon icon="material-symbols:info-outline" class="size-5" />
+            Other translation folders
+          </span>
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+              <Icon icon="mdi:close" class="size-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="overflow-y-auto overscroll-contain max-h-[70vh]">
+        <div class="p-5 space-y-4">
+          <p class="text-sm text-base-content/60 leading-relaxed">
+            Chapters are split into folders as they are worked on, here is a brief description of each. If there is an issue with a chapter or waiting on a new release you can follow up with releases on the Discord.
+          </p>
+
+          <div class="space-y-2.5">
+            {#each TL_INFO as item}
+              <div class="flex gap-3 p-3 rounded-xl bg-base-200/50 border border-base-content/5">
+                <Icon icon={item.icon} class="size-5 shrink-0 mt-0.5 {item.color}" />
+                <div class="space-y-0.5 min-w-0">
+                  <div class="text-xs font-bold tracking-wide">{item.name}</div>
+                  <p class="text-[11px] text-base-content/50 leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            {/each}
+          </div>
+
+          <a
+            href="https://discord.gg/HHnSjeGN4d"
+            target="_blank"
+            class="btn {book.button_primary} btn-sm w-full rounded-xl gap-2"
+          >
+            <Icon icon="mdi:discord" class="size-4" />
+            <span class="text-xs">Chapters are still releasing — join the Discord</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
   <!-- Right: Record List -->
   <div class="md:w-[65vw] w-full min-h-dvh bg-base-100/50">
     {#if isTemp}
       <div class="p-3 md:p-4">
         <div class="flex items-center gap-2 mb-4">
-          <div class="relative grow">
-            <Icon icon="material-symbols:search-rounded" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-30" />
-            <input
-              type="search"
-              bind:value={searchQuery}
-              placeholder="Search by name..."
-              class="input input-sm input-bordered w-full pl-9 rounded-xl bg-base-200/50 focus:bg-base-200 transition-colors"
-            />
+<div class="relative grow">
+            <div
+              class="search-box flex items-center gap-2 h-8 pl-8 pr-2 min-w-0 rounded-xl border border-base-content/15 bg-base-200/60 transition-all duration-200"
+              style="--sb-color: var(--color-{book.accent_color})"
+            >
+              <Icon icon="material-symbols:search-rounded" class="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 opacity-30" />
+              <input
+                type="search"
+                bind:value={searchQuery}
+                placeholder="Search by name..."
+                class="w-full h-full bg-transparent border-0 outline-none text-sm text-base-content placeholder:text-base-content/35"
+              />
+              {#if searchQuery}
+                <button
+                  class="btn btn-xs btn-circle btn-ghost shrink-0 text-base-content/40 hover:text-base-content/80"
+                  onclick={() => (searchQuery = "")}
+                  aria-label="Clear search"
+                >
+                  <Icon icon="material-symbols:close-rounded" class="size-3.5" />
+                </button>
+              {/if}
+            </div>
           </div>
         </div>
         <div class="flex flex-wrap gap-1.5 mb-4">
@@ -511,13 +636,27 @@
       <div class="sticky top-0 z-10 bg-base-100/80 backdrop-blur-lg border-b border-base-content/5">
         <div class="flex items-center gap-2 p-3 md:p-4">
           <div class="relative grow">
-            <Icon icon="material-symbols:search-rounded" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-30" />
-            <input
-              type="search"
-              bind:value={searchQuery}
-              placeholder="Search chapters..."
-              class="input input-sm input-bordered w-full pl-9 rounded-xl bg-base-200/50 focus:bg-base-200 transition-colors"
-            />
+            <div
+              class="search-box flex items-center gap-2 h-8 pl-8 pr-2 min-w-0 rounded-xl border border-base-content/15 bg-base-200/60 transition-all duration-200"
+              style="--sb-color: var(--color-{book.accent_color})"
+            >
+              <Icon icon="material-symbols:search-rounded" class="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 opacity-30" />
+              <input
+                type="search"
+                bind:value={searchQuery}
+                placeholder="Search chapters..."
+                class="w-full h-full bg-transparent border-0 outline-none text-sm text-base-content placeholder:text-base-content/35"
+              />
+              {#if searchQuery}
+                <button
+                  class="btn btn-xs btn-circle btn-ghost shrink-0 text-base-content/40 hover:text-base-content/80"
+                  onclick={() => (searchQuery = "")}
+                  aria-label="Clear search"
+                >
+                  <Icon icon="material-symbols:close-rounded" class="size-3.5" />
+                </button>
+              {/if}
+            </div>
           </div>
 
           <div class="flex items-center gap-1.5">
@@ -596,33 +735,89 @@
     {:else}
       <div class="sticky top-0 z-10 bg-base-100/80 backdrop-blur-lg border-b border-base-content/5">
         <div class="flex items-center gap-2 p-3 md:p-4">
-          <div class="relative grow">
-            <Icon icon="material-symbols:search-rounded" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 opacity-30" />
-            <input
-              type="search"
-              bind:value={searchQuery}
-              placeholder="Search chapters..."
-              class="input input-sm input-bordered w-full pl-9 rounded-xl bg-base-200/50 focus:bg-base-200 transition-colors"
-            />
+          <div class="relative grow min-w-0">
+            <div
+              class="search-box flex items-center gap-2 h-8 pl-8 pr-2 min-w-0 rounded-xl border border-base-content/15 bg-base-200/60 transition-all duration-200"
+              style="--sb-color: var(--color-{book.accent_color})"
+            >
+              <Icon icon="material-symbols:search-rounded" class="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 opacity-30" />
+              <input
+                type="search"
+                bind:value={searchQuery}
+                placeholder="Search chapters..."
+                class="w-full h-full min-w-0 bg-transparent border-0 outline-none text-sm text-base-content placeholder:text-base-content/35"
+              />
+              {#if searchQuery}
+                <button
+                  class="btn btn-xs btn-circle btn-ghost shrink-0 text-base-content/40 hover:text-base-content/80"
+                  onclick={() => (searchQuery = "")}
+                  aria-label="Clear search"
+                >
+                  <Icon icon="material-symbols:close-rounded" class="size-3.5" />
+                </button>
+              {/if}
+            </div>
           </div>
 
-          <div class="flex items-center gap-1.5">
-            <button
-              class="btn btn-sm btn-square rounded-xl {isReversed ? `btn-ghost text-${book.accent_color}` : 'bg-base-200/70'}"
-              onclick={() => (isReversed = !isReversed)}
-              aria-label="Toggle order"
-            >
-              <Icon
-                icon="material-symbols:sort-rounded"
-                class="size-5 transition-transform duration-300 {isReversed ? 'rotate-180' : ''}"
-              />
-            </button>
-            <select class="select select-sm select-bordered rounded-xl bg-base-200/50 min-w-[5rem]" bind:value={selectedTL}>
-              {#each availableTLs as tl}
-                <option value={tl}>{tl.toUpperCase()}</option>
-              {/each}
-            </select>
+          <button
+            class="btn btn-sm btn-square rounded-xl shrink-0 {isReversed ? `btn-ghost text-${book.accent_color}` : 'bg-base-200/70'}"
+            onclick={() => (isReversed = !isReversed)}
+            aria-label="Toggle order"
+          >
+            <Icon
+              icon="material-symbols:sort-rounded"
+              class="size-5 transition-transform duration-300 {isReversed ? 'rotate-180' : ''}"
+            />
+          </button>
+
+          <select class="select select-sm select-bordered rounded-xl bg-base-200/50 w-32 min-w-0 shrink-0 text-xs hidden md:inline-flex" bind:value={selectedTL}>
+            {#each availableTLs as tl}
+              <option value={tl}>{tl.toUpperCase()}</option>
+            {/each}
+          </select>
+
+          <button
+            class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-base-content/80 hover:bg-base-content/5 shrink-0 md:hidden"
+            aria-label="Info"
+            onclick={() => nextInfoDialog?.showModal()}
+          >
+            <Icon icon="material-symbols:info-outline-rounded" class="size-4" />
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 px-3 md:px-4 pb-3">
+          <div class="flex flex-wrap items-center gap-0.5 p-0.5 rounded-xl bg-base-200/60 border border-base-content/10 shadow-sm flex-1 md:flex-none min-w-0">
+            {#each availableParts as part}
+              {@const partCount = chapters.filter((c: Chapter) => c.category === part).length}
+              <button
+                class="flex flex-1 min-w-max items-center justify-center gap-1 md:gap-1.5 px-1.5 md:px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer {selectedPart === part
+                  ? `bg-base-100 shadow-sm text-${book.accent_color} ring-1 ring-base-content/10`
+                  : 'text-base-content/45 hover:text-base-content/80 hover:bg-base-content/5'}"
+                onclick={() => (selectedPart = selectedPart === part ? "" : part)}
+              >
+                {part}
+                <span class="text-[9px] md:text-[10px] font-mono tabular-nums {selectedPart === part ? 'opacity-60' : 'opacity-40'}">({partCount})</span>
+              </button>
+            {/each}
           </div>
+
+          <select class="select select-sm select-bordered rounded-xl bg-base-200/50 w-28 min-w-0 shrink-0 text-xs ml-auto md:hidden" bind:value={selectedTL}>
+            {#each availableTLs as tl}
+              <option value={tl}>{tl.toUpperCase()}</option>
+            {/each}
+          </select>
+
+          <p class="hidden md:block ml-auto text-[10px] font-mono text-base-content/30 leading-tight text-right">
+            Chapters may be in other translation folders
+          </p>
+
+          <button
+            class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-base-content/80 hover:bg-base-content/5 shrink-0 hidden md:block"
+            aria-label="Info"
+            onclick={() => nextInfoDialog?.showModal()}
+          >
+            <Icon icon="material-symbols:info-outline-rounded" class="size-4" />
+          </button>
         </div>
       </div>
 
@@ -698,6 +893,9 @@
 </main>
 
 <style>
+  :global(html) {
+    scrollbar-gutter: stable;
+  }
   .gallery-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -705,5 +903,17 @@
   }
   .chapter-row img {
     display: block;
+  }
+  .search-box {
+    --sb-ring: color-mix(in srgb, var(--sb-color, var(--color-accent)) 40%, transparent);
+  }
+  .search-box:focus-within {
+    border-color: var(--sb-ring);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--sb-color, var(--color-accent)) 16%, transparent);
+    background-color: color-mix(in srgb, var(--sb-color, var(--color-accent)) 5%, var(--color-base-200));
+  }
+  .search-box input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
   }
 </style>
