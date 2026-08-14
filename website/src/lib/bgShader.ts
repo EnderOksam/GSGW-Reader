@@ -84,13 +84,15 @@ vec3 stoneColor(vec2 p, float time) {
 
 vec3 bgTint(vec3 c) {
   float lum = dot(c, vec3(0.299, 0.587, 0.114));
-  c = mix(c, c * c * (3.0 - 2.0 * c), 0.45);
-  vec3 shadow = vec3(0.12, 0.06, 0.10);
-  vec3 mid = vec3(0.32, 0.16, 0.20);
-  vec3 hi = vec3(0.16, 0.40, 0.40);
+  c = mix(c, c * c * (3.0 - 2.0 * c), 0.75);
+  float sl = dot(c, vec3(0.299, 0.587, 0.114));
+  c = mix(vec3(sl), c, 1.12);
+  vec3 shadow = vec3(0.07, 0.08, 0.13);
+  vec3 mid = vec3(0.13, 0.24, 0.34);
+  vec3 hi = vec3(0.56, 0.26, 0.50);
   vec3 grade = mix(shadow, mid, smoothstep(0.0, 0.5, lum));
   grade = mix(grade, hi, smoothstep(0.5, 1.0, lum));
-  return mix(c, grade, 0.28);
+  return mix(c, grade, 0.32);
 }
 
 void main() {

@@ -112,7 +112,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     width: 100%;
     height: 100%;
     background-color: #0d0d0d;
-    filter: blur(5px);
+    filter: blur(6px);
   }
 
   .content {
