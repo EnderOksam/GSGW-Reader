@@ -258,8 +258,17 @@
         try {
           await paintShadows(canvas, snippetOuterEl, { pixelRatio: 2 });
         } catch (e) {
-          console.error("Shadow pass failed:", e);
-          throw new Error(`Shadow compositing failed: ${e instanceof Error ? e.message : String(e)}`);
+          // WebKit on iOS can throw "shadow composition failed, the object is
+          // in an invalid state" while compositing canvas shadows. Re-render
+          // without the shadow pass rather than failing the whole share image.
+          console.error("Shadow pass failed, falling back to plain render:", e);
+          const plain = await toCanvas(snippetOuterEl, {
+            pixelRatio: 2,
+            backgroundColor: bg,
+            style: { borderRadius: "0" },
+          });
+          snippetImageUrl = plain.toDataURL("image/png");
+          return;
         }
       }
       snippetImageUrl = canvas.toDataURL("image/png");

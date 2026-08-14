@@ -172,15 +172,12 @@ export async function paintShadows(
     roundRectPath(gsctx, x, y, w, h, Math.max(0, radius + spec.spread * scale));
     gsctx.fill();
     // Erase ONLY the element's own box. The offset shape is the shadow itself
-    // and must stay (erasing it hollowed glows and wiped out hard/spread
-    // shadows like the sms/comment rings and the sticky-note offset shadow).
-    // Use an opaque fill so the erase is complete regardless of the shadow
-    // color's alpha (destination-out keeps dest * (1 - srcAlpha)).
+    gsctx.restore();
     gsctx.globalCompositeOperation = "destination-out";
     gsctx.fillStyle = "rgba(0,0,0,1)";
     roundRectPath(gsctx, box.x, box.y, box.w, box.h, radius);
     gsctx.fill();
-    gsctx.restore();
+    gsctx.globalCompositeOperation = "source-over";
     gctx.drawImage(scratch, 0, 0);
   }
 
@@ -197,9 +194,9 @@ export async function paintShadows(
     gsctx.fillStyle = spec.color;
     roundRectPath(gsctx, sx, sy, box.w, box.h, radius);
     gsctx.fill();
+    gsctx.restore();
     // Erase the interior so the shape fill (an opaque copy of the shadow
-    // color) and the middle of the halo don't wash out the whole box — the
-    // visible result is a ring just inside the edge. Opaque fill = full erase.
+    // color) and the middle of the halo don't wash out the whole box
     const ring = Math.max(0, (spec.spread + spec.blur) * scale);
     if (ring * 2 < Math.min(box.w, box.h)) {
       gsctx.globalCompositeOperation = "destination-out";
@@ -211,8 +208,8 @@ export async function paintShadows(
         Math.max(0, radius - ring),
       );
       gsctx.fill();
+      gsctx.globalCompositeOperation = "source-over";
     }
-    gsctx.restore();
     // only keep the part inside the box
     gctx.save();
     roundRectPath(gctx, box.x, box.y, box.w, box.h, radius);
@@ -258,7 +255,7 @@ export async function paintShadows(
     // erase the element's own pixels from the scratch so shadows sit *behind*
     // the glyphs already present in the base canvas.
     gsctx.globalCompositeOperation = "destination-out";
-    gsctx.shadowColor = "rgba(0,0,0,0)";
+    gsctx.shadowColor = "transparent";
     gsctx.shadowBlur = 0;
     gsctx.shadowOffsetX = 0;
     gsctx.shadowOffsetY = 0;
@@ -269,11 +266,21 @@ export async function paintShadows(
 
   const els = Array.from(rootEl.querySelectorAll("*"));
   for (const el of els) {
+    // A single element failing to rasterize (e.g. WebKit's shadow-compositing
+    // bug on iOS) should skip that element, not abort the whole pass.
+    try {
+      await paintElement(el);
+    } catch {
+      continue;
+    }
+  }
+
+  async function paintElement(el: Element): Promise<void> {
     let cs: CSSStyleDeclaration;
     try {
       cs = getComputedStyle(el);
     } catch {
-      continue;
+      return;
     }
     const elRect = (el as HTMLElement).getBoundingClientRect();
     const box = {
@@ -282,7 +289,7 @@ export async function paintShadows(
       w: elRect.width * scale,
       h: elRect.height * scale,
     };
-    if (box.w <= 0 || box.h <= 0) continue;
+    if (box.w <= 0 || box.h <= 0) return;
 
     const defaultColor = cs.color;
     const radius = parseRadius(cs.borderRadius) * scale;
@@ -314,7 +321,7 @@ export async function paintShadows(
       try {
         pcs = getComputedStyle(el, pseudo);
       } catch {
-        continue;
+        return;
       }
       if (!pcs.boxShadow || pcs.boxShadow === "none") continue;
       const pRadius = parseRadius(pcs.borderRadius) * scale || radius;
