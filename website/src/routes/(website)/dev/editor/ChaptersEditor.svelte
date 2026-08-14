@@ -1090,7 +1090,7 @@
 
 <style>
   .chapter-content {
-    font-family: var(--chapter-font, Georgia, serif);
+    font-family: var(--chapter-font, 'Alegreya', serif);
     font-size: var(--chapter-size);
     line-height: var(--chapter-lh);
     text-align: var(--chapter-align);
