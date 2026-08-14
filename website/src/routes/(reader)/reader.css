@@ -830,6 +830,10 @@ hr.invisible-hr {
   font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace;
 }
 
+.braun-handwriting {
+  font-family: 'Gabia Maeumgyeol', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+}
+
 .scroll-wrap {
   display: inline-block;
   overflow: hidden;

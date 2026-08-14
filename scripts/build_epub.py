@@ -1174,6 +1174,7 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"\$nbg(.+?)nbg\$", '<span class="nanum-barun-gothic">{inner}</span>'),
         (r"\$tf(.+?)tf\$", '<span class="chungju-kimsaeng">{inner}</span>'),
         (r"\$vcr(.+?)vcr\$", '<span class="vcr-osd-mono">{inner}</span>'),
+        (r"\$Bh(.+?)Bh\$", '<span class="braun-handwriting">{inner}</span>'),
         (r"\$a(.+?)a\$", '<span class="aurora-text">{inner}</span>'),
         (r"\$g(.+?)g\$", '<span class="gold-text">{inner}</span>'),
         (r"\$\*(.+?)\*\$", '<span class="sparkle-text">{inner}</span>'),

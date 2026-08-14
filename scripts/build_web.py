@@ -166,6 +166,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$nbg(.*?)nbg\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
     (re.compile(r"\$tf(.*?)tf\$", re.DOTALL), r'<span class="chungju-kimsaeng">\1</span>'),
     (re.compile(r"\$vcr(.*?)vcr\$", re.DOTALL), r'<span class="vcr-osd-mono">\1</span>'),
+    (re.compile(r"\$Bh(.*?)Bh\$", re.DOTALL), r'<span class="braun-handwriting">\1</span>'),
     (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
     (re.compile(r"\$bo(.*?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
 ]
@@ -412,6 +413,7 @@ def subtle_replacer(match):
     inner = re.sub(r"\$nbg(.+?)nbg\$", r'<span class="nanum-barun-gothic">\1</span>', inner)
     inner = re.sub(r"\$tf(.+?)tf\$", r'<span class="chungju-kimsaeng">\1</span>', inner)
     inner = re.sub(r"\$vcr(.+?)vcr\$", r'<span class="vcr-osd-mono">\1</span>', inner)
+    inner = re.sub(r"\$Bh(.+?)Bh\$", r'<span class="braun-handwriting">\1</span>', inner)
 
     parts = re.split(r"(<[^>]+>)", inner)
 

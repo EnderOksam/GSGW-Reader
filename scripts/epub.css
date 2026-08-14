@@ -358,6 +358,10 @@ del {
   font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace;
 }
 
+.braun-handwriting {
+  font-family: 'Gabia Maeumgyeol', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+}
+
 .smoke-text {
   color: #000;
   letter-spacing: 0.2em;
