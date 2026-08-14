@@ -809,6 +809,27 @@ hr.invisible-hr {
   font-family: 'Comic Neue', 'Comic Sans MS', 'Comic Sans', cursive;
 }
 
+.paulo-bittencourt {
+  font-family: 'Paulo Bittencourt', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+}
+
+.nanum-barun-gothic {
+  font-family: 'Nanum Barun Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  font-weight: 200;
+}
+
+.nanum-barun-gothic strong {
+  font-weight: 400;
+}
+
+.chungju-kimsaeng {
+  font-family: 'Chungju KimSaeng', 'Nanum Barun Gothic', sans-serif;
+}
+
+.vcr-osd-mono {
+  font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace;
+}
+
 .scroll-wrap {
   display: inline-block;
   overflow: hidden;

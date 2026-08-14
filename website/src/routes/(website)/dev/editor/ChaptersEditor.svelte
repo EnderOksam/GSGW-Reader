@@ -39,6 +39,15 @@
   let expandedSyntax = $state<Record<string, boolean>>({});
   let windowViewMode = $state<Record<string, 'code' | 'preview'>>({});
 
+  const EDITOR_FONTS = ["Alegreya", "EB Garamond", "Crimson Pro", "Bookerly", "Lato", "Gowun Batang", "Caveat", "Comic Neue", "Roboto", "Paulo Bittencourt", "Nanum Barun Gothic", "Chungju KimSaeng"];
+  let previewFont = $state(typeof localStorage !== "undefined" ? localStorage.getItem("gsgw-editor-font") ?? "Alegreya" : "Alegreya");
+
+  $effect(() => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("gsgw-editor-font", previewFont);
+    }
+  });
+
   let activeTextarea: HTMLTextAreaElement | null = null;
 
   async function insertFormatting(syntax: string) {
@@ -548,6 +557,10 @@
     { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
     { syntax: "$lattextlat$", text: "lato text", cls: "lato", expandable: true },
     { syntax: "$foxtextfox$", text: "fox counseling text", cls: "fox", expandable: true },
+    { syntax: "$htexth$", text: "pb text", cls: "paulo-bittencourt", expandable: true },
+    { syntax: "$nbgtextnbg$", text: "nanum text", cls: "nanum-barun-gothic", expandable: true },
+    { syntax: "$tftexttf$", text: "chungju text", cls: "chungju-kimsaeng", expandable: true },
+    { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
     { syntax: "$ctextc$", text: "comic sans text", cls: "contaminated", expandable: true },
     { syntax: "$wotextwo$", text: "white outline", cls: "text-black outline-white", expandable: true, previewHtml: '<span class="text-black" style="-webkit-text-stroke:0.15em white;text-stroke:0.15em white;paint-order:stroke fill;">text</span>' },
     { syntax: "$botextbo$", text: "black outline", cls: "text-green outline-black", expandable: true, previewHtml: '<span class="text-green" style="-webkit-text-stroke:0.15em black;text-stroke:0.15em black;paint-order:stroke fill;">text</span>' },
@@ -746,9 +759,18 @@
             <span class="text-[10px] font-mono text-base-content/20">·</span>
             <span class="text-[10px] font-mono text-base-content/25">{selected}</span>
           {/if}
+          <select
+            bind:value={previewFont}
+            class="ml-auto bg-base-300/60 text-base-content/70 text-[10px] px-1.5 py-0.5 rounded-md outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80 cursor-pointer max-w-28"
+            title="Preview font"
+          >
+            {#each EDITOR_FONTS as f}
+              <option value={f} style="font-family: {f}">{f}</option>
+            {/each}
+          </select>
         </div>
         <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 scrollbar-thin">
-          <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; --chapter-indent: 0; --chapter-align: left; --chapter-hyphens: none;">
+          <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: '{previewFont}', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; --chapter-indent: 0; --chapter-align: left; --chapter-hyphens: none;">
             {#if previewHtml}{@html previewHtml}{/if}
           </article>
         </div>
@@ -815,14 +837,23 @@
   </div>
   <div class="flex-1 flex flex-col min-h-0 min-w-0">
     <div class="flex items-center gap-2 px-3 py-2 border-b border-base-content/10 bg-base-200/60 backdrop-blur-sm rounded-t-xl shrink-0">
-      <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">reader</span>
-      {#if selected}
-        <span class="text-[10px] font-mono text-base-content/20">·</span>
-        <span class="text-[10px] font-mono text-base-content/25">{selected}</span>
-      {/if}
-    </div>
-    <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 scrollbar-thin">
-      <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: 'Alegreya', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; --chapter-indent: 0; --chapter-align: left; --chapter-hyphens: none;">
+<span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">reader</span>
+        {#if selected}
+          <span class="text-[10px] font-mono text-base-content/20">·</span>
+          <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
+        {/if}
+        <select
+          bind:value={previewFont}
+          class="ml-auto bg-base-300/60 text-base-content/70 text-[10px] px-1.5 py-0.5 rounded-md outline-none border border-base-content/10 transition-colors focus:border-primary/30 focus:text-base-content/80 cursor-pointer max-w-40"
+          title="Preview font"
+        >
+          {#each EDITOR_FONTS as f}
+            <option value={f} style="font-family: {f}">{f}</option>
+          {/each}
+        </select>
+      </div>
+      <div bind:this={readerScroll} class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 scrollbar-thin">
+        <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: '{previewFont}', serif; --chapter-size: 18px; --chapter-weight: 450; --chapter-lh: 1.8; --chapter-indent: 0; --chapter-align: left; --chapter-hyphens: none;">
         {#if previewHtml}{@html previewHtml}{/if}
       </article>
     </div>

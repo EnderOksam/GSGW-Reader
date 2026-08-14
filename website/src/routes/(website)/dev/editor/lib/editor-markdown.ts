@@ -71,6 +71,10 @@ const simpleInlineTags: [RegExp, string][] = [
   [/\$lat(.*?)lat\$/gs, '<span class="lato">$1</span>'],
   [/\$fox(.*?)fox\$/gs, '<span class="fox">$1</span>'],
   [/\$Eb(.*?)Eb\$/gs, '<span class="eb-garamond">$1</span>'],
+  [/\$h(?!x)(.*?)h\$/gs, '<span class="paulo-bittencourt">$1</span>'],
+  [/\$nbg(.*?)nbg\$/gs, '<span class="nanum-barun-gothic">$1</span>'],
+  [/\$tf(.*?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>'],
+  [/\$vcr(.*?)vcr\$/gs, '<span class="vcr-osd-mono">$1</span>'],
   [/\$c(.*?)c\$/gs, '<span class="contaminated">$1</span>'],
   [/\$wo(.*?)wo\$/gs, '<span class="outline-white">$1</span>'],
   [/\$bo(.*?)bo\$/gs, '<span class="outline-black">$1</span>'],
@@ -201,6 +205,10 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     inner = inner.replace(/\$lat(.+?)lat\$/gs, '<span class="lato">$1</span>');
     inner = inner.replace(/\$fox(.+?)fox\$/gs, '<span class="fox">$1</span>');
     inner = inner.replace(/\$Eb(.+?)Eb\$/gs, '<span class="eb-garamond">$1</span>');
+    inner = inner.replace(/\$h(?!x)(.+?)h\$/gs, '<span class="paulo-bittencourt">$1</span>');
+    inner = inner.replace(/\$nbg(.+?)nbg\$/gs, '<span class="nanum-barun-gothic">$1</span>');
+    inner = inner.replace(/\$tf(.+?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>');
+    inner = inner.replace(/\$vcr(.+?)vcr\$/gs, '<span class="vcr-osd-mono">$1</span>');
     inner = inner.replace(/\$c(.+?)c\$/gs, '<span class="contaminated">$1</span>');
     inner = inner.replace(/\$wo(.+?)wo\$/gs, '<span class="outline-white">$1</span>');
     inner = inner.replace(/\$bo(.+?)bo\$/gs, '<span class="outline-black">$1</span>');

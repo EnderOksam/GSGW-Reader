@@ -337,6 +337,27 @@ del {
   font-family: 'Gowun Batang', 'Georgia', serif;
 }
 
+.paulo-bittencourt {
+  font-family: 'Paulo Bittencourt', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+}
+
+.nanum-barun-gothic {
+  font-family: 'Nanum Barun Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  font-weight: 200;
+}
+
+.nanum-barun-gothic strong {
+  font-weight: 400;
+}
+
+.chungju-kimsaeng {
+  font-family: 'Chungju KimSaeng', 'Nanum Barun Gothic', sans-serif;
+}
+
+.vcr-osd-mono {
+  font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace;
+}
+
 .smoke-text {
   color: #000;
   letter-spacing: 0.2em;
@@ -630,7 +651,7 @@ del {
   color: #eeeeee;
   text-align: center;
   padding: 4em 0.5em;
-  font-family: "Courier New", Courier, monospace;
+  font-family: "VCR OSD Mono", "Courier New", Courier, monospace;
   text-shadow: 0 0 5px rgba(238, 238, 238, 0.4), 0 0 15px rgba(238, 238, 238, 0.15);
 }
 

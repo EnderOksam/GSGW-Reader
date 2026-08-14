@@ -683,7 +683,7 @@
     inset 0 0 60px oklch(0 0 0 / 0.3);
   padding: 6em 0.5em;
   text-align: center;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace;
   font-size: 2em;
   color: oklch(0.95 0 0) !important;
   text-shadow:

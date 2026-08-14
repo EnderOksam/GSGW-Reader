@@ -308,7 +308,7 @@ del { text-decoration: line-through; }
   margin: 2.5rem auto; background: radial-gradient(ellipse at center, #050504 0%, #030302 60%, #020201 100%);
   border: 10px solid #4f4642; border-radius: 36px; max-width: 90%;
   position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 60px rgba(0,0,0,0.3);
-  padding: 6em 0.5em; text-align: center; font-family: 'Courier New', Courier, monospace;
+  padding: 6em 0.5em; text-align: center; font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace;
   font-size: 2em; color: #ffffff !important; text-shadow: 0 0 5px rgba(255,255,255,0.4), 0 0 15px rgba(255,255,255,0.15); overflow: hidden;
 }
 .braun-screen::before {
@@ -1170,6 +1170,10 @@ def render_inline(text: str, ctx: RenderContext) -> str:
         (r"\$Eb(.+?)Eb\$", '<span class="eb-garamond">{inner}</span>'),
         (r"\$lat(.+?)lat\$", '<span class="lato">{inner}</span>'),
         (r"\$fox(.+?)fox\$", '<span class="fox">{inner}</span>'),
+        (r"\$h(?!x)(.+?)h\$", '<span class="paulo-bittencourt">{inner}</span>'),
+        (r"\$nbg(.+?)nbg\$", '<span class="nanum-barun-gothic">{inner}</span>'),
+        (r"\$tf(.+?)tf\$", '<span class="chungju-kimsaeng">{inner}</span>'),
+        (r"\$vcr(.+?)vcr\$", '<span class="vcr-osd-mono">{inner}</span>'),
         (r"\$a(.+?)a\$", '<span class="aurora-text">{inner}</span>'),
         (r"\$g(.+?)g\$", '<span class="gold-text">{inner}</span>'),
         (r"\$\*(.+?)\*\$", '<span class="sparkle-text">{inner}</span>'),

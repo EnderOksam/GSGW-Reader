@@ -162,6 +162,10 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$Eb(.*?)Eb\$", re.DOTALL), r'<span class="eb-garamond">\1</span>'),
     (re.compile(r"\$lat(.*?)lat\$", re.DOTALL), r'<span class="lato">\1</span>'),
     (re.compile(r"\$fox(.*?)fox\$", re.DOTALL), r'<span class="fox">\1</span>'),
+    (re.compile(r"\$h(?!x)(.*?)h\$", re.DOTALL), r'<span class="paulo-bittencourt">\1</span>'),
+    (re.compile(r"\$nbg(.*?)nbg\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
+    (re.compile(r"\$tf(.*?)tf\$", re.DOTALL), r'<span class="chungju-kimsaeng">\1</span>'),
+    (re.compile(r"\$vcr(.*?)vcr\$", re.DOTALL), r'<span class="vcr-osd-mono">\1</span>'),
     (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
     (re.compile(r"\$bo(.*?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
 ]
@@ -404,6 +408,10 @@ def subtle_replacer(match):
     inner = re.sub(r"\$c(.+?)c\$", r'<span class="contaminated">\1</span>', inner)
     inner = re.sub(r"\$wo(.+?)wo\$", r'<span class="outline-white">\1</span>', inner)
     inner = re.sub(r"\$bo(.+?)bo\$", r'<span class="outline-black">\1</span>', inner)
+    inner = re.sub(r"\$h(?!x)(.+?)h\$", r'<span class="paulo-bittencourt">\1</span>', inner)
+    inner = re.sub(r"\$nbg(.+?)nbg\$", r'<span class="nanum-barun-gothic">\1</span>', inner)
+    inner = re.sub(r"\$tf(.+?)tf\$", r'<span class="chungju-kimsaeng">\1</span>', inner)
+    inner = re.sub(r"\$vcr(.+?)vcr\$", r'<span class="vcr-osd-mono">\1</span>', inner)
 
     parts = re.split(r"(<[^>]+>)", inner)
 
@@ -1157,6 +1165,10 @@ def convert_chapter(content):
             lines.append(f'<li value="{num}" id="fn-{num}">{footnotes[num]} <a href="#fn-ref-{num}" class="fn-back" aria-label="Back to reference {num} in text">↩</a></li>')
         footnotes_html = '<div class="footnotes">\n<ol>\n' + '\n'.join(lines) + '\n</ol>\n</div>\n'
 
+    # Protect literal "..." (smart -> ellipsis).
+    ELLIPSIS_TOKEN = "GSGW__ELLIPSIS__"
+    content = content.replace("...", ELLIPSIS_TOKEN)
+
     try:
         proc = subprocess.run(
             ["pandoc", "--from", "markdown-definition_lists-smart-tex_math_dollars-subscript-superscript-citations-pipe_tables-grid_tables", "--to", "html", "--quiet"],
@@ -1168,7 +1180,8 @@ def convert_chapter(content):
             err = proc.stderr.decode().strip()
             print(f"Pandoc error: {err}")
             return f"<p>Error converting content: {err}</p>", footnotes_html
-        return process_html_images(proc.stdout.decode("utf-8")), footnotes_html
+        html_out = proc.stdout.decode("utf-8").replace(ELLIPSIS_TOKEN, "...")
+        return process_html_images(html_out), footnotes_html
     except subprocess.TimeoutExpired:
         print("Pandoc timed out on a chapter — skipping")
         return "<p>Chapter skipped due to conversion timeout.</p>", footnotes_html

@@ -2578,9 +2578,7 @@
         "index": 287,
         "section": "Chapter 287",
         "slug": "287"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
         "title": "[Sekwang Technical High School], III",
         "category": "Part 2",
@@ -2604,7 +2602,9 @@
         "index": 290,
         "section": "Chapter 290",
         "slug": "290"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "[Egg Mood Lamp], I",
         "category": "Part 2",
@@ -2662,7 +2662,7 @@
         "slug": "297"
       },
       {
-        "title": "Chapter 298",
+        "title": "Sekwang Station, Train G1572",
         "category": "Part 2",
         "discussion": 445,
         "index": 298,
@@ -2670,7 +2670,7 @@
         "slug": "298"
       },
       {
-        "title": "Chapter 299",
+        "title": "Sekwang Station [Blood Broadcasting Station], I",
         "category": "Part 2",
         "discussion": 446,
         "index": 299,
@@ -2678,7 +2678,7 @@
         "slug": "299"
       },
       {
-        "title": "Chapter 300",
+        "title": "Sekwang Station [Blood Broadcasting Station], II",
         "category": "Part 2",
         "discussion": 447,
         "index": 300,

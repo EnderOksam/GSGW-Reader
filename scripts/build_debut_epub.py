@@ -149,6 +149,10 @@ def convert_chapter_debut(content: str) -> str:
     content = SMS_WINDOW_RE.sub(bw.sms_window_replacer, content)
     content = COMMENT_WINDOW_RE.sub(bw.comment_window_replacer, content)
 
+    # Protect literal "..." (smart -> ellipsis).
+    ELLIPSIS_TOKEN = "GSGW__ELLIPSIS__"
+    content = content.replace("...", ELLIPSIS_TOKEN)
+
     try:
         proc = subprocess.run(
             ["pandoc", "--from", "markdown-superscript", "--to", "html", "--quiet"],
@@ -160,7 +164,8 @@ def convert_chapter_debut(content: str) -> str:
             err = proc.stderr.decode().strip()
             print(f"      Pandoc error: {err}")
             return f"<p>Error converting content: {err}</p>"
-        return proc.stdout.decode("utf-8")
+        html_out = proc.stdout.decode("utf-8").replace(ELLIPSIS_TOKEN, "...")
+        return html_out
     except subprocess.TimeoutExpired:
         print("      Pandoc timed out")
         return "<p>Chapter skipped due to timeout.</p>"
