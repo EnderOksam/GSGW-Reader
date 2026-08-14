@@ -522,7 +522,7 @@
       <div class="overflow-y-auto overscroll-contain max-h-[70vh]">
         <div class="p-5 space-y-4">
           <p class="text-sm text-base-content/60 leading-relaxed">
-            Chapters are split into folders as they are worked on, here is a brief description of each. If there is an issue with a chapter or waiting on a new release you can follow up with releases on the Discord.
+            Chapters are split into folders based on their progress. Here is a brief description of each. If there is an issue with a chapter or you are waiting for a new release, you can follow up on releases in the Discord.
           </p>
 
           <div class="space-y-2.5">
