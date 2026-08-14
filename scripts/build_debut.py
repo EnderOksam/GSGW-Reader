@@ -448,13 +448,9 @@ def convert_chapter(content):
             lines.append(f'<li value="{num}" id="fn-{num}">{footnotes[num]} <a href="#fn-ref-{num}" class="fn-back" aria-label="Back to reference {num} in text">↩</a></li>')
         footnotes_html = '<div class="footnotes">\n<ol>\n' + '\n'.join(lines) + '\n</ol>\n</div>\n'
 
-    # Protect literal "..." (smart -> ellipsis).
-    ELLIPSIS_TOKEN = "GSGW__ELLIPSIS__"
-    content = content.replace("...", ELLIPSIS_TOKEN)
-
     try:
         proc = subprocess.run(
-            ["pandoc", "--from", "markdown", "--to", "html", "--quiet"],
+            ["pandoc", "--from", "markdown+smart", "--to", "html", "--quiet"],
             input=content.encode("utf-8"),
             capture_output=True,
             timeout=120
@@ -463,7 +459,7 @@ def convert_chapter(content):
             err = proc.stderr.decode().strip()
             print(f"Pandoc error: {err}")
             return f"<p>Error converting content: {err}</p>", footnotes_html
-        html_out = proc.stdout.decode("utf-8").replace(ELLIPSIS_TOKEN, "...")
+        html_out = proc.stdout.decode("utf-8")
         return bw.process_html_images(html_out), footnotes_html
     except subprocess.TimeoutExpired:
         print("Pandoc timed out on a chapter — skipping")

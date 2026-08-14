@@ -2602,11 +2602,9 @@
         "index": 290,
         "section": "Chapter 290",
         "slug": "290"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
-        "title": "[Egg Mood Lamp], I",
+        "title": "Egg Mood Lamp, I",
         "category": "Part 2",
         "discussion": 0,
         "index": 291,
@@ -2614,13 +2612,15 @@
         "slug": "291"
       },
       {
-        "title": "[Egg Mood Lamp], II",
+        "title": "Egg Mood Lamp, II",
         "category": "Part 2",
-        "discussion": 419,
+        "discussion": 0,
         "index": 292,
         "section": "Chapter 292",
         "slug": "292"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "[Gangryeong Town Tunnel], I",
         "category": "Part 2",
@@ -3459,6 +3459,13 @@
         "index": 28,
         "slug": "28",
         "thumb": "/chapters/manwha/thumbnails/28.webp"
+      },
+      {
+        "title": "Chapter 29",
+        "category": "Chapter 29",
+        "index": 29,
+        "slug": "29",
+        "thumb": "/chapters/manwha/thumbnails/29.webp"
       }
     ],
     "vortex scans": [
