@@ -134,8 +134,8 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 
 <div class="relative h-dvh flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden">
     <div class="flex flex-col items-center gap-4 md:gap-8 w-full max-w-7xl">
-    <h1 class="crt-title text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight text-center whitespace-nowrap">
-      GSGW-Reader
+    <h1 class="crt-title text-7xl sm:text-8xl md:text-7xl lg:text-8xl font-bold leading-none md:leading-tight text-center whitespace-nowrap -mt-14 md:-mt-20">
+      <span class="block md:inline -ml-14 md:ml-0">GSGW</span><span class="block md:inline pl-12 md:pl-0">-Reader</span>
     </h1>
 
     <div class="hidden md:block relative w-full max-w-4xl">
