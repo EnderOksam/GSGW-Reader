@@ -8,7 +8,7 @@ const config = {
     vitePreprocess(),
   ],
   kit: {
-    adapter: adapter({ strict: false, fallback: "200.html" }),
+    adapter: adapter({ strict: false, fallback: "404.html" }),
 
     prerender: {
       concurrency: 5,

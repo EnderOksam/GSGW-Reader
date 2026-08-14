@@ -1,6 +1,5 @@
 <script lang="ts">
   import NotFound from "$lib/NotFound.svelte";
-  import "../app.css";
 </script>
 
 <NotFound />
