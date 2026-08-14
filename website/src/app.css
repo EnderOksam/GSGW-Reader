@@ -249,3 +249,114 @@ body {
   font-style: normal;
   font-display: swap;
 }
+
+/* --- Paulo Bittencourt (signature script) --- */
+@font-face {
+  font-family: "Paulo Bittencourt";
+  src:
+    local("Paulo Bittencourt"),
+    local("Paulo Bittencourt - Regular"),
+    url("/fonts/PauloBittencourt-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paulo Bittencourt";
+  src:
+    local("Paulo Bittencourt - Italic"),
+    url("/fonts/PauloBittencourt-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paulo Bittencourt";
+  src:
+    local("Paulo Bittencourt - Regular Bold"),
+    url("/fonts/PauloBittencourt-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Paulo Bittencourt";
+  src:
+    local("Paulo Bittencourt - Italic Bold"),
+    url("/fonts/PauloBittencourt-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* --- Nanum Barun Gothic (Korean sans-serif) --- */
+@font-face {
+  font-family: "Nanum Barun Gothic";
+  src:
+    local("Nanum Barun Gothic UltraLight"),
+    local("NanumBarunGothicUltraLight"),
+    url("/fonts/NanumBarunGothicUltraLight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nanum Barun Gothic";
+  src:
+    local("Nanum Barun Gothic"),
+    local("NanumBarunGothic"),
+    url("/fonts/NanumBarunGothic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nanum Barun Gothic";
+  src:
+    local("Nanum Barun Gothic Light"),
+    local("NanumBarunGothicLight"),
+    url("/fonts/NanumBarunGothicLight.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nanum Barun Gothic";
+  src:
+    local("Nanum Barun Gothic Bold"),
+    local("NanumBarunGothicBold"),
+    url("/fonts/NanumBarunGothicBold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Chungju KimSaeng (Chungju city font) --- */
+@font-face {
+  font-family: "Chungju KimSaeng";
+  src:
+    local("ChungjuKimSaeng"),
+    local("충주김생체"),
+    url("/fonts/ChungjuKimSaeng.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- VCR OSD Mono (CRT/terminal font) --- */
+@font-face {
+  font-family: "VCR OSD Mono";
+  src:
+    local("VCR OSD Mono"),
+    local("VCR_OSD_MONO"),
+    url("/fonts/VCR_OSD_MONO_1.001.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
