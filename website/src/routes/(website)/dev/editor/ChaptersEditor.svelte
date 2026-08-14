@@ -544,13 +544,13 @@
   }
 
   const colorsItems = [
-    { syntax: "$$text$$", text: "handwritten text", cls: "handwritten", expandable: true },
+    { syntax: "$$text$$", text: "handwritten script", cls: "handwritten", expandable: true },
     { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
     { syntax: "$lattextlat$", text: "lato text", cls: "lato", expandable: true },
     { syntax: "$foxtextfox$", text: "fox counseling text", cls: "fox", expandable: true },
-    { syntax: "$htexth$", text: "pb text", cls: "paulo-bittencourt", expandable: true },
-    { syntax: "$nbgtextnbg$", text: "nanum text", cls: "nanum-barun-gothic", expandable: true },
-    { syntax: "$tftexttf$", text: "chungju text", cls: "chungju-kimsaeng", expandable: true },
+    { syntax: "$htexth$", text: "handwritten text", cls: "paulo-bittencourt", expandable: true },
+    { syntax: "$nbgtextnbg$", text: "thin modern", cls: "nanum-barun-gothic", expandable: true },
+    { syntax: "$tftexttf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },
     { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
     { syntax: "$BhtextBh$", text: "braun handwriting font", cls: "braun-handwriting", expandable: true },
     { syntax: "$ctextc$", text: "comic sans text", cls: "contaminated", expandable: true },
