@@ -1,16 +1,30 @@
 <script lang="ts">
+  import { onMount, onDestroy } from "svelte";
   import Icon from "@iconify/svelte";
   import "../../app.css";
   import { page } from "$app/state";
   import { browser, dev } from "$app/environment";
   import { goto } from "$app/navigation";
   import bgImage from "$lib/assets/background.jpg";
+  import { BackgroundShader } from "$lib/bgShader";
 
   let { children } = $props();
 
   let path = $derived(page.url.pathname.replace(/\/$/, "") || "/");
   let isHomePage = $derived(path === "/");
   let isEditorPage = $derived(path === "/dev/editor" || path.startsWith("/dev/editor/"));
+
+  let bgCanvas: HTMLCanvasElement;
+  let bgShader: BackgroundShader | null = null;
+
+  onMount(async () => {
+    bgShader = new BackgroundShader(bgCanvas, bgImage);
+    bgShader.start();
+  });
+
+  onDestroy(() => {
+    bgShader?.dispose();
+  });
 
   function handleBack() {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -35,7 +49,6 @@
   $effect(() => {
     const _ = page.url.href;
     document.documentElement.setAttribute("data-theme", getCachedTheme());
-    document.documentElement.style.setProperty("--bg-image", `url(${bgImage})`);
   });
 </script>
 
@@ -61,7 +74,12 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   </div>
 {/if}
 
-<div class="bg"></div>
+<canvas
+  bind:this={bgCanvas}
+  class="bg"
+  aria-hidden="true"
+  style="background-image:url({bgImage});background-size:cover;background-position:center;"
+></canvas>
 
 <div class="content">
   {@render children()}
@@ -88,28 +106,13 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 
   .bg {
     position: fixed;
-    inset: -10%;
+    inset: 0;
     z-index: -1;
+    display: block;
+    width: 100%;
+    height: 100%;
     background-color: #0d0d0d;
-    background-image: var(--bg-image);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    filter: blur(12px);
-    animation: swirl 30s ease-in-out infinite alternate;
-    transform-origin: center;
-  }
-
-  @keyframes swirl {
-    0% {
-      transform: rotate(-0.5deg) scale(1);
-    }
-    50% {
-      transform: rotate(0.5deg) scale(1.02);
-    }
-    100% {
-      transform: rotate(-0.25deg) scale(1.03);
-    }
+    filter: blur(5px);
   }
 
   .content {
