@@ -271,6 +271,7 @@
   );
 
   onMount(() => {
+    document.documentElement.classList.add("book-gutter");
     const stored = localStorage.getItem("lastRead");
     if (stored) {
       try {
@@ -282,6 +283,7 @@
         console.error("Failed to parse reading history", e);
       }
     }
+    return () => document.documentElement.classList.remove("book-gutter");
   });
 
   function handleReadClick(e: MouseEvent) {
@@ -893,7 +895,7 @@
 </main>
 
 <style>
-  :global(html) {
+  :global(html.book-gutter) {
     scrollbar-gutter: stable;
   }
   .gallery-grid {

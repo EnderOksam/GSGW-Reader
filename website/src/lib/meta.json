@@ -272,6 +272,22 @@
         "index": 405,
         "section": "Chapter 405",
         "slug": "405"
+      },
+      {
+        "title": "Chapter 406",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 406,
+        "section": "Chapter 406",
+        "slug": "406"
+      },
+      {
+        "title": "Chapter 407",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 407,
+        "section": "Chapter 407",
+        "slug": "407"
       }
     ],
     "fantl": [
@@ -3466,6 +3482,13 @@
         "index": 29,
         "slug": "29",
         "thumb": "/chapters/manwha/thumbnails/29.webp"
+      },
+      {
+        "title": "Chapter 30",
+        "category": "Chapter 30",
+        "index": 30,
+        "slug": "30",
+        "thumb": "/chapters/manwha/thumbnails/30.webp"
       }
     ],
     "vortex scans": [

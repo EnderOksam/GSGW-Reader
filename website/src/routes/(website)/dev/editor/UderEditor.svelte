@@ -3,10 +3,21 @@
   import { preprocessMarkdown } from "./lib/editor-markdown";
   import { downloadBlob } from "./lib/zip-tools";
   import { exportUderZip, importUderZip, sanitizeHtml } from "./lib/uder-format";
+  import type { UderRecordType } from "./lib/uder-format";
+  import { NODE_TYPES, NODE_LABELS, NODE_ICONS, NODE_COLORS, CONDITION_OPERATORS, OPERATOR_LABELS } from "./lib/nodes";
+  import type { UderNode } from "./lib/nodes";
+  import { graph, setSelected, addNode, deleteNode, addChoice, removeChoice } from "./lib/node-graph-store.svelte.ts";
+  import NodeGraph from "./NodeGraph.svelte";
+  import NodePreview from "./NodePreview.svelte";
+  import UderSelect from "./UderSelect.svelte";
 
   type ViewMode = "edit" | "preview";
+  type ExperienceMode = "record" | "interactive";
+  type AssetSidebarView = "assets" | "nodes";
 
   let viewMode = $state<ViewMode>("edit");
+  let experienceMode = $state<ExperienceMode>("record");
+  let assetSidebarView = $state<AssetSidebarView>("assets");
   let assets = $state<{ name: string; url: string }[]>([]);
   let dragOver = $state(false);
   let draggedAssetIndex = $state<number | null>(null);
@@ -24,6 +35,8 @@
   let thumbnailInputRef: HTMLInputElement | undefined = $state();
   let mediaSlots = $state<string[]>([]);
   let records = $state<{ title: string; content: string }[]>([]);
+
+  const focusedNode = $derived(graph.nodes.find((n) => n.id === graph.selectedId) ?? null);
 
   let activeField: { set: (v: string) => void; get: () => string; el: HTMLTextAreaElement | null } | null = $state(null);
 
@@ -65,7 +78,7 @@
   }
 
   let selectedFaction = $state<string | null>(null);
-  let isExplorationRecord = $state(false);
+  let recordType = $state<UderRecordType>("record");
 
   const factions = ["Daydream Inc.", "Disaster Management Bureau", "Church of the Luminous Unknown"];
 
@@ -81,26 +94,43 @@
     "Church of the Luminous Unknown": "text-yellow-400 border-yellow-400/30",
   };
 
-  const explorationStyle = "bg-base-content/10 text-base-content/60 border-base-content/20";
-  const explorationStyleInactive = "text-base-content/60 border-base-content/20";
+  const typeTags: { type: Exclude<UderRecordType, "record">; label: string }[] = [
+    { type: "exploration", label: "Exploration Record" },
+    { type: "character", label: "Character" },
+    { type: "item", label: "Item" },
+  ];
+
+  const typeStyles: Record<Exclude<UderRecordType, "record">, string> = {
+    exploration: "bg-base-content/10 text-base-content/60 border-base-content/20",
+    character: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+    item: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+  };
+
+  const typeStylesInactive: Record<Exclude<UderRecordType, "record">, string> = {
+    exploration: "text-base-content/60 border-base-content/20",
+    character: "text-purple-400 border-purple-400/30",
+    item: "text-emerald-400 border-emerald-400/30",
+  };
 
   function selectFaction(faction: string) {
     selectedFaction = selectedFaction === faction ? null : faction;
   }
 
-  function toggleExplorationRecord() {
-    isExplorationRecord = !isExplorationRecord;
+  function toggleRecordType(type: Exclude<UderRecordType, "record">) {
+    recordType = recordType === type ? "record" : type;
   }
 
   function getPreviewTags(): string[] {
     const tags: string[] = [];
     if (selectedFaction) tags.push(selectedFaction);
-    if (isExplorationRecord) tags.push("Exploration Record");
+    const activeType = typeTags.find((tag) => tag.type === recordType);
+    if (activeType) tags.push(activeType.label);
     return tags;
   }
 
   function getTagStyle(tag: string): string {
-    if (tag === "Exploration Record") return explorationStyle;
+    const typeTag = typeTags.find((item) => item.label === tag);
+    if (typeTag) return typeStyles[typeTag.type];
     return factionStyles[tag] || "";
   }
 
@@ -331,13 +361,48 @@
     assets = assets.filter((_, i) => i !== index);
   }
 
-  // package everything up into one .uder zip file and download it
+  function clearEditorFields() {
+    const urls = new Set<string>();
+    for (const asset of assets) urls.add(asset.url);
+    if (thumbnail) urls.add(thumbnail);
+    for (const url of mediaSlots) urls.add(url);
+    for (const url of urls) URL.revokeObjectURL(url);
+
+    assets = [];
+    draggedAssetIndex = null;
+    dragOver = false;
+    thumbnailDragOver = false;
+    mediaSlotDragOver = false;
+    contentDragOver = false;
+    recordDragOver = null;
+    expandedRecord = null;
+    activeField = null;
+
+    title = "";
+    identificationCode = "";
+    classification = "";
+    content = "";
+    shortDescription = "";
+    thumbnail = null;
+    mediaSlots = [];
+    records = [];
+    selectedFaction = null;
+    recordType = "record";
+  }
+
+  function setExperienceMode(mode: ExperienceMode) {
+    if (mode === experienceMode) return;
+    if (mode === "interactive") clearEditorFields();
+    experienceMode = mode;
+    assetSidebarView = "assets";
+  }
+
   export async function handleExport() {
     if (!title.trim()) { alert("Give the record a title first."); return; }
     try {
       const { blob, slug } = await exportUderZip({
         title,
-        type: isExplorationRecord ? "exploration" : "record",
+        type: recordType,
         faction: selectedFaction,
         code: identificationCode,
         classification,
@@ -353,7 +418,6 @@
     }
   }
 
-  // read a .uder (zip) file and put everything back into the editor
   export async function handleImport(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -361,7 +425,7 @@
       const imported = await importUderZip(file);
       title = imported.title;
       selectedFaction = imported.faction;
-      isExplorationRecord = imported.type === "exploration";
+      recordType = imported.type;
       identificationCode = imported.code;
       classification = imported.classification;
       shortDescription = imported.summary;
@@ -388,52 +452,90 @@
     ondragleave={handleDragLeave}
     role="region"
   >
-    <div class="flex items-center gap-2 px-3 py-2.5 border-b border-base-content/10">
-      <Icon icon="mdi:folder-image-outline" class="size-3.5 text-base-content/30" />
-      <span class="text-[10px] font-mono font-medium text-base-content/40 uppercase tracking-widest">assets</span>
-      <span class="text-[9px] font-mono text-base-content/20 ml-auto">{assets.length}</span>
-    </div>
-    <div class="flex-1 overflow-y-auto p-2 min-h-0 space-y-1.5 scrollbar-thin">
-      <input bind:this={fileInputRef} onchange={handleFileInput} type="file" accept="image/*" multiple class="hidden" />
+    <div class="flex items-center bg-base-200/60 backdrop-blur-sm rounded-t-xl border-b border-base-content/10 p-0.5 shrink-0">
       <button
-        onclick={() => fileInputRef?.click()}
-        class="w-full rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 py-6 transition-colors cursor-pointer {dragOver ? 'border-primary/50 bg-primary/5' : 'border-base-content/10 hover:border-base-content/20 hover:bg-base-content/[3%]'}"
-      >
-        <Icon icon={dragOver ? "mdi:image-plus" : "mdi:image-plus-outline"} class="size-5 {dragOver ? 'text-primary/40' : 'text-base-content/15'}" />
-        <span class="text-[10px] font-mono {dragOver ? 'text-primary/40' : 'text-base-content/20'} text-center px-3 leading-relaxed">
-          {dragOver ? "drop to add" : "drag or click to upload images"}
-        </span>
-      </button>
-      {#each assets as asset, i}
-        <div
-          class="group relative rounded-xl border bg-base-300/40 overflow-hidden cursor-grab active:cursor-grabbing transition-all {draggedAssetIndex === i ? 'opacity-40 border-primary/40' : 'border-base-content/10'}"
-          draggable="true"
-          ondragstart={(e) => handleAssetDragStart(e, i)}
-          ondragend={handleAssetDragEnd}
-          role="listitem"
-        >
-          <img src={asset.url} alt={asset.name} class="w-full h-24 object-cover pointer-events-none" />
-          <div class="px-2 py-1.5">
-            <p class="text-[9px] font-mono text-base-content/35 truncate">{asset.name}</p>
-          </div>
-          <button
-            onclick={() => removeAsset(i)}
-            class="absolute top-1.5 right-1.5 p-1 rounded-lg bg-base-300/80 text-base-content/30 hover:text-error hover:bg-base-300 transition-all opacity-0 group-hover:opacity-100"
-            title="Remove"
-          >
-            <Icon icon="mdi:close" class="size-3" />
-          </button>
-        </div>
-      {/each}
+        onclick={() => assetSidebarView = "assets"}
+        class="flex-1 text-[10px] font-mono font-medium py-1.5 rounded-md transition-all {assetSidebarView === 'assets' ? 'bg-primary/15 text-primary shadow-sm' : 'text-base-content/40 hover:text-base-content/60'}"
+      >assets</button>
+      <button
+        onclick={() => assetSidebarView = "nodes"}
+        class="flex-1 text-[10px] font-mono font-medium py-1.5 rounded-md transition-all {assetSidebarView === 'nodes' ? 'bg-primary/15 text-primary shadow-sm' : 'text-base-content/40 hover:text-base-content/60'}"
+      >nodes</button>
     </div>
+    {#if assetSidebarView === "assets"}
+      <div class="flex-1 overflow-y-auto p-2 min-h-0 space-y-1.5 scrollbar-thin">
+        <input bind:this={fileInputRef} onchange={handleFileInput} type="file" accept="image/*" multiple class="hidden" />
+        <button
+          onclick={() => fileInputRef?.click()}
+          class="w-full rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 py-6 transition-colors cursor-pointer {dragOver ? 'border-primary/50 bg-primary/5' : 'border-base-content/10 hover:border-base-content/20 hover:bg-base-content/[3%]'}"
+        >
+          <Icon icon={dragOver ? "mdi:image-plus" : "mdi:image-plus-outline"} class="size-5 {dragOver ? 'text-primary/40' : 'text-base-content/15'}" />
+          <span class="text-[10px] font-mono {dragOver ? 'text-primary/40' : 'text-base-content/20'} text-center px-3 leading-relaxed">
+            {dragOver ? "drop to add" : "drag or click to upload images"}
+          </span>
+        </button>
+        {#each assets as asset, i}
+          <div
+            class="group relative rounded-xl border bg-base-300/40 overflow-hidden cursor-grab active:cursor-grabbing transition-all {draggedAssetIndex === i ? 'opacity-40 border-primary/40' : 'border-base-content/10'}"
+            draggable="true"
+            ondragstart={(e) => handleAssetDragStart(e, i)}
+            ondragend={handleAssetDragEnd}
+            role="listitem"
+          >
+            <img src={asset.url} alt={asset.name} class="w-full h-24 object-cover pointer-events-none" />
+            <div class="px-2 py-1.5">
+              <p class="text-[9px] font-mono text-base-content/35 truncate">{asset.name}</p>
+            </div>
+            <button
+              onclick={() => removeAsset(i)}
+              class="absolute top-1.5 right-1.5 p-1 rounded-lg bg-base-300/80 text-base-content/30 hover:text-error hover:bg-base-300 transition-all opacity-0 group-hover:opacity-100"
+              title="Remove"
+            >
+              <Icon icon="mdi:close" class="size-3" />
+            </button>
+          </div>
+        {/each}
+      </div>
+    {:else}
+      <div class="flex-1 overflow-y-auto p-3 min-h-0 scrollbar-thin">
+        {#if experienceMode === "interactive"}
+          <div class="flex flex-col gap-1.5">
+            <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1 block">add node</span>
+            {#each NODE_TYPES.filter((t) => t !== "loop_start" && t !== "loop_check") as type}
+              <button
+                onclick={() => addNode(type)}
+                class="flex items-center gap-2 text-[11px] px-2.5 py-2 rounded-lg border border-base-content/10 bg-base-200/40 text-base-content/70 hover:bg-base-content/[4%] hover:border-base-content/20 transition-all cursor-pointer text-left"
+              >
+                <Icon icon={NODE_ICONS[type]} class="size-3.5 shrink-0" style={`color:${NODE_COLORS[type]}`} />
+                <span class="shrink-0">{NODE_LABELS[type]}</span>
+              </button>
+            {/each}
+          </div>
+        {:else}
+          <div class="rounded-xl bg-base-200/40 border border-base-content/10 min-h-32 flex items-center justify-center">
+            <p class="text-[10px] font-mono text-base-content/20 px-4 text-center leading-relaxed">switch to interactive mode to build your node graph</p>
+          </div>
+        {/if}
+      </div>
+    {/if}
   </aside>
 
   <!-- ===== MIDDLE: Content Area ===== -->
   <div class="flex-1 flex flex-col min-h-0 min-w-0">
 
     <!-- Top bar -->
-    <div class="flex items-center gap-2 px-3 py-2 border-b border-base-content/10 bg-base-200/60 backdrop-blur-sm rounded-t-xl shrink-0">
+    <div class="relative flex items-center gap-2 px-3 py-2 border-b border-base-content/10 bg-base-200/60 backdrop-blur-sm rounded-t-xl shrink-0">
       <span class="text-[10px] font-mono text-base-content/30 font-medium uppercase tracking-wider">u-der</span>
+      <div class="absolute left-1/2 -translate-x-1/2 flex items-center bg-base-300/60 rounded-lg border border-base-content/10 p-0.5">
+        <button
+          onclick={() => setExperienceMode("record")}
+          class="text-[10px] font-mono font-medium px-3 py-1.5 rounded-md transition-all {experienceMode === 'record' ? 'bg-primary/15 text-primary shadow-sm' : 'text-base-content/40 hover:text-base-content/60'}"
+        >record</button>
+        <button
+          onclick={() => setExperienceMode("interactive")}
+          class="text-[10px] font-mono font-medium px-3 py-1.5 rounded-md transition-all {experienceMode === 'interactive' ? 'bg-primary/15 text-primary shadow-sm' : 'text-base-content/40 hover:text-base-content/60'}"
+        >interactive</button>
+      </div>
       <div class="ml-auto flex items-center bg-base-300/60 rounded-lg border border-base-content/10 p-0.5">
         <button
           onclick={() => viewMode = "edit"}
@@ -447,8 +549,15 @@
     </div>
 
     <!-- Scrollable content -->
-    <div class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 scrollbar-thin">
-      <div class="p-6">
+    <div class="flex-1 overflow-y-auto rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 scrollbar-thin {experienceMode === 'interactive' ? 'overflow-hidden' : ''}">
+      <div class="p-6 {experienceMode === 'interactive' ? 'h-full' : ''}">
+        {#if experienceMode === "interactive"}
+          {#if viewMode === "preview"}
+            <NodePreview />
+          {:else}
+            <NodeGraph />
+          {/if}
+        {:else}
         <div class="uder-grid">
 
           <!-- ===== LEFT COLUMN ===== -->
@@ -567,7 +676,7 @@
                             class="flex-1 bg-transparent text-xs font-mono text-base-content/50 outline-none placeholder:text-base-content/20"
                           />
                         {:else}
-                          <span class="text-xs font-mono text-base-content/50">{record.title || "untitled"}</span>
+                          <span class="text-xs font-mono text-base-content/50">{record.title}</span>
                         {/if}
                       </button>
                       <button
@@ -587,7 +696,6 @@
                             ondragover={(e) => { e.preventDefault(); recordDragOver = i; }}
                             ondragleave={() => recordDragOver = null}
                             ondrop={(e) => handleTextareaDrop(e, (v) => records[i].content = v, () => records[i].content)}
-                            placeholder="..."
                             class="w-full min-h-[80px] bg-transparent text-xs text-base-content/50 leading-relaxed outline-none resize-none placeholder:text-base-content/15 {recordDragOver === i ? 'ring-2 ring-primary/30 ring-inset' : ''}"
                           ></textarea>
                         {:else}
@@ -708,6 +816,7 @@
           </div>
 
         </div>
+        {/if}
       </div>
     </div>
   </div>
@@ -727,63 +836,317 @@
     <div class="flex-1 overflow-y-auto scrollbar-thin p-3 space-y-4">
 
       {#if sidebarView === "metadata"}
-        <!-- Thumbnail Preview Card -->
-        <div>
-          <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">thumbnail preview</span>
-          <div class="relative flex flex-col rounded-xl bg-base-200/40 border border-base-content/10 overflow-hidden">
-            <div class="aspect-[16/9] w-full bg-base-300/50 flex items-center justify-center shrink-0">
-              {#if thumbnail}
-                <img src={thumbnail} alt="thumbnail" class="w-full h-full object-cover" />
-              {:else}
-                <Icon icon="material-symbols:image-outline-rounded" class="size-8 text-base-content/20" />
-              {/if}
-            </div>
-            <div class="flex flex-col gap-2 p-4 grow">
-              <h3 class="text-sm font-bold leading-snug">{title || "untitled"}</h3>
-              <p class="text-xs opacity-50 leading-relaxed line-clamp-3">{shortDescription || "short description"}</p>
-              {#if getPreviewTags().length > 0}
-                <div class="flex gap-1.5 mt-auto pt-2 flex-nowrap overflow-hidden">
-                  {#each getPreviewTags() as tag}
-                    <span class="badge badge-xs border font-mono tracking-wider shrink-0 {getTagStyle(tag)}">{tag}</span>
-                  {/each}
+        {#if experienceMode === "interactive"}
+          {#if focusedNode}
+            {@const n = focusedNode}
+            <div style:--node-color={NODE_COLORS[n.type]}>
+              <div class="flex items-center gap-2.5 mb-4 pb-3 border-b border-base-content/10">
+                <span
+                  class="flex items-center justify-center size-9 rounded-xl border border-base-content/10 shrink-0"
+                  style="color:var(--node-color);background:color-mix(in oklch, var(--node-color) 10%, transparent)"
+                >
+                  <Icon icon={NODE_ICONS[n.type]} class="size-4" />
+                </span>
+                <div class="min-w-0 flex-1">
+                  <p class="text-[10px] font-mono font-bold uppercase tracking-widest" style="color:var(--node-color)">{NODE_LABELS[n.type]}</p>
+                  <p class="text-[11px] text-base-content/45 truncate">{n.title}</p>
                 </div>
+                <button
+                  onclick={() => setSelected(null)}
+                  class="p-1.5 rounded-lg text-base-content/25 hover:text-base-content/50 hover:bg-base-content/5 transition-all shrink-0"
+                  title="Deselect node"
+                >
+                  <Icon icon="mdi:close" class="size-3.5" />
+                </button>
+              </div>
+
+              <div class="flex flex-col gap-3.5">
+                <div>
+                  <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">title</span>
+                  <input
+                    bind:value={n.title}
+                    class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] text-base-content/70 outline-none focus:border-base-content/25"
+                  />
+                </div>
+
+                {#if n.type === "start"}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">text</span>
+                    <textarea
+                      bind:value={n.text}
+                      rows="4"
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest">initial choice</span>
+                      <button onclick={() => addChoice(n.id)} class="text-[10px] font-mono text-primary/70 hover:text-primary transition-colors" title="Add choice">+ add</button>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      {#each n.choices as _, i}
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-4 shrink-0 text-center text-[9px] font-mono text-base-content/30">{i + 1}</span>
+                          <input
+                            bind:value={n.choices[i]}
+                            class="flex-1 min-w-0 bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-1.5 text-[11px] text-base-content/70 outline-none focus:border-base-content/25"
+                          />
+                          <button
+                            onclick={() => removeChoice(n.id, i)}
+                            class="p-1 text-base-content/25 hover:text-error transition-colors shrink-0"
+                            title="Remove choice"
+                          >
+                            <Icon icon="mdi:close" class="size-3" />
+                          </button>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
+                {:else if n.type === "story" || n.type === "ending"}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">text</span>
+                    <textarea
+                      bind:value={n.text}
+                      rows="6"
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25"
+                    ></textarea>
+                  </div>
+                {:else if n.type === "choice"}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">prompt</span>
+                    <textarea
+                      bind:value={n.prompt}
+                      rows="2"
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest">choices</span>
+                      <button onclick={() => addChoice(n.id)} class="text-[10px] font-mono text-primary/70 hover:text-primary transition-colors" title="Add choice">+ add</button>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      {#each n.choices as _, i}
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-4 shrink-0 text-center text-[9px] font-mono text-base-content/30">{i + 1}</span>
+                          <input
+                            bind:value={n.choices[i]}
+                            class="flex-1 min-w-0 bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-1.5 text-[11px] text-base-content/70 outline-none focus:border-base-content/25"
+                          />
+                          <button
+                            onclick={() => removeChoice(n.id, i)}
+                            class="p-1 text-base-content/25 hover:text-error transition-colors shrink-0"
+                            title="Remove choice"
+                          >
+                            <Icon icon="mdi:close" class="size-3" />
+                          </button>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
+                {:else if n.type === "condition"}
+                  {@const isAdd = n.operator === "add"}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">{isAdd ? "target" : "resource"}</span>
+                    <UderSelect
+                      value={n.resource}
+                      placeholder="none"
+                      options={[
+                        { value: "", label: "none" },
+                        ...graph.nodes.filter((x) => x.type === "resource").map((rn) => ({ value: rn.id, label: rn.title })),
+                      ]}
+                      onchange={(v) => (n.resource = v)}
+                    />
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">operator</span>
+                      <UderSelect
+                        value={n.operator}
+                        options={([...CONDITION_OPERATORS, "add"] as const).map((op) => ({ value: op, label: OPERATOR_LABELS[op] }))}
+                        onchange={(v) => (n.operator = v as typeof n.operator)}
+                      />
+                    </div>
+                    <div>
+                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">{isAdd ? "amount" : "value"}</span>
+                      <input
+                        type="number"
+                        bind:value={n.value}
+                        class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] font-mono text-base-content/70 outline-none focus:border-base-content/25"
+                      />
+                    </div>
+                  </div>
+                  {#if !isAdd}
+                    <div>
+                      <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          bind:checked={n.silent}
+                          class="size-3.5 accent-[var(--color-primary,var(--color-base-content))] cursor-pointer"
+                        />
+                        <span class="text-[11px] text-base-content/55">silent · passes without showing in preview</span>
+                      </label>
+                    </div>
+                  {/if}
+                {:else if n.type === "loop_start" || n.type === "loop_check"}
+                  <div class="rounded-xl bg-base-200/40 border border-base-content/10 px-3 py-3 text-[10px] font-mono text-base-content/35 leading-relaxed">
+                    {n.type === "loop_start" ? "loop start" : "loop condition check"} · fixed part of the loop
+                    {#if n.parentId}
+                      <p class="mt-1">loop: {graph.nodes.find((m) => m.id === n.parentId)?.title}</p>
+                    {/if}
+                  </div>
+                {:else if n.type === "loop"}
+                  {@const untilChoice = n.condition.resource || (n.loops > 0 ? "loops" : "")}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">until</span>
+                    <UderSelect
+                      value={untilChoice}
+                      placeholder="none"
+                      options={[
+                        { value: "", label: "none" },
+                        { value: "loops", label: "loops" },
+                        ...graph.nodes.filter((x) => x.type === "resource").map((rn) => ({ value: rn.id, label: rn.title })),
+                      ]}
+                      onchange={(v) => {
+                        if (v === "loops") {
+                          n.condition.resource = "";
+                          if (n.loops < 1) n.loops = 3;
+                        } else {
+                          n.condition.resource = v;
+                          n.loops = 0;
+                        }
+                      }}
+                    />
+                  </div>
+                  {#if untilChoice === "loops"}
+                    <div>
+                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">loops =</span>
+                      <input
+                        type="number"
+                        min="1"
+                        bind:value={n.loops}
+                        class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] font-mono text-base-content/70 outline-none focus:border-base-content/25"
+                      />
+                    </div>
+                  {:else if untilChoice}
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">operator</span>
+                        <UderSelect
+                          mono
+                          value={n.condition.operator}
+                          options={CONDITION_OPERATORS.map((op) => ({ value: op, label: op }))}
+                          onchange={(v) => (n.condition.operator = v as typeof n.condition.operator)}
+                        />
+                      </div>
+                      <div>
+                        <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">value</span>
+                        <input
+                          type="number"
+                          bind:value={n.condition.value}
+                          class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] font-mono text-base-content/70 outline-none focus:border-base-content/25"
+                        />
+                      </div>
+                    </div>
+                  {/if}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">notes</span>
+                    <textarea
+                      bind:value={n.note}
+                      rows="3"
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25"
+                    ></textarea>
+                  </div>
+                {:else if n.type === "resource"}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">initial value</span>
+                    <input
+                      type="number"
+                      bind:value={n.initial}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] font-mono text-base-content/70 outline-none focus:border-base-content/25"
+                    />
+                  </div>
+                {/if}
+              </div>
+
+              {#if n.type !== "loop_start" && n.type !== "loop_check"}
+                <button
+                  onclick={() => deleteNode(n.id)}
+                  class="mt-4 w-full flex items-center justify-center gap-1.5 text-[10px] font-mono text-error/70 hover:text-error py-2 rounded-lg border border-error/20 hover:bg-error/5 transition-all"
+                >
+                  <Icon icon="mdi:trash-can-outline" class="size-3" />
+                  delete node
+                </button>
               {/if}
             </div>
-          </div>
-        </div>
-
-        <!-- Tags -->
-        <div>
-          <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">faction</span>
-          <div class="flex flex-wrap gap-1.5">
-            {#each factions as faction}
-              {@const active = selectedFaction === faction}
-              <button
-                onclick={() => selectFaction(faction)}
-                class="text-[9px] font-mono font-medium px-2 py-1 rounded-lg border transition-all cursor-pointer {active ? factionStyles[faction] : factionStylesInactive[faction]}"
-              >
-                {#if active}
-                  <Icon icon="mdi:check" class="size-2.5 inline-block mr-0.5" />
+          {:else}
+            <div class="flex flex-col items-center justify-center min-h-36 gap-2 rounded-xl border border-dashed border-base-content/10 p-6 text-center text-base-content/25">
+              <Icon icon="mdi:cursor-default-outline" class="size-6" />
+              <p class="text-[10px] font-mono">no focused node</p>
+            </div>
+          {/if}
+        {:else}
+          <!-- Thumbnail Preview Card -->
+          <div>
+            <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">thumbnail preview</span>
+            <div class="relative flex flex-col rounded-xl bg-base-200/40 border border-base-content/10 overflow-hidden">
+              <div class="aspect-[16/9] w-full bg-base-300/50 flex items-center justify-center shrink-0">
+                {#if thumbnail}
+                  <img src={thumbnail} alt="thumbnail" class="w-full h-full object-cover" />
+                {:else}
+                  <Icon icon="material-symbols:image-outline-rounded" class="size-8 text-base-content/20" />
                 {/if}
-                {faction}
-              </button>
-            {/each}
+              </div>
+              <div class="flex flex-col gap-2 p-4 grow">
+                <h3 class="text-sm font-bold leading-snug">{title}</h3>
+                <p class="text-xs opacity-50 leading-relaxed line-clamp-3">{shortDescription}</p>
+                {#if getPreviewTags().length > 0}
+                  <div class="flex gap-1.5 mt-auto pt-2 flex-nowrap overflow-hidden">
+                    {#each getPreviewTags() as tag}
+                      <span class="badge badge-xs border font-mono tracking-wider shrink-0 {getTagStyle(tag)}">{tag}</span>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            </div>
           </div>
-        </div>
-        <div>
-          <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">type</span>
-          <div class="flex flex-wrap gap-1.5">
-            <button
-              onclick={toggleExplorationRecord}
-              class="text-[9px] font-mono font-medium px-2 py-1 rounded-lg border transition-all cursor-pointer {isExplorationRecord ? explorationStyle : explorationStyleInactive}"
-            >
-              {#if isExplorationRecord}
-                <Icon icon="mdi:check" class="size-2.5 inline-block mr-0.5" />
-              {/if}
-              Exploration Record
-            </button>
+
+          <!-- Tags -->
+          <div>
+            <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">faction</span>
+            <div class="flex flex-wrap gap-1.5">
+              {#each factions as faction}
+                {@const active = selectedFaction === faction}
+                <button
+                  onclick={() => selectFaction(faction)}
+                  class="text-[9px] font-mono font-medium px-2 py-1 rounded-lg border transition-all cursor-pointer {active ? factionStyles[faction] : factionStylesInactive[faction]}"
+                >
+                  {#if active}
+                    <Icon icon="mdi:check" class="size-2.5 inline-block mr-0.5" />
+                  {/if}
+                  {faction}
+                </button>
+              {/each}
+            </div>
           </div>
-        </div>
+          <div>
+            <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">type</span>
+            <div class="flex flex-wrap gap-1.5">
+              {#each typeTags as tag}
+                {@const active = recordType === tag.type}
+                <button
+                  onclick={() => toggleRecordType(tag.type)}
+                  class="text-[9px] font-mono font-medium px-2 py-1 rounded-lg border transition-all cursor-pointer {active ? typeStyles[tag.type] : typeStylesInactive[tag.type]}"
+                >
+                  {#if active}
+                    <Icon icon="mdi:check" class="size-2.5 inline-block mr-0.5" />
+                  {/if}
+                  {tag.label}
+                </button>
+              {/each}
+            </div>
+          </div>
+        {/if}
 
       {:else}
         <div>
