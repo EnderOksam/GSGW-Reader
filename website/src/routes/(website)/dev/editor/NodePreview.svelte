@@ -1,8 +1,9 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { graph } from "./lib/node-graph-store.svelte.ts";
-  import { NODE_LABELS, OPERATOR_LABELS, type UderNode, type NodeOperator } from "./lib/nodes";
+  import { NODE_LABELS, type UderNode, type NodeOperator } from "./lib/nodes";
   import UderSelect from "./UderSelect.svelte";
+  import UderText from "./UderText.svelte";
   import { onMount } from "svelte";
 
   let currentId = $state<string | null>(null);
@@ -23,20 +24,9 @@
 
   function evalCond(resourceId: string, op: NodeOperator, value: number): boolean {
     const res = resources[resourceId] ?? 0;
-    switch (op) {
-      case ">":
-        return res > value;
-      case "<":
-        return res < value;
-      case ">=":
-        return res >= value;
-      case "<=":
-        return res <= value;
-      case "==":
-        return res === value;
-      case "!=":
-        return res !== value;
-    }
+    if (op === "<=") return res <= value;
+    if (op === ">=") return res >= value;
+    return res === value;
   }
 
   function enterNode(id: string | null) {
@@ -49,62 +39,60 @@
       currentId = null;
       return;
     }
-    if (n.type === "loop") {
-      const start = graph.nodes.find((c) => c.parentId === n.id && c.type === "loop_start");
-      if (start) enterNode(start.id);
-      else currentId = null;
-      return;
-    }
     if (n.type === "loop_start") {
-      const loop = graph.nodes.find((m) => m.id === n.parentId && m.type === "loop");
-      if (loop) loopCounts = { ...loopCounts, [loop.id]: (loopCounts[loop.id] ?? 0) + 1 };
+      const pairId = n.parentId;
+      if (pairId) loopCounts = { ...loopCounts, [pairId]: (loopCounts[pairId] ?? 0) + 1 };
       currentId = id;
       return;
     }
     if (n.type === "loop_check") {
-      const loop = graph.nodes.find((m) => m.id === n.parentId);
-      if (loop && loop.type === "loop") {
-        const passes = loopCounts[loop.id] ?? 0;
-        const resourceMet = loop.condition.resource
-          ? evalCond(loop.condition.resource, loop.condition.operator, loop.condition.value)
-          : false;
-        const countMet = loop.loops > 0 ? passes >= loop.loops : false;
-        if (resourceMet || countMet) {
-          const exitEdge = graph.edges.find((e) => e.from === n.id && e.fromPort === 0);
-          if (exitEdge) {
-            enterNode(exitEdge.to);
-            return;
-          }
-          currentId = null;
+      const pairId = n.id;
+      const passes = loopCounts[pairId] ?? 0;
+      const resourceMet = n.condition.resource
+        ? evalCond(n.condition.resource, n.condition.operator, n.condition.value)
+        : false;
+      const countMet = n.loops > 0 ? passes >= n.loops : false;
+      if (resourceMet || countMet) {
+        const exitEdge = graph.edges.find((e) => e.from === n.id && e.fromPort === 0);
+        if (exitEdge) {
+          enterNode(exitEdge.to);
           return;
         }
-        const start = graph.nodes.find((c) => c.parentId === loop.id && c.type === "loop_start");
-        if (start) {
-          enterNode(start.id);
-          return;
-        }
+        currentId = null;
+        return;
+      }
+      const start = graph.nodes.find((c) => c.parentId === n.parentId && c.type === "loop_start");
+      if (start) {
+        enterNode(start.id);
+        return;
       }
       currentId = null;
       return;
     }
     if (n.type === "condition") {
-      if (n.operator === "add" && n.resource) {
-        resources = { ...resources, [n.resource]: (resources[n.resource] ?? 0) + n.value };
-      }
-      if (n.silent || n.operator === "add") {
-        const pass = n.operator === "add" ? true : n.resource ? evalCond(n.resource, n.operator, n.value) : true;
-        if (pass) {
-          const edge = graph.edges.find((e) => e.from === n.id && e.fromPort === 0);
-          if (edge) {
-            enterNode(edge.to);
-            return;
-          }
-        }
-        currentId = null;
+      const pass = n.resource ? evalCond(n.resource, n.operator, n.value) : true;
+      const edge = graph.edges.find((e) => e.from === n.id && e.fromPort === (pass ? 0 : 1));
+      if (edge) {
+        enterNode(edge.to);
         return;
       }
-      currentId = id;
+      currentId = null;
       return;
+    }
+    if (n.type === "chance") {
+      const pass = Math.random() * 100 < n.pass;
+      const edge = graph.edges.find((e) => e.from === n.id && e.fromPort === (pass ? 0 : 1));
+      if (edge) {
+        enterNode(edge.to);
+        return;
+      }
+      currentId = null;
+      return;
+    }
+    if (n.type === "addition") {
+      const cur = resources[n.resource] ?? 0;
+      const next = n.op === "add" ? cur + n.value : n.op === "subtract" ? cur - n.value : n.value;
+      resources = { ...resources, [n.resource]: next };
     }
     currentId = id;
   }
@@ -132,19 +120,22 @@
 
   $effect(() => {
     const cur = current;
-    if (!cur || cur.type !== "loop_start") return;
-    const t = setTimeout(() => proceed(0), 40);
-    return () => clearTimeout(t);
+    if (!cur) return;
+    if (cur.type === "loop_start") {
+      const t = setTimeout(() => proceed(0), 40);
+      return () => clearTimeout(t);
+    }
+    if (cur.type === "addition" && !cur.text && !cur.prompt) {
+      const t = setTimeout(() => proceed(0), 40);
+      return () => clearTimeout(t);
+    }
   });
-
-  function resourceName(id: string): string {
-    return graph.nodes.find((n) => n.id === id && n.type === "resource")?.title ?? id;
-  }
 
   function bodyText(n: UderNode): string {
     if (n.type === "story" || n.type === "ending" || n.type === "start") return n.text;
     if (n.type === "choice") return n.prompt;
-    if (n.type === "loop") return n.note;
+    if (n.type === "loop_check") return n.note;
+    if (n.type === "addition" || n.type === "chance") return n.text;
     return "";
   }
 
@@ -184,16 +175,12 @@
           </div>
 
           <div class="window-body">
-            {#if current.type === "condition"}
-              {#if current.operator === "add"}
-                <p class="window-text muted">condition · {current.value > 0 ? "+" : ""}{current.value} {resourceName(current.resource)}</p>
-              {:else}
-                <p class="window-text muted">condition · {resourceName(current.resource)} is {OPERATOR_LABELS[current.operator]} {current.value}</p>
-              {/if}
-            {:else if current.type === "resource"}
+            {#if current.type === "resource"}
               <p class="window-text muted">{current.title} · {current.initial}</p>
+            {:else if current.type === "addition"}
+              <UderText text={bodyText(current)} class="window-text" />
             {:else}
-              <p class="window-text">{bodyText(current)}</p>
+              <UderText text={bodyText(current)} class="window-text" />
             {/if}
           </div>
 
@@ -205,21 +192,26 @@
                   <span>continue</span>
                 </button>
               {:else}
-                {#each current.choices as c, pi}
-                  <button
-                    class="window-choice"
-                    onclick={() => proceed(pi)}
-                    disabled={!currentOutgoing.some((e) => e.fromPort === pi)}
-                  >
-                    <span class="choice-dot"></span>
-                    <span>{c}</span>
-                  </button>
-                {/each}
+                  {#each current.choices as c, pi}
+                    <button
+                      class="window-choice"
+                      onclick={() => proceed(pi)}
+                      disabled={!currentOutgoing.some((e) => e.fromPort === pi)}
+                    >
+                      <span class="choice-dot"></span>
+                      <UderText text={c} images="placeholder" class="min-w-0 flex-1" />
+                    </button>
+                  {/each}
               {/if}
             {:else if current.type === "ending"}
               <button class="window-choice" onclick={begin}>
                 <span class="choice-dot"></span>
                 <span>restart</span>
+              </button>
+            {:else if current.type === "addition"}
+              <button class="window-choice" onclick={() => proceed(0)} disabled={!hasNext()}>
+                <span class="choice-dot"></span>
+                <span>{current.prompt || "continue"}</span>
               </button>
             {:else}
               <button class="window-choice" onclick={() => proceed(0)} disabled={!hasNext()}>
@@ -299,6 +291,7 @@
   .story-window {
     width: 100%;
     max-width: 560px;
+    max-height: min(520px, 100%);
     border-radius: 0.85rem;
     border: 1px solid color-mix(in oklch, var(--color-base-content) 15%, transparent);
     background-color: color-mix(in oklch, var(--color-base-100) 94%, transparent);
@@ -339,6 +332,9 @@
   .window-body {
     padding: 1.75rem 1.5rem 1.25rem;
     flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .window-text {

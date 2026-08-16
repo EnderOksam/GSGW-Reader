@@ -91,6 +91,29 @@ export function sanitizeHtml(html: string): string {
 }
 
 
+export interface ContentPart {
+  type: "html" | "illustration";
+  value: string;
+}
+
+export function splitContent(text: string): ContentPart[] {
+  const parts: ContentPart[] = [];
+  const regex = /\[illustration\|(.*?)\]/g;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: "html", value: text.slice(lastIndex, match.index) });
+    }
+    parts.push({ type: "illustration", value: match[1] });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push({ type: "html", value: text.slice(lastIndex) });
+  }
+  return parts;
+}
+
 function parseScalar(raw: string): string | null {
   if (raw === "null" || raw === "") return null;
   const m = /^"((?:[^"\\]|\\.)*)"$/.exec(raw.trim());

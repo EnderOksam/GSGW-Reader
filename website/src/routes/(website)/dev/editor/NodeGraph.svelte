@@ -5,9 +5,8 @@
     NODE_ICONS,
     NODE_COLORS,
     OPERATOR_LABELS,
+    MUTATION_LABELS,
     nodeOutputs,
-    uid,
-    LOOP_W,
     type UderNode,
   } from "./lib/nodes";
   import {
@@ -17,11 +16,17 @@
     deleteNode,
     removeEdge,
     clampNode,
-    loopAt,
     settleNode,
+    addEdge,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    captureHistory,
     CANVAS_SIZE,
     NODE_WIDTH,
   } from "./lib/node-graph-store.svelte.ts";
+  import UderText from "./UderText.svelte";
 
   const MIN_SCALE = 0.25;
   const MAX_SCALE = 3;
@@ -47,9 +52,12 @@
   let draggingNodeId = $state<string | null>(null);
   let dragPointerStart = $state({ x: 0, y: 0 });
   let dragNodeStart = $state({ x: 0, y: 0 });
+  let dragCaptured = false;
   let wiring = $state<{ from: string; fromPort: number; x: number; y: number } | null>(null);
 
   const resourceNodes = $derived(graph.nodes.filter((n) => n.type === "resource"));
+
+  const cardHeights = $state<Record<string, number>>({});
 
   $effect(() => {
     const el = wrapRef;
@@ -70,6 +78,30 @@
       } else if (e.key === "-" || e.key === "_") {
         e.preventDefault();
         zoomStep(1 / 1.25);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  });
+
+  $effect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+        const key = e.key.toLowerCase();
+        if (key === "z") {
+          e.preventDefault();
+          if (e.shiftKey) redo();
+          else undo();
+        } else if (key === "y") {
+          e.preventDefault();
+          redo();
+        }
+      } else if (e.key === "Delete" || e.key === "Backspace") {
+        if (!graph.selectedId) return;
+        e.preventDefault();
+        deleteNode(graph.selectedId);
       }
     };
     window.addEventListener("keydown", handler);
@@ -192,6 +224,7 @@
     const n = graph.nodes.find((x) => x.id === id);
     if (!n) return;
     draggingNodeId = id;
+    dragCaptured = false;
     dragPointerStart = toCanvas(e);
     dragNodeStart = { x: n.x, y: n.y };
     (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
@@ -199,6 +232,10 @@
 
   function nodePointerMove(e: PointerEvent, id: string) {
     if (draggingNodeId !== id) return;
+    if (!dragCaptured) {
+      captureHistory();
+      dragCaptured = true;
+    }
     const p = toCanvas(e);
     const dx = p.x - dragPointerStart.x;
     const dy = p.y - dragPointerStart.y;
@@ -217,7 +254,6 @@
   }
 
   function inputSideOf(n: UderNode): "left" | "right" {
-    if (n.type === "loop_start" || n.type === "loop_check") return "left";
     let stored: "left" | "right" | null = null;
     let left = 0;
     let right = 0;
@@ -234,8 +270,26 @@
     return right > left ? "right" : "left";
   }
 
+  function isFailPort(n: UderNode, i: number): boolean {
+    return (n.type === "condition" || n.type === "chance") && i === 1;
+  }
+
+  function defaultNodeHeight(n: UderNode): number {
+    if (n.type === "loop_start") return 30;
+    if (n.type === "resource") return 74;
+    if (n.type === "choice" || n.type === "start") return 100;
+    return 88;
+  }
+
+  function measuredHeight(n: UderNode): number {
+    if (n.type === "condition" || n.type === "chance" || n.type === "addition") {
+      return cardHeights[n.id] ?? defaultNodeHeight(n);
+    }
+    return defaultNodeHeight(n);
+  }
+
   function outputPortPos(n: UderNode, i: number): { x: number; y: number } {
-    if (n.type === "loop_start" || n.type === "loop_check") return { x: n.x + NODE_WIDTH, y: n.y + 28 };
+    if (isFailPort(n, i)) return { x: n.x + NODE_WIDTH / 2, y: n.y + measuredHeight(n) };
     const count = nodeOutputs(n);
     const y = count > 1 ? PORT_Y + i * CHOICE_PORT_SPACING : PORT_Y;
     const x = inputSideOf(n) === "right" ? n.x : n.x + NODE_WIDTH;
@@ -243,7 +297,6 @@
   }
 
   function inputPortPos(n: UderNode): { x: number; y: number } {
-    if (n.type === "loop_start" || n.type === "loop_check") return { x: n.x, y: n.y + 28 };
     const x = inputSideOf(n) === "right" ? n.x + NODE_WIDTH : n.x;
     return { x, y: n.y + PORT_Y };
   }
@@ -251,15 +304,8 @@
   interface Rect { x0: number; y0: number; x1: number; y1: number }
 
   function nodeRect(n: UderNode): Rect | null {
-    if (n.type === "loop") {
-      return { x0: n.x - 6, y0: n.y - 6, x1: n.x + LOOP_W + 6, y1: n.y + 42 };
-    }
     const PAD = 8;
-    let h = 88;
-    if (n.type === "loop_start" || n.type === "loop_check") h = 30;
-    else if (n.type === "resource") h = 74;
-    else if (n.type === "condition") h = 116;
-    else if (n.type === "choice" || n.type === "start") h = 100;
+    const h = measuredHeight(n);
     return { x0: n.x - PAD, y0: n.y - PAD, x1: n.x + NODE_WIDTH + PAD, y1: n.y + h + PAD };
   }
 
@@ -316,14 +362,7 @@
   }
 
   function shrunkRect(n: UderNode): Rect | null {
-    if (n.type === "loop") {
-      return { x0: n.x, y0: n.y, x1: n.x + LOOP_W, y1: n.y + 42 };
-    }
-    let h = 88;
-    if (n.type === "loop_start" || n.type === "loop_check") h = 30;
-    else if (n.type === "resource") h = 74;
-    else if (n.type === "condition") h = 116;
-    else if (n.type === "choice" || n.type === "start") h = 100;
+    const h = measuredHeight(n);
     return { x0: n.x, y0: n.y, x1: n.x + NODE_WIDTH, y1: n.y + h };
   }
 
@@ -332,7 +371,7 @@
     b: { x: number; y: number },
     from: UderNode | null,
     to: UderNode | null,
-    outSide: "left" | "right",
+    outSide: "left" | "right" | "down",
     inSide: "left" | "right"
   ): string {
     const excluded = new Set([from?.id, to?.id].filter((id): id is string => !!id));
@@ -343,7 +382,12 @@
     const own = [from, to].map((n) => (n ? shrunkRect(n) : null)).filter((r): r is Rect => r !== null);
 
     const k = Math.max(40, Math.min(160, Math.abs(b.x - a.x) * 0.45));
-    const p1 = { x: outSide === "right" ? a.x + k : a.x - k, y: a.y };
+    const p1 =
+      outSide === "right"
+        ? { x: a.x + k, y: a.y }
+        : outSide === "down"
+          ? { x: a.x, y: a.y + k }
+          : { x: a.x - k, y: a.y };
     const p2 = { x: inSide === "right" ? b.x + k : b.x - k, y: b.y };
     if (!bezierHitsRect(a, p1, p2, b, others) && !bezierHitsRect(a, p1, p2, b, own)) {
       return `M ${a.x} ${a.y} C ${p1.x} ${p1.y}, ${p2.x} ${p2.y}, ${b.x} ${b.y}`;
@@ -394,19 +438,16 @@
     const p = toCanvas(e);
     for (const n of graph.nodes) {
       if (n.id === w.from) continue;
-      if (n.type === "resource" || n.type === "loop") continue;
+      if (n.type === "resource") continue;
       const ip = inputPortPos(n);
       const nearPort = Math.hypot(ip.x - p.x, ip.y - p.y) < PORT_HIT;
       const hasInput = graph.edges.some((en) => en.to === n.id);
-      const freeSide = !hasInput && n.type !== "start" && n.type !== "loop_start" && n.type !== "loop_check";
+      const freeSide = !hasInput && n.type !== "start";
       const nearAnySide =
         Math.abs(p.y - (n.y + PORT_Y)) < PORT_HIT && p.x > n.x - PORT_HIT && p.x < n.x + NODE_WIDTH + PORT_HIT;
       if (nearPort || (freeSide && nearAnySide)) {
-        const exists = graph.edges.some((en) => en.from === w.from && en.fromPort === w.fromPort && en.to === n.id);
-        if (!exists) {
-          const toSide: "left" | "right" = p.x > n.x + NODE_WIDTH / 2 ? "right" : "left";
-          graph.edges = [...graph.edges, { id: uid(), from: w.from, fromPort: w.fromPort, to: n.id, toSide }];
-        }
+        const toSide: "left" | "right" = p.x > n.x + NODE_WIDTH / 2 ? "right" : "left";
+        addEdge(w.from, w.fromPort, n.id, toSide);
         break;
       }
     }
@@ -437,7 +478,8 @@
         {#if from && to && (from.type === "start" || graph.edges.some((en) => en.to === from.id))}
           {@const a = outputPortPos(from, edge.fromPort)}
           {@const b = inputPortPos(to)}
-          {@const d = edgePath(a, b, from, to, inputSideOf(from) === "right" ? "left" : "right", inputSideOf(to))}
+          {@const outSide = isFailPort(from, edge.fromPort) ? "down" : (inputSideOf(from) === "right" ? "left" : "right")}
+          {@const d = edgePath(a, b, from, to, outSide, inputSideOf(to))}
           <path
             class="node-edge-hit"
             d={d}
@@ -446,87 +488,25 @@
             onclick={() => removeEdge(edge.id)}
             onkeydown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); removeEdge(edge.id); } }}
           />
-          <path class="node-edge" d={d} />
+          <path class="node-edge {isFailPort(from, edge.fromPort) ? 'node-edge-fail' : ''}" d={d} />
         {/if}
       {/each}
       {#if wiring}
         {@const w = wiring}
         {@const from = graph.nodes.find((n) => n.id === w.from)}
         {#if from}
-          <path class="node-wire" d={edgePath(outputPortPos(from, w.fromPort), w, from, null, inputSideOf(from) === "right" ? "left" : "right", "left")} />
+          {@const outSide = isFailPort(from, w.fromPort) ? "down" : (inputSideOf(from) === "right" ? "left" : "right")}
+          <path class="node-wire" d={edgePath(outputPortPos(from, w.fromPort), w, from, null, outSide, "left")} />
         {/if}
       {/if}
     </svg>
 
     {#each graph.nodes as node (node.id)}
-      {#if node.type === "loop"}
-        <div
-          class="loop-container {graph.selectedId === node.id ? 'selected' : ''}"
-          style:left={`${node.x}px`}
-          style:top={`${node.y}px`}
-          style:--node-color={NODE_COLORS[node.type]}
-        >
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <div
-            class="loop-topbar"
-            onpointerdown={(e) => nodePointerDown(e, node.id)}
-            onpointermove={(e) => nodePointerMove(e, node.id)}
-            onpointerup={nodePointerUp}
-          >
-            <Icon icon={NODE_ICONS[node.type]} class="size-3.5 shrink-0" style="color:var(--node-color)" />
-            <span class="loop-title">{node.title || NODE_LABELS[node.type]}</span>
-          {#if node.condition.resource}
-            <span class="loop-cond">until {resourceName(node.condition.resource)} {node.condition.operator} {node.condition.value}</span>
-          {/if}
-          {#if node.loops > 0}
-            <span class="loop-cond">until loops = {node.loops}</span>
-          {/if}
-          <button
-            onclick={(e) => { e.stopPropagation(); deleteNode(node.id); }}
-            class="node-delete"
-            title="Delete loop"
-          >
-            <Icon icon="mdi:close" class="size-3" />
-          </button>
-        </div>
-        </div>
-      {:else if node.type === "loop_start" || node.type === "loop_check"}
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div
-          class="loop-anchor {node.type === 'loop_check' ? 'check' : ''} {graph.selectedId === node.id ? 'selected' : ''}"
-          style:left={`${node.x}px`}
-          style:top={`${node.y}px`}
-          style:--node-color={NODE_COLORS[node.type]}
-          onpointerdown={(e) => nodePointerDown(e, node.id)}
-          onpointermove={(e) => nodePointerMove(e, node.id)}
-          onpointerup={nodePointerUp}
-        >
-          <Icon icon={NODE_ICONS[node.type]} class="size-3 shrink-0" style="color:var(--node-color)" />
-          <span>{node.type === "loop_start" ? "start" : "condition check"}</span>
-        </div>
-        <div
-          class="loop-anchor-port loop-anchor-in"
-          style:left={`${node.x - 6}px`}
-          style:top={`${node.y + 22}px`}
-          style:--port-color={NODE_COLORS[node.type]}
-          title="input"
-        ></div>
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div
-          class="loop-anchor-port loop-anchor-out"
-          style:left={`${node.x + NODE_WIDTH - 6}px`}
-          style:top={`${node.y + 22}px`}
-          style:--port-color={NODE_COLORS[node.type]}
-          onpointerdown={(e) => portPointerDown(e, node.id, 0)}
-          onpointermove={portPointerMove}
-          onpointerup={portPointerUp}
-          title="drag to connect"
-        ></div>
-      {:else}
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
           class="node-card {graph.selectedId === node.id ? 'selected' : ''}"
           class:dragging={draggingNodeId === node.id}
+          bind:clientHeight={cardHeights[node.id]}
           style:left={`${node.x}px`}
           style:top={`${node.y}px`}
           style:--node-color={NODE_COLORS[node.type]}
@@ -548,52 +528,81 @@
 
           <div class="node-body">
             {#if node.type === "start"}
-              <p class="node-preview clamp">{node.text}</p>
+              <UderText text={node.text} class="node-preview" images="placeholder" />
               <div class="choice-list">
                 {#each node.choices as choice, i}
                   <div class="choice-row">
                     <span class="choice-badge">{i + 1}</span>
-                    <p class="node-preview clamp">{choice}</p>
+                    <UderText text={choice} class="node-preview" images="placeholder" />
                   </div>
                 {/each}
               </div>
             {:else if node.type === "story" || node.type === "ending"}
-              <p class="node-preview clamp">{node.text}</p>
+              <UderText text={node.text} class="node-preview" images="placeholder" />
             {:else if node.type === "choice"}
               <div class="node-field">
                 <span>prompt</span>
-                <p class="node-preview clamp">{node.prompt}</p>
+                <UderText text={node.prompt} class="node-preview" images="placeholder" />
               </div>
               <div class="choice-list">
                 {#each node.choices as choice, i}
                   <div class="choice-row">
                     <span class="choice-badge">{i + 1}</span>
-                    <p class="node-preview clamp">{choice}</p>
+                    <UderText text={choice} class="node-preview" images="placeholder" />
                   </div>
                 {/each}
               </div>
             {:else if node.type === "condition"}
               <div class="cond-block">
                 <div class="cond-line">
-                  {#if node.operator === "add"}
-                    <span class="cond-value add">{node.value > 0 ? "+" : ""}{node.value}</span>
+                  {#if node.resource}
                     <span class="cond-resource">{resourceName(node.resource)}</span>
-                  {:else}
-                    {#if node.resource}
-                      <span class="cond-resource">{resourceName(node.resource)}</span>
-                    {/if}
                     <span class="cond-op">{OPERATOR_LABELS[node.operator]}</span>
                     <span class="cond-value">{node.value}</span>
+                  {:else}
+                    <span class="cond-op">no resource</span>
                   {/if}
                 </div>
-                {#if node.silent}
-                  <span class="cond-silent" title="silent · passes without showing in preview">✓ silent</span>
-                {/if}
               </div>
+            {:else if node.type === "addition"}
+              <div class="cond-block">
+                <div class="cond-line">
+                  {#if node.resource}
+                    <span class="cond-resource">{resourceName(node.resource)}</span>
+                    <span class="cond-op">{MUTATION_LABELS[node.op]}</span>
+                    <span class="cond-value">{node.value}</span>
+                  {:else}
+                    <span class="cond-op">no resource</span>
+                  {/if}
+                </div>
+              </div>
+              <UderText text={node.text} class="node-preview" images="placeholder" />
+            {:else if node.type === "chance"}
+              <div class="cond-block">
+                <div class="cond-line">
+                  <span class="cond-op">pass chance</span>
+                  <span class="cond-value">{node.pass}%</span>
+                </div>
+              </div>
+              <UderText text={node.text} class="node-preview" images="placeholder" />
             {:else if node.type === "resource"}
               <div class="node-field">
                 <span>initial value</span>
                 <p class="node-preview">{node.initial}</p>
+              </div>
+            {:else if node.type === "loop_check"}
+              <div class="cond-block">
+                <div class="cond-line">
+                  {#if node.condition.resource}
+                    <span class="cond-resource">{resourceName(node.condition.resource)}</span>
+                    <span class="cond-op">{OPERATOR_LABELS[node.condition.operator]}</span>
+                    <span class="cond-value">{node.condition.value}</span>
+                  {:else if node.loops > 0}
+                    <span class="cond-op">until loops = {node.loops}</span>
+                  {:else}
+                    <span class="cond-op">no exit condition</span>
+                  {/if}
+                </div>
               </div>
             {/if}
           </div>
@@ -615,27 +624,45 @@
           {#if nodeOutputs(node) > 0 && (node.type === "start" || graph.edges.some((en) => en.to === node.id))}
             {@const outLeft = inputSideOf(node) === "right"}
             {#each Array(nodeOutputs(node)) as _, i}
+              {@const isFail = isFailPort(node, i)}
               <!-- svelte-ignore a11y_no_static_element_interactions -->
               <div
-                class="node-port node-port-out"
-                class:out-left={outLeft}
-                style:left={outLeft ? `-${PORT_SIZE / 2}px` : undefined}
-                style:right={outLeft ? undefined : `-${PORT_SIZE / 2}px`}
-                style:top={`${(nodeOutputs(node) > 1 ? PORT_Y + i * CHOICE_PORT_SPACING : PORT_Y) - PORT_SIZE / 2}px`}
-                style:--port-color={NODE_COLORS[node.type]}
+                class="node-port node-port-out {isFail ? 'node-port-fail' : ''}"
+                class:out-left={!isFail && outLeft}
+                style:left={isFail ? `${NODE_WIDTH / 2 - PORT_SIZE / 2}px` : outLeft ? `-${PORT_SIZE / 2}px` : undefined}
+                style:right={isFail ? undefined : outLeft ? undefined : `-${PORT_SIZE / 2}px`}
+                style:top={isFail ? `${(cardHeights[node.id] ?? defaultNodeHeight(node)) - 8}px` : `${(nodeOutputs(node) > 1 ? PORT_Y + i * CHOICE_PORT_SPACING : PORT_Y) - PORT_SIZE / 2}px`}
+                style:--port-color={isFail ? "#ef4444" : NODE_COLORS[node.type]}
                 onpointerdown={(e) => portPointerDown(e, node.id, i)}
                 onpointermove={portPointerMove}
                 onpointerup={portPointerUp}
-                title="drag to connect"
+                title={isFail ? "fail" : "drag to connect"}
               ></div>
             {/each}
           {/if}
         </div>
-      {/if}
     {/each}
   </div>
 
   <div class="zoom-controls" role="group" aria-label="Zoom controls">
+    <button
+      class="btn btn-ghost btn-xs"
+      onclick={undo}
+      disabled={!canUndo()}
+      title="Undo (Ctrl+Z)"
+      aria-label="Undo"
+    >
+      <Icon icon="mdi:undo" class="size-4" />
+    </button>
+    <button
+      class="btn btn-ghost btn-xs"
+      onclick={redo}
+      disabled={!canRedo()}
+      title="Redo (Ctrl+Shift+Z)"
+      aria-label="Redo"
+    >
+      <Icon icon="mdi:redo" class="size-4" />
+    </button>
     <button
       class="btn btn-ghost btn-xs"
       onclick={() => zoomStep(1 / 1.25)}
@@ -734,6 +761,10 @@
     pointer-events: none;
   }
 
+  .node-edge-fail {
+    stroke: #ef4444;
+  }
+
   .node-wire {
     fill: none;
     stroke: color-mix(in oklch, var(--color-primary, var(--color-base-content)) 60%, transparent);
@@ -820,14 +851,6 @@
     padding: 0.4rem 0.5rem;
   }
 
-  .node-preview.clamp {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
   .choice-list {
     display: flex;
     flex-direction: column;
@@ -902,21 +925,18 @@
     color: color-mix(in oklch, var(--color-base-content) 85%, transparent);
   }
 
-  .cond-value.add {
-    color: #34d399;
-    font-size: 13px;
+  .node-port.node-port-out.node-port-fail {
+    width: 16px;
+    height: 16px;
+    background-color: #ef4444;
+    border: none;
+    border-radius: 0;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.35));
   }
 
-  .cond-silent {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-    padding: 0.12rem 0.45rem;
-    border-radius: 9999px;
-    font-size: 9px;
-    font-family: ui-monospace, monospace;
-    color: color-mix(in oklch, var(--color-base-content) 45%, transparent);
-    background-color: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+  .node-port.node-port-out.node-port-fail:hover {
+    filter: drop-shadow(0 0 3px rgb(239 68 68 / 0.6));
   }
 
   .node-port {
@@ -964,132 +984,6 @@
   }
 
   .node-port.node-port-out:hover {
-    filter: drop-shadow(0 0 3px color-mix(in oklch, var(--port-color) 45%, transparent));
-  }
-
-  .loop-container {
-    position: absolute;
-    width: 560px;
-    height: 520px;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .loop-container.selected .loop-topbar {
-    border-color: color-mix(in oklch, var(--color-primary, var(--color-base-content)) 60%, transparent);
-  }
-
-  .loop-topbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0 0.6rem;
-    border-radius: 0.85rem;
-    border: 1px solid color-mix(in oklch, var(--node-color) 45%, transparent);
-    background-color: color-mix(in oklch, var(--color-base-200) 92%, transparent);
-    box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
-    pointer-events: auto;
-    cursor: grab;
-  }
-
-  .loop-topbar:active {
-    cursor: grabbing;
-  }
-
-  .loop-title {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 12px;
-    font-weight: 600;
-    color: color-mix(in oklch, var(--color-base-content) 80%, transparent);
-  }
-
-  .loop-cond {
-    margin-left: auto;
-    font-size: 9px;
-    font-family: ui-monospace, monospace;
-    color: var(--node-color);
-    background-color: color-mix(in oklch, var(--node-color) 12%, transparent);
-    border-radius: 0.4rem;
-    padding: 0.15rem 0.45rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .loop-anchor {
-    position: absolute;
-    width: 220px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    border-radius: 0.6rem;
-    border: 1px solid color-mix(in oklch, var(--node-color) 45%, transparent);
-    background-color: color-mix(in oklch, var(--node-color) 10%, transparent);
-    color: color-mix(in oklch, var(--color-base-content) 55%, transparent);
-    font-size: 10px;
-    font-family: ui-monospace, monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    z-index: 1;
-    cursor: grab;
-    user-select: none;
-    touch-action: none;
-  }
-
-  .loop-anchor:active {
-    cursor: grabbing;
-  }
-
-  .loop-anchor.check {
-    border-style: dashed;
-  }
-
-  .loop-anchor.selected {
-    box-shadow: 0 0 0 2px color-mix(in oklch, var(--color-primary, var(--color-base-content)) 20%, transparent);
-  }
-
-  .loop-anchor-port {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border-radius: 9999px;
-    box-sizing: border-box;
-    z-index: 2;
-    transition: box-shadow 0.15s ease, filter 0.15s ease, transform 0.15s ease;
-  }
-
-  .loop-anchor-port.loop-anchor-in {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: var(--port-color);
-    border: none;
-    box-shadow: none;
-    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.35));
-  }
-
-  .loop-anchor-port.loop-anchor-out {
-    background-color: var(--port-color);
-    border: none;
-    border-radius: 0;
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%);
-    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.35));
-    cursor: crosshair;
-    touch-action: none;
-  }
-
-  .loop-anchor-port.loop-anchor-out:hover {
-    transform: scale(1.2);
     filter: drop-shadow(0 0 3px color-mix(in oklch, var(--port-color) 45%, transparent));
   }
 </style>

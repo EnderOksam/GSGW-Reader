@@ -8,6 +8,7 @@
   import CharactersEditor from "./CharactersEditor.svelte";
   import UderEditor from "./UderEditor.svelte";
   import { REPO, BRANCH } from "./lib/github-api";
+  import { NODE_ICONS, NODE_COLORS, NODE_LABELS, type NodeType } from "./lib/nodes";
 
   type EditorMode = "chapters" | "characters" | "uder";
 
@@ -47,6 +48,7 @@
   let showModeMenu = $state(false);
   let showMobileMenu = $state(false);
   let showInfo = $state(false);
+  let showNodeInfo = $state(false);
   let expandedVersion = $state<string | null>(null);
 
   $effect(() => {
@@ -61,6 +63,19 @@
     { version: "v0.3", description: "- better ui (hopefully)\n- mobile editing\n- custom translations\n- adding/removing chapters" },
     { version: "v0.2", description: `- added caching chapter changes and scrolling positions\n- reverting to source\n- exporting single or bulk chapters` },
     { version: "v0.1", description: "initial release of the editor to see a live preview of how your changes would look in the reader" }
+  ];
+
+  const NODE_DOCS = [
+    { type: "start" as const, desc: "Start nodes begin interactive stories. Multiple starting nodes can be placed on the canvas for multiple stories." },
+    { type: "story" as const, desc: "Story nodes are text nodes meant to keep the flow going as things progress." },
+    { type: "choice" as const, desc: "Choice nodes branch out the story, allowing different outcomes based on the reader's decisions." },
+    { type: "addition" as const, desc: `Addition nodes reference a <span class="inline-ref inline-resource">resource</span> and can add, subtract, or set it to a specific value.` },
+    { type: "condition" as const, desc: `Condition nodes are checks. If the check passes, they proceed via the <span class="inline-port pass-port"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="5,0 10,5 5,10" fill="currentColor"/></svg></span> pass port. If it fails, they fail via the <span class="inline-port fail-port"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,0 10,0 5,10" fill="currentColor"/></svg></span> fail port and branch out in another direction.` },
+    { type: "chance" as const, desc: `Chance nodes are percentage-based pass or fails. You can set the specific pass chance. They work like <span class="inline-ref inline-condition">condition</span> nodes.` },
+    { type: "ending" as const, desc: "Ending nodes conclude stories." },
+    { type: "resource" as const, desc: `Resources can be anything \u2014 health, coins, contamination, whatever value you want to keep track of. They can be named, given a value, and referenced by <span class="inline-ref inline-condition">condition</span>, <span class="inline-ref inline-addition">addition</span>, and <span class="inline-ref inline-loop-check">loop check</span> nodes.` },
+    { type: "loop_start" as const, desc: `Loop start nodes mark the beginning of a loop body. Paired with a <span class="inline-ref inline-loop-check">loop check</span> node, any nodes between them will repeat.` },
+    { type: "loop_check" as const, desc: `Loop checks are like <span class="inline-ref inline-condition">condition</span> nodes for loops. Once the exit condition is met, the loop stops. They also track how many loops have run and can end a loop based on that count.` },
   ];
 
   function toggleVersion(v: string) {
@@ -142,6 +157,38 @@
   let charsRef: CharactersEditor = $state()!;
   let uderRef: UderEditor = $state()!;
   let uderImportRef: HTMLInputElement | undefined = $state();
+  let showUderExport = $state(false);
+  let uderExportBtn: HTMLElement | null = $state(null);
+  let showUderDelete = $state(false);
+  let uderDeleteBtn: HTMLElement | null = $state(null);
+
+  function toggleUderExport() {
+    showUderExport = !showUderExport;
+    showUderDelete = false;
+    if (showUderExport) {
+      const handler = (ev: MouseEvent) => {
+        if (!uderExportBtn?.contains(ev.target as Node) && !(ev.target as HTMLElement)?.closest?.('[data-uder-export-dropdown]')) {
+          showUderExport = false;
+          document.removeEventListener("click", handler);
+        }
+      };
+      setTimeout(() => document.addEventListener("click", handler));
+    }
+  }
+
+  function toggleUderDelete() {
+    showUderDelete = !showUderDelete;
+    showUderExport = false;
+    if (showUderDelete) {
+      const handler = (ev: MouseEvent) => {
+        if (!uderDeleteBtn?.contains(ev.target as Node) && !(ev.target as HTMLElement)?.closest?.('[data-uder-delete-dropdown]')) {
+          showUderDelete = false;
+          document.removeEventListener("click", handler);
+        }
+      };
+      setTimeout(() => document.addEventListener("click", handler));
+    }
+  }
 </script>
 
 <svelte:head>
@@ -179,9 +226,24 @@
       {:else if editorMode === "uder"}
         <a href="/" class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-5" /></a>
         <span class="mx-0.5 w-px h-5 bg-base-content/10"></span>
-        <button onclick={() => uderRef?.handleExport()} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:active:scale-100 disabled:cursor-not-allowed" title="Export .uder"><Icon icon="mdi:export-variant" class="size-4 sm:size-5" /></button>
+        <button bind:this={uderExportBtn} onclick={toggleUderExport} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:active:scale-100 disabled:cursor-not-allowed" title="Export"><Icon icon="mdi:export-variant" class="size-4 sm:size-5" /></button>
+        {#if showUderExport}
+          <div data-uder-export-dropdown class="absolute top-full left-0 mt-2 bg-base-200/95 backdrop-blur-xl border border-base-content/10 rounded-xl shadow-2xl shadow-black/20 py-1.5 min-w-52 z-50 overflow-hidden">
+            <button onclick={() => { uderRef?.handleExport(); showUderExport = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors">Export record</button>
+            <button onclick={() => { uderRef?.handleExportInteractive(); showUderExport = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors">Export interactive</button>
+            <button onclick={() => { uderRef?.handleExportBoth(); showUderExport = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors">Export both</button>
+          </div>
+        {/if}
         <button onclick={() => uderImportRef?.click()} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Import .uder"><Icon icon="mdi:file-import-outline" class="size-4 sm:size-5" /></button>
-        <input bind:this={uderImportRef} onchange={(e) => uderRef?.handleImport(e)} type="file" accept=".uder,.zip" class="hidden" />
+        <input bind:this={uderImportRef} onchange={(e) => uderRef?.handleImport(e)} type="file" accept=".uder,.zip,.json" class="hidden" />
+        <button bind:this={uderDeleteBtn} onclick={toggleUderDelete} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Delete cached data"><Icon icon="mdi:delete-outline" class="size-4 sm:size-5" /></button>
+        {#if showUderDelete}
+          <div data-uder-delete-dropdown class="absolute top-full left-0 mt-2 bg-base-200/95 backdrop-blur-xl border border-base-content/10 rounded-xl shadow-2xl shadow-black/20 py-1.5 min-w-52 z-50 overflow-hidden">
+            <button onclick={() => { uderRef?.handleDeleteRecordCache(); showUderDelete = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors">Delete record</button>
+            <button onclick={() => { uderRef?.handleDeleteInteractiveCache(); showUderDelete = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors">Delete interactive</button>
+            <button onclick={() => { uderRef?.handleDeleteBothCache(); showUderDelete = false; }} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 transition-colors">Delete both</button>
+          </div>
+        {/if}
       {:else}
         <button onclick={() => showMobileMenu = true} class="lg:hidden text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Menu"><Icon icon="mdi:menu" class="size-5" /></button>
         <a href="/" class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Home"><Icon icon="mdi:home-outline" class="size-5" /></a>
@@ -227,6 +289,12 @@
         </button>
       {/if}
     </div>
+    {#if editorMode === "uder"}
+      <button onclick={() => showNodeInfo = true} class="flex items-center gap-1.5 text-[10px] font-mono font-medium px-3 py-1.5 rounded-lg border border-base-content/15 text-base-content/50 hover:text-base-content hover:border-base-content/30 hover:bg-base-content/5 transition-all active:scale-95">
+        <Icon icon="mdi:information-outline" class="size-3.5" />
+        Node Reference
+      </button>
+    {/if}
     <div class="flex items-center gap-1.5 sm:gap-2">
       <div class="relative hidden lg:block">
         <button onclick={() => showModeMenu = !showModeMenu} class="text-xs font-mono font-medium px-3 py-1.5 rounded-lg border border-base-content/15 text-base-content/60 hover:text-base-content hover:border-base-content/30 hover:bg-base-content/5 transition-all whitespace-nowrap active:scale-95">
@@ -302,26 +370,91 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <div
-      class="bg-base-200/95 backdrop-blur-xl border border-base-content/10 rounded-2xl p-6 w-96 shadow-2xl shadow-black/30"
+      class="bg-base-100 rounded-2xl shadow-2xl w-96 max-h-[80vh] flex flex-col overflow-hidden mx-4"
       onclick={(e) => e.stopPropagation()}
       role="group"
       tabindex="-1"
     >
-      <h2 class="text-sm font-bold text-base-content/70 font-mono mb-5 tracking-wide">Patch Notes</h2>
-      {#each patchNotes as note}
-        <div class="mb-3 last:mb-0">
-          <button
-            onclick={() => toggleVersion(note.version)}
-            class="flex items-center gap-2 text-xs font-mono text-base-content/60 hover:text-base-content transition-colors w-full text-left py-1"
-          >
-            <span class="text-[10px] w-3 text-base-content/30">{expandedVersion === note.version ? "▼" : "▶"}</span>
-            <span class="font-medium">{note.version}</span>
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg text-primary flex items-center gap-2">
+            <Icon icon="mdi:note-text-outline" class="size-5" /> Patch Notes
+          </span>
+          <button class="btn btn-sm btn-circle btn-ghost" onclick={() => showInfo = false} aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
           </button>
-          {#if expandedVersion === note.version}
-            <p class="text-xs text-base-content/40 font-mono leading-relaxed mt-1.5 ml-5 whitespace-pre-line">{note.description}</p>
-          {/if}
         </div>
-      {/each}
+      </div>
+      <div class="overflow-y-auto overscroll-contain p-5">
+        {#each patchNotes as note}
+          <div class="mb-3 last:mb-0">
+            <button
+              onclick={() => toggleVersion(note.version)}
+              class="flex items-center gap-2 text-xs font-mono text-base-content/60 hover:text-base-content transition-colors w-full text-left py-1"
+            >
+              <span class="text-[10px] w-3 text-base-content/30">{expandedVersion === note.version ? "▼" : "▶"}</span>
+              <span class="font-medium">{note.version}</span>
+            </button>
+            {#if expandedVersion === note.version}
+              <p class="text-xs text-base-content/40 font-mono leading-relaxed mt-1.5 ml-5 whitespace-pre-line">{note.description}</p>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </div>
+  </div>
+{/if}
+
+{#if showNodeInfo}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
+    onclick={() => showNodeInfo = false}
+    onkeydown={(e) => { if (e.key === "Escape") showNodeInfo = false; }}
+    role="dialog"
+    tabindex="-1"
+  >
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div
+      class="bg-base-100 rounded-2xl shadow-2xl max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col overflow-hidden"
+      onclick={(e) => e.stopPropagation()}
+      role="group"
+      tabindex="-1"
+    >
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg text-primary flex items-center gap-2">
+            <Icon icon="mdi:information-outline" class="size-5" /> Node Reference
+          </span>
+          <button class="btn btn-sm btn-circle btn-ghost" onclick={() => showNodeInfo = false} aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </div>
+      </div>
+      <div class="overflow-y-auto overscroll-contain p-5">
+        <div class="grid grid-cols-2 gap-3">
+          {#each NODE_DOCS as node}
+            {@const color = NODE_COLORS[node.type]}
+            {@const icon = NODE_ICONS[node.type]}
+            {@const label = NODE_LABELS[node.type]}
+            <div
+              class="flex flex-col rounded-xl border border-base-content/8 overflow-hidden"
+              style:--node-color={color}
+            >
+              <div class="flex items-center gap-2.5 px-4 py-2.5" style="background-color: color-mix(in oklch, var(--node-color) 14%, var(--color-base-200));">
+                <Icon {icon} class="size-4 shrink-0" style="color:var(--node-color)" />
+                <span class="text-xs font-bold" style="color: color-mix(in oklch, var(--node-color) 90%, var(--color-base-content));">{label}</span>
+              </div>
+              <div class="flex-1 px-4 py-3" style="background-color: color-mix(in oklch, var(--node-color) 4%, var(--color-base-100));">
+                <p class="text-[11px] text-base-content/60 leading-relaxed">{@html node.desc}</p>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
     </div>
   </div>
 {/if}
@@ -347,6 +480,39 @@
   .version-btn:hover {
     color: oklch(var(--bc)/0.85);
     animation: glow-pulse 0.8s ease-in-out infinite;
+  }
+  :global(.inline-ref) {
+    font-weight: 600;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  :global(.inline-resource) {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+  }
+  :global(.inline-condition) {
+    color: #06b6d4;
+    background: rgba(6, 182, 212, 0.12);
+  }
+  :global(.inline-addition) {
+    color: #f472b6;
+    background: rgba(244, 114, 182, 0.12);
+  }
+  :global(.inline-loop-check) {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.12);
+  }
+  :global(.inline-port) {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+  :global(.pass-port) {
+    color: #22c55e;
+  }
+  :global(.fail-port) {
+    color: #ef4444;
   }
   :global(.scrollbar-thin) {
     scrollbar-width: thin;

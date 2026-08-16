@@ -526,5 +526,6 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   });
 
   s = replaceTwitterUrls(s);
+  s = s.replace(/\n/g, "<br>");
   return s;
 }

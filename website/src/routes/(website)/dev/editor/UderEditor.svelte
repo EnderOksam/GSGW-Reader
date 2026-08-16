@@ -1,15 +1,26 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { preprocessMarkdown } from "./lib/editor-markdown";
+  import JSZip from "jszip";
   import { downloadBlob } from "./lib/zip-tools";
-  import { exportUderZip, importUderZip, sanitizeHtml } from "./lib/uder-format";
+  import { exportUderZip, importUderZip } from "./lib/uder-format";
   import type { UderRecordType } from "./lib/uder-format";
-  import { NODE_TYPES, NODE_LABELS, NODE_ICONS, NODE_COLORS, CONDITION_OPERATORS, OPERATOR_LABELS } from "./lib/nodes";
+  import { loadRecordCache, saveRecordCache, deleteRecordCache, deleteInteractiveCache } from "./lib/uder-cache";
+  import {
+    NODE_TYPES,
+    NODE_LABELS,
+    NODE_ICONS,
+    NODE_COLORS,
+    CONDITION_OPERATORS,
+    OPERATOR_LABELS,
+    MUTATION_OPERATORS,
+    MUTATION_LABELS,
+  } from "./lib/nodes";
   import type { UderNode } from "./lib/nodes";
-  import { graph, setSelected, addNode, deleteNode, addChoice, removeChoice } from "./lib/node-graph-store.svelte.ts";
+  import { graph, setSelected, addNode, deleteNode, addChoice, removeChoice, resetGraphCache } from "./lib/node-graph-store.svelte.ts";
   import NodeGraph from "./NodeGraph.svelte";
   import NodePreview from "./NodePreview.svelte";
   import UderSelect from "./UderSelect.svelte";
+  import UderText from "./UderText.svelte";
 
   type ViewMode = "edit" | "preview";
   type ExperienceMode = "record" | "interactive";
@@ -26,25 +37,42 @@
   let fileInputRef: HTMLInputElement | undefined = $state();
   let expandedRecord = $state<number | null>(null);
 
-  let title = $state("");
-  let identificationCode = $state("");
-  let classification = $state("");
-  let content = $state("");
-  let shortDescription = $state("");
+  const cachedRecord = typeof window !== "undefined" ? loadRecordCache() : null;
+
+  let title = $state(cachedRecord?.title ?? "");
+  let identificationCode = $state(cachedRecord?.identificationCode ?? "");
+  let classification = $state(cachedRecord?.classification ?? "");
+  let content = $state(cachedRecord?.content ?? "");
+  let shortDescription = $state(cachedRecord?.shortDescription ?? "");
   let thumbnail = $state<string | null>(null);
   let thumbnailInputRef: HTMLInputElement | undefined = $state();
   let mediaSlots = $state<string[]>([]);
-  let records = $state<{ title: string; content: string }[]>([]);
+  let records = $state<{ title: string; content: string }[]>(cachedRecord?.records ?? []);
+  let selectedFaction = $state<string | null>(cachedRecord?.selectedFaction ?? null);
+  let recordType = $state<UderRecordType>((cachedRecord?.recordType as UderRecordType) ?? "record");
+
+  $effect(() => {
+    saveRecordCache({
+      title,
+      identificationCode,
+      classification,
+      content,
+      shortDescription,
+      selectedFaction,
+      recordType,
+      records,
+    });
+  });
 
   const focusedNode = $derived(graph.nodes.find((n) => n.id === graph.selectedId) ?? null);
 
-  let activeField: { set: (v: string) => void; get: () => string; el: HTMLTextAreaElement | null } | null = $state(null);
+  let activeField: { set: (v: string) => void; get: () => string; el: HTMLTextAreaElement | HTMLInputElement | null } | null = $state(null);
 
   function insertFormatting(syntax: string) {
     if (!activeField?.el) return;
     const el = activeField.el;
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
+    const start = el.selectionStart ?? 0;
+    const end = el.selectionEnd ?? start;
     const current = activeField.get();
     const selected = current.slice(start, end);
     const hasPlaceholder = syntax.includes("text");
@@ -58,27 +86,6 @@
       el.setSelectionRange(newCursorPos, newCursorPos);
     });
   }
-
-  function splitContent(text: string): { type: "html" | "illustration"; value: string }[] {
-    const parts: { type: "html" | "illustration"; value: string }[] = [];
-    const regex = /\[illustration\|(.*?)\]/g;
-    let lastIndex = 0;
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push({ type: "html", value: text.slice(lastIndex, match.index) });
-      }
-      parts.push({ type: "illustration", value: match[1] });
-      lastIndex = match.index + match[0].length;
-    }
-    if (lastIndex < text.length) {
-      parts.push({ type: "html", value: text.slice(lastIndex) });
-    }
-    return parts;
-  }
-
-  let selectedFaction = $state<string | null>(null);
-  let recordType = $state<UderRecordType>("record");
 
   const factions = ["Daydream Inc.", "Disaster Management Bureau", "Church of the Luminous Unknown"];
 
@@ -286,10 +293,12 @@
     mediaSlotDragOver = false;
     contentDragOver = false;
     recordDragOver = null;
+    nodeDragOver = false;
   }
 
   let contentDragOver = $state(false);
   let recordDragOver = $state<number | null>(null);
+  let nodeDragOver = $state(false);
 
   function handleThumbnailDragOver(e: DragEvent) {
     e.preventDefault();
@@ -334,6 +343,7 @@
     e.preventDefault();
     contentDragOver = false;
     recordDragOver = null;
+    nodeDragOver = false;
     if (draggedAssetIndex === null || !assets[draggedAssetIndex]) return;
     const el = e.currentTarget as HTMLTextAreaElement;
     const start = el.selectionStart;
@@ -392,7 +402,6 @@
 
   function setExperienceMode(mode: ExperienceMode) {
     if (mode === experienceMode) return;
-    if (mode === "interactive") clearEditorFields();
     experienceMode = mode;
     assetSidebarView = "assets";
   }
@@ -418,22 +427,112 @@
     }
   }
 
+  export async function handleExportInteractive() {
+    if (!title.trim()) { alert("Give the record a title first."); return; }
+    try {
+      const data = JSON.stringify({ nodes: graph.nodes, edges: graph.edges }, null, 2);
+      const blob = new Blob([data], { type: "application/json" });
+      const slug = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      downloadBlob(blob, `${slug}-interactive.json`, "application/json");
+    } catch (err) {
+      alert("Failed to export interactive: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  export async function handleExportBoth() {
+    if (!title.trim()) { alert("Give the record a title first."); return; }
+    try {
+      const { blob: recordBlob, slug } = await exportUderZip({
+        title,
+        type: recordType,
+        faction: selectedFaction,
+        code: identificationCode,
+        classification,
+        summary: shortDescription,
+        thumbnailUrl: thumbnail,
+        mediaUrls: mediaSlots,
+        content,
+        records,
+      });
+      const interactiveJson = JSON.stringify({ nodes: graph.nodes, edges: graph.edges }, null, 2);
+      const zip = new JSZip();
+      const recordZip = await JSZip.loadAsync(recordBlob);
+      for (const [path, file] of Object.entries(recordZip.files)) {
+        if (!file.dir) zip.file(path, await file.async("uint8array"));
+      }
+      zip.file("interactive.json", interactiveJson);
+      const combinedBlob = await zip.generateAsync({ type: "blob" });
+      downloadBlob(combinedBlob, `${slug}.uder`, "application/zip");
+    } catch (err) {
+      alert("Failed to export both: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  export function handleDeleteRecordCache() {
+    deleteRecordCache();
+    title = "";
+    identificationCode = "";
+    classification = "";
+    content = "";
+    shortDescription = "";
+    thumbnail = null;
+    mediaSlots = [];
+    records = [];
+    selectedFaction = null;
+    recordType = "record";
+  }
+
+  export function handleDeleteInteractiveCache() {
+    deleteInteractiveCache();
+    resetGraphCache();
+  }
+
+  export function handleDeleteBothCache() {
+    handleDeleteRecordCache();
+    handleDeleteInteractiveCache();
+  }
+
   export async function handleImport(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
     try {
-      const imported = await importUderZip(file);
-      title = imported.title;
-      selectedFaction = imported.faction;
-      recordType = imported.type;
-      identificationCode = imported.code;
-      classification = imported.classification;
-      shortDescription = imported.summary;
-      content = imported.content;
-      records = JSON.parse(JSON.stringify(imported.records));
-      thumbnail = imported.thumbnailUrl;
-      mediaSlots = imported.mediaUrls;
-      assets = imported.images.map((img) => ({ name: img.name, url: img.url }));
+      if (file.name.endsWith(".json")) {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (data.nodes && data.edges) {
+          resetGraphCache();
+          graph.nodes = data.nodes;
+          graph.edges = data.edges;
+          experienceMode = "interactive";
+        } else {
+          alert("Unrecognised JSON format.");
+        }
+      } else {
+        const imported = await importUderZip(file);
+        title = imported.title;
+        selectedFaction = imported.faction;
+        recordType = imported.type;
+        identificationCode = imported.code;
+        classification = imported.classification;
+        shortDescription = imported.summary;
+        content = imported.content;
+        records = JSON.parse(JSON.stringify(imported.records));
+        thumbnail = imported.thumbnailUrl;
+        mediaSlots = imported.mediaUrls;
+        assets = imported.images.map((img) => ({ name: img.name, url: img.url }));
+        try {
+          const zip = await JSZip.loadAsync(file);
+          const entry = zip.file("interactive.json");
+          if (entry) {
+            const json = JSON.parse(await entry.async("text"));
+            if (json.nodes && json.edges) {
+              resetGraphCache();
+              graph.nodes = json.nodes;
+              graph.edges = json.edges;
+            }
+          }
+        } catch {}
+      }
     } catch (err) {
       alert("Failed to import: " + (err instanceof Error ? err.message : String(err)));
     }
@@ -501,7 +600,7 @@
         {#if experienceMode === "interactive"}
           <div class="flex flex-col gap-1.5">
             <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1 block">add node</span>
-            {#each NODE_TYPES.filter((t) => t !== "loop_start" && t !== "loop_check") as type}
+            {#each NODE_TYPES.filter((t) => t !== "loop_check") as type}
               <button
                 onclick={() => addNode(type)}
                 class="flex items-center gap-2 text-[11px] px-2.5 py-2 rounded-lg border border-base-content/10 bg-base-200/40 text-base-content/70 hover:bg-base-content/[4%] hover:border-base-content/20 transition-all cursor-pointer text-left"
@@ -624,13 +723,7 @@
               {:else}
                 <div class="p-5 text-sm leading-relaxed text-base-content/60 whitespace-pre-wrap">
                   {#if content}
-                    {#each splitContent(content) as part}
-                      {#if part.type === "html"}
-                        {@html sanitizeHtml(preprocessMarkdown(part.value))}
-                      {:else}
-                        <img src={part.value} alt="illustration" class="w-full max-w-md rounded-xl my-4" />
-                      {/if}
-                    {/each}
+                    <UderText text={content} />
                   {:else}
                     <p class="text-base-content/15 italic">no content yet</p>
                   {/if}
@@ -701,13 +794,7 @@
                         {:else}
                           <div class="text-xs text-base-content/40 leading-relaxed whitespace-pre-wrap">
                             {#if record.content}
-                              {#each splitContent(record.content) as part}
-                                {#if part.type === "html"}
-                                  {@html sanitizeHtml(preprocessMarkdown(part.value))}
-                                {:else}
-                                  <img src={part.value} alt="illustration" class="w-full max-w-sm rounded-xl my-3" />
-                                {/if}
-                              {/each}
+                              <UderText text={record.content} />
                             {:else}
                               <p class="italic text-base-content/15">empty</p>
                             {/if}
@@ -875,7 +962,11 @@
                     <textarea
                       bind:value={n.text}
                       rows="4"
-                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25"
+                      onfocus={(e) => activeField = { set: (v) => n.text = v, get: () => n.text, el: e.currentTarget }}
+                      ondragover={(e) => { e.preventDefault(); nodeDragOver = true; }}
+                      ondragleave={() => nodeDragOver = false}
+                      ondrop={(e) => handleTextareaDrop(e, (v) => n.text = v, () => n.text)}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25 {nodeDragOver ? 'ring-2 ring-primary/30 ring-inset' : ''}"
                     ></textarea>
                   </div>
                   <div>
@@ -889,6 +980,7 @@
                           <span class="w-4 shrink-0 text-center text-[9px] font-mono text-base-content/30">{i + 1}</span>
                           <input
                             bind:value={n.choices[i]}
+                            onfocus={(e) => activeField = { set: (v) => n.choices[i] = v, get: () => n.choices[i], el: e.currentTarget }}
                             class="flex-1 min-w-0 bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-1.5 text-[11px] text-base-content/70 outline-none focus:border-base-content/25"
                           />
                           <button
@@ -908,7 +1000,11 @@
                     <textarea
                       bind:value={n.text}
                       rows="6"
-                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25"
+                      onfocus={(e) => activeField = { set: (v) => n.text = v, get: () => n.text, el: e.currentTarget }}
+                      ondragover={(e) => { e.preventDefault(); nodeDragOver = true; }}
+                      ondragleave={() => nodeDragOver = false}
+                      ondrop={(e) => handleTextareaDrop(e, (v) => n.text = v, () => n.text)}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25 {nodeDragOver ? 'ring-2 ring-primary/30 ring-inset' : ''}"
                     ></textarea>
                   </div>
                 {:else if n.type === "choice"}
@@ -917,7 +1013,11 @@
                     <textarea
                       bind:value={n.prompt}
                       rows="2"
-                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25"
+                      onfocus={(e) => activeField = { set: (v) => n.prompt = v, get: () => n.prompt, el: e.currentTarget }}
+                      ondragover={(e) => { e.preventDefault(); nodeDragOver = true; }}
+                      ondragleave={() => nodeDragOver = false}
+                      ondrop={(e) => handleTextareaDrop(e, (v) => n.prompt = v, () => n.prompt)}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25 {nodeDragOver ? 'ring-2 ring-primary/30 ring-inset' : ''}"
                     ></textarea>
                   </div>
                   <div>
@@ -931,6 +1031,7 @@
                           <span class="w-4 shrink-0 text-center text-[9px] font-mono text-base-content/30">{i + 1}</span>
                           <input
                             bind:value={n.choices[i]}
+                            onfocus={(e) => activeField = { set: (v) => n.choices[i] = v, get: () => n.choices[i], el: e.currentTarget }}
                             class="flex-1 min-w-0 bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-1.5 text-[11px] text-base-content/70 outline-none focus:border-base-content/25"
                           />
                           <button
@@ -945,9 +1046,8 @@
                     </div>
                   </div>
                 {:else if n.type === "condition"}
-                  {@const isAdd = n.operator === "add"}
                   <div>
-                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">{isAdd ? "target" : "resource"}</span>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">resource</span>
                     <UderSelect
                       value={n.resource}
                       placeholder="none"
@@ -963,12 +1063,12 @@
                       <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">operator</span>
                       <UderSelect
                         value={n.operator}
-                        options={([...CONDITION_OPERATORS, "add"] as const).map((op) => ({ value: op, label: OPERATOR_LABELS[op] }))}
+                        options={CONDITION_OPERATORS.map((op) => ({ value: op, label: OPERATOR_LABELS[op] }))}
                         onchange={(v) => (n.operator = v as typeof n.operator)}
                       />
                     </div>
                     <div>
-                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">{isAdd ? "amount" : "value"}</span>
+                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">value</span>
                       <input
                         type="number"
                         bind:value={n.value}
@@ -976,26 +1076,107 @@
                       />
                     </div>
                   </div>
-                  {#if !isAdd}
+                {:else if n.type === "addition"}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">resource</span>
+                    <UderSelect
+                      value={n.resource}
+                      placeholder="none"
+                      options={[
+                        { value: "", label: "none" },
+                        ...graph.nodes.filter((x) => x.type === "resource").map((rn) => ({ value: rn.id, label: rn.title })),
+                      ]}
+                      onchange={(v) => (n.resource = v)}
+                    />
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
                     <div>
-                      <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          bind:checked={n.silent}
-                          class="size-3.5 accent-[var(--color-primary,var(--color-base-content))] cursor-pointer"
-                        />
-                        <span class="text-[11px] text-base-content/55">silent · passes without showing in preview</span>
-                      </label>
+                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">operation</span>
+                      <UderSelect
+                        value={n.op}
+                        options={MUTATION_OPERATORS.map((op) => ({ value: op, label: MUTATION_LABELS[op] }))}
+                        onchange={(v) => (n.op = v as typeof n.op)}
+                      />
                     </div>
-                  {/if}
-                {:else if n.type === "loop_start" || n.type === "loop_check"}
+                    <div>
+                      <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">value</span>
+                      <input
+                        type="number"
+                        bind:value={n.value}
+                        class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] font-mono text-base-content/70 outline-none focus:border-base-content/25"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">text</span>
+                    <textarea
+                      bind:value={n.text}
+                      rows="4"
+                      onfocus={(e) => activeField = { set: (v) => n.text = v, get: () => n.text, el: e.currentTarget }}
+                      ondragover={(e) => { e.preventDefault(); nodeDragOver = true; }}
+                      ondragleave={() => nodeDragOver = false}
+                      ondrop={(e) => handleTextareaDrop(e, (v) => n.text = v, () => n.text)}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25 {nodeDragOver ? 'ring-2 ring-primary/30 ring-inset' : ''}"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">prompt</span>
+                    <textarea
+                      bind:value={n.prompt}
+                      rows="2"
+                      onfocus={(e) => activeField = { set: (v) => n.prompt = v, get: () => n.prompt, el: e.currentTarget }}
+                      ondragover={(e) => { e.preventDefault(); nodeDragOver = true; }}
+                      ondragleave={() => nodeDragOver = false}
+                      ondrop={(e) => handleTextareaDrop(e, (v) => n.prompt = v, () => n.prompt)}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25 {nodeDragOver ? 'ring-2 ring-primary/30 ring-inset' : ''}"
+                    ></textarea>
+                  </div>
+                {:else if n.type === "chance"}
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">pass chance</span>
+                    <div class="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        bind:value={n.pass}
+                        class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] font-mono text-base-content/70 outline-none focus:border-base-content/25"
+                      />
+                      <span class="text-[11px] font-mono text-base-content/40">%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">text</span>
+                    <textarea
+                      bind:value={n.text}
+                      rows="4"
+                      onfocus={(e) => activeField = { set: (v) => n.text = v, get: () => n.text, el: e.currentTarget }}
+                      ondragover={(e) => { e.preventDefault(); nodeDragOver = true; }}
+                      ondragleave={() => nodeDragOver = false}
+                      ondrop={(e) => handleTextareaDrop(e, (v) => n.text = v, () => n.text)}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25 {nodeDragOver ? 'ring-2 ring-primary/30 ring-inset' : ''}"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">prompt</span>
+                    <textarea
+                      bind:value={n.prompt}
+                      rows="2"
+                      onfocus={(e) => activeField = { set: (v) => n.prompt = v, get: () => n.prompt, el: e.currentTarget }}
+                      ondragover={(e) => { e.preventDefault(); nodeDragOver = true; }}
+                      ondragleave={() => nodeDragOver = false}
+                      ondrop={(e) => handleTextareaDrop(e, (v) => n.prompt = v, () => n.prompt)}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25 {nodeDragOver ? 'ring-2 ring-primary/30 ring-inset' : ''}"
+                    ></textarea>
+                  </div>
+                {:else if n.type === "loop_start"}
                   <div class="rounded-xl bg-base-200/40 border border-base-content/10 px-3 py-3 text-[10px] font-mono text-base-content/35 leading-relaxed">
-                    {n.type === "loop_start" ? "loop start" : "loop condition check"} · fixed part of the loop
+                    loop start · wired to its loop check node
                     {#if n.parentId}
-                      <p class="mt-1">loop: {graph.nodes.find((m) => m.id === n.parentId)?.title}</p>
+                      <p class="mt-1">pair: {graph.nodes.find((m) => m.id === n.parentId && m.parentId === n.parentId && m.type === "loop_check")?.title || "unlinked"}</p>
                     {/if}
                   </div>
-                {:else if n.type === "loop"}
+                {:else if n.type === "loop_check"}
                   {@const untilChoice = n.condition.resource || (n.loops > 0 ? "loops" : "")}
                   <div>
                     <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">until</span>
@@ -1033,9 +1214,8 @@
                       <div>
                         <span class="text-[9px] font-mono text-base-content/30 uppercase tracking-widest mb-1.5 block">operator</span>
                         <UderSelect
-                          mono
                           value={n.condition.operator}
-                          options={CONDITION_OPERATORS.map((op) => ({ value: op, label: op }))}
+                          options={CONDITION_OPERATORS.map((op) => ({ value: op, label: OPERATOR_LABELS[op] }))}
                           onchange={(v) => (n.condition.operator = v as typeof n.condition.operator)}
                         />
                       </div>
@@ -1054,7 +1234,11 @@
                     <textarea
                       bind:value={n.note}
                       rows="3"
-                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25"
+                      onfocus={(e) => activeField = { set: (v) => n.note = v, get: () => n.note, el: e.currentTarget }}
+                      ondragover={(e) => { e.preventDefault(); nodeDragOver = true; }}
+                      ondragleave={() => nodeDragOver = false}
+                      ondrop={(e) => handleTextareaDrop(e, (v) => n.note = v, () => n.note)}
+                      class="w-full bg-base-300/40 border border-base-content/10 rounded-lg px-2.5 py-2 text-[11px] leading-relaxed text-base-content/60 outline-none resize-none focus:border-base-content/25 {nodeDragOver ? 'ring-2 ring-primary/30 ring-inset' : ''}"
                     ></textarea>
                   </div>
                 {:else if n.type === "resource"}
@@ -1069,15 +1253,13 @@
                 {/if}
               </div>
 
-              {#if n.type !== "loop_start" && n.type !== "loop_check"}
-                <button
-                  onclick={() => deleteNode(n.id)}
-                  class="mt-4 w-full flex items-center justify-center gap-1.5 text-[10px] font-mono text-error/70 hover:text-error py-2 rounded-lg border border-error/20 hover:bg-error/5 transition-all"
-                >
-                  <Icon icon="mdi:trash-can-outline" class="size-3" />
-                  delete node
-                </button>
-              {/if}
+              <button
+                onclick={() => deleteNode(n.id)}
+                class="mt-4 w-full flex items-center justify-center gap-1.5 text-[10px] font-mono text-error/70 hover:text-error py-2 rounded-lg border border-error/20 hover:bg-error/5 transition-all"
+              >
+                <Icon icon="mdi:trash-can-outline" class="size-3" />
+                delete node
+              </button>
             </div>
           {:else}
             <div class="flex flex-col items-center justify-center min-h-36 gap-2 rounded-xl border border-dashed border-base-content/10 p-6 text-center text-base-content/25">

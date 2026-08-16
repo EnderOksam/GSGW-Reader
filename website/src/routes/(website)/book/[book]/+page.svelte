@@ -379,6 +379,19 @@
               </span>
             </a>
           {/if}
+          {#if bookSlug === "gsgw" || bookSlug === "debut"}
+            <a
+              href="/download"
+              class="flex items-center gap-2.5 mt-1 group"
+            >
+              <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
+                <Icon icon="material-symbols:download-rounded" class="size-4 opacity-50" />
+              </span>
+              <span class="flex flex-col leading-tight">
+                <span class="text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">Download</span>
+              </span>
+            </a>
+          {/if}
         </div>
       </div>
     </div>
