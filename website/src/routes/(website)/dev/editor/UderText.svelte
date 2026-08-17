@@ -16,7 +16,7 @@
 <div class={className}>
   {#each splitContent(text) as part}
     {#if part.type === "html"}
-      {@html sanitizeHtml(preprocessMarkdown(part.value))}
+      {@html sanitizeHtml(preprocessMarkdown(part.value).replace(/\n/g, "<br>"))}
     {:else if images === "render"}
       <img src={part.value} alt="illustration" class="ud-image" />
     {:else if images === "placeholder"}

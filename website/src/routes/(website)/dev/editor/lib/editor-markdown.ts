@@ -525,7 +525,11 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     return makeWindow("debut-window", titleHtml + body);
   });
 
+  // Bold / italic — applied late so inner HTML from windows is untouched
+  s = s.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+  s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/\*(.+?)\*/g, "<em>$1</em>");
+
   s = replaceTwitterUrls(s);
-  s = s.replace(/\n/g, "<br>");
   return s;
 }
