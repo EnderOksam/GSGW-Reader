@@ -1051,7 +1051,7 @@ def convert_chapter(content):
 
     content = TRIPLE_STRIKE_RE.sub(r'<span class="triple-strike">\1</span>', content)
 
-    content = re.sub(r"\$\$(.*?)\$\$", r'<span class="handwritten">\1</span>', content)
+    content = re.sub(r"\$\$(.*?)\$\$", r'<span class="handwritten">\1</span>', content, flags=re.DOTALL)
 
     content = SMOKE_RE.sub(smoke_replacer, content)
 
