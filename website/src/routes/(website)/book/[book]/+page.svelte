@@ -421,7 +421,7 @@
                 <span class="text-xs sm:text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">{continueData ? "Continue" : "Start Reading"}</span>
                 {#if continueData}
                   <span class="text-[8px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">Chapter {continueData.slug}</span>
-                {/if}
+b                {/if}
               </span>
             </a>
           {/if}

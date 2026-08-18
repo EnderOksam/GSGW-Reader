@@ -2231,6 +2231,11 @@ def build_book(args: argparse.Namespace) -> list[Path]:
 
     tweet_cache = load_tweet_cache()
 
+    if args.variant:
+        variants = [v for v in variants if v["id"] == args.variant]
+    if args.part:
+        part_defs = [p for p in part_defs if p["id"] == args.part]
+
     for variant in variants:
         variant_label = variant["label"]
         print(f"\nBuilding {variant_label} variant...")
@@ -2313,6 +2318,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build per-part EPUBs from chapter markdown.")
     parser.add_argument("--book", default="gsgw", help="Book folder under chapters/ to build.")
     parser.add_argument("--limit", type=int, help="Build only the first N chapters total, useful for testing.")
+    parser.add_argument("--variant", help="Build only this variant (e.g. plaintext, windows).")
+    parser.add_argument("--part", help="Build only this part (e.g. part1, part2).")
     parser.add_argument(
         "--no-fetch-twitter",
         action="store_true",

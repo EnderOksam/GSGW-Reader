@@ -26,7 +26,6 @@ div.svg_inner {
 
 body {
   margin: 2%;
-  color: #111;
   font-family: Georgia, "Times New Roman", serif;
 }
 
@@ -608,10 +607,11 @@ del {
 }
 
 .note-window {
-  background: #f7f2e3;
-  border: 1px solid #dfd7c2;
+  border: 0 !important;
+  outline: 1px solid #dfd7c2 !important;
+  background-image: linear-gradient(#f7f2e3, #f7f2e3) !important;
+  color: #000000 !important;
   border-radius: 4px;
-  color: #000000;
 }
 .note-window::before {
   content: "";
@@ -628,10 +628,10 @@ del {
 }
 
 .sticky-window {
-  background: #f7f2e3;
-  border: 1px solid #dfd7c2;
-  border-radius: 2px;
-  color: #0b0b0b;
+  border: 0 !important;
+  outline: 1px solid #dfd7c2 !important;
+  background-image: linear-gradient(#f7f2e3, #f7f2e3) !important;
+  color: #0b0b0b !important;
   text-align: center;
   padding: 1.5em;
 }
