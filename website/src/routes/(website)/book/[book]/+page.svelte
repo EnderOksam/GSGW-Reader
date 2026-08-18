@@ -177,8 +177,8 @@
           { name: "DEBUTPLAINTXT", desc: "The base story without any special features or formatting — essentially equivalent to reading an EPUB. Once chapters here are formatted, they are moved to DEBUTFORMATTED.", icon: "mdi:book-outline", color: "text-blue-400" },
         ]
       : [
-          { name: "FanTL", desc: "This translation is the recommended one, has all the features made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
-          { name: "UnfinishedTL", desc: "The base story with no special features — equivalent of reading an epub. Once chapters here get formatted they get put under FanTL.", icon: "mdi:book-outline", color: "text-blue-400" },
+          { name: "FanTL", desc: "Has all the features made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
+          { name: "UnfinishedTL", desc: "Chapters that are still being worked on, equivalent of reading an epub.", icon: "mdi:book-outline", color: "text-blue-400" },
           { name: "MTL", desc: "Currently released part three chapters. Translated by ZestysDaddy on Discord, kept separate because they'd break the order of FanTL (jumping to part three since part two isn't fully formatted yet).", icon: "mdi:auto-fix", color: "text-purple-400" },
         ],
   );
@@ -309,9 +309,9 @@
 <main class="flex flex-col md:flex-row min-h-dvh">
   <!-- Left: Book Info -->
   <aside class="relative md:h-dvh md:w-[35vw] w-full bg-base-200/70 md:sticky md:top-0 flex flex-col items-center border-b md:border-b-0 md:border-r border-base-content/10 overflow-hidden">
-    <div class="relative w-full flex flex-col items-center p-8 md:p-12">
-      <div class="flex items-start gap-4">
-        <div class="relative w-56 md:w-72 aspect-[3/4] overflow-hidden rounded-2xl shadow-xl">
+    <div class="relative w-full flex flex-col items-center px-5 py-8 sm:p-8 md:p-10">
+      <div class="flex items-center gap-3 sm:gap-4 max-w-full">
+        <div class="relative w-36 sm:w-44 md:w-56 lg:w-64 aspect-[3/4] shrink-0 overflow-hidden rounded-2xl shadow-xl">
           <enhanced:img
             src={book.cover}
             alt="{book.title} cover"
@@ -331,35 +331,35 @@
           <div class="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none"></div>
         </div>
 
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-2 sm:gap-3 justify-center min-w-0 shrink">
           {#if isTemp}
-            <span class="flex items-center gap-2.5">
-              <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
-                <Icon icon="material-symbols:auto-stories" class="size-4 opacity-50" />
+            <span class="flex items-center gap-2 sm:gap-2.5">
+              <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
+                <Icon icon="material-symbols:auto-stories" class="size-3.5 sm:size-4 opacity-50" />
               </span>
-              <span class="flex flex-col leading-tight">
-                <span class="text-lg font-bold tabular-nums">{records.length}</span>
-                <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">{records.length === 1 ? "Record" : "Records"}</span>
+              <span class="flex flex-col leading-tight min-w-0">
+                <span class="text-base sm:text-lg font-bold tabular-nums">{records.length}</span>
+                <span class="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">{records.length === 1 ? "Record" : "Records"}</span>
               </span>
             </span>
           {:else}
-            <span class="flex items-center gap-2.5">
-              <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
-                <Icon icon="material-symbols:auto-stories" class="size-4 opacity-50" />
+            <span class="flex items-center gap-2 sm:gap-2.5">
+              <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
+                <Icon icon="material-symbols:auto-stories" class="size-3.5 sm:size-4 opacity-50" />
               </span>
-              <span class="flex flex-col leading-tight">
-                <span class="text-lg font-bold tabular-nums">{chapters.length}</span>
-                <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">{chapters.length === 1 ? "Chapter" : "Chapters"}</span>
+              <span class="flex flex-col leading-tight min-w-0">
+                <span class="text-base sm:text-lg font-bold tabular-nums">{chapters.length}</span>
+                <span class="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">{chapters.length === 1 ? "Chapter" : "Chapters"}</span>
               </span>
             </span>
             {#if availableTLs.length > 1}
-              <span class="flex items-center gap-2.5">
-                <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
-                  <Icon icon="material-symbols:translate" class="size-4 opacity-50" />
+              <span class="flex items-center gap-2 sm:gap-2.5">
+                <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
+                  <Icon icon="material-symbols:translate" class="size-3.5 sm:size-4 opacity-50" />
                 </span>
-                <span class="flex flex-col leading-tight">
-                  <span class="text-lg font-bold tabular-nums">{availableTLs.length}</span>
-                  <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">{availableTLs.length === 1 ? "Translation" : "Translations"}</span>
+                <span class="flex flex-col leading-tight min-w-0">
+                  <span class="text-base sm:text-lg font-bold tabular-nums">{availableTLs.length}</span>
+                  <span class="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">{availableTLs.length === 1 ? "Translation" : "Translations"}</span>
                 </span>
               </span>
             {/if}
@@ -369,26 +369,59 @@
               href={book.external_link}
               target="_blank"
               rel="noopener noreferrer"
-              class="flex items-center gap-2.5 mt-1 group"
+              class="flex items-center gap-2 sm:gap-2.5 mt-0.5 sm:mt-1 group"
             >
-              <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
-                <Icon icon="material-symbols:open-in-new" class="size-4 opacity-50" />
+              <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
+                <Icon icon="material-symbols:open-in-new" class="size-3.5 sm:size-4 opacity-50" />
               </span>
-              <span class="flex flex-col leading-tight">
-                <span class="text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">Source</span>
+              <span class="flex flex-col leading-tight min-w-0">
+                <span class="text-xs sm:text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">Source</span>
               </span>
             </a>
           {/if}
           {#if bookSlug === "gsgw" || bookSlug === "debut"}
             <a
               href="/download"
-              class="flex items-center gap-2.5 mt-1 group"
+              class="flex items-center gap-2 sm:gap-2.5 mt-0.5 sm:mt-1 group"
             >
-              <span class="flex items-center justify-center size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
-                <Icon icon="material-symbols:download-rounded" class="size-4 opacity-50" />
+              <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
+                <Icon icon="material-symbols:download-rounded" class="size-3.5 sm:size-4 opacity-50" />
               </span>
-              <span class="flex flex-col leading-tight">
-                <span class="text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">Download</span>
+              <span class="flex flex-col leading-tight min-w-0">
+                <span class="text-xs sm:text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">Download</span>
+              </span>
+            </a>
+          {/if}
+          {#if isTemp}
+            <a
+              href="#"
+              onclick={(e) => e.preventDefault()}
+              class="flex items-center gap-2 sm:gap-2.5 mt-0.5 sm:mt-1 group"
+            >
+              <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
+                <Icon icon="material-symbols:menu-book-outline-rounded" class="size-3.5 sm:size-4 opacity-50" />
+              </span>
+              <span class="flex flex-col leading-tight min-w-0">
+                <span class="text-xs sm:text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">Read a Record</span>
+              </span>
+            </a>
+          {:else}
+            <a
+              href={continueData
+                ? `../../read/${continueData.book}/${continueData.tl}/${continueData.slug}`
+                : "#"}
+              onclick={handleReadClick}
+              class="flex items-center gap-2 sm:gap-2.5 mt-0.5 sm:mt-1 group"
+              data-sveltekit-preload-data
+            >
+              <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
+                <Icon icon={continueData ? "material-symbols:resume" : "material-symbols:menu-book-outline-rounded"} class="size-3.5 sm:size-4 opacity-50" />
+              </span>
+              <span class="flex flex-col leading-tight min-w-0">
+                <span class="text-xs sm:text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">{continueData ? "Continue" : "Start Reading"}</span>
+                {#if continueData}
+                  <span class="text-[8px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">Chapter {continueData.slug}</span>
+                {/if}
               </span>
             </a>
           {/if}
@@ -396,52 +429,11 @@
       </div>
     </div>
 
-    <div class="relative w-full px-6 md:px-8 flex gap-2 mb-5">
-      {#if isTemp}
-        <a
-          href="#"
-          onclick={(e) => e.preventDefault()}
-          class="btn {book.button_primary} grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5 rounded-xl"
-        >
-          <Icon icon="material-symbols:menu-book-outline-rounded" class="size-5 shrink-0" />
-          <span class="flex flex-col items-start leading-tight">
-            <span>Read a Record</span>
-          </span>
-        </a>
-        <button
-          disabled
-          class="btn btn-ghost grow shadow-lg font-bold gap-2 h-auto min-h-[2.75rem] py-2.5 rounded-xl opacity-30 cursor-not-allowed"
-        >
-          <Icon icon="material-symbols:resume" class="size-5 shrink-0" />
-          <span class="flex flex-col items-start leading-tight">
-            <span>Continue Reading</span>
-          </span>
-        </button>
-      {:else}
-        <a
-          href={continueData
-            ? `../../read/${continueData.book}/${continueData.tl}/${continueData.slug}`
-            : "#"}
-          onclick={handleReadClick}
-          class="btn {book.button_primary} grow shadow-lg font-bold gap-3 h-auto min-h-[2.75rem] py-2.5 rounded-xl"
-          data-sveltekit-preload-data
-        >
-          <Icon icon={continueData ? "material-symbols:resume" : "material-symbols:menu-book-outline-rounded"} class="size-5 shrink-0" />
-          <span class="flex flex-col items-start leading-tight">
-            <span>{continueData ? "Continue" : "Start Reading"}</span>
-            {#if continueData}
-              <span class="text-[10px] font-mono uppercase tracking-wider opacity-70">Chapter {continueData.slug}</span>
-            {/if}
-          </span>
-        </a>
-      {/if}
-    </div>
-
-    <div class="relative grow w-full px-6 md:px-8 pb-6 overflow-hidden">
-      <div class="hidden md:block h-full">
-        <div class="h-full overflow-y-auto pr-2 custom-scrollbar">
+    <div class="relative grow w-full px-5 sm:px-6 md:px-8 pb-6 overflow-hidden flex flex-col">
+      <div class="hidden md:block grow overflow-hidden rounded-xl bg-base-200/40 border border-base-content/5 p-4">
+        <div class="h-full overflow-y-auto custom-scrollbar">
           <h2 class="text-[10px] font-mono uppercase tracking-wider opacity-40 mb-3 text-center">Synopsis</h2>
-          <p class="text-sm leading-relaxed text-center opacity-60 whitespace-pre-line">
+          <p class="text-[13px] leading-relaxed text-center opacity-55 whitespace-pre-line">
             {book.synopsis}
           </p>
         </div>
@@ -461,11 +453,29 @@
 
   <!-- Modal: Synopsis -->
   <dialog bind:this={synopsisModal} class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box bg-base-200 rounded-2xl p-6">
-      <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3">✕</button></form>
-      <h3 class="text-lg font-bold mb-4">Synopsis</h3>
-      <div class="max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
-        <p class="text-sm leading-relaxed whitespace-pre-line opacity-75 text-center">{book.synopsis}</p>
+    <div class="modal-box bg-base-100 p-0 rounded-t-2xl sm:rounded-box shadow-2xl overflow-hidden max-h-[85vh]">
+      <div class="relative">
+        <div
+          class="absolute inset-0"
+          style="background: linear-gradient(135deg, color-mix(in srgb, var(--color-{book.accent_color}) 12%, transparent), transparent)"
+        ></div>
+        <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg flex items-center gap-2 text-{book.accent_color}">
+            <Icon icon="material-symbols:book-outline" class="size-5" />
+            Synopsis
+          </span>
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+              <Icon icon="mdi:close" class="size-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="overflow-y-auto overscroll-contain max-h-[70vh]">
+        <div class="p-5">
+          <p class="text-sm leading-relaxed whitespace-pre-line opacity-65 text-center">{book.synopsis}</p>
+        </div>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
@@ -473,41 +483,61 @@
 
   <!-- Modal: TL Selection -->
   <dialog bind:this={tlSelectionModal} class="modal modal-bottom sm:modal-middle">
-    <div class="modal-box bg-base-100 rounded-2xl p-6">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="font-bold text-lg flex items-center gap-2">
-          <Icon icon="material-symbols:translate-rounded" class="size-5" />
-          Select Translation
-        </h3>
-        <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost">✕</button></form>
+    <div class="modal-box bg-base-100 p-0 rounded-t-2xl sm:rounded-box shadow-2xl overflow-hidden max-h-[85vh]">
+      <div class="relative">
+        <div
+          class="absolute inset-0"
+          style="background: linear-gradient(135deg, color-mix(in srgb, var(--color-{book.accent_color}) 12%, transparent), transparent)"
+        ></div>
+        <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg flex items-center gap-2 text-{book.accent_color}">
+            <Icon icon="material-symbols:translate-rounded" class="size-5" />
+            Select Translation
+          </span>
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+              <Icon icon="mdi:close" class="size-4" />
+            </button>
+          </form>
+        </div>
       </div>
-      <div class="flex flex-col gap-3">
-        {#if bookSlug === "lotm"}
-          <a href="../../read/lotm/goblintl/1" class="btn btn-outline btn-lg justify-between h-auto py-4 group rounded-xl" onclick={() => tlSelectionModal.close()}>
-            <div class="text-left">
-              <div class="font-bold text-base flex items-center gap-2">
-                goblintl <span class="badge badge-primary badge-sm">Recommended</span>
+
+      <div class="overflow-y-auto overscroll-contain max-h-[70vh]">
+        <div class="p-4 space-y-2">
+          {#if bookSlug === "lotm"}
+            <a href="../../read/lotm/goblintl/1" class="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-base-content/5 hover:bg-base-200/70 hover:border-base-content/15 transition-all group" onclick={() => tlSelectionModal.close()}>
+              <div class="flex flex-col min-w-0 grow">
+                <span class="text-sm font-bold">goblintl</span>
+                <span class="text-[11px] text-base-content/45">With illustrations & notes</span>
               </div>
-              <div class="text-xs opacity-60 font-normal mt-1 flex items-center gap-1">
-                <Icon icon="material-symbols:imagesmode-outline" class="size-3" /> With Illustrations & Notes
-              </div>
-            </div>
-            <Icon icon="material-symbols:arrow-forward-rounded" class="size-6 group-hover:translate-x-1 transition-transform" />
-          </a>
-        {:else}
-          {#each availableTLs as tl}
-            {@const isRecommended = (bookSlug === "gsgw" && tl === "fantl") || (bookSlug === "manwha" && tl === "flame comics")}
-            {@const firstSlug = meta[bookSlug]?.[tl]?.[0]?.slug ?? "1"}
-            <a href="../../read/{bookSlug}/{tl}/{firstSlug}" class="btn btn-outline btn-lg justify-between h-auto py-4 group rounded-xl" onclick={() => tlSelectionModal.close()}>
-              <div class="text-left">
-                <div class="font-bold text-base flex items-center gap-2">
-                  {tl.toUpperCase()} {#if isRecommended}<span class="badge badge-primary badge-sm">Recommended</span>{/if}
-                </div>
-              </div>
-              <Icon icon="material-symbols:arrow-forward-rounded" class="size-6 group-hover:translate-x-1 transition-transform" />
+              <span class="badge badge-primary badge-sm">Recommended</span>
+              <Icon icon="material-symbols:chevron-right-rounded" class="size-4 opacity-0 -translate-x-1 group-hover:opacity-40 group-hover:translate-x-0 transition-all shrink-0" />
             </a>
-          {/each}
-        {/if}
+          {:else}
+            {#each availableTLs as tl}
+              {@const isRecommended = (bookSlug === "gsgw" && tl === "fantl") || (bookSlug === "manwha" && tl === "flame comics")}
+              {@const firstSlug = meta[bookSlug]?.[tl]?.[0]?.slug ?? "1"}
+              {@const info = TL_INFO?.find((t) => t.name.toLowerCase().replace(/\s+/g, "") === tl.toLowerCase().replace(/\s+/g, ""))}
+              <a href="../../read/{bookSlug}/{tl}/{firstSlug}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-base-content/5 hover:bg-base-200/70 hover:border-base-content/15 transition-all group" onclick={() => tlSelectionModal.close()}>
+                {#if info}
+                  <Icon icon={info.icon} class="size-5 shrink-0 {info.color}" />
+                {:else}
+                  <Icon icon="material-symbols:translate-rounded" class="size-5 shrink-0 text-base-content/30" />
+                {/if}
+                <div class="flex flex-col min-w-0 grow">
+                  <span class="text-sm font-bold">{tl.toUpperCase()}</span>
+                  {#if info}
+                    <span class="text-[11px] text-base-content/45">{info.desc}</span>
+                  {/if}
+                </div>
+                {#if isRecommended}
+                  <span class="badge badge-primary badge-sm shrink-0">Recommended</span>
+                {/if}
+                <Icon icon="material-symbols:chevron-right-rounded" class="size-4 opacity-0 -translate-x-1 group-hover:opacity-40 group-hover:translate-x-0 transition-all shrink-0" />
+              </a>
+            {/each}
+          {/if}
+        </div>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop"><button>close</button></form>

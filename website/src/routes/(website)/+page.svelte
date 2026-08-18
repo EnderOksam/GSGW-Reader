@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { fade } from "svelte/transition";
   import Icon from "@iconify/svelte";
   import StarField from "$lib/StarField.svelte";
   import imgGsgw from "$lib/assets/web-gsgw-cover.webp";
@@ -30,60 +29,31 @@
   }
 
   let contributeModal: HTMLDialogElement;
-  let currentIndex = $state(0);
+  let gsgwVariant = $state<"webnovel" | "manwha">("webnovel");
 
-  const books = [
-    {
-      href: "/book/gsgw",
-      img: imgGsgw,
-      title: "Got Dropped into a Ghost Story, Still Gotta Work",
-      author: "Baek Deoksoo",
-      tag: "Webnovel",
-      tagClass: "text-primary",
-    },
-    {
-      href: "/book/manwha",
-      img: imgManwha,
-      title: "Ghost Story, Gotta Work",
-      author: "todac_s",
-      tag: "Manwha",
-      tagClass: "text-accent",
-    },
-    {
-      href: "/book/debut",
-      img: imgDebut,
-      title: "Debut Or Die",
-      author: "Baek Deoksoo",
-      tag: "Webnovel",
-      tagClass: "text-primary",
-    },
-    {
-      href: "#",
-      img: "",
-      title: "",
-      author: "",
-      tag: "Coming Soon",
-      tagClass: "text-base-content/30",
-      blank: true,
-    },
-    {
-      href: "/book/temp",
-      img: imgCoi,
-      title: "Dark Exploration Records",
-      author: "Fanatics",
-      tag: "Unofficial",
-      tagClass: "text-warning",
-    },
-    {
-      href: "#",
-      img: "",
-      title: "",
-      author: "",
-      tag: "Coming Soon",
-      tagClass: "text-base-content/30",
-      blank: true,
-    },
-  ];
+  const gsgwData = $derived(
+    gsgwVariant === "webnovel"
+      ? { href: "/book/gsgw", img: imgGsgw, title: "Got Dropped into a Ghost Story, Still Gotta Work", author: "Baek Deoksoo", tag: "Webnovel", tagClass: "text-primary" }
+      : { href: "/book/manwha", img: imgManwha, title: "Ghost Story, Gotta Work", author: "todac_s", tag: "Manwha", tagClass: "text-accent" }
+  );
+
+  const dodBook = {
+    href: "/book/debut",
+    img: imgDebut,
+    title: "Debut Or Die",
+    author: "Baek Deoksoo",
+    tag: "Webnovel",
+    tagClass: "text-primary",
+  };
+
+  const uderBook = {
+    href: "/book/temp",
+    img: imgCoi,
+    title: "Dark Exploration Records",
+    author: "Fanatics",
+    tag: "Unofficial",
+    tagClass: "text-warning",
+  };
 </script>
 
 <svelte:head>
@@ -118,6 +88,32 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   #
 </button>
 
+{#snippet bookCard(book)}
+  <a
+    href={book.href}
+    class="group relative w-40 h-60 md:w-64 md:h-80 overflow-hidden rounded-2xl ring-2 ring-black shadow-xl transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl block shrink-0"
+    data-sveltekit-preload-data
+  >
+    <div class="absolute inset-0 transition-all duration-700 group-hover:scale-110">
+      <enhanced:img
+        src={book.img}
+        alt="{book.title} cover"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-60% to-black/10 to-100%"></div>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 p-3 md:p-4 z-10 translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+      <span class="inline-flex items-center gap-1 text-[10px] md:text-xs font-bold uppercase tracking-widest {book.tagClass} drop-shadow mb-1">
+        <span class="size-1 md:size-1.5 rounded-full bg-current"></span>
+        {book.tag}
+      </span>
+      <h2 class="text-xs md:text-sm font-black text-white drop-shadow leading-tight line-clamp-2">{book.title}</h2>
+      <p class="text-[10px] text-white/70 font-mono mt-0.5 md:mt-1">{book.author}</p>
+    </div>
+    <div class="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none group-hover:ring-white/20 transition-all duration-500"></div>
+  </a>
+{/snippet}
+
 {#if showBanner}
   <div class="fixed top-0 left-0 right-0 z-50 flex items-center justify-center gap-4 bg-[#0d0d0d]/95 backdrop-blur-sm border-b border-[#fb8462]/20 px-4 py-3 text-sm text-white/80">
     <span class="text-center">
@@ -132,181 +128,66 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   </div>
 {/if}
 
-<div class="relative h-dvh flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden">
-    <div class="flex flex-col items-center gap-4 md:gap-8 w-full max-w-7xl">
-    <h1 class="crt-title text-7xl sm:text-8xl md:text-7xl lg:text-8xl font-bold leading-none md:leading-tight text-center whitespace-nowrap -mt-14 md:-mt-20">
+<div class="relative h-dvh flex flex-col items-center justify-center gap-3 md:gap-8 py-8 px-8 md:p-12 overflow-hidden">
+    <div class="flex flex-col items-center gap-3 md:gap-8 w-full max-w-7xl">
+    <h1 class="crt-title text-5xl sm:text-7xl md:text-7xl lg:text-8xl font-bold leading-none md:leading-tight text-center whitespace-nowrap">
       <span class="block md:inline -ml-14 md:ml-0">GSGW</span><span class="block md:inline pl-12 md:pl-0">-Reader</span>
     </h1>
 
-    <div class="hidden md:block relative w-full max-w-4xl">
-      <span
-        onclick={() => currentIndex = (currentIndex - 3 + books.length) % books.length}
-        class="absolute -left-10 top-1/2 -translate-y-1/2 z-10 text-white/70 cursor-pointer select-none text-2xl p-2"
-        aria-label="Previous books"
-      >‹</span>
-
-      {#key currentIndex}
-        <div class="flex items-center justify-center gap-4" in:fade={{ duration: 180 }}>
-        {#each books.slice(currentIndex, currentIndex + 3) as book}
-          <a
-            href={book.href}
-            class="group relative w-56 md:w-72 aspect-[3/4] overflow-hidden rounded-2xl shadow-xl transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl"
-            data-sveltekit-preload-data
-          >
-            {#if book.blank}
-              <div class="absolute inset-0 flex items-center justify-center bg-base-300/20">
-                <div class="text-center">
-                  <div class="text-3xl mb-2 opacity-30">+</div>
-                  <span class="text-xs font-bold uppercase tracking-widest {book.tagClass}">{book.tag}</span>
-                </div>
-              </div>
-            {:else}
-              <div class="absolute inset-0 transition-all duration-700 group-hover:scale-110">
-                <enhanced:img
-                  src={book.img}
-                  alt="{book.title} cover"
-                  class="absolute inset-0 w-full h-full object-cover"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-60% to-black/10 to-100%"></div>
-              </div>
-
-              <div class="absolute bottom-0 left-0 right-0 p-4 z-10 translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
-                <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest {book.tagClass} drop-shadow mb-1">
-                  <span class="size-1.5 rounded-full bg-current"></span>
-                  {book.tag}
-                </span>
-                <h2 class="text-sm font-black text-white drop-shadow leading-tight line-clamp-2">{book.title}</h2>
-                <p class="text-[11px] text-white/70 font-mono mt-1">{book.author}</p>
-              </div>
-            {/if}
-
-            <div class="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none group-hover:ring-white/20 transition-all duration-500"></div>
-          </a>
-        {/each}
+    <div class="hidden md:flex items-center justify-center gap-4">
+      {@render bookCard(uderBook)}
+      <div class="relative">
+        <div class="absolute -top-[12px] left-0 right-0 z-20 flex items-center justify-center" onclick={(e) => e.preventDefault()}>
+          <div class="flex items-center bg-black/80 backdrop-blur-md rounded-full p-0.5 ring-2 ring-black border border-white/10">
+            <button class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-200 {gsgwVariant === 'webnovel' ? 'bg-primary/20 text-primary' : 'text-white/40 hover:text-white/60'}" onclick={() => gsgwVariant = 'webnovel'}>Webnovel</button>
+            <button class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-200 {gsgwVariant === 'manwha' ? 'bg-accent/20 text-accent' : 'text-white/40 hover:text-white/60'}" onclick={() => gsgwVariant = 'manwha'}>Manwha</button>
+          </div>
         </div>
-      {/key}
-
-      <span
-        onclick={() => currentIndex = (currentIndex + 3) % books.length}
-        class="absolute -right-3 md:-right-10 top-1/2 -translate-y-1/2 z-10 text-white/70 cursor-pointer select-none text-2xl p-2"
-        aria-label="Next books"
-      >›</span>
+        {@render bookCard(gsgwData)}
+      </div>
+      {@render bookCard(dodBook)}
     </div>
 
     <div class="flex flex-col items-center gap-4 md:hidden">
-      {#key currentIndex}
-        <div class="flex items-center justify-center gap-4" in:fade={{ duration: 180 }}>
-          {#each books.slice(currentIndex, currentIndex + 2) as book}
-          <a
-            href={book.href}
-            class="group relative w-[42vw] max-w-44 aspect-[3/4] overflow-hidden rounded-2xl shadow-xl transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl"
-            data-sveltekit-preload-data
-          >
-            {#if book.blank}
-              <div class="absolute inset-0 flex items-center justify-center bg-base-300/20">
-                <div class="text-center">
-                  <div class="text-2xl mb-2 opacity-30">+</div>
-                  <span class="text-xs font-bold uppercase tracking-widest {book.tagClass}">{book.tag}</span>
-                </div>
-              </div>
-            {:else}
-              <div class="absolute inset-0 transition-all duration-700 group-hover:scale-110">
-                <enhanced:img
-                  src={book.img}
-                  alt="{book.title} cover"
-                  class="absolute inset-0 w-full h-full object-cover"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-60% to-black/10 to-100%"></div>
-              </div>
-              <div class="absolute bottom-0 left-0 right-0 p-3 z-10 translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
-                <span class="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest {book.tagClass} drop-shadow mb-1">
-                  <span class="size-1.5 rounded-full bg-current"></span>
-                  {book.tag}
-                </span>
-                <h2 class="text-xs font-black text-white drop-shadow leading-tight line-clamp-2">{book.title}</h2>
-                <p class="text-[10px] text-white/70 font-mono mt-1">{book.author}</p>
-              </div>
-            {/if}
-            <div class="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none group-hover:ring-white/20 transition-all duration-500"></div>
-          </a>
-        {/each}
-        </div>
-      {/key}
       <div class="flex items-center justify-center gap-4">
-        <span
-          onclick={() => currentIndex = (currentIndex - 3 + books.length) % books.length}
-          class="text-white/70 cursor-pointer select-none text-xl p-2"
-          aria-label="Previous books"
-        >‹</span>
-        {#key currentIndex}
-          {#each books.slice(currentIndex + 2, currentIndex + 3) as book}
-            <a
-              href={book.href}
-              class="group relative w-[42vw] max-w-44 aspect-[3/4] overflow-hidden rounded-2xl shadow-xl transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl"
-              data-sveltekit-preload-data
-              in:fade={{ duration: 180 }}
-            >
-              {#if book.blank}
-                <div class="absolute inset-0 flex items-center justify-center bg-base-300/20">
-                  <div class="text-center">
-                  <div class="text-2xl mb-2 opacity-30">+</div>
-                    <span class="text-xs font-bold uppercase tracking-widest {book.tagClass}">{book.tag}</span>
-                  </div>
-                </div>
-              {:else}
-                <div class="absolute inset-0 transition-all duration-700 group-hover:scale-110">
-                  <enhanced:img
-                    src={book.img}
-                    alt="{book.title} cover"
-                    class="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 via-60% to-black/10 to-100%"></div>
-                </div>
-                <div class="absolute bottom-0 left-0 right-0 p-3 z-10 translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
-                  <span class="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest {book.tagClass} drop-shadow mb-1">
-                    <span class="size-1.5 rounded-full bg-current"></span>
-                    {book.tag}
-                  </span>
-                  <h2 class="text-xs font-black text-white drop-shadow leading-tight line-clamp-2">{book.title}</h2>
-                  <p class="text-[10px] text-white/70 font-mono mt-1">{book.author}</p>
-                </div>
-              {/if}
-              <div class="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none group-hover:ring-white/20 transition-all duration-500"></div>
-            </a>
-          {/each}
-        {/key}
-        <span
-          onclick={() => currentIndex = (currentIndex + 3) % books.length}
-          class="text-white/70 cursor-pointer select-none text-xl p-2"
-          aria-label="Next books"
-        >›</span>
+        <div class="relative">
+          <div class="absolute -top-[12px] left-0 right-0 z-20 flex items-center justify-center" onclick={(e) => e.preventDefault()}>
+            <div class="flex items-center bg-black/80 backdrop-blur-md rounded-full p-0.5 ring-2 ring-black border border-white/10">
+              <button class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all duration-200 {gsgwVariant === 'webnovel' ? 'bg-primary/20 text-primary' : 'text-white/40 hover:text-white/60'}" onclick={() => gsgwVariant = 'webnovel'}>Webnovel</button>
+              <button class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all duration-200 {gsgwVariant === 'manwha' ? 'bg-accent/20 text-accent' : 'text-white/40 hover:text-white/60'}" onclick={() => gsgwVariant = 'manwha'}>Manwha</button>
+            </div>
+          </div>
+          {@render bookCard(gsgwData)}
+        </div>
+        {@render bookCard(dodBook)}
       </div>
+      {@render bookCard(uderBook)}
     </div>
 
-    <div class="flex flex-nowrap items-center justify-center gap-2 md:gap-4">
+    <div class="flex flex-nowrap items-center justify-center gap-2 md:gap-3">
       <div class="tooltip" data-tip="Download">
-        <a href="/download" class="btn btn-soft btn-square btn-lg md:btn-xl btn-secondary shadow-lg">
+        <a href="/download" class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-secondary/20 border border-white/10 hover:border-secondary/40 text-secondary/80 hover:text-secondary shadow-lg backdrop-blur-md transition-all duration-300">
           <Icon icon="material-symbols:download" class="size-5 md:size-7" />
         </a>
       </div>
       <div class="tooltip" data-tip="Contribute">
-        <button onclick={() => contributeModal.showModal()} class="btn btn-soft btn-square btn-lg md:btn-xl btn-warning shadow-lg">
+        <button onclick={() => contributeModal.showModal()} class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-warning/20 border border-white/10 hover:border-warning/40 text-warning/80 hover:text-warning shadow-lg backdrop-blur-md transition-all duration-300">
           <Icon icon="ri:edit-line" class="size-5 md:size-7" />
         </button>
       </div>
       <div class="tooltip" data-tip="Discord">
-        <a href="https://discord.gg/HHnSjeGN4d" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-square btn-lg md:btn-xl btn-accent shadow-lg">
+        <a href="https://discord.gg/HHnSjeGN4d" target="_blank" rel="noopener noreferrer" class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-accent/80 hover:text-accent shadow-lg backdrop-blur-md transition-all duration-300">
           <Icon icon="mingcute:discord-line" class="size-5 md:size-7" />
         </a>
       </div>
       <div class="tooltip" data-tip="GitHub">
-        <a href="https://github.com/EnderOksam/GSGW-Reader" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-square btn-lg md:btn-xl btn-info shadow-lg">
+        <a href="https://github.com/EnderOksam/GSGW-Reader" target="_blank" rel="noopener noreferrer" class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-info/20 border border-white/10 hover:border-info/40 text-info/80 hover:text-info shadow-lg backdrop-blur-md transition-all duration-300">
           <Icon icon="mdi:github" class="size-5 md:size-7" />
         </a>
       </div>
       <StarField>
         <div class="tooltip" data-tip="Info">
-          <a href="/info" class="btn btn-soft btn-square btn-lg md:btn-xl btn-ghost shadow-lg info-glow">
+          <a href="/info" class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-base-100/20 border border-white/10 hover:border-white/30 text-white/50 hover:text-white shadow-lg backdrop-blur-md transition-all duration-300 info-glow">
             <Icon icon="mdi:information-outline" class="size-5 md:size-7" />
           </a>
         </div>
