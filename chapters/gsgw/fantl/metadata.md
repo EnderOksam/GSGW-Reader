@@ -50,8 +50,22 @@ also there is some custom formatting in this epub if you cant see it you might w
 this should look like its inside a yellow window
 -!
 
+★:
+this should look like a "sms window"
+-left oriented text message
+right oriented sms message-
+:★
+
+
+
 Illustrations by:
 
 #* @uoongpig on X *#
+
+#* @Katzz_artt on X *#
+
+#* @d_kartonidze on X *#
+
+#* @chiiiiliii on X *#
 
 #* @yjh_ism on X *#

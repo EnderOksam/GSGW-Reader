@@ -26,22 +26,36 @@
   }
 
   const variantDefs = [
-    { id: "windows", label: "Windows", badge: "experimental", description: "Experimental — uses a html-to-image library to render windows inside the EPUB just as they appear on the website." },
     { id: "plaintext", label: "Plain Text", badge: "css", description: "All formatting is done through text — the best attempt to use CSS to make it look like the website." },
+    { id: "default", label: "Default", description: "Coming Soon — standard EPUBs with no special windows, support for legacy devices." },
   ];
 
   const defaultStories: Story[] = [
     {
       id: "gsgw", title: "Got Dropped into a Ghost Story, Still Gotta Work", short: "GSGW", badgeClass: "badge-primary",
       variants: [
-        { id: "windows", label: "Windows", description: variantDefs[0].description, parts: [{ id: "part1", label: "Part 1", status: "Formatted" }, { id: "part2", label: "Part 2", status: "WIP" }, { id: "part3", label: "Part 3", status: "Ongoing" }] },
-        { id: "plaintext", label: "Plain Text", description: variantDefs[1].description, parts: [{ id: "part1", label: "Part 1", status: "Formatted" }, { id: "part2", label: "Part 2", status: "WIP" }, { id: "part3", label: "Part 3", status: "Ongoing" }] },
+        { id: "plaintext", label: "Plain Text", description: variantDefs[0].description, parts: [
+          { id: "part1", label: "Part 1", range: "Chapters 0–208", status: "Formatted" },
+          { id: "part2", label: "Part 2", range: "Chapters 209–371", status: "WIP" },
+          { id: "part3", label: "Part 3", range: "Chapter 372 – Current", status: "Ongoing" },
+        ] },
+        { id: "default", label: "Default", description: variantDefs[1].description, parts: [
+          { id: "part1", label: "Part 1", range: "Chapters 0–208", status: "Formatted" },
+          { id: "part2", label: "Part 2", range: "Chapters 209–371", status: "WIP" },
+          { id: "part3", label: "Part 3", range: "Chapter 372 – Current", status: "Ongoing" },
+        ] },
       ],
     },
     {
       id: "debut", title: "Debut or Die", short: "Debut", badgeClass: "badge-secondary",
       variants: [
-        { id: "windows", label: "Windows", description: variantDefs[0].description, parts: [
+        { id: "plaintext", label: "Plain Text", description: variantDefs[0].description, parts: [
+          { id: "part1", label: "Part 1", range: "Chapters 1–147", status: "Formatted" },
+          { id: "part2", label: "Part 2", range: "Chapters 148–364", status: "WIP" },
+          { id: "part3", label: "Part 3", range: "Chapters 365–451", status: "Unformatted" },
+          { id: "part4", label: "Part 4", range: "Chapters 452–644", status: "Unformatted" },
+        ] },
+        { id: "default", label: "Default", description: variantDefs[1].description, parts: [
           { id: "part1", label: "Part 1", range: "Chapters 1–147", status: "Formatted" },
           { id: "part2", label: "Part 2", range: "Chapters 148–364", status: "WIP" },
           { id: "part3", label: "Part 3", range: "Chapters 365–451", status: "Unformatted" },
@@ -53,7 +67,7 @@
 
   let stories = $state<Story[]>(defaultStories);
   let selectedStory = $state("gsgw");
-  let selectedVariant = $state("windows");
+  let selectedVariant = $state("plaintext");
   let selectedPart = $state("part1");
   let downloadUrl = $state("");
   let epubName = $state("");
@@ -62,8 +76,7 @@
   let storyAssets = $state<Record<string, { url: string; name: string; count: number }>>({});
 
   function releaseFilename(story: string, variant: string, part: string) {
-    const v = variant === "windows" ? "Windows" : "PlainText";
-    return `${story} - Part ${part} [${v}]`.replace(/[[\],]/g, '').replace(/ /g, '.').replace(/\.+/g, '.') + '.epub';
+    return `${story} - Part ${part} [PlainText]`.replace(/[[\],]/g, '').replace(/ /g, '.').replace(/\.+/g, '.') + '.epub';
   }
 
   function makeAssetUrl(tag: string, story: string, variant: string, part: string) {
@@ -126,7 +139,7 @@
       }
       stories = defaultStories;
       selectedStory = "gsgw";
-      selectedVariant = "windows";
+      selectedVariant = "plaintext";
       selectedPart = "part1";
       updateDownload();
     }
@@ -227,19 +240,24 @@
             <div class="flex justify-center gap-3 flex-wrap">
               {#each variantDefs as def}
                 {@const supported = currentStory.variants.some((v) => v.id === def.id)}
+                {@const isDefault = def.id === 'default'}
                 <button
-                  onclick={() => supported && selectVariant(def.id)}
-                  disabled={!supported}
+                  onclick={() => !isDefault && supported && selectVariant(def.id)}
+                  disabled={!supported || isDefault}
                   class="relative flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300
                     {selectedVariant === def.id && supported
                       ? 'text-white shadow-lg shadow-primary/15'
-                      : 'text-base-content/50 hover:text-base-content/70 border border-white/5 hover:border-white/10 bg-white/[0.02]'}"
+                      : isDefault
+                        ? 'text-base-content/25 line-through cursor-not-allowed border border-white/[0.03] bg-white/[0.01]'
+                        : 'text-base-content/50 hover:text-base-content/70 border border-white/5 hover:border-white/10 bg-white/[0.02]'}"
                 >
                   {#if selectedVariant === def.id && supported}
                     <div class="absolute inset-0 rounded-xl bg-linear-to-br from-primary/25 to-primary/10 border border-primary/30 shadow-inner shadow-white/5"></div>
                   {/if}
-                  <span class="relative z-10 {!supported ? 'line-through opacity-50' : ''}">{def.label}</span>
-                  <span class="relative z-10 text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-md {def.id === 'windows' ? 'text-purple-300 bg-purple-500/10 border border-purple-500/20' : 'text-green-300 bg-green-500/10 border border-green-500/20'}">{def.badge}</span>
+                  <span class="relative z-10">{def.label}</span>
+                  {#if def.badge}
+                    <span class="relative z-10 text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-md text-green-300 bg-green-500/10 border border-green-500/20">{def.badge}</span>
+                  {/if}
                 </button>
               {/each}
             </div>
@@ -269,10 +287,23 @@
               <div class="flex-1 min-w-0 space-y-4">
                 {#each variantDefs as def}
                   {@const variant = currentStory?.variants.find((v) => v.id === def.id)}
-                  <div class="text-sm leading-relaxed pl-3 border-l-2 {variant ? (def.id === 'windows' ? 'border-purple-500/40' : 'border-green-500/40') : 'border-white/5'} {!variant ? 'opacity-25' : ''}">
-                    <span class="font-semibold {variant ? 'text-white/80' : 'text-white/40'}">{def.label}</span>
-                    <span class="{variant ? 'text-base-content/50' : 'text-base-content/30'}"> — {variant?.description || def.description}</span>
-                  </div>
+                  {@const isDefault = def.id === 'default'}
+                  {#if !isDefault}
+                    <div class="text-sm leading-relaxed pl-3 border-l-2 {variant ? 'border-green-500/40' : 'border-white/5'}">
+                      <span class="font-semibold text-white/80">{def.label}</span>
+                      <span class="text-base-content/50"> — {variant?.description || def.description}</span>
+                    </div>
+                  {/if}
+                {/each}
+                {#each variantDefs as def}
+                  {@const variant = currentStory?.variants.find((v) => v.id === def.id)}
+                  {@const isDefault = def.id === 'default'}
+                  {#if isDefault}
+                    <div class="text-xs leading-relaxed pl-3 border-l border-white/5 opacity-30 mt-3">
+                      <span class="font-semibold text-white/40">{def.label}</span>
+                      <span class="text-base-content/30"> — {variant?.description || def.description}</span>
+                    </div>
+                  {/if}
                 {/each}
               </div>
             </div>
@@ -389,6 +420,10 @@
               <span class="font-semibold text-white">PocketBook</span>
               <p class="text-xs text-base-content/60">I don't personally use iOS, but Lei and Destiny on the discord have said PocketBook is the best.</p>
             </div>
+            <div>
+              <span class="font-semibold text-white">Suwatte</span>
+              <p class="text-xs text-base-content/60">Lei really likes this one but it's a TestFlight app so you gotta opt in for it.</p>
+            </div>
             <div class="opacity-50">
               <span class="font-semibold text-white">Apple Books</span>
               <p class="text-xs text-base-content/60">Apple Books works too but if you change the theme to dark mode it will mess up the css rules (what makes text look pretty).</p>
@@ -406,7 +441,7 @@
               <p class="text-xs text-base-content/60">I've discovered Episteme recently and it's been my favorite epub reader so far. Haven't had any issues people report on other epub readers.</p>
             </div>
             <div class="opacity-50">
-              <span class="font-semibold text-white">Moon Reader</span>
+              <span class="font-semibold text-white">Lithium</span>
               <p class="text-xs text-base-content/60">Good alternative, it works but it's not perfect.</p>
             </div>
           </div>

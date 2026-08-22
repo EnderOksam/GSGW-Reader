@@ -1382,15 +1382,7 @@ def comment_window_replacer(match):
 def scroll_replacer(match, direction):
     inner = match.group(1)
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
-    cls = "scroll-left" if direction == "left" else "scroll-right"
-    return (
-        f'<span class="scroll-wrap {cls}">'
-        f'<span class="scroll-sizer"><span class="scroll-text">{inner}</span></span>'
-        f'<span class="scroll-track">'
-        f'<span class="scroll-text">{inner}</span>'
-        f'<span class="scroll-text">{inner}</span>'
-        f'</span></span>'
-    )
+    return f'<p style="text-align:center">{inner}</p>'
 
 
 def transition_replacer(match):

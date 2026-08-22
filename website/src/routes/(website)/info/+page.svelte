@@ -244,19 +244,19 @@
         </section>
 
         <div class="grid grid-cols-2 gap-4 mt-8">
-          <a href="/download" class="btn btn-soft btn-md btn-secondary shadow-lg gap-2">
+          <a href="/download" class="btn btn-md bg-black/60 hover:bg-secondary/20 border border-white/10 hover:border-secondary/40 text-secondary/80 hover:text-secondary shadow-lg backdrop-blur-md transition-all duration-300 gap-2">
             <Icon icon="material-symbols:download" class="size-5" />
             Download
           </a>
-          <button onclick={() => contributeModal.showModal()} class="btn btn-soft btn-md btn-warning shadow-lg gap-2">
+          <button onclick={() => contributeModal.showModal()} class="btn btn-md bg-black/60 hover:bg-warning/20 border border-white/10 hover:border-warning/40 text-warning/80 hover:text-warning shadow-lg backdrop-blur-md transition-all duration-300 gap-2">
             <Icon icon="ri:edit-line" class="size-5" />
             Contribute
           </button>
-          <a href="https://discord.gg/HHnSjeGN4d" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-md btn-accent shadow-lg gap-2">
+          <a href="https://discord.gg/HHnSjeGN4d" target="_blank" rel="noopener noreferrer" class="btn btn-md bg-black/60 hover:bg-accent/20 border border-white/10 hover:border-accent/40 text-accent/80 hover:text-accent shadow-lg backdrop-blur-md transition-all duration-300 gap-2">
             <Icon icon="mingcute:discord-line" class="size-5" />
             Discord
           </a>
-          <a href="https://github.com/EnderOksam/GSGW-Reader" target="_blank" rel="noopener noreferrer" class="btn btn-soft btn-md btn-info shadow-lg gap-2">
+          <a href="https://github.com/EnderOksam/GSGW-Reader" target="_blank" rel="noopener noreferrer" class="btn btn-md bg-black/60 hover:bg-info/20 border border-white/10 hover:border-info/40 text-info/80 hover:text-info shadow-lg backdrop-blur-md transition-all duration-300 gap-2">
             <Icon icon="mdi:github" class="size-5" />
             GitHub
           </a>
