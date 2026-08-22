@@ -2,6 +2,8 @@
   import { onMount } from "svelte";
   import Icon from "@iconify/svelte";
   import StarField from "$lib/StarField.svelte";
+  import { goto } from "$app/navigation";
+  import { uderTransition } from "$lib/uder-transition";
   import imgGsgw from "$lib/assets/web-gsgw-cover.webp";
   import imgCoi from "$lib/assets/web-coi-cover.jpg";
   import imgManwha from "$lib/assets/webtoon-cover.webp";
@@ -30,6 +32,12 @@
 
   let contributeModal: HTMLDialogElement;
   let gsgwVariant = $state<"webnovel" | "manwha">("webnovel");
+
+  function handleUderClick(e: MouseEvent) {
+    e.preventDefault();
+    uderTransition.set("fade-in");
+    setTimeout(() => goto("/book/temp"), 500);
+  }
 
   const gsgwData = $derived(
     gsgwVariant === "webnovel"
@@ -88,9 +96,10 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   #
 </button>
 
-{#snippet bookCard(book)}
+{#snippet bookCard(book, onclick?: (e: MouseEvent) => void)}
   <a
     href={book.href}
+    onclick={onclick}
     class="group relative w-40 h-60 md:w-64 md:h-80 overflow-hidden rounded-2xl ring-2 ring-black shadow-xl transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl block shrink-0"
     data-sveltekit-preload-data
   >
@@ -135,7 +144,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     </h1>
 
     <div class="hidden md:flex items-center justify-center gap-4">
-      {@render bookCard(uderBook)}
+      {@render bookCard(uderBook, handleUderClick)}
       <div class="relative">
         <div class="absolute -top-[12px] left-0 right-0 z-20 flex items-center justify-center" onclick={(e) => e.preventDefault()}>
           <div class="flex items-center bg-black/80 backdrop-blur-md rounded-full p-0.5 ring-2 ring-black border border-white/10">
@@ -161,7 +170,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
         </div>
         {@render bookCard(dodBook)}
       </div>
-      {@render bookCard(uderBook)}
+      {@render bookCard(uderBook, handleUderClick)}
     </div>
 
     <div class="flex flex-nowrap items-center justify-center gap-2 md:gap-3">

@@ -17,6 +17,7 @@ uniform sampler2D u_tex;
 uniform vec2 u_res;
 uniform vec2 u_texSize;
 uniform float u_time;
+uniform float u_texStrength;
 
 in vec2 v_uv;
 out vec4 fragColor;
@@ -111,7 +112,7 @@ void main() {
   vec2 off = (u_res - scaled) * 0.5;
   vec2 texUv = clamp((uvd * u_res - off) / scaled, 0.0, 1.0);
 
-  vec3 col = bgTint(texture(u_tex, texUv).rgb);
+  vec3 col = bgTint(texture(u_tex, texUv).rgb * u_texStrength);
 
   vec2 drift = vec2(u_time * 0.006, u_time * 0.004);
   vec2 TR = uv - vec2(1.0, 0.0);
@@ -153,6 +154,7 @@ export class BackgroundShader {
   private uTime: WebGLUniformLocation | null = null;
   private uRes: WebGLUniformLocation | null = null;
   private uTexSize: WebGLUniformLocation | null = null;
+  private uTexStrength: WebGLUniformLocation | null = null;
   private texWidth = 1;
   private texHeight = 1;
   private rafId = 0;
@@ -205,7 +207,9 @@ export class BackgroundShader {
     this.uTime = gl.getUniformLocation(prog, "u_time");
     this.uRes = gl.getUniformLocation(prog, "u_res");
     this.uTexSize = gl.getUniformLocation(prog, "u_texSize");
+    this.uTexStrength = gl.getUniformLocation(prog, "u_texStrength");
     if (this.uTexSize) gl.uniform2f(this.uTexSize, 1, 1);
+    if (this.uTexStrength) gl.uniform1f(this.uTexStrength, 1.0);
 
     const tex = gl.createTexture();
     if (!tex) return false;
@@ -288,6 +292,14 @@ export class BackgroundShader {
     this.running = true;
     this.startTime = performance.now();
     this.rafId = requestAnimationFrame(this.frame);
+  }
+
+  setTextureStrength(s: number): void {
+    const gl = this.gl;
+    if (gl && this.uTexStrength) {
+      gl.useProgram(this.program);
+      gl.uniform1f(this.uTexStrength, s);
+    }
   }
 
   private frame = (now: number): void => {

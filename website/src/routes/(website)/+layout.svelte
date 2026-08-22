@@ -7,6 +7,7 @@
   import { goto } from "$app/navigation";
   import bgImage from "$lib/assets/background.jpg";
   import { BackgroundShader } from "$lib/bgShader";
+  import { uderTransition } from "$lib/uder-transition";
 
   let { children } = $props();
 
@@ -17,6 +18,38 @@
   let bgCanvas: HTMLCanvasElement;
   let bgShader: BackgroundShader | null = null;
 
+  let uderPhase = $state<"idle" | "fade-in" | "hold" | "fade-out" | "back-fade" | "back-hold">("idle");
+
+  $effect(() => {
+    const unsub = uderTransition.subscribe((v) => (uderPhase = v));
+    return unsub;
+  });
+
+  $effect(() => {
+    if (uderPhase === "fade-in" && path === "/book/temp") {
+      const t = setTimeout(() => {
+        uderTransition.set("hold");
+        const t2 = setTimeout(() => {
+          uderTransition.set("fade-out");
+          const t3 = setTimeout(() => uderTransition.set("idle"), 600);
+        }, 2000);
+      }, 100);
+      return () => { clearTimeout(t); };
+    }
+  });
+
+  $effect(() => {
+    if (uderPhase === "back-fade" && path === "/book/temp") {
+      const t = setTimeout(() => {
+        uderTransition.set("back-hold");
+        const t2 = setTimeout(() => {
+          navigateBack();
+        }, 80);
+      }, 80);
+      return () => { clearTimeout(t); };
+    }
+  });
+
   onMount(async () => {
     bgShader = new BackgroundShader(bgCanvas, bgImage);
     bgShader.start();
@@ -26,12 +59,20 @@
     bgShader?.dispose();
   });
 
-  function handleBack() {
+  function navigateBack() {
     if (typeof window !== "undefined" && window.history.length > 1) {
       goto("../");
     } else {
       goto("/");
     }
+  }
+
+  function handleBack() {
+    if (path === "/book/temp") {
+      uderTransition.set("back-fade");
+      return;
+    }
+    navigateBack();
   }
 
   function getCachedTheme(): string {
@@ -49,6 +90,19 @@
   $effect(() => {
     const _ = page.url.href;
     document.documentElement.setAttribute("data-theme", getCachedTheme());
+  });
+
+  $effect(() => {
+    if (bgShader) {
+      bgShader.setTextureStrength(path === "/book/temp" ? 0 : 1);
+    }
+  });
+
+  $effect(() => {
+    if (path !== "/book/temp" && (uderPhase === "back-fade" || uderPhase === "back-hold")) {
+      const t = setTimeout(() => uderTransition.set("idle"), 150);
+      return () => clearTimeout(t);
+    }
   });
 </script>
 
@@ -83,6 +137,21 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 
 <div class="content">
   {@render children()}
+</div>
+
+<div
+  class="fixed inset-0 z-[100] bg-black pointer-events-none transition-opacity"
+  class:duration-500={uderPhase !== 'back-fade' && uderPhase !== 'back-hold'}
+  class:duration-100={uderPhase === 'back-fade' || uderPhase === 'back-hold'}
+  style="opacity: {uderPhase === 'idle' ? 0 : 1}"
+  class:pointer-events-auto={uderPhase !== 'idle'}
+>
+  {#if uderPhase === 'hold' || uderPhase === 'fade-out'}
+    <div class="absolute inset-0 flex flex-col items-center justify-center gap-6 {uderPhase === 'fade-out' ? 'transition-opacity duration-500 opacity-0' : 'transition-opacity duration-500 opacity-100'}">
+      <img src="/assets/ghost.webp" alt="" class="w-32 h-32 md:w-48 md:h-48 object-contain" />
+      <p class="text-white/60 text-xs md:text-sm font-mono uppercase tracking-[0.25em] text-center max-w-md px-4">Prophecy of the Apocalypse: Darkness Exploration Records</p>
+    </div>
+  {/if}
 </div>
 
 <style>
