@@ -2634,9 +2634,7 @@
         "index": 292,
         "section": "Chapter 292",
         "slug": "292"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
         "title": "[Gangryeong Town Tunnel], I",
         "category": "Part 2",
@@ -2656,7 +2654,7 @@
       {
         "title": "Company Dinner",
         "category": "Part 2",
-        "discussion": 420,
+        "discussion": 0,
         "index": 295,
         "section": "Chapter 295",
         "slug": "295"
@@ -2664,23 +2662,23 @@
       {
         "title": "Sekwang Station Office",
         "category": "Part 2",
-        "discussion": 441,
+        "discussion": 0,
         "index": 296,
         "section": "Chapter 296",
         "slug": "296"
       },
       {
-        "title": "Cheerful Research Institute",
+        "title": "Underground Cheerful Research Institute",
         "category": "Part 2",
-        "discussion": 442,
+        "discussion": 0,
         "index": 297,
         "section": "Chapter 297",
         "slug": "297"
       },
       {
-        "title": "Sekwang Station, Train G1572",
+        "title": "Sekwang Station, [Train G1572]",
         "category": "Part 2",
-        "discussion": 445,
+        "discussion": 0,
         "index": 298,
         "section": "Chapter 298",
         "slug": "298"
@@ -2688,7 +2686,7 @@
       {
         "title": "Sekwang Station [Blood Broadcasting Station], I",
         "category": "Part 2",
-        "discussion": 446,
+        "discussion": 0,
         "index": 299,
         "section": "Chapter 299",
         "slug": "299"
@@ -2696,13 +2694,13 @@
       {
         "title": "Sekwang Station [Blood Broadcasting Station], II",
         "category": "Part 2",
-        "discussion": 447,
+        "discussion": 0,
         "index": 300,
         "section": "Chapter 300",
         "slug": "300"
       },
       {
-        "title": "Chapter 301",
+        "title": "Sekwang Station [Blood Broadcasting Station], III",
         "category": "Part 2",
         "discussion": 0,
         "index": 301,
@@ -2710,7 +2708,7 @@
         "slug": "301"
       },
       {
-        "title": "Chapter 302",
+        "title": "Sekwang Station [Blood Broadcasting Station], IV",
         "category": "Part 2",
         "discussion": 0,
         "index": 302,
@@ -2718,15 +2716,17 @@
         "slug": "302"
       },
       {
-        "title": "Chapter 303",
+        "title": "Sekwang Station [Blood Broadcasting Station], V",
         "category": "Part 2",
         "discussion": 0,
         "index": 303,
         "section": "Chapter 303",
         "slug": "303"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
-        "title": "Chapter 304",
+        "title": "Sekwang Station [Blood Broadcasting Station], VI",
         "category": "Part 2",
         "discussion": 0,
         "index": 304,

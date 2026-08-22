@@ -263,6 +263,8 @@ hr.invisible-hr {
 
 .hex-aurora {
   display: inline-block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   font-weight: 800;
   background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 25%, var(--ha-c3) 50%, var(--ha-c2) 75%, var(--ha-c1) 100%);
   background-size: 300% 300%;
@@ -275,6 +277,8 @@ hr.invisible-hr {
 
 .hex-aurora-static {
   display: inline-block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   font-weight: 800;
   background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 50%, var(--ha-c3) 100%);
   -webkit-background-clip: text;
@@ -285,6 +289,8 @@ hr.invisible-hr {
 
 .hex-aurora-up {
   display: inline-block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   font-weight: 800;
   background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 25%, var(--ha-c3) 50%, var(--ha-c2) 75%, var(--ha-c1) 100%);
   background-size: 300% 300%;
@@ -297,6 +303,8 @@ hr.invisible-hr {
 
 .hex-aurora-up-static {
   display: inline-block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   font-weight: 800;
   background: linear-gradient(135deg, var(--ha-c1) 0%, var(--ha-c2) 50%, var(--ha-c3) 100%);
   -webkit-background-clip: text;

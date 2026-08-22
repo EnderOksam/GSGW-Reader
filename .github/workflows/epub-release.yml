@@ -20,38 +20,30 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install Pillow playwright python-frontmatter imagesize
-
-      - name: Install Chromium
-        run: |
-          playwright install chromium
-          playwright install-deps chromium
-
-      - name: Build GSGW EPUBs
-        run: python scripts/build_epub.py
+          pip install Pillow python-frontmatter imagesize
 
       - name: Install Pandoc
         run: sudo apt-get update && sudo apt-get install -y pandoc
 
-      - name: Build Debut EPUB
-        run: python scripts/build_debut_epub.py
+      - name: Build GSGW EPUBs
+        run: python scripts/build_new_epub.py --book gsgw --part part1 && python scripts/build_new_epub.py --book gsgw --part part2 && python scripts/build_new_epub.py --book gsgw --part part3
+
+      - name: Build Debut EPUBs
+        run: python scripts/build_new_epub.py --book debut --part part1 && python scripts/build_new_epub.py --book debut --part part2 && python scripts/build_new_epub.py --book debut --part part3 && python scripts/build_new_epub.py --book debut --part part4
 
       - name: Rotate releases
         run: |
-          LAST_TAG=$(gh release view "latest" --json tagName -q .tagName 2>/dev/null || true)
           LAST_BODY=$(gh release view "latest" --json body -q .body 2>/dev/null || true)
+          LAST_DATE=$(gh release view "latest" --json tagName -q .tagName 2>/dev/null | grep -oP '\d{4}-\d{2}-\d{2}' || true)
 
-          if [ -n "$LAST_TAG" ]; then
-            LAST_DATE=$(echo "$LAST_TAG" | grep -oP '\d{4}-\d{2}-\d{2}' || true)
+          gh release delete "last" --yes --cleanup-tag 2>/dev/null || true
+          gh release delete "latest" --yes --cleanup-tag 2>/dev/null || true
 
-            gh release delete "last" --yes --cleanup-tag 2>/dev/null || true
-
-            gh release create "last-${LAST_DATE:-unknown}" \
-              --title "last - ${LAST_DATE:-unknown}" \
+          if [ -n "$LAST_DATE" ]; then
+            gh release create "last-${LAST_DATE}" \
+              --title "last - ${LAST_DATE}" \
               --notes "${LAST_BODY:-}" \
               --prerelease
-
-            gh release delete "$LAST_TAG" --yes --cleanup-tag 2>/dev/null || true
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
