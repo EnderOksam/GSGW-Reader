@@ -6,6 +6,7 @@
   import { browser, dev } from "$app/environment";
   import { goto } from "$app/navigation";
   import bgImage from "$lib/assets/background.jpg";
+  import uderBgImage from "$lib/assets/uderbg.jpg";
   import { BackgroundShader } from "$lib/bgShader";
   import { uderTransition } from "$lib/uder-transition";
 
@@ -14,6 +15,7 @@
   let path = $derived(page.url.pathname.replace(/\/$/, "") || "/");
   let isHomePage = $derived(path === "/");
   let isEditorPage = $derived(path === "/dev/editor" || path.startsWith("/dev/editor/"));
+  let isUderReadPage = $derived(path.startsWith("/read/uder/"));
 
   let bgCanvas: HTMLCanvasElement;
   let bgShader: BackgroundShader | null = null;
@@ -26,7 +28,7 @@
   });
 
   $effect(() => {
-    if (uderPhase === "fade-in" && path === "/book/temp") {
+    if (uderPhase === "fade-in" && path === "/book/uder") {
       const t = setTimeout(() => {
         uderTransition.set("hold");
         const t2 = setTimeout(() => {
@@ -39,7 +41,7 @@
   });
 
   $effect(() => {
-    if (uderPhase === "back-fade" && path === "/book/temp") {
+    if (uderPhase === "back-fade" && path === "/book/uder") {
       const t = setTimeout(() => {
         uderTransition.set("back-hold");
         const t2 = setTimeout(() => {
@@ -68,7 +70,7 @@
   }
 
   function handleBack() {
-    if (path === "/book/temp") {
+    if (path === "/book/uder") {
       uderTransition.set("back-fade");
       return;
     }
@@ -94,12 +96,13 @@
 
   $effect(() => {
     if (bgShader) {
-      bgShader.setTextureStrength(path === "/book/temp" ? 0 : 1);
+      bgShader.setTextureStrength(1);
+      bgShader.swapTexture(path === "/book/uder" ? uderBgImage : bgImage);
     }
   });
 
   $effect(() => {
-    if (path !== "/book/temp" && (uderPhase === "back-fade" || uderPhase === "back-hold")) {
+    if (path !== "/book/uder" && (uderPhase === "back-fade" || uderPhase === "back-hold")) {
       const t = setTimeout(() => uderTransition.set("idle"), 150);
       return () => clearTimeout(t);
     }
@@ -116,7 +119,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   />
 </svelte:head>
 
-{#if !isHomePage && !isEditorPage}
+{#if !isHomePage && !isEditorPage && !isUderReadPage}
   <div class="fixed top-4 left-4 z-50 flex gap-2">
     <button
       onclick={handleBack}

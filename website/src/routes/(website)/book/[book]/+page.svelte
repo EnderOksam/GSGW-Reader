@@ -4,7 +4,7 @@
   import { dev } from "$app/environment";
   import Icon from "@iconify/svelte";
   import imgGsgwCover from "$lib/assets/web-gsgw-cover.webp";
-  import imgtempCover from "$lib/assets/web-coi-cover.jpg";
+  import imgUderCover from "$lib/assets/web-coi-cover.jpg";
   import imgManwhaCover from "$lib/assets/webtoon-cover.webp";
   import imgDebutCover from "$lib/assets/debut.webp";
   import imgDebutBanner from "$lib/assets/debut-banner.png";
@@ -12,6 +12,8 @@
   import book_meta from "$lib/meta.json";
   import { searchChapterContent, renderSnippet, storeSnippetTarget } from "$lib/content-search";
   import type { Chapter, ContentMatch } from "$lib/content-search";
+
+  let { data } = $props();
 
   interface BookConfig {
     title: string;
@@ -57,7 +59,7 @@
       cover: imgGsgwCover,
       external_link: "https://page.kakao.com/content/65171279",
     },
-    temp: {
+    uder: {
       title: "Unofficial Dark Exploration Records",
       author: "Fanatics",
       synopsis: "A collection of fan-created records exploring the darkness that lies beyond.",
@@ -65,7 +67,7 @@
       accent_color: "primary",
       button_primary: "btn-secondary",
       button_secondary: "btn-primary",
-      cover: imgtempCover,
+      cover: imgUderCover,
       external_link: "",
     },
     debut: {
@@ -114,7 +116,7 @@
 
   const bookSlug = $derived(page.params.book || "gsgw");
   const book = $derived(bookConfigs[bookSlug] || bookConfigs["gsgw"]);
-  const isTemp = $derived(bookSlug === "temp");
+  const isTemp = $derived(bookSlug === "uder");
   const isManwha = $derived(bookSlug === "manwha");
   const embedImage = $derived(bookSlug === "debut" ? imgDebutBanner : bookSlug === "gsgw" ? imgGsgwBanner : book.cover);
   const embedTitle = $derived(bookSlug === "debut" ? "Debut or Die" : book.title);
@@ -127,20 +129,31 @@
   let isReversed = $state(false);
   let selectedPart = $state("");
 
-  const allTags = ["Daydream Inc.", "Disaster Management Bureau", "Church of the Luminous Unknown", "Exploration Record"];
+  const allTags = $derived(
+    [...new Set(
+      ((data.records ?? []) as { typeLabel?: string; faction?: string }[])
+        .flatMap((r) => [r.typeLabel, r.faction].filter((t): t is string => !!t))
+    )].sort()
+  );
 
   const tagColors: Record<string, string> = {
+    "Record": "text-blue-400 border-blue-400/30 bg-blue-400/10",
+    "Exploration Record": "text-base-content/60 border-base-content/20 bg-base-content/5",
+    "Character": "text-purple-400 border-purple-400/30 bg-purple-400/10",
+    "Item": "text-green-400 border-green-400/30 bg-green-400/10",
     "Daydream Inc.": "text-red-400 border-red-400/30 bg-red-400/10",
     "Disaster Management Bureau": "text-blue-400 border-blue-400/30 bg-blue-400/10",
     "Church of the Luminous Unknown": "text-yellow-400 border-yellow-400/30 bg-yellow-400/10",
-    "Exploration Record": "text-base-content/60 border-base-content/20 bg-base-content/5",
   };
 
   const tagColorsSolid: Record<string, string> = {
+    "Record": "bg-blue-500/20 text-blue-300 border-blue-500/30",
+    "Exploration Record": "bg-base-content/10 text-base-content/60 border-base-content/20",
+    "Character": "bg-purple-500/20 text-purple-300 border-purple-500/30",
+    "Item": "bg-green-500/20 text-green-300 border-green-500/30",
     "Daydream Inc.": "bg-red-500/20 text-red-300 border-red-500/30",
     "Disaster Management Bureau": "bg-blue-500/20 text-blue-300 border-blue-500/30",
     "Church of the Luminous Unknown": "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-    "Exploration Record": "bg-base-content/10 text-base-content/60 border-base-content/20",
   };
 
   function toggleTag(tag: string) {
@@ -183,8 +196,8 @@
         ],
   );
 
-  const availableTLs = $derived(Object.keys(meta[bookSlug] || {}));
-  const chapters = $derived(meta[bookSlug]?.[selectedTL] || []);
+  const availableTLs = $derived(isTemp ? [] : Object.keys(meta[bookSlug] || {}));
+  const chapters = $derived(isTemp ? [] : (meta[bookSlug]?.[selectedTL] || []));
 
   const availableParts = $derived(
     Object.values(meta[bookSlug] || {})
@@ -251,21 +264,12 @@
   const isContinueChapter = (ch: Chapter) =>
     continueData?.slug === ch.slug && continueData?.tl === selectedTL;
 
-  const records = [
-    { title: "TITLE", excerpt: "short description", tags: ["Exploration Record"], img: true },
-    { title: "TITLE", excerpt: "short description", tags: ["Exploration Record"], img: true },
-    { title: "TITLE", excerpt: "short description", tags: ["Disaster Management Bureau"], img: true },
-    { title: "TITLE", excerpt: "short description", tags: ["Exploration Record"], img: true },
-    { title: "TITLE", excerpt: "short description", tags: ["Daydream Inc."], img: true },
-    { title: "TITLE", excerpt: "short description", tags: ["Church of the Luminous Unknown"], img: true },
-    { title: "TITLE", excerpt: "short description", tags: ["Exploration Record"], img: true },
-    { title: "TITLE", excerpt: "short description", tags: ["Disaster Management Bureau"], img: true },
-  ];
+  const uderRecords = $derived(data.records ?? []);
 
   const filteredRecords = $derived(
-    records.filter((r) => {
+    uderRecords.filter((r: any) => {
       const matchesSearch = !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesTags = selectedTags.length === 0 || selectedTags.some((t) => r.tags.includes(t));
+      const matchesTags = selectedTags.length === 0 || selectedTags.some((t) => t === r.typeLabel || t === r.faction);
       return matchesSearch && matchesTags;
     }),
   );
@@ -338,8 +342,8 @@
                 <Icon icon="material-symbols:auto-stories" class="size-3.5 sm:size-4 opacity-50" />
               </span>
               <span class="flex flex-col leading-tight min-w-0">
-                <span class="text-base sm:text-lg font-bold tabular-nums">{records.length}</span>
-                <span class="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">{records.length === 1 ? "Record" : "Records"}</span>
+                <span class="text-base sm:text-lg font-bold tabular-nums">{uderRecords.length}</span>
+                <span class="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">{uderRecords.length === 1 ? "Record" : "Records"}</span>
               </span>
             </span>
           {:else}
@@ -648,20 +652,26 @@
           <div class="gallery-grid">
             {#each filteredRecords as entry}
             <a
-              href="#"
-              onclick={(e) => e.preventDefault()}
+              href="/read/uder/{entry.slug}"
               class="gallery-card group relative flex flex-col rounded-xl bg-base-200/40 border border-base-content/10 overflow-hidden hover:border-base-content/30 hover:shadow-lg transition-all duration-300"
             >
               <div class="aspect-[16/9] w-full bg-base-300/50 flex items-center justify-center shrink-0">
-                <Icon icon="material-symbols:image-outline-rounded" class="size-8 opacity-20" />
+                {#if entry.thumb}
+                  <img src={entry.thumb} alt="" class="w-full h-full object-cover" loading="lazy" />
+                {:else}
+                  <Icon icon="material-symbols:image-outline-rounded" class="size-8 opacity-20" />
+                {/if}
               </div>
               <div class="flex flex-col gap-2 p-4 grow">
                 <h3 class="text-sm font-bold leading-snug group-hover:text-primary transition-colors">{entry.title}</h3>
-                <p class="text-xs opacity-50 leading-relaxed line-clamp-3">{entry.excerpt}</p>
+                <p class="text-xs opacity-50 leading-relaxed line-clamp-3">{entry.summary || entry.typeLabel}</p>
                 <div class="flex flex-wrap gap-1.5 mt-auto pt-2">
-                  {#each entry.tags as tag}
-                    <span class="badge badge-xs border font-mono tracking-wider {tagColorsSolid[tag]}">{tag}</span>
-                  {/each}
+                  {#if entry.typeLabel}
+                    <span class="badge badge-xs border font-mono tracking-wider {tagColorsSolid[entry.typeLabel] ?? 'text-base-content/40 border-base-content/20 bg-base-content/5'}">{entry.typeLabel}</span>
+                  {/if}
+                  {#if entry.faction}
+                    <span class="badge badge-xs border font-mono tracking-wider {tagColorsSolid[entry.faction] ?? 'text-base-content/40 border-base-content/20 bg-base-content/5'}">{entry.faction}</span>
+                  {/if}
                 </div>
               </div>
             </a>

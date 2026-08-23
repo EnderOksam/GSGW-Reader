@@ -3,6 +3,7 @@ export interface Chapter {
   slug: string | number;
   category?: string;
   index?: number;
+  thumb?: string | null;
 }
 
 export interface ContentMatch {

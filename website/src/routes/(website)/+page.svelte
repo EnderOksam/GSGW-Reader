@@ -36,7 +36,7 @@
   function handleUderClick(e: MouseEvent) {
     e.preventDefault();
     uderTransition.set("fade-in");
-    setTimeout(() => goto("/book/temp"), 500);
+    setTimeout(() => goto("/book/uder"), 500);
   }
 
   const gsgwData = $derived(
@@ -55,7 +55,7 @@
   };
 
   const uderBook = {
-    href: "/book/temp",
+    href: "/book/uder",
     img: imgCoi,
     title: "Dark Exploration Records",
     author: "Fanatics",
@@ -96,7 +96,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
   #
 </button>
 
-{#snippet bookCard(book, onclick?: (e: MouseEvent) => void)}
+{#snippet bookCard(book: { href: string; img: string; title: string; author: string; tag: string; tagClass: string }, onclick?: (e: MouseEvent) => void)}
   <a
     href={book.href}
     onclick={onclick}

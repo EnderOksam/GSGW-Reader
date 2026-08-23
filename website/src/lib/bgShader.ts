@@ -302,6 +302,11 @@ export class BackgroundShader {
     }
   }
 
+  swapTexture(imageUrl: string): void {
+    this.texReady = false;
+    this.prepareTexture(imageUrl);
+  }
+
   private frame = (now: number): void => {
     if (!this.running || this.disposed) return;
     if (!document.hidden && this.texReady && now - this.lastFrame >= 33) {

@@ -38,7 +38,7 @@
   });
 
   interface Chapter { title: string; slug: string; index: number; }
-  const meta = book_meta as Record<string, Record<string, Chapter[]>>;
+  const meta = book_meta as unknown as Record<string, Record<string, Chapter[]>>;
   const chapters = $derived(meta["manwha"]?.[tl] || []);
   const currentIndex = $derived(chapters.findIndex(ch => ch.slug === slug));
   const prevChapter = $derived(currentIndex > 0 ? chapters[currentIndex - 1] : null);

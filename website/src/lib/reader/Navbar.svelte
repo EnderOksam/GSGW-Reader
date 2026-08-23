@@ -320,7 +320,7 @@
   let contentSearchAbort: AbortController | null = null;
   let contentSearchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  const isTempBook = $derived(bookSlug === "temp" || bookSlug === "manwha");
+  const isTempBook = $derived(bookSlug === "uder" || bookSlug === "manwha");
 
   const displayList = $derived.by(() => {
     if (!isSearching) return chapterList;

@@ -4,7 +4,7 @@
   import JSZip from "jszip";
   import book_meta from "$lib/meta.json";
 
-  const meta = book_meta as Record<string, Record<string, {title: string; slug: string; index: number}[]>>;
+  const meta = book_meta as unknown as Record<string, Record<string, {title: string; slug: string; index: number}[]>>;
   const manwhaData = $derived(meta["manwha"] || {});
   const tls = $derived(Object.keys(manwhaData));
 

@@ -1,25 +1,38 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { graph } from "./lib/node-graph-store.svelte.ts";
-  import { NODE_LABELS, type UderNode, type NodeOperator } from "./lib/nodes";
+  import { NODE_LABELS, type UderNode, type NodeEdge, type NodeOperator } from "./lib/nodes";
   import UderSelect from "./UderSelect.svelte";
   import UderText from "./UderText.svelte";
   import { onMount } from "svelte";
+
+  let {
+    nodes,
+    edges,
+    showEntrySelect = true,
+  }: {
+    nodes?: UderNode[];
+    edges?: NodeEdge[];
+    showEntrySelect?: boolean;
+  } = $props();
 
   let currentId = $state<string | null>(null);
   let entryId = $state<string>("");
   let resources = $state<Record<string, number>>({});
   let loopCounts = $state<Record<string, number>>({});
 
-  const current = $derived(currentId ? graph.nodes.find((n) => n.id === currentId) ?? null : null);
-  const currentOutgoing = $derived(current ? graph.edges.filter((e) => e.from === current.id) : []);
+  const activeNodes = $derived(nodes ?? graph.nodes);
+  const activeEdges = $derived(edges ?? graph.edges);
+
+  const current = $derived(currentId ? activeNodes.find((n) => n.id === currentId) ?? null : null);
+  const currentOutgoing = $derived(current ? activeEdges.filter((e) => e.from === current.id) : []);
 
   function targetFor(port: number): UderNode | null {
     const cur = current;
     if (!cur) return null;
-    const edge = graph.edges.find((e) => e.from === cur.id && e.fromPort === port);
+    const edge = activeEdges.find((e) => e.from === cur.id && e.fromPort === port);
     if (!edge) return null;
-    return graph.nodes.find((n) => n.id === edge.to) ?? null;
+    return activeNodes.find((n) => n.id === edge.to) ?? null;
   }
 
   function evalCond(resourceId: string, op: NodeOperator, value: number): boolean {
@@ -34,7 +47,7 @@
       currentId = null;
       return;
     }
-    const n = graph.nodes.find((x) => x.id === id);
+    const n = activeNodes.find((x) => x.id === id);
     if (!n) {
       currentId = null;
       return;
@@ -53,7 +66,7 @@
         : false;
       const countMet = n.loops > 0 ? passes >= n.loops : false;
       if (resourceMet || countMet) {
-        const exitEdge = graph.edges.find((e) => e.from === n.id && e.fromPort === 0);
+        const exitEdge = activeEdges.find((e) => e.from === n.id && e.fromPort === 0);
         if (exitEdge) {
           enterNode(exitEdge.to);
           return;
@@ -61,7 +74,7 @@
         currentId = null;
         return;
       }
-      const start = graph.nodes.find((c) => c.parentId === n.parentId && c.type === "loop_start");
+      const start = activeNodes.find((c) => c.parentId === n.parentId && c.type === "loop_start");
       if (start) {
         enterNode(start.id);
         return;
@@ -71,7 +84,7 @@
     }
     if (n.type === "condition") {
       const pass = n.resource ? evalCond(n.resource, n.operator, n.value) : true;
-      const edge = graph.edges.find((e) => e.from === n.id && e.fromPort === (pass ? 0 : 1));
+      const edge = activeEdges.find((e) => e.from === n.id && e.fromPort === (pass ? 0 : 1));
       if (edge) {
         enterNode(edge.to);
         return;
@@ -81,7 +94,7 @@
     }
     if (n.type === "chance") {
       const pass = Math.random() * 100 < n.pass;
-      const edge = graph.edges.find((e) => e.from === n.id && e.fromPort === (pass ? 0 : 1));
+      const edge = activeEdges.find((e) => e.from === n.id && e.fromPort === (pass ? 0 : 1));
       if (edge) {
         enterNode(edge.to);
         return;
@@ -99,11 +112,11 @@
 
   function begin() {
     resources = Object.fromEntries(
-      graph.nodes.filter((x) => x.type === "resource").map((x) => [x.id, x.initial])
+      activeNodes.filter((x) => x.type === "resource").map((x) => [x.id, x.initial])
     );
     loopCounts = {};
     const start =
-      graph.nodes.find((n) => n.id === entryId) ?? graph.nodes.find((n) => n.type === "start") ?? graph.nodes[0] ?? null;
+      activeNodes.find((n) => n.id === entryId) ?? activeNodes.find((n) => n.type === "start") ?? activeNodes[0] ?? null;
     if (!start) {
       currentId = null;
       return;
@@ -143,23 +156,34 @@
     return currentOutgoing.some((e) => e.fromPort === 0);
   }
 
+  $effect(() => {
+    if (nodes && edges) {
+      entryId = "";
+      begin();
+    }
+  });
+
   onMount(begin);
 </script>
 
 <div class="preview-wrap">
   <div class="preview-toolbar">
-    <span class="toolbar-label">starting node</span>
-    <UderSelect
-      class="flex-1 min-w-0"
-      value={entryId}
-      options={graph.nodes
-        .filter((n) => n.type !== "loop_start" && n.type !== "loop_check")
-        .map((n) => ({ value: n.id, label: `${NODE_LABELS[n.type]}: ${n.title}` }))}
-      onchange={(v) => {
-        entryId = v;
-        begin();
-      }}
-    />
+    {#if showEntrySelect}
+      <span class="toolbar-label">starting node</span>
+      <UderSelect
+        class="flex-1 min-w-0"
+        value={entryId}
+        options={activeNodes
+          .filter((n) => n.type !== "loop_start" && n.type !== "loop_check")
+          .map((n) => ({ value: n.id, label: `${NODE_LABELS[n.type]}: ${n.title}` }))}
+        onchange={(v) => {
+          entryId = v;
+          begin();
+        }}
+      />
+    {:else}
+      <span class="toolbar-label">{NODE_LABELS[current?.type ?? "start"] ?? ""}</span>
+    {/if}
     <button onclick={begin} class="toolbar-restart" title="Restart">
       <Icon icon="mdi:restart" class="size-3.5" />
     </button>

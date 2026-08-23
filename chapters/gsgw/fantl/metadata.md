@@ -34,13 +34,14 @@ page-progression-direction: ltr
 
 **Author:** Baek Deoksoo  
 
-**Original Translator:** Salt Goblin (edited by readers)
+**Original Translator:** Salt Goblin (edited by readers) to make up the "FANTL", big contributions by 
 
 **Last Updated:** {{DATE}}
 
-this chapter is ignored by the website, its exclusive to the epub for adding credits or whatever else 
+This chapter is ignored by the website and is included exclusively in the EPUB for credits and other additional information.
 
-also there is some custom formatting in this epub if you cant see it you might want to consider getting a different epub reader.
+This EPUB also uses some custom formatting. If your current EPUB reader does not display the formatting correctly, you may want to consider using a different EPUB reader.
+(some examples rendered below for testing)
 
 #r this line should show up as red text r#
 
@@ -62,10 +63,10 @@ Illustrations by:
 
 #* @uoongpig on X *#
 
-#* @Katzz_artt on X *#
+#* @Katzz\_artt on X *#
 
-#* @d_kartonidze on X *#
+#* @d\_kartonidze on X *#
 
 #* @chiiiiliii on X *#
 
-#* @yjh_ism on X *#
+#* @yjh\_ism on X *#
