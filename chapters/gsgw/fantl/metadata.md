@@ -40,7 +40,7 @@ page-progression-direction: ltr
 
 **Edited by:** Readers 
 
-**Big contributions by:** Ender (enderoksam), Dominus (dominusz), Sen (senyen), Destiny (heydestiny), Lei (moonsoleum) and Seirios (lawofentropy)
+**Big contributions by:** Ender (enderoksam), Dominus (dominusz), Sen (senyen), Destiny (heydestiny), Lei (moonsoleum), Beiruu (everythingtbs), and Seirios (lawofentropy)
 
 This chapter is ignored by the website and is included exclusively in the EPUB for credits and other additional information. 
 
