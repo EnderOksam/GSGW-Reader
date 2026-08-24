@@ -31,4 +31,4 @@ page-progression-direction: ltr
 
 **Author:** Sibe
 
-**Last Updated:** {DATE}
+**Last Updated:** {{DATE}}

@@ -213,11 +213,18 @@ def sms_window_replacer(match):
     return bw.make_window("sms-window", "\n\n".join(html_parts))
 
 
+def escape_leading_block_markup(text: str) -> str:
+    """Escape a leading character that pandoc would parse as block markup
+    (bullet/numbered lists, headings, quotes) so description lines render
+    as plain paragraphs instead of swallowing the rest of the window."""
+    return re.sub(r"^([+*#>]|\d+[.)])(?=\s|$)", r"\\\1", text)
+
+
 def comment_window_replacer(match):
     inner = match.group(1)
     lines = inner.split("\n")
     title = ""
-    desc = ""
+    desc_lines = []
     items = []
     in_comments = False
 
@@ -226,7 +233,7 @@ def comment_window_replacer(match):
         if line.startswith("["):
             title = fix_underline(safe_html(line.strip()))
         elif line.startswith(":"):
-            desc = fix_underline(safe_html(line.replace(":", "", 1).strip()))
+            desc_lines = [escape_leading_block_markup(fix_underline(safe_html(line.replace(":", "", 1).strip())))]
         elif line.startswith("-") or line.startswith("\u2013") or line.startswith("\u2014"):
             in_comments = True
             content = re.sub(r"^[\u2014\u2013-]", "", line).strip()
@@ -242,15 +249,17 @@ def comment_window_replacer(match):
                 depth = 3
             items.append((fix_underline(safe_html(content.strip())), depth))
         elif line and not in_comments:
-            desc += ("" if not desc else "</p>\n<p>") + fix_underline(safe_html(line))
+            desc_lines.append(escape_leading_block_markup(fix_underline(safe_html(line))))
 
     html_parts = []
-    if title or desc:
+    if title or desc_lines:
         html_parts.append('<div class="comment-post-header">')
         if title:
             html_parts.append(f'<div class="comment-post-title">{title}</div>')
-        if desc:
-            html_parts.append(f'<div class="comment-post-desc"><p>{desc}</p></div>')
+        if desc_lines:
+            html_parts.append('<div class="comment-post-desc">')
+            html_parts.append("\n\n".join(desc_lines))
+            html_parts.append('</div>')
         html_parts.append('</div>')
     if items:
         html_parts.append('<div class="comment-section">')
