@@ -1227,7 +1227,8 @@ figcaption {
 
 .debut-window {
   position: relative;
-  width: min(430px, 90%);
+  box-sizing: border-box;
+  width: min(430px, 100%);
   margin: 2rem auto;
   padding: 2rem 2.5rem;
   color: #f0f0f0 !important;
@@ -1282,7 +1283,8 @@ figcaption {
 
 .debut-alert {
   position: relative;
-  width: min(430px, 95%);
+  box-sizing: border-box;
+  width: min(430px, 100%);
   margin: 2rem auto;
   padding: 2rem 2.5rem;
   color: #f0f0f0 !important;
@@ -1311,7 +1313,8 @@ figcaption {
 
 .debut-achievement {
   position: relative;
-  width: min(430px, 90%);
+  box-sizing: border-box;
+  width: min(430px, 100%);
   margin: 2rem auto;
   padding: 2rem 2.5rem;
   color: #f0f0f0 !important;

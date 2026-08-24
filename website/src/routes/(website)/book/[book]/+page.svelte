@@ -336,9 +336,9 @@
   <meta name="twitter:image" content={embedImage} />
 </svelte:head>
 
-<main class="flex flex-col md:flex-row min-h-dvh">
+<main class="flex flex-col xl:flex-row min-h-dvh">
   <!-- Left: Book Info -->
-  <aside class="relative md:h-dvh md:w-[35vw] w-full bg-base-200/70 md:sticky md:top-0 flex flex-col items-center border-b md:border-b-0 md:border-r border-base-content/10 overflow-hidden">
+  <aside class="relative xl:h-dvh xl:w-[35vw] w-full bg-base-200/70 xl:sticky xl:top-0 flex flex-col items-center border-b xl:border-b-0 xl:border-r border-base-content/10 overflow-hidden">
     <div class="relative w-full flex flex-col items-center px-5 py-8 sm:p-8 md:p-10">
       {#if isTemp}
         <div class="w-full max-w-lg flex flex-col items-center text-center gap-3 py-2">
@@ -461,7 +461,7 @@
 
     {#if !isTemp}
       <div class="relative grow w-full px-5 sm:px-6 md:px-8 pb-6 overflow-hidden flex flex-col">
-        <div class="hidden md:block grow overflow-hidden rounded-xl bg-base-200/40 border border-base-content/5 p-4">
+        <div class="hidden xl:block grow overflow-hidden rounded-xl bg-base-200/40 border border-base-content/5 p-4">
           <div class="h-full overflow-y-auto custom-scrollbar">
             <h2 class="text-[10px] font-mono uppercase tracking-wider opacity-40 mb-3 text-center">Synopsis</h2>
             <p class="text-[13px] leading-relaxed text-center opacity-55 whitespace-pre-line">
@@ -471,7 +471,7 @@
         </div>
 
         <button
-          class="md:hidden btn btn-ghost btn-sm w-full h-auto py-3.5 bg-base-300/20 hover:bg-base-300/40 rounded-xl flex-col gap-1"
+          class="xl:hidden btn btn-ghost btn-sm w-full h-auto py-3.5 bg-base-300/20 hover:bg-base-300/40 rounded-xl flex-col gap-1"
           onclick={() => synopsisModal.showModal()}
         >
           <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">Synopsis</span>
@@ -629,7 +629,7 @@
   </dialog>
 
   <!-- Right: Record List -->
-  <div class="md:w-[65vw] w-full min-h-dvh bg-base-100/50">
+  <div class="xl:w-[65vw] w-full min-h-dvh bg-base-100/50">
     {#if isTemp}
       <div class="sticky top-0 z-10 bg-base-100/80 backdrop-blur-lg border-b border-base-content/5">
         <div class="flex items-center gap-2 p-3 md:p-4">
@@ -887,14 +887,14 @@
             />
           </button>
 
-          <select class="select select-sm select-bordered rounded-xl bg-base-200/50 w-32 min-w-0 shrink-0 text-xs hidden md:inline-flex" bind:value={selectedTL}>
+          <select class="select select-sm select-bordered rounded-xl bg-base-200/50 w-32 min-w-0 shrink-0 text-xs hidden xl:inline-flex" bind:value={selectedTL}>
             {#each availableTLs as tl}
               <option value={tl}>{tl.toUpperCase()}</option>
             {/each}
           </select>
 
           <button
-            class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-base-content/80 hover:bg-base-content/5 shrink-0 md:hidden"
+            class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-base-content/80 hover:bg-base-content/5 shrink-0 xl:hidden"
             aria-label="Info"
             onclick={() => nextInfoDialog?.showModal()}
           >
@@ -918,18 +918,18 @@
             {/each}
           </div>
 
-          <select class="select select-sm select-bordered rounded-xl bg-base-200/50 w-28 min-w-0 shrink-0 text-xs ml-auto md:hidden" bind:value={selectedTL}>
+          <select class="select select-sm select-bordered rounded-xl bg-base-200/50 w-28 min-w-0 shrink-0 text-xs ml-auto xl:hidden" bind:value={selectedTL}>
             {#each availableTLs as tl}
               <option value={tl}>{tl.toUpperCase()}</option>
             {/each}
           </select>
 
-          <p class="hidden md:block ml-auto text-[10px] font-mono text-base-content/30 leading-tight text-right">
+          <p class="hidden xl:block ml-auto text-[10px] font-mono text-base-content/30 leading-tight text-right">
             Chapters may be in other translation folders
           </p>
 
           <button
-            class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-base-content/80 hover:bg-base-content/5 shrink-0 hidden md:block"
+            class="btn btn-xs btn-circle btn-ghost text-base-content/40 hover:text-base-content/80 hover:bg-base-content/5 shrink-0 hidden xl:block"
             aria-label="Info"
             onclick={() => nextInfoDialog?.showModal()}
           >
