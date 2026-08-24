@@ -31,5 +31,5 @@ page-progression-direction: ltr
 
 **Author:** Baek Deoksoo
 
-**Last Updated:** {DATE}
+**Last Updated:** {{DATE}}
 
