@@ -1,10 +1,12 @@
 <script lang="ts">
+  import { dev } from "$app/environment";
   import Icon from "@iconify/svelte";
   import JSZip from "jszip";
   import { downloadBlob } from "./lib/zip-tools";
   import { exportUderZip, importUderZip } from "./lib/uder-format";
   import type { UderRecordType } from "./lib/uder-format";
   import { loadRecordCache, saveRecordCache, deleteRecordCache, deleteInteractiveCache } from "./lib/uder-cache";
+  import { REPO, BRANCH } from "./lib/github-api";
   import {
     NODE_TYPES,
     NODE_LABELS,
@@ -468,6 +470,47 @@
     }
   }
 
+  async function applyUderFile(file: File) {
+    const imported = await importUderZip(file);
+    title = imported.title;
+    selectedFaction = imported.faction;
+    recordType = imported.type;
+    identificationCode = imported.code;
+    classification = imported.classification;
+    shortDescription = imported.summary;
+    content = imported.content;
+    records = JSON.parse(JSON.stringify(imported.records));
+    thumbnail = imported.thumbnailUrl;
+    mediaSlots = imported.mediaUrls;
+    assets = imported.images.map((img) => ({ name: img.name, url: img.url }));
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const entry = zip.file("interactive.json");
+      if (entry) {
+        const json = JSON.parse(await entry.async("text"));
+        if (json.nodes && json.edges) {
+          resetGraphCache();
+          graph.nodes = json.nodes;
+          graph.edges = json.edges;
+        }
+      }
+    } catch {}
+  }
+
+  export async function importFromServer(slug: string) {
+    try {
+      const url = dev
+        ? `/chapters/uder/records/${encodeURIComponent(slug)}.uder`
+        : `https://raw.githubusercontent.com/${REPO}/${BRANCH}/chapters/uder/records/${encodeURIComponent(slug)}.uder`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("record archive not found");
+      const blob = await res.blob();
+      await applyUderFile(new File([blob], `${slug}.uder`, { type: "application/zip" }));
+    } catch (err) {
+      alert("Failed to load record: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
   export function handleDeleteRecordCache() {
     deleteRecordCache();
     title = "";
@@ -508,30 +551,7 @@
           alert("Unrecognised JSON format.");
         }
       } else {
-        const imported = await importUderZip(file);
-        title = imported.title;
-        selectedFaction = imported.faction;
-        recordType = imported.type;
-        identificationCode = imported.code;
-        classification = imported.classification;
-        shortDescription = imported.summary;
-        content = imported.content;
-        records = JSON.parse(JSON.stringify(imported.records));
-        thumbnail = imported.thumbnailUrl;
-        mediaSlots = imported.mediaUrls;
-        assets = imported.images.map((img) => ({ name: img.name, url: img.url }));
-        try {
-          const zip = await JSZip.loadAsync(file);
-          const entry = zip.file("interactive.json");
-          if (entry) {
-            const json = JSON.parse(await entry.async("text"));
-            if (json.nodes && json.edges) {
-              resetGraphCache();
-              graph.nodes = json.nodes;
-              graph.edges = json.edges;
-            }
-          }
-        } catch {}
+        await applyUderFile(file);
       }
     } catch (err) {
       alert("Failed to import: " + (err instanceof Error ? err.message : String(err)));

@@ -1,6 +1,8 @@
 ﻿<script lang="ts">
   import { browser } from "$app/environment";
+  import { page } from "$app/state";
   import Icon from "@iconify/svelte";
+  import bookMeta from "$lib/meta.json";
   import { fade } from "svelte/transition";
   import "$lib/reader/reader-windows.css";
   import readerCss from "../../../../routes/(reader)/reader.css?url";
@@ -38,7 +40,13 @@
     }
   });
 
-  let editorMode = $state<EditorMode>((typeof localStorage !== 'undefined' ? localStorage.getItem('gsgw-editor-mode') : null) as EditorMode ?? "chapters");
+  function initialEditorMode(): EditorMode {
+    const m = page.url.searchParams.get("mode");
+    if (m === "chapters" || m === "characters" || m === "uder") return m;
+    return (typeof localStorage !== 'undefined' ? localStorage.getItem('gsgw-editor-mode') : null) as EditorMode ?? "chapters";
+  }
+
+  let editorMode = $state<EditorMode>(initialEditorMode());
 
   const EDITOR_MODE_LABELS: Record<EditorMode, string> = {
     chapters: "Chapters",
@@ -46,6 +54,26 @@
     uder: "U-DER",
   };
   let showModeMenu = $state(false);
+  let showEditExisting = $state(false);
+  let showPublish = $state(false);
+
+  const uderRecordsList = ((bookMeta as any)?.uder?.records ?? []) as {
+    slug: string;
+    title: string;
+    typeLabel: string;
+    faction: string | null;
+    thumb: string | null;
+  }[];
+
+  let recordSearch = $state("");
+  const filteredUderRecords = $derived(
+    uderRecordsList.filter((r) => r.title.toLowerCase().includes(recordSearch.trim().toLowerCase())),
+  );
+
+  function importExistingRecord(slug: string) {
+    showEditExisting = false;
+    uderRef?.importFromServer(slug);
+  }
   let showMobileMenu = $state(false);
   let showInfo = $state(false);
   let showNodeInfo = $state(false);
@@ -77,6 +105,16 @@
     { type: "loop_start" as const, desc: `Loop start nodes mark the beginning of a loop body. Paired with a <span class="inline-ref inline-loop-check">loop check</span> node, any nodes between them will repeat.` },
     { type: "loop_check" as const, desc: `Loop checks are like <span class="inline-ref inline-condition">condition</span> nodes for loops. Once the exit condition is met, the loop stops. They also track how many loops have run and can end a loop based on that count.` },
   ];
+
+  $effect(() => {
+    if (editorMode === "uder" && uderRef) {
+      const rec = page.url.searchParams.get("record");
+      if (rec && rec !== lastLoadedRecord) {
+        lastLoadedRecord = rec;
+        uderRef.importFromServer(rec);
+      }
+    }
+  });
 
   function toggleVersion(v: string) {
     expandedVersion = expandedVersion === v ? null : v;
@@ -152,6 +190,8 @@
       requestAnimationFrame(() => document.addEventListener("click", handler));
     }
   }
+
+  let lastLoadedRecord = $state<string | null>(null);
 
   let chaptersRef: ChaptersEditor = $state()!;
   let charsRef: CharactersEditor = $state()!;
@@ -290,10 +330,20 @@
       {/if}
     </div>
     {#if editorMode === "uder"}
-      <button onclick={() => showNodeInfo = true} class="flex items-center gap-1.5 text-[10px] font-mono font-medium px-3 py-1.5 rounded-lg border border-base-content/15 text-base-content/50 hover:text-base-content hover:border-base-content/30 hover:bg-base-content/5 transition-all active:scale-95">
-        <Icon icon="mdi:information-outline" class="size-3.5" />
-        Node Reference
-      </button>
+      <div class="flex items-center gap-1.5">
+        <button onclick={() => showEditExisting = true} class="flex items-center gap-1.5 text-[10px] font-mono font-medium px-3 py-1.5 rounded-lg border border-base-content/15 text-base-content/50 hover:text-base-content hover:border-base-content/30 hover:bg-base-content/5 transition-all active:scale-95">
+          <Icon icon="mdi:folder-open-outline" class="size-3.5" />
+          Edit Existing
+        </button>
+        <button onclick={() => showNodeInfo = true} class="flex items-center gap-1.5 text-[10px] font-mono font-medium px-3 py-1.5 rounded-lg border border-base-content/15 text-base-content/50 hover:text-base-content hover:border-base-content/30 hover:bg-base-content/5 transition-all active:scale-95">
+          <Icon icon="mdi:information-outline" class="size-3.5" />
+          Node Reference
+        </button>
+        <button onclick={() => showPublish = true} class="flex items-center gap-1.5 text-[10px] font-mono font-medium px-3 py-1.5 rounded-lg border border-primary/25 text-primary/60 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all active:scale-95">
+          <Icon icon="mdi:rocket-launch-outline" class="size-3.5" />
+          Publish
+        </button>
+      </div>
     {/if}
     <div class="flex items-center gap-1.5 sm:gap-2">
       <div class="relative hidden lg:block">
@@ -357,6 +407,138 @@
     {/key}
   </div>
 </div>
+
+{#if showEditExisting}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
+    onclick={() => showEditExisting = false}
+    onkeydown={(e) => { if (e.key === "Escape") showEditExisting = false; }}
+    role="dialog"
+    tabindex="-1"
+  >
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div
+      class="bg-base-100 rounded-2xl shadow-2xl max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col overflow-hidden"
+      onclick={(e) => e.stopPropagation()}
+      role="group"
+      tabindex="-1"
+    >
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg text-primary flex items-center gap-2">
+            <Icon icon="mdi:folder-open-outline" class="size-5" /> Edit Existing
+          </span>
+          <button class="btn btn-sm btn-circle btn-ghost" onclick={() => showEditExisting = false} aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </div>
+      </div>
+      <div class="overflow-y-auto overscroll-contain p-5 space-y-3">
+        <input
+          bind:value={recordSearch}
+          placeholder="Search records..."
+          class="w-full bg-base-300/60 text-base-content/70 text-xs px-3 py-2 rounded-xl outline-none border border-base-content/10 placeholder:text-base-content/20 focus:border-primary/40 transition-colors"
+        />
+        {#if uderRecordsList.length === 0}
+          <div class="py-16 text-center opacity-40">
+            <Icon icon="tabler:ghost" class="size-10 mx-auto mb-2" />
+            <p class="text-sm font-semibold">No records yet</p>
+            <p class="text-xs opacity-70 mt-1">Build a record first</p>
+          </div>
+        {:else if filteredUderRecords.length === 0}
+          <div class="py-16 text-center opacity-40">
+            <Icon icon="mdi:magnify" class="size-10 mx-auto mb-2" />
+            <p class="text-sm font-semibold">No matches</p>
+            <p class="text-xs opacity-70 mt-1">Try a different name</p>
+          </div>
+        {:else}
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {#each filteredUderRecords as rec (rec.slug)}
+              <button
+                class="group text-left rounded-xl border border-base-content/10 overflow-hidden hover:border-primary/50 hover:shadow-lg transition-all duration-200"
+                onclick={() => importExistingRecord(rec.slug)}
+              >
+                <div class="aspect-video bg-base-300/50 flex items-center justify-center shrink-0 overflow-hidden">
+                  {#if rec.thumb}
+                    <img src={rec.thumb} alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  {:else}
+                    <Icon icon="material-symbols:image-outline-rounded" class="size-7 opacity-20" />
+                  {/if}
+                </div>
+                <div class="p-2.5 space-y-1">
+                  <p class="text-xs font-bold leading-tight line-clamp-2 min-h-[2em]">{rec.title}</p>
+                  <span class="text-[9px] font-mono uppercase tracking-wider text-base-content/40">{rec.typeLabel}{rec.faction ? ` · ${rec.faction}` : ""}</span>
+                </div>
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </div>
+    </div>
+  </div>
+{/if}
+
+{#if showPublish}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
+    onclick={() => showPublish = false}
+    onkeydown={(e) => { if (e.key === "Escape") showPublish = false; }}
+    role="dialog"
+    tabindex="-1"
+  >
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div
+      class="bg-base-100 rounded-2xl shadow-2xl w-96 max-h-[85vh] flex flex-col overflow-hidden mx-4"
+      onclick={(e) => e.stopPropagation()}
+      role="group"
+      tabindex="-1"
+    >
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg text-primary flex items-center gap-2">
+            <Icon icon="mdi:rocket-launch-outline" class="size-5" /> Publish
+          </span>
+          <button class="btn btn-sm btn-circle btn-ghost" onclick={() => showPublish = false} aria-label="Close">
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </div>
+      </div>
+      <div class="p-6 pt-5 space-y-4">
+        <p class="text-xs sm:text-sm text-base-content/55 leading-relaxed">
+          You can either build the project locally and drop .uder files under
+          <code class="px-1 py-0.5 rounded bg-base-content/10 text-[11px] font-mono">chapters/uder/records/</code>
+          or send them up in the Discord so a lead editor can verify and add them for you.
+        </p>
+        <div class="space-y-2">
+          <a
+            href="https://discord.gg/HHnSjeGN4d"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-md w-full rounded-xl bg-base-200/60 border border-base-content/10 text-base-content/60 hover:text-primary hover:border-primary/40 shadow-sm transition-all duration-200 gap-2"
+          >
+            <Icon icon="mdi:discord" class="size-4" />
+            Join the Discord
+          </a>
+          <a
+            href="https://github.com/EnderOksam/GSGW-Reader/tree/main/chapters/uder/records"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-md w-full rounded-xl bg-base-200/60 border border-base-content/10 text-base-content/60 hover:text-primary hover:border-primary/40 shadow-sm transition-all duration-200 gap-2"
+          >
+            <Icon icon="mdi:github" class="size-4" />
+            Check the GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}
 
 {#if showInfo}
   <!-- svelte-ignore a11y_no_static_element_interactions -->

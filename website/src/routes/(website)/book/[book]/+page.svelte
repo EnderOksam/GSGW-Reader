@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state";
+  import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import { dev } from "$app/environment";
   import Icon from "@iconify/svelte";
@@ -129,28 +130,31 @@
   let isReversed = $state(false);
   let selectedPart = $state("");
 
-  const allTags = $derived(
-    [...new Set(
-      ((data.records ?? []) as { typeLabel?: string; faction?: string }[])
-        .flatMap((r) => [r.typeLabel, r.faction].filter((t): t is string => !!t))
-    )].sort()
-  );
+  const allTags: string[] = [
+    "Record",
+    "Exploration Record",
+    "Character",
+    "Item",
+    "Daydream Inc.",
+    "Disaster Management Bureau",
+    "Church of the Luminous Unknown",
+  ];
 
   const tagColors: Record<string, string> = {
-    "Record": "text-blue-400 border-blue-400/30 bg-blue-400/10",
-    "Exploration Record": "text-base-content/60 border-base-content/20 bg-base-content/5",
-    "Character": "text-purple-400 border-purple-400/30 bg-purple-400/10",
-    "Item": "text-green-400 border-green-400/30 bg-green-400/10",
-    "Daydream Inc.": "text-red-400 border-red-400/30 bg-red-400/10",
-    "Disaster Management Bureau": "text-blue-400 border-blue-400/30 bg-blue-400/10",
-    "Church of the Luminous Unknown": "text-yellow-400 border-yellow-400/30 bg-yellow-400/10",
+    "Record": "text-primary/60 border-primary/20 bg-primary/10",
+    "Exploration Record": "text-base-content/60 border-base-content/20",
+    "Character": "text-purple-400 border-purple-400/30",
+    "Item": "text-emerald-400 border-emerald-400/30",
+    "Daydream Inc.": "text-red-400 border-red-400/30",
+    "Disaster Management Bureau": "text-blue-400 border-blue-400/30",
+    "Church of the Luminous Unknown": "text-yellow-400 border-yellow-400/30",
   };
 
   const tagColorsSolid: Record<string, string> = {
-    "Record": "bg-blue-500/20 text-blue-300 border-blue-500/30",
+    "Record": "bg-primary/15 text-primary border-primary/30",
     "Exploration Record": "bg-base-content/10 text-base-content/60 border-base-content/20",
     "Character": "bg-purple-500/20 text-purple-300 border-purple-500/30",
-    "Item": "bg-green-500/20 text-green-300 border-green-500/30",
+    "Item": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
     "Daydream Inc.": "bg-red-500/20 text-red-300 border-red-500/30",
     "Disaster Management Bureau": "bg-blue-500/20 text-blue-300 border-blue-500/30",
     "Church of the Luminous Unknown": "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
@@ -274,6 +278,26 @@
     }),
   );
 
+  function readRandomRecord() {
+    const pool = filteredRecords.length > 0 ? filteredRecords : uderRecords;
+    if (pool.length === 0) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    goto(`/read/uder/${pick.slug}`);
+  }
+
+
+  let searchInput = $state<HTMLInputElement | null>(null);
+
+  function onGlobalKey(e: KeyboardEvent) {
+    if (!searchInput) return;
+    const t = e.target as HTMLElement;
+    const typing = t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable;
+    if (!typing && e.key === "/") {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  }
+
   onMount(() => {
     document.documentElement.classList.add("book-gutter");
     const stored = localStorage.getItem("lastRead");
@@ -297,6 +321,8 @@
   }
 </script>
 
+<svelte:window onkeydown={onGlobalKey} />
+
 <svelte:head>
   <title>{book.title}</title>
   <meta name="description" content={book.synopsis} />
@@ -314,6 +340,32 @@
   <!-- Left: Book Info -->
   <aside class="relative md:h-dvh md:w-[35vw] w-full bg-base-200/70 md:sticky md:top-0 flex flex-col items-center border-b md:border-b-0 md:border-r border-base-content/10 overflow-hidden">
     <div class="relative w-full flex flex-col items-center px-5 py-8 sm:p-8 md:p-10">
+      {#if isTemp}
+        <div class="w-full max-w-lg flex flex-col items-center text-center gap-3 py-2">
+          <img src="/assets/ghost.webp" alt="" class="w-24 h-24 md:w-32 md:h-32 object-contain" />
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight">
+            Prophecy Of the Apocalypse:<br />
+            Unofficial Dark exploration records
+          </h1>
+          <p class="text-xs sm:text-sm opacity-55 leading-relaxed max-w-md">
+            {book.synopsis}
+          </p>
+          <div class="flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-wider opacity-40 mt-1">
+            <Icon icon="material-symbols:auto-stories" class="size-3.5" />
+            <span>{uderRecords.length} records</span>
+          </div>
+          {#if uderRecords.length > 0}
+            <button
+              class="mt-2 flex items-center justify-center gap-2 h-10 px-5 rounded-xl bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 active:scale-95 font-semibold text-xs transition-all duration-200"
+              onclick={readRandomRecord}
+            >
+              <Icon icon="material-symbols:shuffle-rounded" class="size-4" />
+              Read a record
+            </button>
+          {/if}
+        </div>
+      {/if}
+      {#if !isTemp}
       <div class="flex items-center gap-3 sm:gap-4 max-w-full">
         <div class="relative w-36 sm:w-44 md:w-56 lg:w-64 aspect-[3/4] shrink-0 overflow-hidden rounded-2xl shadow-xl">
           <enhanced:img
@@ -336,17 +388,6 @@
         </div>
 
         <div class="flex flex-col gap-2 sm:gap-3 justify-center min-w-0 shrink">
-          {#if isTemp}
-            <span class="flex items-center gap-2 sm:gap-2.5">
-              <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
-                <Icon icon="material-symbols:auto-stories" class="size-3.5 sm:size-4 opacity-50" />
-              </span>
-              <span class="flex flex-col leading-tight min-w-0">
-                <span class="text-base sm:text-lg font-bold tabular-nums">{uderRecords.length}</span>
-                <span class="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">{uderRecords.length === 1 ? "Record" : "Records"}</span>
-              </span>
-            </span>
-          {:else}
             <span class="flex items-center gap-2 sm:gap-2.5">
               <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10">
                 <Icon icon="material-symbols:auto-stories" class="size-3.5 sm:size-4 opacity-50" />
@@ -363,11 +404,10 @@
                 </span>
                 <span class="flex flex-col leading-tight min-w-0">
                   <span class="text-base sm:text-lg font-bold tabular-nums">{availableTLs.length}</span>
-                  <span class="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">{availableTLs.length === 1 ? "Translation" : "Translations"}</span>
-                </span>
+                <span class="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider opacity-40">{availableTLs.length === 1 ? "Translation" : "Translations"}</span>
               </span>
+            </span>
             {/if}
-          {/if}
           {#if book.external_link}
             <a
               href={book.external_link}
@@ -396,20 +436,6 @@
               </span>
             </a>
           {/if}
-          {#if isTemp}
-            <a
-              href="#"
-              onclick={(e) => e.preventDefault()}
-              class="flex items-center gap-2 sm:gap-2.5 mt-0.5 sm:mt-1 group"
-            >
-              <span class="flex items-center justify-center size-7 sm:size-8 shrink-0 rounded-lg bg-base-content/5 ring-1 ring-base-content/10 group-hover:bg-base-content/10 transition-colors">
-                <Icon icon="material-symbols:menu-book-outline-rounded" class="size-3.5 sm:size-4 opacity-50" />
-              </span>
-              <span class="flex flex-col leading-tight min-w-0">
-                <span class="text-xs sm:text-sm font-bold tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">Read a Record</span>
-              </span>
-            </a>
-          {:else}
             <a
               href={continueData
                 ? `../../read/${continueData.book}/${continueData.tl}/${continueData.slug}`
@@ -428,31 +454,33 @@
                 {/if}
               </span>
             </a>
-          {/if}
         </div>
       </div>
+      {/if}
     </div>
 
-    <div class="relative grow w-full px-5 sm:px-6 md:px-8 pb-6 overflow-hidden flex flex-col">
-      <div class="hidden md:block grow overflow-hidden rounded-xl bg-base-200/40 border border-base-content/5 p-4">
-        <div class="h-full overflow-y-auto custom-scrollbar">
-          <h2 class="text-[10px] font-mono uppercase tracking-wider opacity-40 mb-3 text-center">Synopsis</h2>
-          <p class="text-[13px] leading-relaxed text-center opacity-55 whitespace-pre-line">
+    {#if !isTemp}
+      <div class="relative grow w-full px-5 sm:px-6 md:px-8 pb-6 overflow-hidden flex flex-col">
+        <div class="hidden md:block grow overflow-hidden rounded-xl bg-base-200/40 border border-base-content/5 p-4">
+          <div class="h-full overflow-y-auto custom-scrollbar">
+            <h2 class="text-[10px] font-mono uppercase tracking-wider opacity-40 mb-3 text-center">Synopsis</h2>
+            <p class="text-[13px] leading-relaxed text-center opacity-55 whitespace-pre-line">
+              {book.synopsis}
+            </p>
+          </div>
+        </div>
+
+        <button
+          class="md:hidden btn btn-ghost btn-sm w-full h-auto py-3.5 bg-base-300/20 hover:bg-base-300/40 rounded-xl flex-col gap-1"
+          onclick={() => synopsisModal.showModal()}
+        >
+          <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">Synopsis</span>
+          <p class="line-clamp-2 text-xs italic opacity-50 text-center leading-relaxed">
             {book.synopsis}
           </p>
-        </div>
+        </button>
       </div>
-
-      <button
-        class="md:hidden btn btn-ghost btn-sm w-full h-auto py-3.5 bg-base-300/20 hover:bg-base-300/40 rounded-xl flex-col gap-1"
-        onclick={() => synopsisModal.showModal()}
-      >
-        <span class="text-[10px] font-mono uppercase tracking-wider opacity-40">Synopsis</span>
-        <p class="line-clamp-2 text-xs italic opacity-50 text-center leading-relaxed">
-          {book.synopsis}
-        </p>
-      </button>
-    </div>
+    {/if}
   </aside>
 
   <!-- Modal: Synopsis -->
@@ -603,21 +631,23 @@
   <!-- Right: Record List -->
   <div class="md:w-[65vw] w-full min-h-dvh bg-base-100/50">
     {#if isTemp}
-      <div class="p-3 md:p-4">
-        <div class="flex items-center gap-2 mb-4">
-<div class="relative grow">
+      <div class="sticky top-0 z-10 bg-base-100/80 backdrop-blur-lg border-b border-base-content/5">
+        <div class="flex items-center gap-2 p-3 md:p-4">
+          <div class="relative grow min-w-0">
             <div
               class="search-box flex items-center gap-2 h-8 pl-8 pr-2 min-w-0 rounded-xl border border-base-content/15 bg-base-200/60 transition-all duration-200"
               style="--sb-color: var(--color-{book.accent_color})"
             >
               <Icon icon="material-symbols:search-rounded" class="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 opacity-30" />
               <input
+                bind:this={searchInput}
                 type="search"
                 bind:value={searchQuery}
-                placeholder="Search by name..."
-                class="w-full h-full bg-transparent border-0 outline-none text-sm text-base-content placeholder:text-base-content/35"
+                placeholder="Search records..."
+                class="w-full h-full min-w-0 bg-transparent border-0 outline-none text-sm text-base-content placeholder:text-base-content/35"
               />
               {#if searchQuery}
+                <span class="shrink-0 text-[10px] font-mono opacity-40">{filteredRecords.length}/{uderRecords.length}</span>
                 <button
                   class="btn btn-xs btn-circle btn-ghost shrink-0 text-base-content/40 hover:text-base-content/80"
                   onclick={() => (searchQuery = "")}
@@ -625,29 +655,55 @@
                 >
                   <Icon icon="material-symbols:close-rounded" class="size-3.5" />
                 </button>
+              {:else}
+                <kbd class="hidden sm:inline-flex shrink-0 items-center justify-center min-w-5 h-5 px-1 rounded-md border border-base-content/15 bg-base-content/5 text-[9px] font-mono opacity-40">/</kbd>
               {/if}
             </div>
           </div>
         </div>
-        <div class="flex flex-wrap gap-1.5 mb-4">
-          {#each allTags as tag}
-            <button
-              class="badge badge-sm gap-1 cursor-pointer transition-all border {selectedTags.includes(tag) ? tagColorsSolid[tag] : tagColors[tag]}"
-              onclick={() => toggleTag(tag)}
-            >
-              {#if selectedTags.includes(tag)}
-                <Icon icon="material-symbols:close-rounded" class="size-3" />
-              {/if}
-              {tag}
-            </button>
-          {/each}
+
+        <div class="flex flex-wrap items-center justify-center gap-2 px-3 md:px-4 pb-3">
+          <div class="flex flex-wrap items-center justify-center gap-0.5 p-0.5 rounded-xl bg-base-200/60 border border-base-content/10 shadow-sm min-w-0">
+            {#each allTags as tag}
+              <button
+                class="flex items-center gap-1 px-2.5 md:px-3 py-1.5 rounded-lg text-[10px] md:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer {selectedTags.includes(tag) ? tagColorsSolid[tag] : tagColors[tag]}"
+                onclick={() => toggleTag(tag)}
+              >
+                {#if selectedTags.includes(tag)}
+                  <Icon icon="material-symbols:close-rounded" class="size-3" />
+                {/if}
+                {tag}
+              </button>
+            {/each}
+          </div>
           {#if selectedTags.length > 0}
-            <button class="badge badge-sm cursor-pointer transition-all border text-base-content/40 border-base-content/20 hover:text-base-content/70" onclick={() => (selectedTags = [])}>
+            <button
+              class="btn btn-xs btn-ghost text-base-content/40 hover:text-base-content/90 shrink-0"
+              onclick={() => (selectedTags = [])}
+            >
               Clear
             </button>
           {/if}
         </div>
-        <h2 class="text-sm font-bold opacity-60 uppercase tracking-widest mb-4">Records</h2>
+
+        <div class="flex flex-wrap items-center justify-center gap-2 px-3 md:px-4 pb-3">
+          <a
+            href="/dev/editor?mode=uder"
+            class="flex items-center justify-center gap-1.5 h-8 px-3 rounded-xl bg-base-200/60 border border-base-content/10 shadow-sm text-[11px] md:text-xs font-semibold whitespace-nowrap transition-all duration-200 hover:border-primary/40 hover:text-primary"
+          >
+            <Icon icon="material-symbols:add-circle-outline-rounded" class="size-3.5" />
+            Create a record
+          </a>
+          <span
+            class="flex items-center justify-center gap-1.5 h-8 px-3 rounded-xl bg-base-200/60 border border-base-content/10 shadow-sm text-[11px] md:text-xs font-semibold whitespace-nowrap line-through opacity-50 cursor-not-allowed select-none"
+          >
+            <Icon icon="material-symbols:menu-book-outline-rounded" class="size-3.5" />
+            Guidelines
+          </span>
+        </div>
+      </div>
+
+      <div class="p-3 md:p-4">
         {#if filteredRecords.length > 0}
           <div class="gallery-grid">
             {#each filteredRecords as entry}
@@ -657,7 +713,7 @@
             >
               <div class="aspect-[16/9] w-full bg-base-300/50 flex items-center justify-center shrink-0">
                 {#if entry.thumb}
-                  <img src={entry.thumb} alt="" class="w-full h-full object-cover" loading="lazy" />
+                  <img src={entry.thumb} alt="" class="w-full h-full object-contain" loading="lazy" />
                 {:else}
                   <Icon icon="material-symbols:image-outline-rounded" class="size-8 opacity-20" />
                 {/if}
@@ -665,7 +721,7 @@
               <div class="flex flex-col gap-2 p-4 grow">
                 <h3 class="text-sm font-bold leading-snug group-hover:text-primary transition-colors">{entry.title}</h3>
                 <p class="text-xs opacity-50 leading-relaxed line-clamp-3">{entry.summary || entry.typeLabel}</p>
-                <div class="flex flex-wrap gap-1.5 mt-auto pt-2">
+                <div class="flex flex-wrap gap-1.5 pt-2">
                   {#if entry.typeLabel}
                     <span class="badge badge-xs border font-mono tracking-wider {tagColorsSolid[entry.typeLabel] ?? 'text-base-content/40 border-base-content/20 bg-base-content/5'}">{entry.typeLabel}</span>
                   {/if}
@@ -682,7 +738,7 @@
             <Icon icon="tabler:ghost" class="size-14" />
             <div class="text-center">
               <p class="text-lg font-bold">No records found</p>
-              <p class="text-sm opacity-60 mt-1">Try a different tag</p>
+              <p class="text-sm opacity-60 mt-1">Try a different search or tag</p>
             </div>
           </div>
         {/if}
@@ -697,6 +753,7 @@
             >
               <Icon icon="material-symbols:search-rounded" class="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 opacity-30" />
               <input
+                bind:this={searchInput}
                 type="search"
                 bind:value={searchQuery}
                 placeholder="Search chapters..."
@@ -710,6 +767,8 @@
                 >
                   <Icon icon="material-symbols:close-rounded" class="size-3.5" />
                 </button>
+              {:else}
+                <kbd class="hidden sm:inline-flex shrink-0 items-center justify-center min-w-5 h-5 px-1 rounded-md border border-base-content/15 bg-base-content/5 text-[9px] font-mono opacity-40">/</kbd>
               {/if}
             </div>
           </div>
@@ -797,6 +856,7 @@
             >
               <Icon icon="material-symbols:search-rounded" class="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 opacity-30" />
               <input
+                bind:this={searchInput}
                 type="search"
                 bind:value={searchQuery}
                 placeholder="Search chapters..."
@@ -810,6 +870,8 @@
                 >
                   <Icon icon="material-symbols:close-rounded" class="size-3.5" />
                 </button>
+              {:else}
+                <kbd class="hidden sm:inline-flex shrink-0 items-center justify-center min-w-5 h-5 px-1 rounded-md border border-base-content/15 bg-base-content/5 text-[9px] font-mono opacity-40">/</kbd>
               {/if}
             </div>
           </div>

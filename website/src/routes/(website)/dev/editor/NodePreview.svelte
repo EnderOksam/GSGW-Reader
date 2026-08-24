@@ -4,7 +4,7 @@
   import { NODE_LABELS, type UderNode, type NodeEdge, type NodeOperator } from "./lib/nodes";
   import UderSelect from "./UderSelect.svelte";
   import UderText from "./UderText.svelte";
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
 
   let {
     nodes,
@@ -158,8 +158,10 @@
 
   $effect(() => {
     if (nodes && edges) {
-      entryId = "";
-      begin();
+      untrack(() => {
+        entryId = "";
+        begin();
+      });
     }
   });
 

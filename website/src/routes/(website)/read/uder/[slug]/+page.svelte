@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
   import { page } from "$app/state";
   import { dev } from "$app/environment";
   import JSZip from "jszip";
   import Icon from "@iconify/svelte";
+  import Giscus from "@giscus/svelte";
   import bookMeta from "$lib/meta.json";
   import UderText from "../../../dev/editor/UderText.svelte";
   import NodePreview from "../../../dev/editor/NodePreview.svelte";
@@ -35,9 +36,17 @@
   let error = $state("");
   let content = $state("");
   let subRecords = $state<{ title: string; content: string }[]>([]);
+  let media = $state<string[]>([]);
+  let lightbox = $state<string | null>(null);
   let interactive = $state<{ nodes: UderNode[]; edges: NodeEdge[] } | null>(null);
   let mode = $state<"record" | "interactive">("record");
   let expandedRecords = $state<Record<number, boolean>>({});
+
+  const PRIORITY_THEMES = ["sunset", "light", "retro", "night", "business", "cupcake", "black"];
+  const ALL_THEMES = ["sunset","light","dark","cupcake","bumblebee","emerald","corporate","synthwave","retro","cyberpunk","valentine","halloween","garden","forest","aqua","lofi","pastel","fantasy","wireframe","black","luxury","dracula","cmyk","autumn","business","acid","lemonade","night","coffee","winter","dim","nord","sunset"];
+  const MISC_THEMES = ALL_THEMES.filter((t) => !PRIORITY_THEMES.includes(t));
+
+  let showThemeMenu = $state(false);
 
   let settings = $state({
     font: "Alegreya",
@@ -77,6 +86,10 @@
     error = "";
     content = "";
     subRecords = [];
+    untrack(() => {
+      for (const m of media) URL.revokeObjectURL(m);
+      media = [];
+    });
     interactive = null;
     mode = "record";
     expandedRecords = {};
@@ -97,7 +110,7 @@
         subRecords = imported.records;
 
         if (imported.thumbnailUrl) URL.revokeObjectURL(imported.thumbnailUrl);
-        for (const m of imported.mediaUrls) URL.revokeObjectURL(m);
+        media = imported.mediaUrls;
 
         const zip = await JSZip.loadAsync(blob);
         const interFile = zip.file("interactive.json");
@@ -119,6 +132,21 @@
     })();
   });
 
+  $effect(() => {
+    document.documentElement.setAttribute("data-theme", settings.theme);
+  });
+
+  $effect(() => {
+    try {
+      const raw = localStorage.getItem("readerSettings");
+      const cur = raw ? JSON.parse(raw) : {};
+      if (cur.theme !== settings.theme) {
+        cur.theme = settings.theme;
+        localStorage.setItem("readerSettings", JSON.stringify(cur));
+      }
+    } catch {}
+  });
+
   function toggleRecord(i: number) {
     expandedRecords[i] = !expandedRecords[i];
   }
@@ -132,6 +160,8 @@
   {/if}
 </svelte:head>
 
+<svelte:window onkeydown={(e) => { if (e.key === "Escape") lightbox = null; }} />
+
 <div class="uder-reader" style={chapterVars}>
   <nav class="reader-topbar">
     <div class="topbar-left">
@@ -140,6 +170,9 @@
       </a>
     </div>
     <div class="topbar-center">
+      <a href={`/dev/editor?mode=uder&record=${slug}`} class="topbar-icon" aria-label="Edit record">
+        <Icon icon="material-symbols:edit-outline-rounded" class="size-5" />
+      </a>
       <div class="topbar-toggle">
         <button
           class="topbar-toggle-btn"
@@ -153,12 +186,33 @@
           onclick={() => (mode = "interactive")}
         >interactive</button>
       </div>
+      <div class="relative">
+        <button class="topbar-icon" aria-label="Change theme" onclick={() => (showThemeMenu = !showThemeMenu)}>
+          <Icon icon="material-symbols:palette-outline-rounded" class="size-5" />
+        </button>
+        {#if showThemeMenu}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div class="fixed inset-0 z-40" onclick={() => (showThemeMenu = false)}></div>
+          <div class="theme-menu">
+            <span class="text-xs font-medium">Theme</span>
+            <select class="select select-bordered select-sm w-full mt-2" bind:value={settings.theme}>
+              <optgroup label="Recommended">
+                {#each PRIORITY_THEMES as t}
+                  <option value={t}>{t}</option>
+                {/each}
+              </optgroup>
+              <optgroup label="Other">
+                {#each MISC_THEMES as t}
+                  <option value={t}>{t}</option>
+                {/each}
+              </optgroup>
+            </select>
+          </div>
+        {/if}
+      </div>
     </div>
-    <div class="topbar-right">
-      {#if entry?.code}
-        <span class="topbar-id">{entry.code}</span>
-      {/if}
-    </div>
+    <div class="topbar-right"></div>
   </nav>
 
   <div class="reader-scroll">
@@ -254,6 +308,22 @@
                   </section>
                 {/if}
 
+                {#if media.length > 0}
+                  <section class="reader-card card-has-header md:hidden">
+                    <div class="card-header">
+                      <Icon icon="mdi:image-multiple-outline" class="size-3.5 text-base-content/30" />
+                      <span class="card-header-label">additional media</span>
+                    </div>
+                    <div class="media-grid">
+                      {#each media as m}
+                        <button class="media-item" onclick={() => (lightbox = m)} aria-label="Expand image">
+                          <img src={m} alt="additional media" loading="lazy" />
+                        </button>
+                      {/each}
+                    </div>
+                  </section>
+                {/if}
+
               </div>
 
               <div class="flex flex-col gap-5 min-w-0 sticky-col uder-area-side">
@@ -280,6 +350,22 @@
                     </div>
                   </section>
                 {/if}
+
+                {#if media.length > 0}
+                  <section class="reader-card card-has-header hidden md:block">
+                    <div class="card-header">
+                      <Icon icon="mdi:image-multiple-outline" class="size-3.5 text-base-content/30" />
+                      <span class="card-header-label">additional media</span>
+                    </div>
+                    <div class="media-grid">
+                      {#each media as m}
+                        <button class="media-item" onclick={() => (lightbox = m)} aria-label="Expand image">
+                          <img src={m} alt="additional media" loading="lazy" />
+                        </button>
+                      {/each}
+                    </div>
+                  </section>
+                {/if}
               </div>
 
             </div>
@@ -288,8 +374,49 @@
         </div>
       </main>
     {/if}
+
+    {#if !loading && !error && entry}
+      <div id="comments" class="mx-auto mt-8 mb-4 max-w-4xl">
+        <div class="rounded-2xl border border-base-content/10 bg-base-200 shadow-xl shadow-base-content/5 overflow-hidden">
+          <div class="px-4 sm:px-8 pt-6 pb-2">
+            <div class="flex items-center gap-2">
+              <Icon icon="lucide:message-square-text" class="size-4 text-base-content/30 shrink-0" />
+              <span class="text-xs font-mono font-bold text-base-content/30 uppercase tracking-widest">Comments</span>
+            </div>
+          </div>
+          <div class="px-4 sm:px-8 pb-8">
+            {#key slug}
+              <Giscus
+                id="uder-record-comments"
+                repo="EnderOksam/GSGW-Reader"
+                term=""
+                repoId="R_kgDOSUYftA"
+                category="General"
+                categoryId="DIC_kwDOSUYftM4C9WvT"
+                mapping="pathname"
+                strict="0"
+                reactionsEnabled="1"
+                emitMetadata="0"
+                inputPosition="top"
+                theme="preferred_color_scheme"
+                lang="en"
+                loading="eager"
+              />
+            {/key}
+          </div>
+        </div>
+      </div>
+    {/if}
   </div>
 </div>
+
+  {#if lightbox}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="lightbox" onclick={() => (lightbox = null)} role="presentation">
+      <img src={lightbox} alt="expanded media" />
+    </div>
+  {/if}
 
 <style>
   .uder-reader {
@@ -305,6 +432,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
+    z-index: 30;
     padding: 0.25rem 0.5rem;
     border-bottom: 1px solid color-mix(in oklch, var(--color-base-content) 5%, transparent);
     background-color: color-mix(in oklch, var(--color-base-100) 80%, transparent);
@@ -339,7 +468,9 @@
   .topbar-center {
     flex: 1;
     display: flex;
+    align-items: center;
     justify-content: center;
+    gap: 0.5rem;
   }
 
   .topbar-toggle {
@@ -385,16 +516,40 @@
     align-items: center;
     justify-content: flex-end;
     min-width: 0;
+    position: relative;
   }
 
-  .topbar-id {
-    font-size: 9px;
-    font-family: ui-monospace, monospace;
-    letter-spacing: 0.08em;
-    color: color-mix(in oklch, var(--color-base-content) 25%, transparent);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .topbar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.75rem;
+    color: color-mix(in oklch, var(--color-base-content) 60%, transparent);
+    transition: all 0.12s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .topbar-icon:hover {
+    color: var(--color-primary, var(--color-base-content));
+    background-color: color-mix(in oklch, var(--color-base-content) 6%, transparent);
+  }
+
+  .theme-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    z-index: 50;
+    background-color: var(--color-base-100);
+    border: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.18);
+    padding: 1rem;
+    min-width: 12rem;
   }
 
   .reader-scroll {
@@ -708,5 +863,56 @@
     font-size: 12px;
     line-height: 1.7;
     color: color-mix(in oklch, var(--color-base-content) 45%, transparent);
+  }
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .media-item {
+    padding: 0;
+    border: none;
+    background: color-mix(in oklch, var(--color-base-300) 50%, transparent);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    cursor: zoom-in;
+  }
+
+  .media-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.15s ease;
+  }
+
+  .media-item:hover img {
+    transform: scale(1.05);
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background-color: rgb(0 0 0 / 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    cursor: zoom-out;
+  }
+
+  .lightbox img {
+    max-width: min(1400px, 94vw);
+    max-height: 92dvh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 60px rgb(0 0 0 / 0.5);
   }
 </style>
