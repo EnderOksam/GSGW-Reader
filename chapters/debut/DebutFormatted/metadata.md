@@ -31,10 +31,7 @@ page-progression-direction: ltr
 
 **Author:** Baek Deoksoo
 
-**Original Translators:**
-* LyraDhani — Chapters 1–200
-* Chovrs — Chapters 201–421
-* FoodieMonster007 — Chapters 422–645
+**Original Translators:** LyraDhani — Chapters 1–200, Chovrs — Chapters 201–421, and FoodieMonster007 — Chapters 422–645
 
 **Last Updated:** {{DATE}}
 
