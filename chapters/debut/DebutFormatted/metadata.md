@@ -40,7 +40,7 @@ page-progression-direction: ltr
 
 **Edited by:** Readers 
 
-**Big contributions by:** Lei (moonsoluem) and Destiny (heydestiny)
+**Big contributions by:** Lei (moonsoleum) and Destiny (heydestiny)
 
 This chapter is ignored by the website and is included exclusively in the EPUB for credits and other additional information. 
 
