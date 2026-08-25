@@ -34,13 +34,13 @@ page-progression-direction: ltr
 
 **Author:** Baek Deoksoo  
 
-**Original Translator:** Salt Goblin
+**Original Translators:** Salt Goblin — Chapters 0–271, Ugly Sunfish — Chapters 272–316, Goop and Geminel — 317–371, and Beiruu — Chapters 372–Current
 
 **Last Updated:** {{DATE}}
 
 **Edited by:** Readers 
 
-**Big contributions by:** Ender (enderoksam), Dominus (dominusz), Sen (senyen), Destiny (heydestiny), Lei (moonsoleum), Beiruu (everythingtbs), and Seirios (lawofentropy)
+**Big contributions by:** Ender (enderoksam), Dominus (dominusz), Destiny (heydestiny), Lei (moonsoleum), Beiruu (everythingtbs), Sen (senyen), and Seirios (lawofentropy)
 
 This chapter is ignored by the website and is included exclusively in the EPUB for credits and other additional information. 
 
