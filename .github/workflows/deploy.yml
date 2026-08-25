@@ -34,6 +34,7 @@ jobs:
 
       - name: Build chapters
         run: |
+          python scripts/build_uder.py
           python scripts/build_web.py
           python scripts/build_debut.py
 

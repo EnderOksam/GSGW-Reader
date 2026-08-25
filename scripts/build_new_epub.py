@@ -347,6 +347,11 @@ def valid_identifier(value: str, book_title: str) -> str:
     return f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, book_title)}"
 
 
+def part_identifier(base: str, part_id: str) -> str:
+    """Deterministic urn:uuid unique to this book+part combination."""
+    return f"urn:uuid:{uuid.uuid5(uuid.NAMESPACE_URL, f'{base}|{part_id}')}"
+
+
 def escape_text(value: Any) -> str:
     return html.escape(str(value), quote=False)
 
@@ -384,6 +389,47 @@ def convert_to_png(source_path: Path, output_dir: Path) -> Path | None:
         return output_path if output_path.exists() and output_path.stat().st_size > 0 else None
     except Exception:
         return None
+
+
+COVER_IMAGE_EXTS = [".webp", ".png", ".jpg", ".jpeg"]
+
+
+def resolve_cover_image(book_id: str, part_id: str | None = None) -> Path | None:
+    """Per-part covers live at images/<book>/<part-id>.<ext>; missing ones
+    fall back to the shared images/<book>/cover.<ext>."""
+    book_img_dir = IMAGES_ROOT / BOOK_COVER_DIR.get(book_id, book_id)
+    candidates: list[Path] = []
+    if part_id:
+        candidates.extend(book_img_dir / f"{part_id}{ext}" for ext in COVER_IMAGE_EXTS)
+    candidates.extend(book_img_dir / f"cover{ext}" for ext in COVER_IMAGE_EXTS)
+    return next((path for path in candidates if path.exists()), None)
+
+
+def build_cover(book_id: str, part_id: str | None = None) -> tuple[EpubAsset | None, EpubItem | None]:
+    image_path = resolve_cover_image(book_id, part_id)
+    if not image_path:
+        return None, None
+
+    png_path = convert_to_png(image_path, OUTPUT_DIR / "cover_images") or image_path
+    cover_name = unique_asset_name(png_path, png_path.name, set())
+    cover_asset = EpubAsset(
+        source_path=png_path,
+        href=f"Images/{cover_name}",
+        media_type=media_type_for(png_path),
+    )
+    cover_body = (
+        '<div class="cover-page">'
+        f'<img src="../{escape_attr(cover_asset.href)}" alt="Cover" class="cover-image" />'
+        "</div>"
+    )
+    cover_item = EpubItem(
+        item_id="cover",
+        href="Text/cover.xhtml",
+        title="Cover",
+        body=cover_body,
+    )
+    print(f"  Cover: {cover_asset.href}")
+    return cover_asset, cover_item
 
 
 def unique_asset_name(source_path: Path, preferred: str, used: set[str]) -> str:
@@ -1928,10 +1974,11 @@ def write_epub(
     assets: dict[Path, EpubAsset],
     cover_item: EpubItem | None = None,
     cover_asset: EpubAsset | None = None,
+    identifier_override: str | None = None,
 ) -> None:
     css = CSS_PATH.read_text(encoding="utf-8")
     modified = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    identifier = metadata_text(metadata.get("identifier"), "")
+    identifier = identifier_override or metadata_text(metadata.get("identifier"), "")
     identifier = valid_identifier(identifier, book_title)
     asset_list = sorted(assets.values(), key=lambda asset: asset.href)
 
@@ -2067,34 +2114,6 @@ def build_book(args: argparse.Namespace) -> list[Path]:
     master_content = master_content.replace("{{DATE}}", pretty_date)
 
     built: list[Path] = []
-    cover_asset_base: EpubAsset | None = None
-    cover_item_base: EpubItem | None = None
-    cover_image_path_base = IMAGES_ROOT / BOOK_COVER_DIR.get(book_id, book_id) / "cover.webp"
-
-    if cover_image_path_base.exists():
-        cover_src = convert_to_png(cover_image_path_base, OUTPUT_DIR / "cover_images") or cover_image_path_base
-        cover_name = unique_asset_name(
-            cover_src,
-            "cover.png" if cover_src.suffix.lower() == ".png" else cover_src.name,
-            set(),
-        )
-        cover_asset_base = EpubAsset(
-            source_path=cover_src,
-            href=f"Images/{cover_name}",
-            media_type=media_type_for(cover_src),
-        )
-        cover_body = (
-            '<div class="cover-page">'
-            f'<img src="../{escape_attr(cover_asset_base.href)}" alt="Cover" class="cover-image" />'
-            "</div>"
-        )
-        cover_item_base = EpubItem(
-            item_id="cover",
-            href="Text/cover.xhtml",
-            title="Cover",
-            body=cover_body,
-        )
-        print(f"  Cover: {cover_asset_base.href}")
 
     if args.variant:
         variants = [v for v in variants if v["id"] == args.variant]
@@ -2128,16 +2147,17 @@ def build_book(args: argparse.Namespace) -> list[Path]:
             output_name = re.sub(r'\.+', '.', output_name) + '.epub'
             epub_path = OUTPUT_DIR / output_name
 
+            display_title = f"{book_title} - {part_def['label']}"
+            base_identifier = metadata_text(master_meta.get("identifier"), "")
+            epub_identifier = part_identifier(base_identifier or book_title, part_def["id"])
+
             assets: dict[Path, EpubAsset] = {}
             asset_names: set[str] = set()
-            cover_asset = None
-            cover_item = None
 
-            if cover_asset_base:
-                cover_asset = cover_asset_base
+            cover_asset, cover_item = build_cover(book_id, part_def["id"])
+            if cover_asset:
                 asset_names.add(Path(cover_asset.href).name)
                 assets[cover_asset.source_path] = cover_asset
-                cover_item = cover_item_base
 
             info_ctx = RenderContext(book_id, metadata_path, assets, asset_names, tweet_cache, fetch_twitter)
             info_body, info_footnotes = convert_chapter(master_content, info_ctx)
@@ -2168,7 +2188,7 @@ def build_book(args: argparse.Namespace) -> list[Path]:
                     )
                 )
 
-            write_epub(epub_path, book_title, master_meta, items, assets, cover_item, cover_asset)
+            write_epub(epub_path, display_title, master_meta, items, assets, cover_item, cover_asset, epub_identifier)
 
             print(f"    Done -> {epub_path}")
             built.append(epub_path)
