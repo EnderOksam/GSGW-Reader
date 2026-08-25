@@ -90,7 +90,7 @@
       button_primary: "btn-secondary",
       button_secondary: "btn-info",
       cover: imgDebutCover,
-      external_link: "",
+      external_link: "https://page.kakao.com/content/56325530/",
     },
     manwha: {
       title: "Ghost Story, Gotta Work",
