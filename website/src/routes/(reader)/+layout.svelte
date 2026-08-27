@@ -117,9 +117,9 @@
   let nextInfoDialog: HTMLDialogElement | undefined = $state();
 
   const TL_INFO = [
-    { name: "FanTL", desc: "This translation is the recommended one, has all the features made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
+    { name: "FanTL", desc: "This is the recommended translation, with all the features and formatting made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
     { name: "UnfinishedTL", desc: "The base story with no special features — equivalent of reading an epub. Once chapters here get formatted they get put under FanTL.", icon: "mdi:book-outline", color: "text-blue-400" },
-    { name: "MTL", desc: "Currently released part three chapters. Translated by ZestysDaddy on Discord, kept separate because they'd break the order of FanTL (jumping to part three since part two isn't fully formatted yet).", icon: "mdi:auto-fix", color: "text-purple-400" },
+    { name: "MTL", desc: "Currently released Part 3 chapters, translated by ZestysDaddy on Discord. Kept separate because adding them to FanTL would disrupt the chapter order by jumping to Part 3 while Part 2 is not yet fully formatted.", icon: "mdi:auto-fix", color: "text-purple-400" },
   ];
 
   // 4. Sync internal state with URL
