@@ -79,6 +79,14 @@ const simpleInlineTags: [RegExp, string][] = [
   [/\$c(.*?)c\$/gs, '<span class="contaminated">$1</span>'],
   [/\$wo(.*?)wo\$/gs, '<span class="outline-white">$1</span>'],
   [/\$bo(.*?)bo\$/gs, '<span class="outline-black">$1</span>'],
+  [/\$ssr(.*?)ssr\$/gs, '<span class="noto-sans">$1</span>'],
+  [/\$NE(.*?)NE\$/gs, '<span class="noto-emoji">$1</span>'],
+  [/\$soc(.*?)soc\$/gs, '<span class="kcc-an-changho">$1</span>'],
+  [/\$clu(.*?)clu\$/gs, '<span class="diphylleia">$1</span>'],
+  [/\$osh(.*?)osh\$/gs, '<span class="crimson-old-style">$1</span>'],
+  [/\$cri(.*?)cri\$/gs, '<span class="macho">$1</span>'],
+  [/\$sst(.*?)sst\$/gs, '<span class="ibm-plex-sans">$1</span>'],
+  [/\$gps(.*?)gps\$/gs, '<span class="sandoll-danpatpang">$1</span>'],
 ];
 
 function renderFootnoteText(text: string): string {
@@ -211,6 +219,14 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     inner = inner.replace(/\$tf(.+?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>');
     inner = inner.replace(/\$vcr(.+?)vcr\$/gs, '<span class="vcr-osd-mono">$1</span>');
     inner = inner.replace(/\$Bh(.+?)Bh\$/gs, '<span class="braun-handwriting">$1</span>');
+    inner = inner.replace(/\$ssr(.+?)ssr\$/gs, '<span class="noto-sans">$1</span>');
+    inner = inner.replace(/\$NE(.+?)NE\$/gs, '<span class="noto-emoji">$1</span>');
+    inner = inner.replace(/\$soc(.+?)soc\$/gs, '<span class="kcc-an-changho">$1</span>');
+    inner = inner.replace(/\$clu(.+?)clu\$/gs, '<span class="diphylleia">$1</span>');
+    inner = inner.replace(/\$osh(.+?)osh\$/gs, '<span class="crimson-old-style">$1</span>');
+    inner = inner.replace(/\$cri(.+?)cri\$/gs, '<span class="macho">$1</span>');
+    inner = inner.replace(/\$sst(.+?)sst\$/gs, '<span class="ibm-plex-sans">$1</span>');
+    inner = inner.replace(/\$gps(.+?)gps\$/gs, '<span class="sandoll-danpatpang">$1</span>');
     inner = inner.replace(/\$c(.+?)c\$/gs, '<span class="contaminated">$1</span>');
     inner = inner.replace(/\$wo(.+?)wo\$/gs, '<span class="outline-white">$1</span>');
     inner = inner.replace(/\$bo(.+?)bo\$/gs, '<span class="outline-black">$1</span>');

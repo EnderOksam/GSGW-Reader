@@ -110,6 +110,62 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Noto Sans";
+  src: url("../Fonts/NotoSans-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Emoji";
+  src: url("../Fonts/NotoEmoji-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "KCC An Changho";
+  src: url("../Fonts/KCCAnChangho.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Diphylleia";
+  src: url("../Fonts/Diphylleia-Variable.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Macho";
+  src: url("../Fonts/Macho.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../Fonts/IBMPlexSans-Thin.woff2") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../Fonts/IBMPlexSans-UltraLight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
 .cover-page {
   text-align: center;
   margin: 0;
@@ -506,6 +562,50 @@ figcaption {
 
 .braun-handwriting {
   font-family: 'Gabia Maeumgyeol', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+}
+
+.noto-sans {
+  font-family: 'Noto Sans', 'Helvetica Neue', 'Arial', sans-serif;
+  font-weight: 400;
+}
+
+.noto-sans strong {
+  font-weight: 600;
+}
+
+.noto-emoji {
+  font-family: 'Noto Emoji';
+  font-size: 2em;
+}
+
+.kcc-an-changho {
+  font-family: 'KCC An Changho', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+.diphylleia {
+  font-family: 'Diphylleia', 'Georgia', serif;
+}
+
+.crimson-old-style {
+  font-family: 'Crimson Pro', 'Georgia', serif;
+  font-weight: 500;
+}
+
+.crimson-old-style strong {
+  font-weight: 700;
+}
+
+.macho {
+  font-family: 'Macho', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+.ibm-plex-sans {
+  font-family: 'IBM Plex Sans', 'Helvetica Neue', 'Arial', sans-serif;
+  font-weight: 100;
+}
+
+.ibm-plex-sans strong {
+  font-weight: 200;
 }
 
 .smoke-text {
