@@ -119,9 +119,9 @@
         "name": "Braun (Good Friend)",
         "chapter": 25,
         "toggleable": true,
-        "hasManwha": false,
+        "hasManwha": true,
         "hasWebnovel": true,
-        "manwhaImage": null,
+        "manwhaImage": "GoodfriendManhwa.webp",
         "webnovelImage": "GoodfriendWebnovel.webp"
       }
     ]
