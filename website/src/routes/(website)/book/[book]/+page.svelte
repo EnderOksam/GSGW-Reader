@@ -194,9 +194,9 @@
           { name: "DEBUTPLAINTXT", desc: "The base story without any special features or formatting — essentially equivalent to reading an EPUB. Once chapters here are formatted, they are moved to DEBUTFORMATTED.", icon: "mdi:book-outline", color: "text-blue-400" },
         ]
       : [
-          { name: "FanTL", desc: "Has all the features made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
-          { name: "UnfinishedTL", desc: "Chapters that are still being worked on, equivalent of reading an epub.", icon: "mdi:book-outline", color: "text-blue-400" },
-          { name: "MTL", desc: "Currently released part three chapters. Translated by ZestysDaddy on Discord, kept separate because they'd break the order of FanTL (jumping to part three since part two isn't fully formatted yet).", icon: "mdi:auto-fix", color: "text-purple-400" },
+          { name: "FanTL", desc: "This is the recommended translation, with all the features and formatting made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
+          { name: "UnfinishedTL", desc: "The base story without any special features or formatting — essentially equivalent to reading an EPUB. Once chapters here are formatted, they are moved to FanTL.", icon: "mdi:book-outline", color: "text-blue-400" },
+          { name: "MTL", desc: "Currently released Part 3 chapters, translated by ZestysDaddy on Discord. Kept separate because adding them to FanTL would disrupt the chapter order by jumping to Part 3 while Part 2 is not yet fully formatted.", icon: "mdi:auto-fix", color: "text-purple-400" },
         ],
   );
 
