@@ -886,6 +886,10 @@ hr.invisible-hr {
   font-weight: 200;
 }
 
+.sandoll-danpatpang {
+  font-family: 'Sandoll Danpatpang', 'Georgia', serif;
+}
+
 .scroll-wrap {
   display: inline-block;
   overflow: hidden;

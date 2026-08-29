@@ -166,6 +166,23 @@
   font-display: swap;
 }
 
+/* --- Sandoll Danpatpang --- */
+@font-face {
+  font-family: "Sandoll Danpatpang";
+  src: url("../Fonts/SandollDanpatpang-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sandoll Danpatpang";
+  src: url("../Fonts/SandollDanpatpang-Italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 .cover-page {
   text-align: center;
   margin: 0;
@@ -606,6 +623,10 @@ figcaption {
 
 .ibm-plex-sans strong {
   font-weight: 200;
+}
+
+.sandoll-danpatpang {
+  font-family: 'Sandoll Danpatpang', 'Georgia', serif;
 }
 
 .smoke-text {

@@ -1909,6 +1909,8 @@ def content_opf(
         ("Fonts/Macho.woff2", "font-macho", "font/woff2"),
         ("Fonts/IBMPlexSans-Thin.woff2", "font-ibm-plex-sans-thin", "font/woff2"),
         ("Fonts/IBMPlexSans-UltraLight.woff2", "font-ibm-plex-sans-ultralight", "font/woff2"),
+        ("Fonts/SandollDanpatpang-Regular.otf", "font-sandoll-danpatpang", "font/sfnt"),
+        ("Fonts/SandollDanpatpang-Italic.otf", "font-sandoll-danpatpang-italic", "font/sfnt"),
     ]
     for href, fid, media in FONT_FILES:
         manifest_items.append(
@@ -2050,6 +2052,8 @@ def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
         "Macho.woff2",
         "IBMPlexSans-Thin.woff2",
         "IBMPlexSans-UltraLight.woff2",
+        "SandollDanpatpang-Regular.otf",
+        "SandollDanpatpang-Italic.otf",
     ]
     for font_name in font_names:
         src = FONTS_DIR / font_name
