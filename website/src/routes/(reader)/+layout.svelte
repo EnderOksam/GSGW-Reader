@@ -129,6 +129,39 @@
 
   // --- Handlers ---
 
+  function randomizeAnimationDelays() {
+    if (!browser) return;
+    const article = document.querySelector("article.reader-container");
+    if (!article) return;
+
+    
+    article.querySelectorAll("span.shake").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 0.5}s`;
+      }
+    });
+
+   
+    article.querySelectorAll("span.wave-up").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 0.6}s`;
+      }
+    });
+
+  
+    article.querySelectorAll(".glitch-text .char").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 0.25}s`;
+      }
+    });
+
+    article.querySelectorAll(".glitch-subtle .char").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 2.0}s`;
+      }
+    });
+  }
+
   afterNavigate(() => {
     nextInfoDialog?.close();
   });
@@ -141,6 +174,10 @@
       dismissOnUnhover: true,
       buttonTemplate: `<button aria-label="Footnote <% number %>" class="relative btn btn-xs btn-info px-3 py-2 h-3 text-sm mx-1 font-mono"><% number %></button>`,
     });
+  });
+
+  afterNavigate(() => {
+    randomizeAnimationDelays();
   });
   onMount(async () => {
     if (browser) {
@@ -182,11 +219,11 @@
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().then(() => {
-        screen.orientation?.lock?.("portrait").catch(() => {});
+        (screen.orientation as any)?.lock?.("portrait").catch(() => {});
       }).catch(console.error);
     } else {
       document.exitFullscreen().then(() => {
-        screen.orientation?.unlock?.();
+        (screen.orientation as any)?.unlock?.();
       }).catch(console.error);
     }
   }
@@ -377,6 +414,7 @@
     {#key page.url.pathname}
       {#if readerState.ch_meta.discussion}
         <Giscus
+          id="giscus-comments"
           repo="EnderOksam/GSGW-Reader"
           repoId="R_kgDOSUYftA"
           category="General"
@@ -393,11 +431,13 @@
         />
       {:else}
         <Giscus
+          id="giscus-comments"
           repo="EnderOksam/GSGW-Reader"
           repoId="R_kgDOSUYftA"
           category="General"
           categoryId="DIC_kwDOSUYftM4C9WvT"
           mapping="pathname"
+          term={page.url.pathname}
           strict="0"
           reactionsEnabled="1"
           emitMetadata="0"
@@ -489,6 +529,7 @@
 
   .chapter-content :global(p) {
     text-indent: var(--chapter-indent);
+    text-wrap: pretty;
   }
 
   :global(:fullscreen) {
