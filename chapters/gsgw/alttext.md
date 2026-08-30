@@ -33,6 +33,9 @@ Jekang -> Jaekang
 ## Darkness Exploration Records
 Darkness Exploration Records -> Dark Exploration Records
 
+## Lord Cat
+Lord Cat -> Cat-nim
+
 ## White Tiger
 White Tiger -> Baekho
 
