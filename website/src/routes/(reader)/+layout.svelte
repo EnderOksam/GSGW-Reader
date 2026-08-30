@@ -14,6 +14,8 @@
   // Data
   import { readerState } from "$lib/reader.svelte";
   import bookData from "$lib/meta.json";
+  import alttextData from "$lib/alttext.json";
+  import { storePristine, applyAltText, clearAltText } from "$lib/reader/alttext";
 
 
   let { children } = $props();
@@ -179,14 +181,48 @@
   afterNavigate(() => {
     randomizeAnimationDelays();
   });
+
+  // Apply alt text replacements when selections change or chapter navigates (GSGW only)
+  $effect(() => {
+    if (bookSlug !== "gsgw") return;
+    const selections = readerState.altTextSelections;
+    const chapter = currentChapter;
+    const article = document.querySelector("article.reader-container") as HTMLElement | null;
+    if (!article) return;
+
+    setTimeout(() => {
+      const pairs: [string, string][] = [];
+      for (const variant of alttextData.variants) {
+        const option = selections[variant.name];
+        if (option && variant.options.includes(option)) {
+          for (const search of variant.searches) {
+            pairs.push([search, option]);
+          }
+        }
+      }
+      if (pairs.length > 0) {
+        storePristine(article);
+        applyAltText(article, pairs);
+      } else {
+        clearAltText(article);
+      }
+    }, 50);
+  });
+
   onMount(async () => {
     if (browser) {
       const lastRead = JSON.parse(localStorage.getItem("lastRead") || "{} ");
-      // Check if saved position matches current URL
       if (lastRead.slug == currentChapter && lastRead.book === bookSlug) {
         window.scrollTo({ top: lastRead.scroll, behavior: "instant" });
       }
       window.addEventListener("scroll", handleScroll);
+
+      const savedSelections = localStorage.getItem("altTextSelections");
+      if (savedSelections) {
+        try {
+          readerState.altTextSelections = JSON.parse(savedSelections);
+        } catch {}
+      }
     }
   });
 

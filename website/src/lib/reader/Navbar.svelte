@@ -11,6 +11,7 @@
   import type { ContentMatch } from "$lib/content-search";
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
+  import alttextData from "$lib/alttext.json";
 
   // --- Types ---
   interface Chapter {
@@ -30,6 +31,7 @@
     settings: null as HTMLDialogElement | null,
     edit: null as HTMLDialogElement | null,
     snippet: null as HTMLDialogElement | null,
+    altText: null as HTMLDialogElement | null,
   });
 
   let snippetToast = $state(false);
@@ -398,6 +400,7 @@
   
   const openSettings = () => modals.settings?.showModal();
   const openEdit = () => modals.edit?.showModal();
+  const openAltText = () => modals.altText?.showModal();
 </script>
 
 <!-- --- Navbar View --- -->
@@ -740,6 +743,11 @@
               {/each}
             </div>
           </div>
+          {#if bookSlug === "gsgw" && alttextData.variants.length > 0}
+            <button class="btn btn-outline btn-primary btn-sm w-full rounded-xl gap-2" onclick={() => { modals.settings?.close(); modals.altText?.showModal(); }}>
+              <Icon icon="material-symbols:translate" class="size-4" /> Alt Text
+            </button>
+          {/if}
         </div>
 
         <!-- Display -->
@@ -812,6 +820,93 @@
         </div>
 
       </a>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<!-- --- Modal: Alt Text --- -->
+<dialog bind:this={modals.altText} class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-base-100 p-0 rounded-t-2xl sm:rounded-box shadow-2xl overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-secondary/5"></div>
+      <div class="relative flex justify-between items-center px-6 py-4 border-b border-base-content/10">
+        <div class="flex items-center gap-2">
+          <Icon icon="material-symbols:translate" class="size-5 text-primary" />
+          <span class="font-bold text-lg text-primary">Alt Text</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <a
+            href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/gsgw/alttext.md"
+            target="_blank"
+            class="btn btn-ghost btn-xs rounded-lg gap-1 text-base-content/40 hover:text-primary"
+          >
+            <Icon icon="mdi:github" class="size-3.5" />
+            <span class="text-[10px]">Edit</span>
+          </a>
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+              <Icon icon="mdi:close" class="size-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-y-auto overscroll-contain max-h-[70vh]">
+      <div class="p-5 space-y-4">
+        {#if alttextData.variants.length === 0}
+          <div class="py-10 text-center">
+            <div class="w-14 h-14 rounded-2xl bg-base-200/60 flex items-center justify-center mx-auto mb-3">
+              <Icon icon="material-symbols:translate" class="size-7 text-base-content/20" />
+            </div>
+            <p class="text-sm font-medium text-base-content/50 mb-1">No variants yet</p>
+            <p class="text-xs text-base-content/30">Add word replacements in chapters/gsgw/alttext.md</p>
+          </div>
+        {:else}
+          <p class="text-[11px] text-base-content/40 leading-relaxed">Some words differ across translations. Pick your preferred version for each group.</p>
+
+          <div class="space-y-3">
+            {#each alttextData.variants as variant}
+              {@const selected = readerState.altTextSelections[variant.name]}
+              <div class="group rounded-xl border transition-colors {selected ? 'bg-primary/5 border-primary/20' : 'bg-base-200/30 border-base-content/5 hover:border-base-content/10'}">
+                <div class="p-3.5 space-y-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold leading-tight">{variant.name}</span>
+                    {#if variant.description}
+                      <span class="text-[10px] text-base-content/40 italic">({variant.description})</span>
+                    {/if}
+                    {#if selected}
+                      <span class="size-1.5 rounded-full bg-primary shrink-0"></span>
+                    {/if}
+                  </div>
+
+                  <div class="flex flex-wrap gap-1.5">
+                    {#each variant.options as option}
+                      {@const isActive = selected === option}
+                      <button
+                        class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all {isActive ? 'bg-primary text-primary-content shadow-sm shadow-primary/20' : 'bg-base-200/60 text-base-content/60 hover:bg-base-200 hover:text-base-content/80'}"
+                        onclick={() => {
+                          const sel = { ...readerState.altTextSelections };
+                          if (isActive) {
+                            delete sel[variant.name];
+                          } else {
+                            sel[variant.name] = option;
+                          }
+                          readerState.altTextSelections = sel;
+                          if (browser) localStorage.setItem("altTextSelections", JSON.stringify(sel));
+                        }}
+                      >
+                        {option}
+                      </button>
+                    {/each}
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </div>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>

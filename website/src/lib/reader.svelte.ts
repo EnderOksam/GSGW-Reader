@@ -10,4 +10,5 @@ export const readerState = $state({
   },
   refPanelOpen: false,
   footnotes: "",
+  altTextSelections: {} as Record<string, string>,
 });

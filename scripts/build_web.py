@@ -12,6 +12,7 @@ from PIL import Image
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import frontmatter
+import build_library
 
 
 
@@ -1447,6 +1448,8 @@ def main():
         json.dumps(meta_map, indent=2),
         encoding="utf-8"
     )
+
+    build_library.build_alttext()
 
     if not tasks_data:
         print("No chapters found.")
