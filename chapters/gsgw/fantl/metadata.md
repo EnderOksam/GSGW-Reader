@@ -61,7 +61,7 @@ right-oriented SMS message-
 :★
 
 +-
-Dark Exploration Records
+Darkness Exploration Records
 
 this should look like a "Wiki window"
 -+

@@ -57,7 +57,7 @@
   const uderBook = {
     href: "/book/uder",
     img: imgCoi,
-    title: "Dark Exploration Records",
+    title: "Darkness Exploration Records",
     author: "Fanatics",
     tag: "Unofficial",
     tagClass: "text-warning",
