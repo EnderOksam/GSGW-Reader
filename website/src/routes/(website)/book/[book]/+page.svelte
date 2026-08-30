@@ -344,8 +344,8 @@
         <div class="w-full max-w-lg flex flex-col items-center text-center gap-3 py-2">
           <img src="/assets/ghost.webp" alt="" class="w-24 h-24 md:w-32 md:h-32 object-contain" />
           <h1 class="text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight">
-            Prophecy Of the Apocalypse:<br />
-            Unofficial Dark exploration records
+            Prophecy of the Apocalypse:<br />
+            Unofficial Dark Exploration Records
           </h1>
           <p class="text-xs sm:text-sm opacity-55 leading-relaxed max-w-md">
             {book.synopsis}
