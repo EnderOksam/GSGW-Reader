@@ -22,9 +22,25 @@ Heoun -> Heowoon
 Jekang -> Jaekang
 (Kwak Jekang)
 
+## Yeongeun
+Yeongeun -> Youngeun
+(Go Yeongeun)
+
 ## [Name]
 [Name] -> Ireum
 (Ireum-nim)
 
 ## Darkness Exploration Records
 Darkness Exploration Records -> Dark Exploration Records
+
+## White Tiger
+White Tiger -> Baekho
+
+## Black Tortoise
+Black Tortoise -> Hyunmoo
+
+## Azure Dragon
+Azure Dragon -> Cheongryong
+
+## Vermillion Bird
+Vermillion Bird -> Jujak
