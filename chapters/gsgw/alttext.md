@@ -14,6 +14,10 @@
 ## Soleum
 Soleum -> Soreum
 
+## Yeongeun
+Yeongeun -> Youngeun
+(Go Yeongeun)
+
 ## Heoun
 Heoun -> Heowoon
 (Jang Heoun)
@@ -21,10 +25,6 @@ Heoun -> Heowoon
 ## Jekang
 Jekang -> Jaekang
 (Kwak Jekang)
-
-## Yeongeun
-Yeongeun -> Youngeun
-(Go Yeongeun)
 
 ## [Name]
 [Name] -> Ireum
