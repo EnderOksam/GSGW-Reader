@@ -154,7 +154,7 @@
 
 <svelte:head>
   <link rel="stylesheet" href={readerCss} />
-  <title>{entry?.title || slug} - Dark Exploration Records</title>
+  <title>{entry?.title || slug} - Darkness Exploration Records</title>
   {#if entry?.summary}
     <meta name="description" content={entry.summary} />
   {/if}

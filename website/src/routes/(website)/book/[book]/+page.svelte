@@ -61,7 +61,7 @@
       external_link: "https://page.kakao.com/content/65171279",
     },
     uder: {
-      title: "Unofficial Dark Exploration Records",
+      title: "Unofficial Darkness Exploration Records",
       author: "Fanatics",
       synopsis: "A collection of fan-created records exploring the darkness that lies beyond.",
       title_accent: "text-primary",
@@ -345,7 +345,7 @@
           <img src="/assets/ghost.webp" alt="" class="w-24 h-24 md:w-32 md:h-32 object-contain" />
           <h1 class="text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight">
             Prophecy of the Apocalypse:<br />
-            Unofficial Dark Exploration Records
+            Unofficial Darkness Exploration Records
           </h1>
           <p class="text-xs sm:text-sm opacity-55 leading-relaxed max-w-md">
             {book.synopsis}
