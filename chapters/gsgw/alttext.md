@@ -14,6 +14,10 @@
 ## Soleum
 Soleum -> Soreum
 
+## Yeongeun
+Yeongeun -> Youngeun
+(Go Yeongeun)
+
 ## Heoun
 Heoun -> Heowoon
 (Jang Heoun)
@@ -28,3 +32,18 @@ Jekang -> Jaekang
 
 ## Darkness Exploration Records
 Darkness Exploration Records -> Dark Exploration Records
+
+## Lord Cat
+Lord Cat -> Cat-nim
+
+## White Tiger
+White Tiger -> Baekho
+
+## Black Tortoise
+Black Tortoise -> Hyunmoo
+
+## Azure Dragon
+Azure Dragon -> Cheongryong
+
+## Vermillion Bird
+Vermillion Bird -> Jujak
