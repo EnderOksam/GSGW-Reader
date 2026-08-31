@@ -1450,6 +1450,7 @@ def main():
     )
 
     build_library.build_alttext()
+    build_library.build_characters()
 
     if not tasks_data:
         print("No chapters found.")
