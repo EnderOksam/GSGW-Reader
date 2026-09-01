@@ -152,34 +152,26 @@
 
 @font-face {
   font-family: "IBM Plex Sans";
-  src: url("../Fonts/IBMPlexSans-Thin.woff2") format("woff2");
-  font-weight: 100;
+  src: url("../Fonts/IBMPlexSans-VariableFont_wdth,wght.ttf") format("truetype");
+  font-weight: 200 300;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: "IBM Plex Sans";
-  src: url("../Fonts/IBMPlexSans-UltraLight.woff2") format("woff2");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* --- Sandoll Danpatpang --- */
-@font-face {
-  font-family: "Sandoll Danpatpang";
-  src: url("../Fonts/SandollDanpatpang-Regular.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Sandoll Danpatpang";
-  src: url("../Fonts/SandollDanpatpang-Italic.otf") format("opentype");
-  font-weight: 400;
+  src: url("../Fonts/IBMPlexSans-Italic-VariableFont_wdth,wght.ttf") format("truetype");
+  font-weight: 200 300;
   font-style: italic;
+  font-display: swap;
+}
+
+/* --- Tenada --- */
+@font-face {
+  font-family: "Tenada";
+  src: url("../Fonts/Tenada.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -618,15 +610,15 @@ figcaption {
 
 .ibm-plex-sans {
   font-family: 'IBM Plex Sans', 'Helvetica Neue', 'Arial', sans-serif;
-  font-weight: 100;
-}
-
-.ibm-plex-sans strong {
   font-weight: 200;
 }
 
-.sandoll-danpatpang {
-  font-family: 'Sandoll Danpatpang', 'Georgia', serif;
+.ibm-plex-sans strong {
+  font-weight: 300;
+}
+
+.tenada {
+  font-family: 'Tenada', 'Georgia', serif;
 }
 
 .smoke-text {
