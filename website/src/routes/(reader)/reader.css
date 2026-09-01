@@ -18,30 +18,25 @@
   text-decoration: line-through;
 }
 .reader-container .triple-strike {
-  position: relative;
-  display: inline-block;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 100% 0.1em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(currentColor, currentColor);
+
   background-repeat: no-repeat;
-  background-position: 0 48%;
-}
 
-.reader-container .triple-strike::before,
-.reader-container .triple-strike::after {
-  content: "";
-  position: absolute;
-  left: -1%;
-  width: 102%;
-  height: 0.1em;
-  background: currentColor;
-}
+  background-size:
+    100% 2px,
+    100% 2px,
+    100% 2px;
 
-.reader-container .triple-strike::after {
-  top: 35%;
-}
-
-.reader-container .triple-strike::before {
-  top: 57%;
+  background-position:
+    0 34%,
+    0 50%,
+    0 66%;
 }
 
 img {

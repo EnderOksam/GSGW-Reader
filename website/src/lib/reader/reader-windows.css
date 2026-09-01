@@ -787,6 +787,11 @@
   padding: 1em 0;
 }
 
+.reader-container .braun-tv-text,
+.reader-container .braun-doll-text {
+  font-weight: 700;
+}
+
 .reader-container .padding-window p,
 .reader-container .braun-tv-text p,
 .reader-container .braun-doll-text p {

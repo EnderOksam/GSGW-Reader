@@ -545,23 +545,23 @@
 
   const fontItems = [
     { syntax: "$$text$$", text: "handwritten script", cls: "handwritten", expandable: true },
+    { syntax: "$htexth$", text: "handwritten text", cls: "paulo-bittencourt", expandable: true },
     { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
     { syntax: "$oshtextosh$", text: "old style humanist", cls: "crimson-old-style", expandable: true },
-    { syntax: "$lattextlat$", text: "lato text", cls: "lato", expandable: true },
-    { syntax: "$foxtextfox$", text: "fox counseling text", cls: "fox", expandable: true },
-    { syntax: "$htexth$", text: "handwritten text", cls: "paulo-bittencourt", expandable: true },
     { syntax: "$ssrtextssr$", text: "sans serif regular", cls: "noto-sans", expandable: true },
     { syntax: "$ssttextsst$", text: "sans serif thin", cls: "ibm-plex-sans", expandable: true },
-    { syntax: "$nbgtextnbg$", text: "thin modern", cls: "nanum-barun-gothic", expandable: true },
-    { syntax: "$tftexttf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },
-    { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
+    { syntax: "$lattextlat$", text: "document text", cls: "lato", expandable: true },
     { syntax: "$BhtextBh$", text: "braun font", cls: "braun-handwriting", expandable: true },
+    { syntax: "$foxtextfox$", text: "fox counseling text", cls: "fox", expandable: true },
     { syntax: "$ctextc$", text: "comic sans text", cls: "contaminated", expandable: true },
-    { syntax: "$clutextclu$", text: "church luminous", cls: "diphylleia", expandable: true },
-    { syntax: "$crictextcri$", text: "cheerful font", cls: "macho", expandable: true },
+    { syntax: "$clutextclu$", text: "church of luminous unknown", cls: "diphylleia", expandable: true },
+    { syntax: "$gpstextgps$", text: "retro blocky text", cls: "sandoll-danpatpang", expandable: true },
+    { syntax: "$tftexttf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },
+    { syntax: "$crictextcri$", text: "cheerful research inc.", cls: "macho", expandable: true },
     { syntax: "$NEtextNE$", text: "noto emoji", cls: "noto-emoji", expandable: true, previewHtml: '<span class="noto-emoji">🥰🥸🤯🧐🤪🥱</span>' },
-    { syntax: "$soctextsoc$", text: "kcc an changho", cls: "kcc-an-changho", expandable: true },
-    { syntax: "$gpstextgps$", text: "sandoll danpatpang", cls: "sandoll-danpatpang", expandable: true },
+    { syntax: "$soctextsoc$", text: "cursive script", cls: "kcc-an-changho", expandable: true },
+    { syntax: "$nbgtextnbg$", text: "thin modern", cls: "nanum-barun-gothic", expandable: true },
+    { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
   ];
 
   const colorsItems = [
