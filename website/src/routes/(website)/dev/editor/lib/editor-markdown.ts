@@ -72,7 +72,7 @@ const simpleInlineTags: [RegExp, string][] = [
   [/\$fox(.*?)fox\$/gs, '<span class="fox">$1</span>'],
   [/\$Eb(.*?)Eb\$/gs, '<span class="eb-garamond">$1</span>'],
   [/\$h(?!x)(.*?)h\$/gs, '<span class="paulo-bittencourt">$1</span>'],
-  [/\$nbg(.*?)nbg\$/gs, '<span class="nanum-barun-gothic">$1</span>'],
+  [/\$sst(.*?)sst\$/gs, '<span class="nanum-barun-gothic">$1</span>'],
   [/\$tf(.*?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>'],
   [/\$vcr(.*?)vcr\$/gs, '<span class="vcr-osd-mono">$1</span>'],
   [/\$Bh(.*?)Bh\$/gs, '<span class="braun-handwriting">$1</span>'],
@@ -85,8 +85,8 @@ const simpleInlineTags: [RegExp, string][] = [
   [/\$clu(.*?)clu\$/gs, '<span class="diphylleia">$1</span>'],
   [/\$osh(.*?)osh\$/gs, '<span class="crimson-old-style">$1</span>'],
   [/\$cri(.*?)cri\$/gs, '<span class="macho">$1</span>'],
-  [/\$sst(.*?)sst\$/gs, '<span class="ibm-plex-sans">$1</span>'],
-  [/\$gps(.*?)gps\$/gs, '<span class="sandoll-danpatpang">$1</span>'],
+  [/\$ips(.*?)ips\$/gs, '<span class="ibm-plex-sans">$1</span>'],
+  [/\$gps(.*?)gps\$/gs, '<span class="tenada">$1</span>'],
 ];
 
 function renderFootnoteText(text: string): string {
@@ -210,24 +210,31 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/@_@(.+?)@_@/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    inner = inner.replace(/\$\$(.+?)\$\$/gs, '<span class="handwritten">$1</span>');
+
     inner = inner.replace(/\$lat(.+?)lat\$/gs, '<span class="lato">$1</span>');
-    inner = inner.replace(/\$fox(.+?)fox\$/gs, '<span class="fox">$1</span>');
-    inner = inner.replace(/\$Eb(.+?)Eb\$/gs, '<span class="eb-garamond">$1</span>');
-    inner = inner.replace(/\$h(?!x)(.+?)h\$/gs, '<span class="paulo-bittencourt">$1</span>');
-    inner = inner.replace(/\$nbg(.+?)nbg\$/gs, '<span class="nanum-barun-gothic">$1</span>');
-    inner = inner.replace(/\$tf(.+?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>');
-    inner = inner.replace(/\$vcr(.+?)vcr\$/gs, '<span class="vcr-osd-mono">$1</span>');
-    inner = inner.replace(/\$Bh(.+?)Bh\$/gs, '<span class="braun-handwriting">$1</span>');
+    inner = inner.replace(/\$sst(.+?)sst\$/gs, '<span class="nanum-barun-gothic">$1</span>');
+    inner = inner.replace(/\$ips(.+?)ips\$/gs, '<span class="ibm-plex-sans">$1</span>');
     inner = inner.replace(/\$ssr(.+?)ssr\$/gs, '<span class="noto-sans">$1</span>');
-    inner = inner.replace(/\$NE(.+?)NE\$/gs, '<span class="noto-emoji">$1</span>');
-    inner = inner.replace(/\$soc(.+?)soc\$/gs, '<span class="kcc-an-changho">$1</span>');
-    inner = inner.replace(/\$clu(.+?)clu\$/gs, '<span class="diphylleia">$1</span>');
-    inner = inner.replace(/\$osh(.+?)osh\$/gs, '<span class="crimson-old-style">$1</span>');
-    inner = inner.replace(/\$cri(.+?)cri\$/gs, '<span class="macho">$1</span>');
-    inner = inner.replace(/\$sst(.+?)sst\$/gs, '<span class="ibm-plex-sans">$1</span>');
-    inner = inner.replace(/\$gps(.+?)gps\$/gs, '<span class="sandoll-danpatpang">$1</span>');
+
+    inner = inner.replace(/\$\$(.+?)\$\$/gs, '<span class="handwritten">$1</span>');
+    inner = inner.replace(/\$h(?!x)(.+?)h\$/gs, '<span class="paulo-bittencourt">$1</span>');
+    
+    inner = inner.replace(/\$Eb(.+?)Eb\$/gs, '<span class="eb-garamond">$1</span>');
+    inner = inner.replace(/\$osh(.+?)osh\$/gs, '<span class="crimson-old-style">$1</span>');   
+    
+    inner = inner.replace(/\$fox(.+?)fox\$/gs, '<span class="fox">$1</span>');
+    inner = inner.replace(/\$Bh(.+?)Bh\$/gs, '<span class="braun-handwriting">$1</span>');
     inner = inner.replace(/\$c(.+?)c\$/gs, '<span class="contaminated">$1</span>');
+    inner = inner.replace(/\$clu(.+?)clu\$/gs, '<span class="diphylleia">$1</span>');
+    
+    inner = inner.replace(/\$tf(.+?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>');
+    inner = inner.replace(/\$cri(.+?)cri\$/gs, '<span class="macho">$1</span>');
+    inner = inner.replace(/\$gps(.+?)gps\$/gs, '<span class="tenada">$1</span>');
+
+    inner = inner.replace(/\$NE(.+?)NE\$/gs, '<span class="noto-emoji">$1</span>');
+    inner = inner.replace(/\$soc(.+?)soc\$/gs, '<span class="kcc-an-changho">$1</span>');    
+    
+    inner = inner.replace(/\$vcr(.+?)vcr\$/gs, '<span class="vcr-osd-mono">$1</span>');    
     inner = inner.replace(/\$wo(.+?)wo\$/gs, '<span class="outline-white">$1</span>');
     inner = inner.replace(/\$bo(.+?)bo\$/gs, '<span class="outline-black">$1</span>');
     const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
