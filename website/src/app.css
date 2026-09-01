@@ -386,7 +386,7 @@ body {
 @font-face {
   font-family: "Noto Emoji";
   src: url("/fonts/NotoEmoji-Variable.ttf") format("truetype");
-  font-weight: 100 900;
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
@@ -430,7 +430,7 @@ body {
   font-family: "IBM Plex Sans";
   src: url("/fonts/IIBMPlexSans-Italic-VariableFont_wdth,wght.tff") format("truetype");
   font-weight: 200 300;
-  font-style: normal;
+  font-style: italic;
   font-display: swap;
 }
 
