@@ -874,15 +874,15 @@ hr.invisible-hr {
 
 .ibm-plex-sans {
   font-family: 'IBM Plex Sans', 'Helvetica Neue', 'Arial', sans-serif;
-  font-weight: 100;
-}
-
-.ibm-plex-sans strong {
   font-weight: 200;
 }
 
-.sandoll-danpatpang {
-  font-family: 'Sandoll Danpatpang', 'Georgia', serif;
+.ibm-plex-sans strong {
+  font-weight: 300;
+}
+
+.tenada {
+  font-family: 'Tenada', 'Georgia', serif;
 }
 
 .scroll-wrap {
