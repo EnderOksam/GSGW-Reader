@@ -563,7 +563,7 @@
     { syntax: "$crictextcri$", text: "cheerful research inc.", cls: "macho", expandable: true },
     { syntax: "$NEtextNE$", text: "noto emoji", cls: "noto-emoji", expandable: true, previewHtml: '<span class="noto-emoji">🥰🥸🤯🧐🤪🥱</span>' },
     { syntax: "$soctextsoc$", text: "cursive script", cls: "kcc-an-changho", expandable: true },
-    { syntax: "$nbgtextnbg$", 
+
     { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
   ];
 
