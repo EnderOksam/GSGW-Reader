@@ -420,7 +420,7 @@ body {
 
 @font-face {
   font-family: "IBM Plex Sans";
-  src: url("/fonts/IBMPlexSans-VariableFont_wdth,wght.tff") format("truetype");
+  src: url("/fonts/IBMPlexSans-VariableFont_wdth,wght.ttf") format("truetype");
   font-weight: 200 300;
   font-style: normal;
   font-display: swap;
@@ -428,7 +428,7 @@ body {
 
 @font-face {
   font-family: "IBM Plex Sans";
-  src: url("/fonts/IIBMPlexSans-Italic-VariableFont_wdth,wght.tff") format("truetype");
+  src: url("/fonts/IBMPlexSans-Italic-VariableFont_wdth,wght.ttf") format("truetype");
   font-weight: 200 300;
   font-style: italic;
   font-display: swap;

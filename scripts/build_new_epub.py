@@ -615,7 +615,8 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$osh(.*?)osh\$", re.DOTALL), r'<span class="crimson-old-style">\1</span>'),
     (re.compile(r"\$cri(.*?)cri\$", re.DOTALL), r'<span class="macho">\1</span>'),
     (re.compile(r"\$sst(.*?)sst\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
-    (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="sandoll-danpatpang">\1</span>'),
+    (re.compile(r"\$ips(.*?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
+    (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
     (re.compile(r"\$tf(.*?)tf\$", re.DOTALL), r'<span class="chungju-kimsaeng">\1</span>'),
     (re.compile(r"\$vcr(.*?)vcr\$", re.DOTALL), r'<span class="vcr-osd-mono">\1</span>'),
     (re.compile(r"\$Bh(.*?)Bh\$", re.DOTALL), r'<span class="braun-handwriting">\1</span>'),
@@ -915,7 +916,8 @@ def subtle_replacer(match):
     inner = re.sub(r"\$osh(.+?)osh\$", r'<span class="crimson-old-style">\1</span>', inner)
     inner = re.sub(r"\$cri(.+?)cri\$", r'<span class="macho">\1</span>', inner)
     inner = re.sub(r"\$sst(.+?)sst\$", r'<span class="ibm-plex-sans">\1</span>', inner)
-    inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="sandoll-danpatpang">\1</span>', inner)
+    inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
+    inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
     inner = re.sub(r"\$tf(.+?)tf\$", r'<span class="chungju-kimsaeng">\1</span>', inner)
     inner = re.sub(r"\$vcr(.+?)vcr\$", r'<span class="vcr-osd-mono">\1</span>', inner)
     inner = re.sub(r"\$Bh(.+?)Bh\$", r'<span class="braun-handwriting">\1</span>', inner)
@@ -1266,6 +1268,10 @@ FOOTNOTE_TAG_REPLACEMENTS = [
     (re.compile(r"\$bo(.+?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
     (re.compile(r"\$lat(.+?)lat\$", re.DOTALL), r'<span class="lato">\1</span>'),
     (re.compile(r"\$fox(.+?)fox\$", re.DOTALL), r'<span class="fox">\1</span>'),
+    (re.compile(r"\$nbg(.+?)nbg\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
+    (re.compile(r"\$sst(.+?)sst\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
+    (re.compile(r"\$ips(.+?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
+    (re.compile(r"\$gps(.+?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
     (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),
      lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL),
@@ -1907,10 +1913,9 @@ def content_opf(
         ("Fonts/KCCAnChangho.woff2", "font-kcc-an-changho", "font/woff2"),
         ("Fonts/Diphylleia-Variable.woff2", "font-diphylleia", "font/woff2"),
         ("Fonts/Macho.woff2", "font-macho", "font/woff2"),
-        ("Fonts/IBMPlexSans-Thin.woff2", "font-ibm-plex-sans-thin", "font/woff2"),
-        ("Fonts/IBMPlexSans-UltraLight.woff2", "font-ibm-plex-sans-ultralight", "font/woff2"),
-        ("Fonts/SandollDanpatpang-Regular.otf", "font-sandoll-danpatpang", "font/sfnt"),
-        ("Fonts/SandollDanpatpang-Italic.otf", "font-sandoll-danpatpang-italic", "font/sfnt"),
+        ("Fonts/IBMPlexSans-VariableFont_wdth,wght.ttf", "font-ibm-plex-sans", "font/sfnt"),
+        ("Fonts/IBMPlexSans-Italic-VariableFont_wdth,wght.ttf", "font-ibm-plex-sans-italic", "font/sfnt"),
+        ("Fonts/Tenada.ttf", "font-tenada", "font/sfnt"),
     ]
     for href, fid, media in FONT_FILES:
         manifest_items.append(
@@ -2050,10 +2055,9 @@ def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
         "KCCAnChangho.woff2",
         "Diphylleia-Variable.woff2",
         "Macho.woff2",
-        "IBMPlexSans-Thin.woff2",
-        "IBMPlexSans-UltraLight.woff2",
-        "SandollDanpatpang-Regular.otf",
-        "SandollDanpatpang-Italic.otf",
+        "IBMPlexSans-VariableFont_wdth,wght.ttf",
+        "IBMPlexSans-Italic-VariableFont_wdth,wght.ttf",
+        "Tenada.ttf",
     ]
     for font_name in font_names:
         src = FONTS_DIR / font_name

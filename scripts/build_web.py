@@ -177,7 +177,8 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$osh(.*?)osh\$", re.DOTALL), r'<span class="crimson-old-style">\1</span>'),
     (re.compile(r"\$cri(.*?)cri\$", re.DOTALL), r'<span class="macho">\1</span>'),
     (re.compile(r"\$sst(.*?)sst\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
-    (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="sandoll-danpatpang">\1</span>'),
+    (re.compile(r"\$ips(.*?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
+    (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
 ]
 
 
@@ -430,7 +431,8 @@ def subtle_replacer(match):
     inner = re.sub(r"\$osh(.+?)osh\$", r'<span class="crimson-old-style">\1</span>', inner)
     inner = re.sub(r"\$cri(.+?)cri\$", r'<span class="macho">\1</span>', inner)
     inner = re.sub(r"\$sst(.+?)sst\$", r'<span class="ibm-plex-sans">\1</span>', inner)
-    inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="sandoll-danpatpang">\1</span>', inner)
+    inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
+    inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
 
     parts = re.split(r"(<[^>]+>)", inner)
 
@@ -782,6 +784,10 @@ FOOTNOTE_TAG_REPLACEMENTS = [
     (re.compile(r"\$bo(.+?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
     (re.compile(r"\$lat(.+?)lat\$", re.DOTALL), r'<span class="lato">\1</span>'),
     (re.compile(r"\$fox(.+?)fox\$", re.DOTALL), r'<span class="fox">\1</span>'),
+    (re.compile(r"\$nbg(.+?)nbg\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
+    (re.compile(r"\$sst(.+?)sst\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
+    (re.compile(r"\$ips(.+?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
+    (re.compile(r"\$gps(.+?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
     (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),
      lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL),
