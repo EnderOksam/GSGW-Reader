@@ -549,7 +549,7 @@
     { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
     { syntax: "$oshtextosh$", text: "old style humanist", cls: "crimson-old-style", expandable: true },
     { syntax: "$ssrtextssr$", text: "sans serif regular", cls: "noto-sans", expandable: true },
-    { syntax: "$ssttextsst$", text: "sans serif thin", cls: "ibm-plex-sans", expandable: true },
+    { syntax: "$ssttextsst$", text: "sans serif thin", cls: "nanum-barun-gothic", expandable: true },
     { syntax: "$ipstextips$", text: "IBM Plex Sans", cls: "ibm-plex-sans", expandable: true },
     { syntax: "$lattextlat$", text: "document text", cls: "lato", expandable: true },
     { syntax: "$BhtextBh$", text: "braun font", cls: "braun-handwriting", expandable: true },
@@ -561,7 +561,6 @@
     { syntax: "$crictextcri$", text: "cheerful research inc.", cls: "macho", expandable: true },
     { syntax: "$NEtextNE$", text: "noto emoji", cls: "noto-emoji", expandable: true, previewHtml: '<span class="noto-emoji">🥰🥸🤯🧐🤪🥱</span>' },
     { syntax: "$soctextsoc$", text: "cursive script", cls: "kcc-an-changho", expandable: true },
-    { syntax: "$nbgtextnbg$", text: "thin modern", cls: "nanum-barun-gothic", expandable: true },
     { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
   ];
 

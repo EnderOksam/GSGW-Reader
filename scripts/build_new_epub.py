@@ -607,14 +607,13 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$lat(.*?)lat\$", re.DOTALL), r'<span class="lato">\1</span>'),
     (re.compile(r"\$fox(.*?)fox\$", re.DOTALL), r'<span class="fox">\1</span>'),
     (re.compile(r"\$h(?!x)(.*?)h\$", re.DOTALL), r'<span class="paulo-bittencourt">\1</span>'),
-    (re.compile(r"\$nbg(.*?)nbg\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
     (re.compile(r"\$ssr(.*?)ssr\$", re.DOTALL), r'<span class="noto-sans">\1</span>'),
     (re.compile(r"\$NE(.*?)NE\$", re.DOTALL), r'<span class="noto-emoji">\1</span>'),
     (re.compile(r"\$soc(.*?)soc\$", re.DOTALL), r'<span class="kcc-an-changho">\1</span>'),
     (re.compile(r"\$clu(.*?)clu\$", re.DOTALL), r'<span class="diphylleia">\1</span>'),
     (re.compile(r"\$osh(.*?)osh\$", re.DOTALL), r'<span class="crimson-old-style">\1</span>'),
     (re.compile(r"\$cri(.*?)cri\$", re.DOTALL), r'<span class="macho">\1</span>'),
-    (re.compile(r"\$sst(.*?)sst\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
+    (re.compile(r"\$sst(.*?)sst\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
     (re.compile(r"\$ips(.*?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
     (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
     (re.compile(r"\$tf(.*?)tf\$", re.DOTALL), r'<span class="chungju-kimsaeng">\1</span>'),
@@ -908,14 +907,13 @@ def subtle_replacer(match):
     inner = re.sub(r"\$wo(.+?)wo\$", r'<span class="outline-white">\1</span>', inner)
     inner = re.sub(r"\$bo(.+?)bo\$", r'<span class="outline-black">\1</span>', inner)
     inner = re.sub(r"\$h(?!x)(.+?)h\$", r'<span class="paulo-bittencourt">\1</span>', inner)
-    inner = re.sub(r"\$nbg(.+?)nbg\$", r'<span class="nanum-barun-gothic">\1</span>', inner)
     inner = re.sub(r"\$ssr(.+?)ssr\$", r'<span class="noto-sans">\1</span>', inner)
     inner = re.sub(r"\$NE(.+?)NE\$", r'<span class="noto-emoji">\1</span>', inner)
     inner = re.sub(r"\$soc(.+?)soc\$", r'<span class="kcc-an-changho">\1</span>', inner)
     inner = re.sub(r"\$clu(.+?)clu\$", r'<span class="diphylleia">\1</span>', inner)
     inner = re.sub(r"\$osh(.+?)osh\$", r'<span class="crimson-old-style">\1</span>', inner)
     inner = re.sub(r"\$cri(.+?)cri\$", r'<span class="macho">\1</span>', inner)
-    inner = re.sub(r"\$sst(.+?)sst\$", r'<span class="ibm-plex-sans">\1</span>', inner)
+    inner = re.sub(r"\$sst(.+?)sst\$", r'<span class="nanum-barun-gothic">\1</span>', inner)
     inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
     inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
     inner = re.sub(r"\$tf(.+?)tf\$", r'<span class="chungju-kimsaeng">\1</span>', inner)
@@ -1268,8 +1266,7 @@ FOOTNOTE_TAG_REPLACEMENTS = [
     (re.compile(r"\$bo(.+?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
     (re.compile(r"\$lat(.+?)lat\$", re.DOTALL), r'<span class="lato">\1</span>'),
     (re.compile(r"\$fox(.+?)fox\$", re.DOTALL), r'<span class="fox">\1</span>'),
-    (re.compile(r"\$nbg(.+?)nbg\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
-    (re.compile(r"\$sst(.+?)sst\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
+    (re.compile(r"\$sst(.+?)sst\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
     (re.compile(r"\$ips(.+?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
     (re.compile(r"\$gps(.+?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
     (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),

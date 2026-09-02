@@ -71,8 +71,7 @@ const simpleInlineTags: [RegExp, string][] = [
   [/;o(.*?)o;/gs, '<span class="hl-orange">$1</span>'],
 
   [/\$ssr(.*?)ssr\$/gs, '<span class="noto-sans">$1</span>'],
-  [/\$sst(.*?)sst\$/gs, '<span class="ibm-plex-sans">$1</span>'],
-  [/\$nbg(.*?)nbg\$/gs, '<span class="nanum-barun-gothic">$1</span>'],
+  [/\$sst(.*?)sst\$/gs, '<span class="nanum-barun-gothic">$1</span>'],
   [/\$lat(.*?)lat\$/gs, '<span class="lato">$1</span>'],
   [/\$ips(.*?)ips\$/gs, '<span class="ibm-plex-sans">$1</span>'],
 
@@ -222,8 +221,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 
     inner = inner.replace(/\$ssr(.+?)ssr\$/gs, '<span class="noto-sans">$1</span>');
-    inner = inner.replace(/\$sst(.+?)sst\$/gs, '<span class="ibm-plex-sans">$1</span>');
-    inner = inner.replace(/\$nbg(.+?)nbg\$/gs, '<span class="nanum-barun-gothic">$1</span>');
+    inner = inner.replace(/\$sst(.+?)sst\$/gs, '<span class="nanum-barun-gothic">$1</span>');
     inner = inner.replace(/\$lat(.+?)lat\$/gs, '<span class="lato">$1</span>');
     inner = inner.replace(/\$ips(.+?)ips\$/gs, '<span class="ibm-plex-sans">$1</span>');
     
