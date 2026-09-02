@@ -90,7 +90,14 @@
   // 1. Parse URL manually (since page.params is empty)
   // Split path, filter out empty strings to handle trailing slashes
   // URL: /read/coi/webnovel/1 -> ["read", "coi", "webnovel", "1"]
-  const pathSegments = $derived(page.url.pathname.split("/").filter(Boolean));
+  const pathSegments = $derived(
+    page.url.pathname
+      .split("/")
+      .filter(Boolean)
+      .map((seg) => {
+        try { return decodeURIComponent(seg); } catch { return seg; }
+      })
+  );
 
   // 2. Derive values from URL position
   const bookSlug = $derived(pathSegments[1] ?? "lotm");

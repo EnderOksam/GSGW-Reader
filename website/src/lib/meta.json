@@ -996,7 +996,7 @@
         "slug": "87"
       },
       {
-        "title": "[■■■ 16th Avenue], I",
+        "title": "[\u25a0\u25a0\u25a0 16th Avenue], I",
         "category": "Part 1",
         "discussion": 129,
         "index": 88,
@@ -1004,7 +1004,7 @@
         "slug": "88"
       },
       {
-        "title": "[■■■ 16th Avenue], II",
+        "title": "[\u25a0\u25a0\u25a0 16th Avenue], II",
         "category": "Part 1",
         "discussion": 130,
         "index": 89,
@@ -1012,7 +1012,7 @@
         "slug": "89"
       },
       {
-        "title": "[■■■ 16th Avenue], III",
+        "title": "[\u25a0\u25a0\u25a0 16th Avenue], III",
         "category": "Part 1",
         "discussion": 131,
         "index": 90,
@@ -1020,7 +1020,7 @@
         "slug": "90"
       },
       {
-        "title": "[■■■ 16th Avenue], IV",
+        "title": "[\u25a0\u25a0\u25a0 16th Avenue], IV",
         "category": "Part 1",
         "discussion": 132,
         "index": 91,
@@ -1028,7 +1028,7 @@
         "slug": "91"
       },
       {
-        "title": "[■■■ 16th Avenue], V",
+        "title": "[\u25a0\u25a0\u25a0 16th Avenue], V",
         "category": "Part 1",
         "discussion": 522,
         "index": 92,
@@ -1036,7 +1036,7 @@
         "slug": "92"
       },
       {
-        "title": "[■■■ 16th Avenue], VI",
+        "title": "[\u25a0\u25a0\u25a0 16th Avenue], VI",
         "category": "Part 1",
         "discussion": 134,
         "index": 93,
@@ -1044,7 +1044,7 @@
         "slug": "93"
       },
       {
-        "title": "[■■■ 16th Avenue], VII",
+        "title": "[\u25a0\u25a0\u25a0 16th Avenue], VII",
         "category": "Part 1",
         "discussion": 135,
         "index": 94,
@@ -1052,7 +1052,7 @@
         "slug": "94"
       },
       {
-        "title": "[■■■ 16th Avenue], VIII",
+        "title": "[\u25a0\u25a0\u25a0 16th Avenue], VIII",
         "category": "Part 1",
         "discussion": 136,
         "index": 95,
@@ -1092,7 +1092,7 @@
         "slug": "99"
       },
       {
-        "title": "[Don’t Look in the Mirror], I",
+        "title": "[Don\u2019t Look in the Mirror], I",
         "category": "Part 1",
         "discussion": 141,
         "index": 100,
@@ -1100,7 +1100,7 @@
         "slug": "100"
       },
       {
-        "title": "[Don’t Look in the Mirror], II",
+        "title": "[Don\u2019t Look in the Mirror], II",
         "category": "Part 1",
         "discussion": 142,
         "index": 101,
@@ -1108,7 +1108,7 @@
         "slug": "101"
       },
       {
-        "title": "[Don’t Look in the Mirror], III",
+        "title": "[Don\u2019t Look in the Mirror], III",
         "category": "Part 1",
         "discussion": 143,
         "index": 102,
@@ -1132,7 +1132,7 @@
         "slug": "104"
       },
       {
-        "title": "'Doppelgänger?'",
+        "title": "'Doppelg\u00e4nger?'",
         "category": "Part 1",
         "discussion": 146,
         "index": 105,
@@ -1956,7 +1956,7 @@
         "slug": "207"
       },
       {
-        "title": "■■■",
+        "title": "\u25a0\u25a0\u25a0",
         "category": "Part 1",
         "discussion": 151,
         "index": 208,
@@ -2156,7 +2156,7 @@
         "slug": "232"
       },
       {
-        "title": "■■ Heoun",
+        "title": "\u25a0\u25a0 Heoun",
         "category": "Part 2",
         "discussion": 0,
         "index": 233,
@@ -2722,9 +2722,7 @@
         "index": 303,
         "section": "Chapter 303",
         "slug": "303"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
         "title": "Sekwang Station [Blood Broadcasting Station], VI",
         "category": "Part 2",
@@ -2804,9 +2802,11 @@
         "index": 313,
         "section": "Chapter 313",
         "slug": "313"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
-        "title": "Chapter 314",
+        "title": "Sekwang Station [Morning Station], III",
         "category": "Part 2",
         "discussion": 0,
         "index": 314,
@@ -2814,7 +2814,7 @@
         "slug": "314"
       },
       {
-        "title": "Chapter 315",
+        "title": "Sekwang Station [Morning Station], IV",
         "category": "Part 2",
         "discussion": 0,
         "index": 315,
@@ -2822,7 +2822,7 @@
         "slug": "315"
       },
       {
-        "title": "Chapter 316",
+        "title": "Sekwang Station [Morning Station], V",
         "category": "Part 2",
         "discussion": 0,
         "index": 316,
@@ -3721,35 +3721,35 @@
         "slug": "5"
       },
       {
-        "title": "⟨Shining Star⟩, I",
+        "title": "\u27e8Shining Star\u27e9, I",
         "category": "Part 1",
         "index": 5,
         "section": "Chapter 6",
         "slug": "6"
       },
       {
-        "title": "⟨Shining Star⟩, II",
+        "title": "\u27e8Shining Star\u27e9, II",
         "category": "Part 1",
         "index": 6,
         "section": "Chapter 7",
         "slug": "7"
       },
       {
-        "title": "⟨Shining Star⟩, III",
+        "title": "\u27e8Shining Star\u27e9, III",
         "category": "Part 1",
         "index": 7,
         "section": "Chapter 8",
         "slug": "8"
       },
       {
-        "title": "⟨Shining Star⟩, IV",
+        "title": "\u27e8Shining Star\u27e9, IV",
         "category": "Part 1",
         "index": 8,
         "section": "Chapter 9",
         "slug": "9"
       },
       {
-        "title": "⟨Shining Star⟩, V",
+        "title": "\u27e8Shining Star\u27e9, V",
         "category": "Part 1",
         "index": 9,
         "section": "Chapter 10",
@@ -4162,7 +4162,7 @@
         "slug": "68"
       },
       {
-        "title": "⟨Living Together TEST⟩ Episode 1",
+        "title": "\u27e8Living Together TEST\u27e9 Episode 1",
         "category": "Part 1",
         "index": 68,
         "section": "Chapter 69",
@@ -4232,21 +4232,21 @@
         "slug": "78"
       },
       {
-        "title": "⟨Working Man⟩, I",
+        "title": "\u27e8Working Man\u27e9, I",
         "category": "Part 1",
         "index": 78,
         "section": "Chapter 79",
         "slug": "79"
       },
       {
-        "title": "⟨Working Man⟩, II",
+        "title": "\u27e8Working Man\u27e9, II",
         "category": "Part 1",
         "index": 79,
         "section": "Chapter 80",
         "slug": "80"
       },
       {
-        "title": "⟨Man Who Only Needs To Say It Once⟩",
+        "title": "\u27e8Man Who Only Needs To Say It Once\u27e9",
         "category": "Part 1",
         "index": 80,
         "section": "Chapter 81",
@@ -4316,21 +4316,21 @@
         "slug": "90"
       },
       {
-        "title": "⟨Let's Get Close First⟩, I",
+        "title": "\u27e8Let's Get Close First\u27e9, I",
         "category": "Part 1",
         "index": 90,
         "section": "Chapter 91",
         "slug": "91"
       },
       {
-        "title": "⟨Let's Get Close First⟩, II",
+        "title": "\u27e8Let's Get Close First\u27e9, II",
         "category": "Part 1",
         "index": 91,
         "section": "Chapter 92",
         "slug": "92"
       },
       {
-        "title": "⟨Let's Get Close First⟩, III",
+        "title": "\u27e8Let's Get Close First\u27e9, III",
         "category": "Part 1",
         "index": 92,
         "section": "Chapter 93",
@@ -4442,21 +4442,21 @@
         "slug": "108"
       },
       {
-        "title": "⟨Hwarang Idols⟩, I",
+        "title": "\u27e8Hwarang Idols\u27e9, I",
         "category": "Part 1",
         "index": 108,
         "section": "Chapter 109",
         "slug": "109"
       },
       {
-        "title": "⟨Hwarang Idols⟩, II",
+        "title": "\u27e8Hwarang Idols\u27e9, II",
         "category": "Part 1",
         "index": 109,
         "section": "Chapter 110",
         "slug": "110"
       },
       {
-        "title": "⟨127 Section⟩",
+        "title": "\u27e8127 Section\u27e9",
         "category": "Part 1",
         "index": 110,
         "section": "Chapter 111",
@@ -4631,28 +4631,28 @@
         "slug": "135"
       },
       {
-        "title": "⟨Copy Cat⟩, I",
+        "title": "\u27e8Copy Cat\u27e9, I",
         "category": "Part 1",
         "index": 135,
         "section": "Chapter 136",
         "slug": "136"
       },
       {
-        "title": "⟨Copy Cat⟩, II",
+        "title": "\u27e8Copy Cat\u27e9, II",
         "category": "Part 1",
         "index": 136,
         "section": "Chapter 137",
         "slug": "137"
       },
       {
-        "title": "⟨Copy Cat⟩, III",
+        "title": "\u27e8Copy Cat\u27e9, III",
         "category": "Part 1",
         "index": 137,
         "section": "Chapter 138",
         "slug": "138"
       },
       {
-        "title": "⟨Copy Cat⟩, IV",
+        "title": "\u27e8Copy Cat\u27e9, IV",
         "category": "Part 1",
         "index": 138,
         "section": "Chapter 139",
@@ -4680,14 +4680,14 @@
         "slug": "142"
       },
       {
-        "title": "⟨Nerdy Andy Show⟩, I",
+        "title": "\u27e8Nerdy Andy Show\u27e9, I",
         "category": "Part 1",
         "index": 142,
         "section": "Chapter 143",
         "slug": "143"
       },
       {
-        "title": "⟨Nerdy Andy Show⟩, II",
+        "title": "\u27e8Nerdy Andy Show\u27e9, II",
         "category": "Part 1",
         "index": 143,
         "section": "Chapter 144",
@@ -4715,28 +4715,28 @@
         "slug": "147"
       },
       {
-        "title": "⟨The Singer I Made⟩, I",
+        "title": "\u27e8The Singer I Made\u27e9, I",
         "category": "Part 2",
         "index": 147,
         "section": "Chapter 148",
         "slug": "148"
       },
       {
-        "title": "⟨The Singer I Made⟩, II",
+        "title": "\u27e8The Singer I Made\u27e9, II",
         "category": "Part 2",
         "index": 148,
         "section": "Chapter 149",
         "slug": "149"
       },
       {
-        "title": "⟨The Singer I Made⟩, III",
+        "title": "\u27e8The Singer I Made\u27e9, III",
         "category": "Part 2",
         "index": 149,
         "section": "Chapter 150",
         "slug": "150"
       },
       {
-        "title": "⟨The Singer I Made⟩, IV",
+        "title": "\u27e8The Singer I Made\u27e9, IV",
         "category": "Part 2",
         "index": 150,
         "section": "Chapter 151",
@@ -4848,7 +4848,7 @@
         "slug": "166"
       },
       {
-        "title": "⟨Time Traveler's Notebook⟩",
+        "title": "\u27e8Time Traveler's Notebook\u27e9",
         "category": "Part 2",
         "index": 166,
         "section": "Chapter 167",
@@ -5009,14 +5009,14 @@
         "slug": "189"
       },
       {
-        "title": "⟨TeSTAR's Working Holiday⟩, I",
+        "title": "\u27e8TeSTAR's Working Holiday\u27e9, I",
         "category": "Part 2",
         "index": 189,
         "section": "Chapter 190",
         "slug": "190"
       },
       {
-        "title": "⟨TeSTAR's Working Holiday⟩, II",
+        "title": "\u27e8TeSTAR's Working Holiday\u27e9, II",
         "category": "Part 2",
         "index": 190,
         "section": "Chapter 191",
@@ -5625,35 +5625,35 @@
         "slug": "277"
       },
       {
-        "title": "⟨TeSTAR Roommate⟩ Season 4, I",
+        "title": "\u27e8TeSTAR Roommate\u27e9 Season 4, I",
         "category": "Part 2",
         "index": 277,
         "section": "Chapter 278",
         "slug": "278"
       },
       {
-        "title": "⟨TeSTAR Roommate⟩ Season 4, II",
+        "title": "\u27e8TeSTAR Roommate\u27e9 Season 4, II",
         "category": "Part 2",
         "index": 278,
         "section": "Chapter 279",
         "slug": "279"
       },
       {
-        "title": "⟨TeSTAR Roommate⟩ Season 4, III",
+        "title": "\u27e8TeSTAR Roommate\u27e9 Season 4, III",
         "category": "Part 2",
         "index": 279,
         "section": "Chapter 280",
         "slug": "280"
       },
       {
-        "title": "⟨TeSTAR Roommate⟩ Season 4, IV",
+        "title": "\u27e8TeSTAR Roommate\u27e9 Season 4, IV",
         "category": "Part 2",
         "index": 280,
         "section": "Chapter 281",
         "slug": "281"
       },
       {
-        "title": "⟨TeSTAR Roommate⟩ Season 4, V",
+        "title": "\u27e8TeSTAR Roommate\u27e9 Season 4, V",
         "category": "Part 2",
         "index": 281,
         "section": "Chapter 282",
@@ -5786,28 +5786,28 @@
         "slug": "300"
       },
       {
-        "title": "⟨T-Holic's Show Business⟩, I",
+        "title": "\u27e8T-Holic's Show Business\u27e9, I",
         "category": "Part 2",
         "index": 300,
         "section": "Chapter 301",
         "slug": "301"
       },
       {
-        "title": "⟨T-Holic's Show Business⟩, II",
+        "title": "\u27e8T-Holic's Show Business\u27e9, II",
         "category": "Part 2",
         "index": 301,
         "section": "Chapter 302",
         "slug": "302"
       },
       {
-        "title": "⟨T-Holic's Show Business⟩, III",
+        "title": "\u27e8T-Holic's Show Business\u27e9, III",
         "category": "Part 2",
         "index": 302,
         "section": "Chapter 303",
         "slug": "303"
       },
       {
-        "title": "⟨T-Holic's Show Business⟩, IV",
+        "title": "\u27e8T-Holic's Show Business\u27e9, IV",
         "category": "Part 2",
         "index": 303,
         "section": "Chapter 304",
@@ -5952,9 +5952,7 @@
         "index": 323,
         "section": "Chapter 324",
         "slug": "324"
-      }
-    ],
-    "debutplaintxt": [
+      },
       {
         "title": "Chapter 325",
         "category": "Part 2",
@@ -6087,7 +6085,9 @@
         "index": 342,
         "section": "Chapter 343",
         "slug": "343"
-      },
+      }
+    ],
+    "debutplaintxt": [
       {
         "title": "Chapter 344",
         "category": "Part 2",
@@ -8195,6 +8195,456 @@
         "section": "Epilogue",
         "slug": "644"
       }
+    ],
+    "espa\u00f1ol": [
+      {
+        "title": "Cr\u00e9ditos",
+        "category": "Part 1",
+        "index": -1,
+        "section": "Pr\u00f3logo",
+        "slug": "0"
+      },
+      {
+        "title": "Debuta o Muere, I",
+        "category": "Part 1",
+        "index": 0,
+        "section": "Cap\u00edtulo 1",
+        "slug": "1"
+      },
+      {
+        "title": "Debuta o Muere, II",
+        "category": "Part 1",
+        "index": 1,
+        "section": "Cap\u00edtulo 2",
+        "slug": "2"
+      },
+      {
+        "title": "Evaluaci\u00f3n Inicial, I",
+        "category": "Part 1",
+        "index": 2,
+        "section": "Cap\u00edtulo 3",
+        "slug": "3"
+      },
+      {
+        "title": "Evaluaci\u00f3n Inicial, II",
+        "category": "Part 1",
+        "index": 3,
+        "section": "Cap\u00edtulo 4",
+        "slug": "4"
+      },
+      {
+        "title": "Evaluaci\u00f3n Inicial, III",
+        "category": "Part 1",
+        "index": 4,
+        "section": "Cap\u00edtulo 5",
+        "slug": "5"
+      },
+      {
+        "title": "\u27e8Estrella Brillante\u27e9, I",
+        "category": "Part 1",
+        "index": 5,
+        "section": "Cap\u00edtulo 6",
+        "slug": "6"
+      },
+      {
+        "title": "\u27e8Estrella Brillante\u27e9, II",
+        "category": "Part 1",
+        "index": 6,
+        "section": "Cap\u00edtulo 7",
+        "slug": "7"
+      },
+      {
+        "title": "\u27e8Estrella Brillante\u27e9, III",
+        "category": "Part 1",
+        "index": 7,
+        "section": "Cap\u00edtulo 8",
+        "slug": "8"
+      },
+      {
+        "title": "\u27e8Estrella Brillante\u27e9, IV",
+        "category": "Part 1",
+        "index": 8,
+        "section": "Cap\u00edtulo 9",
+        "slug": "9"
+      },
+      {
+        "title": "\u27e8Estrella Brillante\u27e9, V",
+        "category": "Part 1",
+        "index": 9,
+        "section": "Cap\u00edtulo 10",
+        "slug": "10"
+      },
+      {
+        "title": "Primer Combate en Equipo, I",
+        "category": "Part 1",
+        "index": 10,
+        "section": "Cap\u00edtulo 11",
+        "slug": "11"
+      },
+      {
+        "title": "Primer Combate en Equipo, II",
+        "category": "Part 1",
+        "index": 11,
+        "section": "Cap\u00edtulo 12",
+        "slug": "12"
+      },
+      {
+        "title": "Primer Combate en Equipo, III",
+        "category": "Part 1",
+        "index": 12,
+        "section": "Cap\u00edtulo 13",
+        "slug": "13"
+      },
+      {
+        "title": "Primer Combate en Equipo, IV",
+        "category": "Part 1",
+        "index": 13,
+        "section": "Cap\u00edtulo 14",
+        "slug": "14"
+      },
+      {
+        "title": "Primer Combate en Equipo, V",
+        "category": "Part 1",
+        "index": 14,
+        "section": "Cap\u00edtulo 15",
+        "slug": "15"
+      },
+      {
+        "title": "Primer Combate en Equipo, VI",
+        "category": "Part 1",
+        "index": 15,
+        "section": "Cap\u00edtulo 16",
+        "slug": "16"
+      },
+      {
+        "title": "Presentaci\u00f3n de Producci\u00f3n",
+        "category": "Part 1",
+        "index": 16,
+        "section": "Cap\u00edtulo 17",
+        "slug": "17"
+      },
+      {
+        "title": "Transmisi\u00f3n del EP 1, I",
+        "category": "Part 1",
+        "index": 17,
+        "section": "Cap\u00edtulo 18",
+        "slug": "18"
+      },
+      {
+        "title": "Transmisi\u00f3n del EP 1, II",
+        "category": "Part 1",
+        "index": 18,
+        "section": "Cap\u00edtulo 19",
+        "slug": "19"
+      },
+      {
+        "title": "PR en Vivo, I",
+        "category": "Part 1",
+        "index": 19,
+        "section": "Cap\u00edtulo 20",
+        "slug": "20"
+      },
+      {
+        "title": "PR en Vivo, II",
+        "category": "Part 1",
+        "index": 20,
+        "section": "Cap\u00edtulo 21",
+        "slug": "21"
+      },
+      {
+        "title": "Transmisi\u00f3n de los EP 3-5, I",
+        "category": "Part 1",
+        "index": 21,
+        "section": "Cap\u00edtulo 22",
+        "slug": "22"
+      },
+      {
+        "title": "Transmisi\u00f3n de los EP 3-5, II",
+        "category": "Part 1",
+        "index": 22,
+        "section": "Cap\u00edtulo 23",
+        "slug": "23"
+      },
+      {
+        "title": "Transmisi\u00f3n de los EP 3-5, III",
+        "category": "Part 1",
+        "index": 23,
+        "section": "Cap\u00edtulo 24",
+        "slug": "24"
+      },
+      {
+        "title": "Transmisi\u00f3n de los EP 3-5, IV",
+        "category": "Part 1",
+        "index": 24,
+        "section": "Cap\u00edtulo 25",
+        "slug": "25"
+      },
+      {
+        "title": "Transmisi\u00f3n de los EP 3-5, V",
+        "category": "Part 1",
+        "index": 25,
+        "section": "Cap\u00edtulo 26",
+        "slug": "26"
+      },
+      {
+        "title": "Cap\u00edtulo 27",
+        "category": "Part 1",
+        "index": 26,
+        "section": "Cap\u00edtulo 27",
+        "slug": "27"
+      },
+      {
+        "title": "Cap\u00edtulo 28",
+        "category": "Part 1",
+        "index": 27,
+        "section": "Cap\u00edtulo 28",
+        "slug": "28"
+      },
+      {
+        "title": "Cap\u00edtulo 29",
+        "category": "Part 1",
+        "index": 28,
+        "section": "Cap\u00edtulo 29",
+        "slug": "29"
+      },
+      {
+        "title": "Cap\u00edtulo 30",
+        "category": "Part 1",
+        "index": 29,
+        "section": "Cap\u00edtulo 30",
+        "slug": "30"
+      },
+      {
+        "title": "Visita de Anuncios en el Metro (Misma Edad), I",
+        "category": "Part 1",
+        "index": 30,
+        "section": "Cap\u00edtulo 31",
+        "slug": "31"
+      },
+      {
+        "title": "Visita de Anuncios en el Metro (Misma Edad), II",
+        "category": "Part 1",
+        "index": 31,
+        "section": "Cap\u00edtulo 32",
+        "slug": "32"
+      },
+      {
+        "title": "Cap\u00edtulo 33",
+        "category": "Part 1",
+        "index": 32,
+        "section": "Cap\u00edtulo 33",
+        "slug": "33"
+      },
+      {
+        "title": "Cap\u00edtulo 34",
+        "category": "Part 1",
+        "index": 33,
+        "section": "Cap\u00edtulo 34",
+        "slug": "34"
+      },
+      {
+        "title": "Cap\u00edtulo 35",
+        "category": "Part 1",
+        "index": 34,
+        "section": "Cap\u00edtulo 35",
+        "slug": "35"
+      },
+      {
+        "title": "Cap\u00edtulo 36",
+        "category": "Part 1",
+        "index": 35,
+        "section": "Cap\u00edtulo 36",
+        "slug": "36"
+      },
+      {
+        "title": "Cap\u00edtulo 37",
+        "category": "Part 1",
+        "index": 36,
+        "section": "Cap\u00edtulo 37",
+        "slug": "37"
+      },
+      {
+        "title": "Cap\u00edtulo 38",
+        "category": "Part 1",
+        "index": 37,
+        "section": "Cap\u00edtulo 38",
+        "slug": "38"
+      },
+      {
+        "title": "Cap\u00edtulo 39",
+        "category": "Part 1",
+        "index": 38,
+        "section": "Cap\u00edtulo 39",
+        "slug": "39"
+      },
+      {
+        "title": "Cap\u00edtulo 40",
+        "category": "Part 1",
+        "index": 39,
+        "section": "Cap\u00edtulo 40",
+        "slug": "40"
+      },
+      {
+        "title": "Cap\u00edtulo 41",
+        "category": "Part 1",
+        "index": 40,
+        "section": "Cap\u00edtulo 41",
+        "slug": "41"
+      },
+      {
+        "title": "Cap\u00edtulo 42",
+        "category": "Part 1",
+        "index": 41,
+        "section": "Cap\u00edtulo 42",
+        "slug": "42"
+      },
+      {
+        "title": "Cap\u00edtulo 43",
+        "category": "Part 1",
+        "index": 42,
+        "section": "Cap\u00edtulo 43",
+        "slug": "43"
+      },
+      {
+        "title": "Cap\u00edtulo 44",
+        "category": "Part 1",
+        "index": 43,
+        "section": "Cap\u00edtulo 44",
+        "slug": "44"
+      },
+      {
+        "title": "Cap\u00edtulo 45",
+        "category": "Part 1",
+        "index": 44,
+        "section": "Cap\u00edtulo 45",
+        "slug": "45"
+      },
+      {
+        "title": "Cap\u00edtulo 46",
+        "category": "Part 1",
+        "index": 45,
+        "section": "Cap\u00edtulo 46",
+        "slug": "46"
+      },
+      {
+        "title": "Cap\u00edtulo 47",
+        "category": "Part 1",
+        "index": 46,
+        "section": "Cap\u00edtulo 47",
+        "slug": "47"
+      },
+      {
+        "title": "Cap\u00edtulo 48",
+        "category": "Part 1",
+        "index": 47,
+        "section": "Cap\u00edtulo 48",
+        "slug": "48"
+      },
+      {
+        "title": "Cap\u00edtulo 49",
+        "category": "Part 1",
+        "index": 48,
+        "section": "Cap\u00edtulo 49",
+        "slug": "49"
+      },
+      {
+        "title": "Cap\u00edtulo 50",
+        "category": "Part 1",
+        "index": 49,
+        "section": "Cap\u00edtulo 50",
+        "slug": "50"
+      },
+      {
+        "title": "Cap\u00edtulo 51",
+        "category": "Part 1",
+        "index": 50,
+        "section": "Cap\u00edtulo 51",
+        "slug": "51"
+      },
+      {
+        "title": "Cap\u00edtulo 52",
+        "category": "Part 1",
+        "index": 51,
+        "section": "Cap\u00edtulo 52",
+        "slug": "52"
+      },
+      {
+        "title": "Cap\u00edtulo 53",
+        "category": "Part 1",
+        "index": 52,
+        "section": "Cap\u00edtulo 53",
+        "slug": "53"
+      },
+      {
+        "title": "Visita de Anuncios en el Metro (M\u00e1scara de Animal)",
+        "category": "Part 1",
+        "index": 53,
+        "section": "Cap\u00edtulo 54",
+        "slug": "54"
+      },
+      {
+        "title": "Cap\u00edtulo 55",
+        "category": "Part 1",
+        "index": 54,
+        "section": "Cap\u00edtulo 55",
+        "slug": "55"
+      },
+      {
+        "title": "Cap\u00edtulo 56",
+        "category": "Part 1",
+        "index": 55,
+        "section": "Cap\u00edtulo 56",
+        "slug": "56"
+      },
+      {
+        "title": "Cap\u00edtulo 57",
+        "category": "Part 1",
+        "index": 56,
+        "section": "Cap\u00edtulo 57",
+        "slug": "57"
+      },
+      {
+        "title": "Cap\u00edtulo 58",
+        "category": "Part 1",
+        "index": 57,
+        "section": "Cap\u00edtulo 58",
+        "slug": "58"
+      },
+      {
+        "title": "Cap\u00edtulo 59",
+        "category": "Part 1",
+        "index": 58,
+        "section": "Cap\u00edtulo 59",
+        "slug": "59"
+      },
+      {
+        "title": "Cap\u00edtulo 60",
+        "category": "Part 1",
+        "index": 59,
+        "section": "Cap\u00edtulo 60",
+        "slug": "60"
+      },
+      {
+        "title": "Anuncio de las Finales, I",
+        "category": "Part 1",
+        "index": 60,
+        "section": "Cap\u00edtulo 61",
+        "slug": "61"
+      },
+      {
+        "title": "Anuncio de las Finales, II",
+        "category": "Part 1",
+        "index": 61,
+        "section": "Cap\u00edtulo 62",
+        "slug": "62"
+      },
+      {
+        "title": "Anuncio de las Finales, III",
+        "category": "Part 1",
+        "index": 62,
+        "section": "Cap\u00edtulo 63",
+        "slug": "63"
+      }
     ]
   },
   "uder": {
@@ -8219,7 +8669,7 @@
         "faction": "Disaster Management Bureau",
         "code": "4721PSYA.2019.HU38",
         "classification": "Breaking Type",
-        "summary": "Welcome to ■■■■■■ Airport. Once you enter, please join our waiting passengers...",
+        "summary": "Welcome to \u25a0\u25a0\u25a0\u25a0\u25a0\u25a0 Airport. Once you enter, please join our waiting passengers...",
         "thumb": "/chapters/uder/thumbnails/hushly-airport.webp",
         "hasInteractive": false
       },
