@@ -217,6 +217,12 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   s = s.replace(/^~~~(?=\s*$)/gm, '<hr class="visible-hr">');
   s = s.replace(/^~\^~(?=\s*$)/gm, '<hr class="invisible-hr">');
 
+  s = s.replace(/^\s*\*(\s*\*){2,}\s*$/gm, '<hr>');
+  s = s.replace(/^\s*-([ \t]*-){2,}[ \t]*$/gm, '<hr>');
+  s = s.replace(/^\s*_{3,}\s*$/gm, '<hr>');
+  s = s.replace(/^\s*-([ \t]*-){2,}[ \t]*$/gm, '<hr>');
+  s = s.replace(/^\s*_{3,}\s*$/gm, '<hr>');
+
   s = s.replace(/@_@(.+?)@_@/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 

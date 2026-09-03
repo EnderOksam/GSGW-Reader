@@ -661,21 +661,31 @@
   }
 
   @media (max-width: 768px) {
+    .reader-card-outer {
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      background: none;
+    }
+    .reader-card-outer .reader-card-bg {
+      display: none;
+    }
+    .reader-card-inner {
+      padding: 0;
+    }
+    .reader-scroll {
+      padding: 0 0.75rem 1.5rem;
+    }
     .uder-grid {
       grid-template-columns: 1fr;
       grid-template-areas:
         "title"
         "side"
         "main";
+      gap: 1rem;
     }
     .sticky-col {
       position: static;
-    }
-    .reader-card-inner {
-      padding: 1.25rem;
-    }
-    .reader-scroll {
-      padding: 1rem;
     }
   }
 
