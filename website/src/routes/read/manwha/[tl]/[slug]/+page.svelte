@@ -226,8 +226,8 @@
   {/if}
 </main>
 
-<footer class="mx-auto w-full px-0 sm:px-6 md:px-12 pb-8 pt-12" style="max-width: {56 * imageScale}rem">
-  <div class="mt-16 flex items-center justify-between border-t border-base-content/10 pt-8">
+<footer class="mx-auto w-full px-3 sm:px-6 md:px-12 pb-8 pt-6" style="max-width: {56 * imageScale}rem">
+  <div class="mt-6 flex items-center justify-between border-t border-base-content/10 pt-6">
     <a
       href={prevChapter ? `/read/manwha/${tl}/${prevChapter.slug}` : `/book/manwha`}
       class="btn btn-soft btn-sm gap-2"

@@ -38,7 +38,11 @@ function cleanContentForSearch(text: string): string {
     .replace(/\$★\n?([\s\S]*?)\n?★\$/g, "$1")
     .replace(/\+[-=~\$]+\n?([\s\S]*?)\n?[-=~\$]+\+/g, "$1")
     .replace(/[&][-\$]+\n?([\s\S]*?)\n?[-\$]+[&]/g, "$1")
-    .replace(/[!][-\$[\]]+\n?([\s\S]*?)\n?[\-\$[\]]+!/g, "$1");
+    .replace(/[!][-\$[\]]+\n?([\s\S]*?)\n?[\-\$[\]]+!/g, "$1")
+    .replace(/\$Brt\n?([\s\S]*?)\n?Brt\$/gi, "$1")
+    .replace(/\$Brd\n?([\s\S]*?)\n?Brd\$/gi, "$1")
+    .replace(/!pb\n?([\s\S]*?)\n?pb!/g, "$1")
+    .replace(/\$p\n?([\s\S]*?)\n?p\$/g, "$1");
   // Strip standalone delimiter lines (scene breaks)
   t = t
     .replace(/^[\-\u2013\u2014~=]{3,}$/gm, "")
@@ -53,7 +57,7 @@ function cleanContentForSearch(text: string): string {
   t = t
     .replace(/#\^[>f<]?\^#([\s\S]*?)#\^[>f<]?\^#/g, "$1")
     .replace(/#v[>f<]?v#([\s\S]*?)#v[>f<]?v#/g, "$1")
-    .replace(/#f[><]?#\(.*?\)#f[><]?#/g, "")
+    .replace(/#f[><]?#(.*?)#f[><]?#/g, "$1")
     .replace(/#\*(.*?)\*#/g, "$1")
     .replace(/#><(.*?)><#/g, "$1")
     .replace(/#r(.*?)r#/g, "$1")
@@ -105,6 +109,10 @@ function cleanSnippet(raw: string): string {
     .replace(/\+[-=~\$]+[\s\S]*?[-=~\$]+\+/g, "")
     .replace(/[&][-\$]+[\s\S]*?[-\$]+[&]/g, "")
     .replace(/[!][-\$[\]]+[\s\S]*?[-\$[\]]+!/g, "")
+    .replace(/\$Brt[\s\S]*?Brt\$/gi, "")
+    .replace(/\$Brd[\s\S]*?Brd\$/gi, "")
+    .replace(/!pb[\s\S]*?pb!/g, "")
+    .replace(/\$p[\s\S]*?p\$/g, "")
     .replace(/^[\+][-=~\$*><]+[\+]*$/gm, "")
     .replace(/^[\&][-\$]+[\-&\$]*$/gm, "")
     .replace(/^![\-\$\[\]!]+$/gm, "")
@@ -127,7 +135,7 @@ function cleanSnippet(raw: string): string {
     .replace(/\$c[\s\S]*?c\$/g, "")
     .replace(/#\^[>f<]?\^#[\s\S]*?#\^[>f<]?\^#/g, "")
     .replace(/#v[>f<]?v#[\s\S]*?#v[>f<]?v#/g, "")
-    .replace(/#f[><]?#\(.*?\)#f[><]?#/g, "")
+    .replace(/#f[><]?#(.*?)#f[><]?#/g, "$1")
     .replace(/#\*(.*?)\*#/g, "$1")
     .replace(/#><(.*?)><#/g, "$1")
     .replace(/#r(.*?)r#/g, "$1")
