@@ -8674,6 +8674,30 @@
         "hasInteractive": false
       },
       {
+        "title": "MorrowPost",
+        "slug": "morrowpost",
+        "type": "exploration",
+        "typeLabel": "Exploration Record",
+        "faction": "Daydream Inc.",
+        "code": "Qterw-E-913",
+        "classification": " E Grade",
+        "summary": "Welcome to MorrowPost. Please take a number and wait to be served.. ",
+        "thumb": "/chapters/uder/thumbnails/morrowpost.webp",
+        "hasInteractive": true
+      },
+      {
+        "title": "Never Sit Down",
+        "slug": "never-sit-down",
+        "type": "exploration",
+        "typeLabel": "Exploration Record",
+        "faction": "Disaster Management Bureau",
+        "code": "6734PSYA.2007.\ub35442",
+        "classification": "Idle-sanctioned Disaster",
+        "summary": "A supernatural disaster that manifests itself as an underwater research facility. Escape is possible. The only rule? Do not sit down.",
+        "thumb": "/chapters/uder/thumbnails/never-sit-down.webp",
+        "hasInteractive": false
+      },
+      {
         "title": "New Employee Orientation",
         "slug": "new-employee-orientation",
         "type": "record",

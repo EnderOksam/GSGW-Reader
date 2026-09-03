@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import Giscus from "@giscus/svelte";
+  import Icon from "@iconify/svelte";
   import bookData from "$lib/meta.json";
 
   let { children } = $props();
@@ -33,40 +34,53 @@
 <div class="min-h-screen w-full bg-base-100 text-base-content relative">
   {@render children()}
 
-  <div id="comments" class="mx-auto max-w-4xl px-4 pb-16">
-  {#key page.url.pathname}
-    {#if currentChMeta.discussion}
-      <Giscus
-        repo="EnderOksam/GSGW-Reader"
-        repoId="R_kgDOSUYftA"
-        category="General"
-        categoryId="DIC_kwDOSUYftM4C9WvT"
-        mapping="number"
-        term={String(currentChMeta.discussion)}
-        strict="1"
-        reactionsEnabled="1"
-        emitMetadata="0"
-        inputPosition="top"
-        theme="dark"
-        lang="en"
-        loading="eager"
-      />
-    {:else}
-      <Giscus
-        repo="EnderOksam/GSGW-Reader"
-        repoId="R_kgDOSUYftA"
-        category="General"
-        categoryId="DIC_kwDOSUYftM4C9WvT"
-        mapping="pathname"
-        strict="0"
-        reactionsEnabled="1"
-        emitMetadata="0"
-        inputPosition="top"
-        theme="dark"
-        lang="en"
-        loading="eager"
-      />
-    {/if}
-  {/key}
-</div>
+  <div id="comments" class="mx-auto max-w-4xl px-4 pb-4 pt-2">
+    <div class="rounded-2xl border border-base-content/10 bg-base-200 shadow-xl shadow-base-content/5 overflow-hidden">
+      <div class="px-4 sm:px-8 pt-6 pb-2">
+        <div class="flex items-center gap-2">
+          <Icon icon="lucide:message-square-text" class="size-4 text-base-content/30 shrink-0" />
+          <span class="text-xs font-mono font-bold text-base-content/30 uppercase tracking-widest">Comments</span>
+        </div>
+      </div>
+      <div class="px-4 sm:px-8 pb-8">
+        {#key page.url.pathname}
+          {#if currentChMeta.discussion}
+            <Giscus
+              id="manwha-comments"
+              repo="EnderOksam/GSGW-Reader"
+              repoId="R_kgDOSUYftA"
+              category="General"
+              categoryId="DIC_kwDOSUYftM4C9WvT"
+              mapping="number"
+              term={String(currentChMeta.discussion)}
+              strict="1"
+              reactionsEnabled="1"
+              emitMetadata="0"
+              inputPosition="top"
+              theme="preferred_color_scheme"
+              lang="en"
+              loading="eager"
+            />
+          {:else}
+            <Giscus
+              id="manwha-comments"
+              repo="EnderOksam/GSGW-Reader"
+              repoId="R_kgDOSUYftA"
+              category="General"
+              categoryId="DIC_kwDOSUYftM4C9WvT"
+              mapping="pathname"
+              term=""
+              strict="0"
+              reactionsEnabled="1"
+              emitMetadata="0"
+              inputPosition="top"
+              theme="preferred_color_scheme"
+              lang="en"
+              loading="eager"
+            />
+          {/if}
+        {/key}
+      </div>
+    </div>
+  </div>
 </div>
