@@ -684,7 +684,7 @@
   padding: 2em 1em;
   text-align: center;
   font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace;
-  font-size: clamp(1em, 10vw, 2em);
+  font-size: clamp(1em, 8vw, 2em);
   color: oklch(0.95 0 0) !important;
   text-shadow:
     0 0 5px oklch(0.95 0 0 / 0.4),
