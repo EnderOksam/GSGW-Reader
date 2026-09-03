@@ -1,0 +1,114 @@
+{
+  "variants": [
+    {
+      "name": "Soleum",
+      "description": "",
+      "searches": [
+        "Soleum"
+      ],
+      "options": [
+        "Soreum"
+      ]
+    },
+    {
+      "name": "Yeongeun",
+      "description": "Go Yeongeun",
+      "searches": [
+        "Yeongeun"
+      ],
+      "options": [
+        "Youngeun"
+      ]
+    },
+    {
+      "name": "Heoun",
+      "description": "Jang Heoun",
+      "searches": [
+        "Heoun"
+      ],
+      "options": [
+        "Heowoon"
+      ]
+    },
+    {
+      "name": "Jekang",
+      "description": "Kwak Jekang",
+      "searches": [
+        "Jekang"
+      ],
+      "options": [
+        "Jaekang"
+      ]
+    },
+    {
+      "name": "[Name]",
+      "description": "Ireum-nim",
+      "searches": [
+        "[Name]"
+      ],
+      "options": [
+        "Ireum"
+      ]
+    },
+    {
+      "name": "Darkness Exploration Records",
+      "description": "",
+      "searches": [
+        "Darkness Exploration Records"
+      ],
+      "options": [
+        "Dark Exploration Records"
+      ]
+    },
+    {
+      "name": "Lord Cat",
+      "description": "",
+      "searches": [
+        "Lord Cat"
+      ],
+      "options": [
+        "Cat-nim"
+      ]
+    },
+    {
+      "name": "White Tiger",
+      "description": "",
+      "searches": [
+        "White Tiger"
+      ],
+      "options": [
+        "Baekho"
+      ]
+    },
+    {
+      "name": "Black Tortoise",
+      "description": "",
+      "searches": [
+        "Black Tortoise"
+      ],
+      "options": [
+        "Hyunmoo"
+      ]
+    },
+    {
+      "name": "Azure Dragon",
+      "description": "",
+      "searches": [
+        "Azure Dragon"
+      ],
+      "options": [
+        "Cheongryong"
+      ]
+    },
+    {
+      "name": "Vermillion Bird",
+      "description": "",
+      "searches": [
+        "Vermillion Bird"
+      ],
+      "options": [
+        "Jujak"
+      ]
+    }
+  ]
+}

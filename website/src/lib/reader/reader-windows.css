@@ -200,7 +200,7 @@
     box-shadow:
       0 4px 24px oklch(0 0 0 / 0.4),
       0 0 0 1px oklch(0.95 0 0 / 0.02) inset;
-  padding: 1.5em 2em 1em;
+  padding: 1.25em 2em 1em;
   text-align: left;
   color: oklch(0.75 0.06 260 / 0.9);
 }
@@ -318,7 +318,7 @@
     box-shadow:
       0 4px 24px oklch(0 0 0 / 0.4),
       0 0 0 1px oklch(0.95 0 0 / 0.02) inset;
-  padding: 1.5em 2em 1em;
+  padding: 1.25em 2em 1em;
   text-align: left;
   color: oklch(0.7 0.08 245 / 0.9);
 }
@@ -681,10 +681,10 @@
   box-shadow:
     0 0 30px oklch(0 0 0 / 0.8),
     inset 0 0 60px oklch(0 0 0 / 0.3);
-  padding: 6em 0.5em;
+  padding: 2em 1em;
   text-align: center;
   font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace;
-  font-size: 2em;
+  font-size: clamp(1em, 10vw, 2em);
   color: oklch(0.95 0 0) !important;
   text-shadow:
     0 0 5px oklch(0.95 0 0 / 0.4),
@@ -785,6 +785,10 @@
 .reader-container .braun-tv-text,
 .reader-container .braun-doll-text {
   padding: 1em 0;
+}
+
+.reader-container .braun-tv-text {
+  font-weight: 700;
 }
 
 .reader-container .padding-window p,

@@ -14,6 +14,8 @@
   // Data
   import { readerState } from "$lib/reader.svelte";
   import bookData from "$lib/meta.json";
+  import alttextData from "$lib/alttext.json";
+  import { storePristine, applyAltText, clearAltText } from "$lib/reader/alttext";
 
 
   let { children } = $props();
@@ -88,7 +90,14 @@
   // 1. Parse URL manually (since page.params is empty)
   // Split path, filter out empty strings to handle trailing slashes
   // URL: /read/coi/webnovel/1 -> ["read", "coi", "webnovel", "1"]
-  const pathSegments = $derived(page.url.pathname.split("/").filter(Boolean));
+  const pathSegments = $derived(
+    page.url.pathname
+      .split("/")
+      .filter(Boolean)
+      .map((seg) => {
+        try { return decodeURIComponent(seg); } catch { return seg; }
+      })
+  );
 
   // 2. Derive values from URL position
   const bookSlug = $derived(pathSegments[1] ?? "lotm");
@@ -117,9 +126,9 @@
   let nextInfoDialog: HTMLDialogElement | undefined = $state();
 
   const TL_INFO = [
-    { name: "FanTL", desc: "This translation is the recommended one, has all the features made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
+    { name: "FanTL", desc: "This is the recommended translation, with all the features and formatting made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
     { name: "UnfinishedTL", desc: "The base story with no special features — equivalent of reading an epub. Once chapters here get formatted they get put under FanTL.", icon: "mdi:book-outline", color: "text-blue-400" },
-    { name: "MTL", desc: "Currently released part three chapters. Translated by ZestysDaddy on Discord, kept separate because they'd break the order of FanTL (jumping to part three since part two isn't fully formatted yet).", icon: "mdi:auto-fix", color: "text-purple-400" },
+    { name: "MTL", desc: "Currently released Part 3 chapters, translated by ZestysDaddy on Discord. Kept separate because adding them to FanTL would disrupt the chapter order by jumping to Part 3 while Part 2 is not yet fully formatted.", icon: "mdi:auto-fix", color: "text-purple-400" },
   ];
 
   // 4. Sync internal state with URL
@@ -128,6 +137,39 @@
   });
 
   // --- Handlers ---
+
+  function randomizeAnimationDelays() {
+    if (!browser) return;
+    const article = document.querySelector("article.reader-container");
+    if (!article) return;
+
+    
+    article.querySelectorAll("span.shake").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 0.5}s`;
+      }
+    });
+
+   
+    article.querySelectorAll("span.wave-up").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 0.6}s`;
+      }
+    });
+
+  
+    article.querySelectorAll(".glitch-text .char").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 0.25}s`;
+      }
+    });
+
+    article.querySelectorAll(".glitch-subtle .char").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 2.0}s`;
+      }
+    });
+  }
 
   afterNavigate(() => {
     nextInfoDialog?.close();
@@ -142,14 +184,52 @@
       buttonTemplate: `<button aria-label="Footnote <% number %>" class="relative btn btn-xs btn-info px-3 py-2 h-3 text-sm mx-1 font-mono"><% number %></button>`,
     });
   });
+
+  afterNavigate(() => {
+    randomizeAnimationDelays();
+  });
+
+  // Apply alt text replacements when selections change or chapter navigates (GSGW only)
+  $effect(() => {
+    if (bookSlug !== "gsgw") return;
+    const selections = readerState.altTextSelections;
+    const chapter = currentChapter;
+    const article = document.querySelector("article.reader-container") as HTMLElement | null;
+    if (!article) return;
+
+    setTimeout(() => {
+      const pairs: [string, string][] = [];
+      for (const variant of alttextData.variants) {
+        const option = selections[variant.name];
+        if (option && variant.options.includes(option)) {
+          for (const search of variant.searches) {
+            pairs.push([search, option]);
+          }
+        }
+      }
+      if (pairs.length > 0) {
+        storePristine(article);
+        applyAltText(article, pairs);
+      } else {
+        clearAltText(article);
+      }
+    }, 50);
+  });
+
   onMount(async () => {
     if (browser) {
       const lastRead = JSON.parse(localStorage.getItem("lastRead") || "{} ");
-      // Check if saved position matches current URL
       if (lastRead.slug == currentChapter && lastRead.book === bookSlug) {
         window.scrollTo({ top: lastRead.scroll, behavior: "instant" });
       }
       window.addEventListener("scroll", handleScroll);
+
+      const savedSelections = localStorage.getItem("altTextSelections");
+      if (savedSelections) {
+        try {
+          readerState.altTextSelections = JSON.parse(savedSelections);
+        } catch {}
+      }
     }
   });
 
@@ -182,11 +262,11 @@
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().then(() => {
-        screen.orientation?.lock?.("portrait").catch(() => {});
+        (screen.orientation as any)?.lock?.("portrait").catch(() => {});
       }).catch(console.error);
     } else {
       document.exitFullscreen().then(() => {
-        screen.orientation?.unlock?.();
+        (screen.orientation as any)?.unlock?.();
       }).catch(console.error);
     }
   }
@@ -377,6 +457,7 @@
     {#key page.url.pathname}
       {#if readerState.ch_meta.discussion}
         <Giscus
+          id="giscus-comments"
           repo="EnderOksam/GSGW-Reader"
           repoId="R_kgDOSUYftA"
           category="General"
@@ -393,11 +474,13 @@
         />
       {:else}
         <Giscus
+          id="giscus-comments"
           repo="EnderOksam/GSGW-Reader"
           repoId="R_kgDOSUYftA"
           category="General"
           categoryId="DIC_kwDOSUYftM4C9WvT"
           mapping="pathname"
+          term={page.url.pathname}
           strict="0"
           reactionsEnabled="1"
           emitMetadata="0"
@@ -489,6 +572,7 @@
 
   .chapter-content :global(p) {
     text-indent: var(--chapter-indent);
+    text-wrap: pretty;
   }
 
   :global(:fullscreen) {

@@ -35,7 +35,7 @@
   let originalContent = $state<Map<string, string>>(new Map());
   let leftTab = $state<'chapters' | 'formatting'>('chapters');
   let rightTab = $state<'editor' | 'reader'>('editor');
-  let formatSections = $state<Record<string, boolean>>({ 'Colors & Markdown': true, 'Changing Text': true, 'windows': true });
+  let formatSections = $state<Record<string, boolean>>({ 'Colors & Markdown': true, 'Fonts': true, 'Changing Text': true, 'windows': true });
   let expandedSyntax = $state<Record<string, boolean>>({});
   let windowViewMode = $state<Record<string, 'code' | 'preview'>>({});
 
@@ -543,17 +543,28 @@
     }).join("");
   }
 
-  const colorsItems = [
+  const fontItems = [
     { syntax: "$$text$$", text: "handwritten script", cls: "handwritten", expandable: true },
-    { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
-    { syntax: "$lattextlat$", text: "lato text", cls: "lato", expandable: true },
-    { syntax: "$foxtextfox$", text: "fox counseling text", cls: "fox", expandable: true },
     { syntax: "$htexth$", text: "handwritten text", cls: "paulo-bittencourt", expandable: true },
-    { syntax: "$nbgtextnbg$", text: "thin modern", cls: "nanum-barun-gothic", expandable: true },
-    { syntax: "$tftexttf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },
-    { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
-    { syntax: "$BhtextBh$", text: "braun handwriting font", cls: "braun-handwriting", expandable: true },
+    { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
+    { syntax: "$oshtextosh$", text: "old style humanist", cls: "crimson-old-style", expandable: true },
+    { syntax: "$ssrtextssr$", text: "sans serif regular", cls: "noto-sans", expandable: true },
+    { syntax: "$ssttextsst$", text: "sans serif thin", cls: "nanum-barun-gothic", expandable: true },
+    { syntax: "$ipstextips$", text: "IBM Plex Sans", cls: "ibm-plex-sans", expandable: true },
+    { syntax: "$lattextlat$", text: "document text", cls: "lato", expandable: true },
+    { syntax: "$BhtextBh$", text: "braun font", cls: "braun-handwriting", expandable: true },
+    { syntax: "$foxtextfox$", text: "fox counseling text", cls: "fox", expandable: true },
     { syntax: "$ctextc$", text: "comic sans text", cls: "contaminated", expandable: true },
+    { syntax: "$clutextclu$", text: "church of luminous unknown", cls: "diphylleia", expandable: true },
+    { syntax: "$gpstextgps$", text: "retro blocky text", cls: "tenada", expandable: true },
+    { syntax: "$tftexttf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },
+    { syntax: "$crictextcri$", text: "cheerful research inc.", cls: "macho", expandable: true },
+    { syntax: "$NEtextNE$", text: "noto emoji", cls: "noto-emoji", expandable: true, previewHtml: '<span class="noto-emoji">🥰🥸🤯🧐🤪🥱</span>' },
+    { syntax: "$soctextsoc$", text: "cursive script", cls: "kcc-an-changho", expandable: true },
+    { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
+  ];
+
+  const colorsItems = [
     { syntax: "$wotextwo$", text: "white outline", cls: "text-black outline-white", expandable: true, previewHtml: '<span class="text-black" style="-webkit-text-stroke:0.15em white;text-stroke:0.15em white;paint-order:stroke fill;">text</span>' },
     { syntax: "$botextbo$", text: "black outline", cls: "text-green outline-black", expandable: true, previewHtml: '<span class="text-green" style="-webkit-text-stroke:0.15em black;text-stroke:0.15em black;paint-order:stroke fill;">text</span>' },
     { syntax: "$hxo(#ff)texthxo#", text: "hex outline", cls: "hex-outline", expandable: true, previewHtml: '<span class="hex-outline hex-preview" style="--hxo-color:#ff6600">text</span>', meta: "replace #ffffff with any valid hex color" },
@@ -660,11 +671,11 @@
         {/each}
         {#each expandable as item}
           <div class="rounded-lg overflow-hidden border border-base-content/5">
-            <div class="flex items-center">
-              <button onclick={() => insertFormatting(item.syntax)} class="flex-1 flex items-center gap-2 px-2 py-1.5 text-left hover:bg-base-content/[3%] transition-colors cursor-pointer">
+            <div class="flex items-center min-w-0">
+              <button onclick={() => insertFormatting(item.syntax)} class="flex-1 flex items-center gap-2 px-2 py-1.5 text-left hover:bg-base-content/[3%] transition-colors cursor-pointer min-w-0">
                 <span class="text-[10px] font-mono text-base-content/70 whitespace-nowrap shrink-0">{item.syntax}</span>
                 <span class="text-[10px] text-base-content/15 shrink-0">→</span>
-                <span class="text-[11px] text-base-content/50 truncate">{item.text}</span>
+                <span class="text-[11px] text-base-content/50 truncate min-w-0" title="{item.text}">{item.text}</span>
               </button>
               <button onclick={() => expandedSyntax[item.syntax] = !expandedSyntax[item.syntax]} class="p-2 text-base-content/20 hover:text-base-content/40 transition-colors shrink-0" title="Preview">
                 <Icon icon={expandedSyntax[item.syntax] ? "mdi:eye" : "mdi:eye-outline"} class="size-3.5" />
@@ -839,6 +850,7 @@
     <div class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin p-2 space-y-2">
 
       {@render section("Colors & Markdown", colorsItems)}
+      {@render section("Fonts", fontItems)}
       {@render section("Changing Text", changingItems)}
 
       <div class="bg-base-300/40 rounded-xl border border-base-content/10">
@@ -963,6 +975,7 @@
         <div class="flex-1 min-h-0 flex flex-col bg-base-200/60 rounded-xl border border-base-content/10 overflow-y-auto overflow-x-hidden scrollbar-thin p-2 space-y-2">
 
           {@render section("Colors & Markdown", colorsItems)}
+          {@render section("Fonts", fontItems)}
           {@render section("Changing Text", changingItems)}
 
           <div class="bg-base-300/40 rounded-xl border border-base-content/10 shrink-0">

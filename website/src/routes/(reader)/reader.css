@@ -18,30 +18,25 @@
   text-decoration: line-through;
 }
 .reader-container .triple-strike {
-  position: relative;
-  display: inline-block;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 100% 0.1em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(currentColor, currentColor);
+
   background-repeat: no-repeat;
-  background-position: 0 48%;
-}
 
-.reader-container .triple-strike::before,
-.reader-container .triple-strike::after {
-  content: "";
-  position: absolute;
-  left: -1%;
-  width: 102%;
-  height: 0.1em;
-  background: currentColor;
-}
+  background-size:
+    100% 2px,
+    100% 2px,
+    100% 2px;
 
-.reader-container .triple-strike::after {
-  top: 35%;
-}
-
-.reader-container .triple-strike::before {
-  top: 57%;
+  background-position:
+    0 34%,
+    0 50%,
+    0 66%;
 }
 
 img {
@@ -840,6 +835,54 @@ hr.invisible-hr {
 
 .braun-handwriting {
   font-family: 'Gabia Maeumgyeol', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+}
+
+.noto-sans {
+  font-family: 'Noto Sans', 'Helvetica Neue', 'Arial', sans-serif;
+  font-weight: 400;
+}
+
+.noto-sans strong {
+  font-weight: 600;
+}
+
+.noto-emoji {
+  font-family: 'Noto Emoji';
+  font-size: 2em;
+}
+
+.kcc-an-changho {
+  font-family: 'KCC An Changho', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+.diphylleia {
+  font-family: 'Diphylleia', 'Georgia', serif;
+}
+
+.crimson-old-style {
+  font-family: 'Crimson Pro', 'Georgia', serif;
+  font-weight: 500;
+}
+
+.crimson-old-style strong {
+  font-weight: 700;
+}
+
+.macho {
+  font-family: 'Macho', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+.ibm-plex-sans {
+  font-family: 'IBM Plex Sans', 'Helvetica Neue', 'Arial', sans-serif;
+  font-weight: 200;
+}
+
+.ibm-plex-sans strong {
+  font-weight: 300;
+}
+
+.tenada {
+  font-family: 'Tenada', 'Georgia', serif;
 }
 
 .scroll-wrap {

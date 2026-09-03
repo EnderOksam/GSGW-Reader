@@ -61,7 +61,7 @@
       external_link: "https://page.kakao.com/content/65171279",
     },
     uder: {
-      title: "Unofficial Dark Exploration Records",
+      title: "Unofficial Darkness Exploration Records",
       author: "Fanatics",
       synopsis: "A collection of fan-created records exploring the darkness that lies beyond.",
       title_accent: "text-primary",
@@ -194,9 +194,9 @@
           { name: "DEBUTPLAINTXT", desc: "The base story without any special features or formatting — essentially equivalent to reading an EPUB. Once chapters here are formatted, they are moved to DEBUTFORMATTED.", icon: "mdi:book-outline", color: "text-blue-400" },
         ]
       : [
-          { name: "FanTL", desc: "Has all the features made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
-          { name: "UnfinishedTL", desc: "Chapters that are still being worked on, equivalent of reading an epub.", icon: "mdi:book-outline", color: "text-blue-400" },
-          { name: "MTL", desc: "Currently released part three chapters. Translated by ZestysDaddy on Discord, kept separate because they'd break the order of FanTL (jumping to part three since part two isn't fully formatted yet).", icon: "mdi:auto-fix", color: "text-purple-400" },
+          { name: "FanTL", desc: "This is the recommended translation, with all the features and formatting made specifically for the site.", icon: "mdi:star-outline", color: "text-yellow-500" },
+          { name: "UnfinishedTL", desc: "The base story without any special features or formatting — essentially equivalent to reading an EPUB. Once chapters here are formatted, they are moved to FanTL.", icon: "mdi:book-outline", color: "text-blue-400" },
+          { name: "MTL", desc: "Currently released Part 3 chapters, translated by ZestysDaddy on Discord. Kept separate because adding them to FanTL would disrupt the chapter order by jumping to Part 3 while Part 2 is not yet fully formatted.", icon: "mdi:auto-fix", color: "text-purple-400" },
         ],
   );
 
@@ -344,8 +344,8 @@
         <div class="w-full max-w-lg flex flex-col items-center text-center gap-3 py-2">
           <img src="/assets/ghost.webp" alt="" class="w-24 h-24 md:w-32 md:h-32 object-contain" />
           <h1 class="text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight">
-            Prophecy Of the Apocalypse:<br />
-            Unofficial Dark exploration records
+            Prophecy of the Apocalypse:<br />
+            Unofficial Darkness Exploration Records
           </h1>
           <p class="text-xs sm:text-sm opacity-55 leading-relaxed max-w-md">
             {book.synopsis}

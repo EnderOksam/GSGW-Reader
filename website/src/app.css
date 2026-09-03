@@ -307,10 +307,10 @@ body {
 @font-face {
   font-family: "Nanum Barun Gothic";
   src:
-    local("Nanum Barun Gothic"),
-    local("NanumBarunGothic"),
-    url("/fonts/NanumBarunGothic.woff2") format("woff2");
-  font-weight: 400;
+    local("Nanum Barun Gothic Light"),
+    local("NanumBarunGothicLight"),
+    url("/fonts/NanumBarunGothicLight.woff2") format("woff2");
+  font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
@@ -318,10 +318,10 @@ body {
 @font-face {
   font-family: "Nanum Barun Gothic";
   src:
-    local("Nanum Barun Gothic Light"),
-    local("NanumBarunGothicLight"),
-    url("/fonts/NanumBarunGothicLight.woff2") format("woff2");
-  font-weight: 300;
+    local("Nanum Barun Gothic"),
+    local("NanumBarunGothic"),
+    url("/fonts/NanumBarunGothic.woff2") format("woff2");
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
@@ -369,6 +369,75 @@ body {
     local("GabiaMaeumgyeol"),
     local("가비아 마음결체"),
     url("/fonts/GabiaMaeumgyeol.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Noto Sans (DER text) --- */
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Emoji";
+  src: url("/fonts/NotoEmoji-Variable.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "KCC An Changho";
+  src:
+    local("KCC An Changho"),
+    local("KCC아 chóngchangho"),
+    url("/fonts/KCCAnChangho.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Diphylleia";
+  src: url("/fonts/Diphylleia-Variable.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Macho";
+  src: url("/fonts/Macho.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/fonts/IBMPlexSans-VariableFont_wdth,wght.ttf") format("truetype");
+  font-weight: 200 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/fonts/IBMPlexSans-Italic-VariableFont_wdth,wght.ttf") format("truetype");
+  font-weight: 200 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* --- Tenada --- */
+@font-face {
+  font-family: "Tenada";
+  src: url("/fonts/Tenada.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
