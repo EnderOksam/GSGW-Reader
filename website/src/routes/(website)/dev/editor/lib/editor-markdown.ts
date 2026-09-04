@@ -589,7 +589,3 @@ function makeScarePage(inner: string): string {
 </div>
 `;
 }
-
-s = s.replace(/<pagebreak>\n(.*?)\n<\/pagebreak>/gs, (_: string, inner: string) => {
-  return makeScarePage(toParagraphs(fmtInline(inner)));
-});
