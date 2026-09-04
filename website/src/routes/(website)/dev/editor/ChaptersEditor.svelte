@@ -9,6 +9,7 @@
   import { loadCache as loadChapterCache, saveCache as saveChapterCache, saveChapterEdit } from "./lib/chapter-cache";
   import { hydrateTwitterEmbeds } from "$lib/reader/twitter-embeds";
   import { initFootnoteTooltips } from "$lib/reader/footnote-tooltips";
+  import { initScareScroll } from "$lib/reader/scare-scroll";
   import { loadCustomTranslations, saveCustomTranslations, loadCustomChapterList, loadCustomChapterContent, saveCustomChapter, deleteCustomChapter, renameCustomTranslation, deleteCustomTranslation } from "./lib/custom-translations";
   import { importZip, createZip, downloadBlob } from "./lib/zip-tools";
 
@@ -395,7 +396,9 @@
     for (const el of scrollEls) {
       if (!el) continue;
       const article = el.querySelector<HTMLElement>("article.reader-container");
-      if (article) cleanups.push(initFootnoteTooltips(article));
+      if (!article) continue;
+      cleanups.push(initFootnoteTooltips(article));
+      cleanups.push(initScareScroll(el));
     }
     return () => cleanups.forEach((c) => c());
   });

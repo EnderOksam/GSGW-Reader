@@ -182,7 +182,7 @@ hr.invisible-hr {
 
 .glitch-text .char {
   display: inline-block;
-  opacity: 0.55;
+  opacity: 1;
   animation: char-shake 0.25s infinite;
 }
 
@@ -958,7 +958,7 @@ hr.invisible-hr {
 
 .transition-item {
   grid-area: 1 / 1;
-  white-space: nowrap;
+  white-space: normal;
   opacity: 0;
   animation-fill-mode: both;
   animation-iteration-count: infinite;
@@ -1765,4 +1765,121 @@ body .reader-container .sms-center.sms-center {
   background: oklch(0.55 0.15 250 / 0.2);
   color: oklch(0.55 0.15 250);
   transform: translateY(-1px);
+}
+
+/* =========================================================
+   SCROLL-CATCH PAGEBREAK
+   Structured output: .scare-zone → .scare-window → .scare-page
+   with --scare-progress / --scare-percent and the zone's
+   data-state supplied by $lib/reader/scare-scroll.ts.
+   ========================================================= */
+
+.reader-container .scare-zone {
+  position: relative;
+
+  /* Total amount of scroll available to the effect. */
+  height: 250dvh;
+
+  width: 100%;
+
+  margin: 0;
+
+  --scare-progress: 0;
+  --scare-percent: 0%;
+}
+
+
+/* =========================================================
+   STICKY VIEWPORT
+   ========================================================= */
+
+.reader-container .scare-window {
+  position: sticky;
+
+  top: 0;
+
+  width: 100%;
+  height: 100dvh;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: none;
+
+  contain: layout style;
+
+  /* Keep the scene isolated from surrounding content. */
+  touch-action: pan-y;
+}
+
+.reader-container .scare-window::-webkit-scrollbar {
+  display: none;
+
+  width: 0;
+
+  height: 0;
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.reader-container .scare-page {
+  visibility: hidden;
+
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: flex-start;
+
+  padding: 0;
+
+  text-align: left;
+}
+
+/* Safe vertical centering: short content stays centered, but once content
+   overflows the viewport (long sections) the auto margins collapse to 0 and
+   the text snaps to the top instead of getting pinned middle-out. */
+.reader-container .scare-page > :first-child {
+  margin-block-start: auto;
+}
+
+.reader-container .scare-page > :last-child {
+  margin-block-end: auto;
+}
+
+.reader-container .scare-page p {
+  margin: 0.8rem 0;
+}
+
+.reader-container .scare-page img {
+  max-width: 100%;
+
+  height: auto;
+
+  max-height: 74dvh;
+}
+
+/* Windows are block-level and stretch to full column width in normal flow,
+   but as flex items under align-items: center they collapse to content width.
+   Restore full-width behaviour inside the scare page. */
+.reader-container .scare-page .black-window {
+  align-self: stretch;
+
+  width: 100%;
+}
+
+/* Hidden until the window is pinned to the viewport (stuck), then revealed
+   instantly — no fade-in. */
+.reader-container .scare-zone[data-state="stuck"] .scare-page,
+.reader-container .scare-zone[data-state="releasing"] .scare-page {
+  visibility: visible;
 }

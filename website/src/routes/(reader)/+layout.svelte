@@ -369,7 +369,7 @@
   <Navbar bind:this={navbarRef} {prefs} {bookSlug} {bookData} bind:navState {currentChapter} {chaptersForTL} {currentIndex} {currentTL} {nextInfoDialog} />
 
   <main bind:this={mainEl} class="mx-auto my-0 sm:my-6 max-w-4xl w-full z-0 relative transition-transform duration-300 ease-out ref-shift" style="transform: translateX({readerState.refPanelOpen ? '-72px' : '0px'})">
-    <div class="relative rounded-2xl border-0 sm:border border-base-content/10 bg-base-200 shadow-none sm:shadow-xl sm:shadow-base-content/5 overflow-hidden">
+    <div class="relative rounded-2xl border-0 sm:border border-base-content/10 bg-base-200 shadow-none sm:shadow-xl sm:shadow-base-content/5 overflow-clip">
       <div
         class="absolute inset-0 bg-base-300 -z-10 transition-opacity duration-300"
         style="opacity: var(--card-bg-opacity);"

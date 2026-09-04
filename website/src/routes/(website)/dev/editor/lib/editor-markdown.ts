@@ -565,6 +565,15 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     return makeWindow("debut-window", titleHtml + body);
   });
 
+  s = s.replace(
+  /<pagebreak>\n(.*?)\n<\/pagebreak>/gs,
+  (_: string, inner: string) => {
+    return makeScarePage(
+      toParagraphs(fmtInline(inner))
+    );
+  }
+  ); 
+
   // Bold / italic — applied late so inner HTML from windows is untouched
   s = s.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
   s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
@@ -572,4 +581,16 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = replaceTwitterUrls(s);
   return s;
+}
+
+function makeScarePage(inner: string): string {
+  return `
+<div class="scare-zone">
+  <div class="scare-window">
+    <div class="scare-page">
+      ${inner}
+    </div>
+  </div>
+</div>
+`;
 }
