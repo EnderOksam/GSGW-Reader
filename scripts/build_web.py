@@ -106,7 +106,7 @@ RECORD_WINDOW_RE = re.compile(r"&[-]+\n(.*?)\n[-]+&", re.DOTALL)
 FOLLOWUP_WINDOW_RE = re.compile(r"\+\$\n(.*?)\n-\$", re.DOTALL)
 AMPERSAND_WINDOW_RE = re.compile(r"&\$\n(.*?)\n\$&", re.DOTALL)
 
-NEW_PAGE_WINDOW_RE = re.compile(r"<pagebreak>\n(.*?)\n<\/pagebreak>", re.DOTALL)
+NEW_PAGE_WINDOW_RE = re.compile(r"<pagebreak>[ \t]*\n(.*?)\n[ \t]*<\/pagebreak>", re.DOTALL)
 
 NOTE_WINDOW_RE = re.compile(r"![-]+\n(.*?)\n[-]+!", re.DOTALL)
 STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
@@ -277,12 +277,16 @@ def process_html_images(html_content):
 def escape_markdown_except_bold(text):
 
     html_placeholders = {}
+
     def save_html(m):
         key = f"\x00HTML{len(html_placeholders)}\x00"
         html_placeholders[key] = m.group(0)
         return key
+
     text = re.sub(r'<[a-zA-Z][^>]*>.*?</[a-zA-Z][^>]*>', save_html, text, flags=re.DOTALL)
     text = re.sub(r'<[a-zA-Z][^>]*/>', save_html, text)
+
+    text = re.sub(r'!\[[^\]]*\]\([^)]*\)', save_html, text)
 
     text = re.sub(r'(?<!\\)\[', r'\\[', text)
     text = re.sub(r'(?<!\\)\]', r'\\]', text)
@@ -596,12 +600,18 @@ def shrink_replacer(match):
 # WINDOW REPLACERS
 # =========================================================
 
-def make_window(class_name, inner, extra_class=None):
+def scrub_window_inner(inner):
 
     inner = fix_underline(inner)
     inner = escape_markdown_except_bold(inner)
     inner = re.sub(r"\*\*\*(.+?)\*\*\*", r"<strong><em>\1</em></strong>", inner, flags=re.DOTALL)
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner, flags=re.DOTALL)
+    return inner
+
+
+def make_window(class_name, inner, extra_class=None):
+
+    inner = scrub_window_inner(inner)
 
     cls = class_name
 
@@ -611,6 +621,25 @@ def make_window(class_name, inner, extra_class=None):
     dotted = " ".join(f".{c.lstrip('.')}" for c in cls.split())
 
     return f'\n::: {{{dotted}}}\n{inner}\n:::\n'
+
+
+def scare_zone_replacer(match):
+
+    inner = re.sub(r"\n+", "\n\n", match.group(1))
+    inner = scrub_window_inner(inner)
+
+    # Nested pandoc fenced divs mirror the editor's makeScarePage output:
+    # a tall 250dvh zone with a sticky full-viewport window whose content
+    # (.scare-page) is animated by scroll progress. See scare-scroll.ts.
+    return (
+        "\n::::: {.scare-zone}\n"
+        ":::: {.scare-window}\n"
+        "::: {.scare-page}\n"
+        + inner + "\n"
+        ":::\n"
+        "::::\n"
+        ":::::\n"
+    )
 
 
 def braun_text_replacer(class_name):
@@ -1177,11 +1206,9 @@ def convert_chapter(content):
     content = BRAUN_DOLL_TEXT_RE.sub(braun_text_replacer("braun-doll-text"), content)
     content = PADDING_WINDOW_RE.sub(braun_text_replacer("padding-window"), content)
 
-    # new page window
-    content = NEW_PAGE_WINDOW_RE.sub(
-        lambda m: make_window("new-page", m.group(1)),
-        content
-    )
+    # Scare pagebreak: tall scroll zone w/ sticky full-viewport window.
+    # Catch/state/progress animation is driven by $lib/reader/scare-scroll.ts.
+    content = NEW_PAGE_WINDOW_RE.sub(scare_zone_replacer, content)
 
     # star windows (debut-specific)
     content = DEBUT_ALERT_RE.sub(debut_alert_replacer, content)
