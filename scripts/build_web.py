@@ -106,6 +106,8 @@ RECORD_WINDOW_RE = re.compile(r"&[-]+\n(.*?)\n[-]+&", re.DOTALL)
 FOLLOWUP_WINDOW_RE = re.compile(r"\+\$\n(.*?)\n-\$", re.DOTALL)
 AMPERSAND_WINDOW_RE = re.compile(r"&\$\n(.*?)\n\$&", re.DOTALL)
 
+NEW_PAGE_WINDOW_RE = re.compile(r"<pagebreak>\n(.*?)\n<\/pagebreak>", re.DOTALL)
+
 NOTE_WINDOW_RE = re.compile(r"![-]+\n(.*?)\n[-]+!", re.DOTALL)
 STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
 PAPER_BOAT_WINDOW_RE = re.compile(r"!pb\n(.*?)\npb!", re.DOTALL)
@@ -1175,10 +1177,17 @@ def convert_chapter(content):
     content = BRAUN_DOLL_TEXT_RE.sub(braun_text_replacer("braun-doll-text"), content)
     content = PADDING_WINDOW_RE.sub(braun_text_replacer("padding-window"), content)
 
+    # new page window
+    content = NEW_PAGE_WINDOW_RE.sub(
+        lambda m: make_window("new-page", m.group(1)),
+        content
+    )
+
     # star windows (debut-specific)
     content = DEBUT_ALERT_RE.sub(debut_alert_replacer, content)
     content = DEBUT_WINDOW_RE.sub(debut_window_replacer, content)
     content = DEBUT_ACHIEVE_RE.sub(debut_achieve_replacer, content)
+
 
     # sms and comment windows
     content = SMS_WINDOW_RE.sub(sms_window_replacer, content)

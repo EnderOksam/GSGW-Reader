@@ -182,7 +182,7 @@ hr.invisible-hr {
 
 .glitch-text .char {
   display: inline-block;
-  opacity: 0.55;
+  opacity: 1;
   animation: char-shake 0.25s infinite;
 }
 
@@ -958,7 +958,7 @@ hr.invisible-hr {
 
 .transition-item {
   grid-area: 1 / 1;
-  white-space: nowrap;
+  white-space: normal;
   opacity: 0;
   animation-fill-mode: both;
   animation-iteration-count: infinite;

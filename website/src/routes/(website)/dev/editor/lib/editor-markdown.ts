@@ -573,3 +573,23 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   s = replaceTwitterUrls(s);
   return s;
 }
+
+function makeScarePage(inner: string): string {
+  return `
+<div class="scare-zone">
+
+  <div class="scare-window">
+
+    <div class="new-page">
+      ${inner}
+    </div>
+
+  </div>
+
+</div>
+`;
+}
+
+s = s.replace(/<pagebreak>\n(.*?)\n<\/pagebreak>/gs, (_: string, inner: string) => {
+  return makeScarePage(toParagraphs(fmtInline(inner)));
+});
