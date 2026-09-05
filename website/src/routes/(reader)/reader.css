@@ -1840,7 +1840,10 @@ body .reader-container .sms-center.sms-center {
   align-items: center;
   justify-content: flex-start;
 
-  padding: 0;
+  /* Clears the sticky reader navbar on long sections. When content fits, the
+     auto margins still center it; once it overflows they collapse to 0 and the
+     text snaps to the top at this offset instead of going under the navbar. */
+  padding-block: 3.5rem;
 
   text-align: left;
 }
@@ -1854,6 +1857,17 @@ body .reader-container .sms-center.sms-center {
 
 .reader-container .scare-page > :last-child {
   margin-block-end: auto;
+}
+
+/* Long scare sections (marked data-long by scare-scroll.ts when the text is
+   longer than 200 characters) always snap to the top, even when they would
+   fit in the viewport, instead of being centered middle-out. */
+.reader-container .scare-zone[data-long] .scare-page > :first-child {
+  margin-block-start: 0;
+}
+
+.reader-container .scare-zone[data-long] .scare-page > :last-child {
+  margin-block-end: 0;
 }
 
 .reader-container .scare-page p {
