@@ -72,9 +72,6 @@
     return initFootnoteTooltips(article);
   });
 
-  // Scare pagebreaks: tall 250dvh zones with a sticky full-screen window.
-  // The reader is caught as it approaches and scroll controls the page
-  // through approaching → catching → stuck → releasing. See scare-scroll.ts.
   $effect(() => {
     return initScareScroll(window);
   });

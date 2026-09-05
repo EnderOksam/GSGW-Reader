@@ -646,9 +646,6 @@ def scare_zone_replacer(match):
     inner = re.sub(r"\n+", "\n\n", match.group(1))
     inner = scrub_window_inner(inner)
 
-    # Nested pandoc fenced divs mirror the editor's makeScarePage output:
-    # a tall 250dvh zone with a sticky full-viewport window whose content
-    # (.scare-page) is animated by scroll progress. See scare-scroll.ts.
     return (
         "\n::::: {.scare-zone}\n"
         ":::: {.scare-window}\n"
@@ -1224,8 +1221,6 @@ def convert_chapter(content):
     content = BRAUN_DOLL_TEXT_RE.sub(braun_text_replacer("braun-doll-text"), content)
     content = PADDING_WINDOW_RE.sub(braun_text_replacer("padding-window"), content)
 
-    # Scare pagebreak: tall scroll zone w/ sticky full-viewport window.
-    # Catch/state/progress animation is driven by $lib/reader/scare-scroll.ts.
     content = NEW_PAGE_WINDOW_RE.sub(scare_zone_replacer, content)
 
     # star windows (debut-specific)

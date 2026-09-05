@@ -2802,9 +2802,7 @@
         "index": 313,
         "section": "Chapter 313",
         "slug": "313"
-      }
-    ],
-    "unfinishedtl": [
+      },
       {
         "title": "Sekwang Station [Morning Station], III",
         "category": "Part 2",
@@ -2830,7 +2828,7 @@
         "slug": "316"
       },
       {
-        "title": "Chapter 317",
+        "title": "One-Day Researcher, I",
         "category": "Part 2",
         "discussion": 0,
         "index": 317,
@@ -2838,7 +2836,7 @@
         "slug": "317"
       },
       {
-        "title": "Chapter 318",
+        "title": "One-Day Researcher, II",
         "category": "Part 2",
         "discussion": 0,
         "index": 318,
@@ -2846,7 +2844,7 @@
         "slug": "318"
       },
       {
-        "title": "Chapter 319",
+        "title": "One-Day Researcher, III",
         "category": "Part 2",
         "discussion": 0,
         "index": 319,
@@ -2854,7 +2852,7 @@
         "slug": "319"
       },
       {
-        "title": "Chapter 320",
+        "title": "We Record Our End, I",
         "category": "Part 2",
         "discussion": 0,
         "index": 320,
@@ -2862,7 +2860,7 @@
         "slug": "320"
       },
       {
-        "title": "Chapter 321",
+        "title": "We Record Our End, II",
         "category": "Part 2",
         "discussion": 0,
         "index": 321,
@@ -2870,7 +2868,7 @@
         "slug": "321"
       },
       {
-        "title": "Chapter 322",
+        "title": "We Record Our End, III",
         "category": "Part 2",
         "discussion": 0,
         "index": 322,
@@ -2878,13 +2876,15 @@
         "slug": "322"
       },
       {
-        "title": "Chapter 323",
+        "title": "We Record Our End, IV",
         "category": "Part 2",
         "discussion": 0,
         "index": 323,
         "section": "Chapter 323",
         "slug": "323"
-      },
+      }
+    ],
+    "unfinishedtl": [
       {
         "title": "Chapter 324",
         "category": "Part 2",
