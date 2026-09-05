@@ -51,13 +51,13 @@
       variants: [
         { id: "plaintext", label: "Plain Text", description: variantDefs[0].description, parts: [
           { id: "part1", label: "Part 1", range: "Chapters 1–147", status: "Formatted" },
-          { id: "part2", label: "Part 2", range: "Chapters 148–364", status: "WIP" },
+          { id: "part2", label: "Part 2", range: "Chapters 148–364", status: "Formatted" },
           { id: "part3", label: "Part 3", range: "Chapters 365–451", status: "Unformatted" },
           { id: "part4", label: "Part 4", range: "Chapters 452–644", status: "Unformatted" },
         ] },
         { id: "default", label: "Default", description: variantDefs[1].description, parts: [
           { id: "part1", label: "Part 1", range: "Chapters 1–147", status: "Formatted" },
-          { id: "part2", label: "Part 2", range: "Chapters 148–364", status: "WIP" },
+          { id: "part2", label: "Part 2", range: "Chapters 148–364", status: "Formatted" },
           { id: "part3", label: "Part 3", range: "Chapters 365–451", status: "Unformatted" },
           { id: "part4", label: "Part 4", range: "Chapters 452–644", status: "Unformatted" },
         ] },

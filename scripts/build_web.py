@@ -438,6 +438,24 @@ def subtle_replacer(match):
     inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
     inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
 
+    inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
+    inner = re.sub(r"#b(.+?)b#", r'<span class="text-blue">\1</span>', inner)
+    inner = re.sub(r"#y(.+?)y#", r'<span class="text-yellow">\1</span>', inner)
+    inner = re.sub(r"#p(.+?)p#", r'<span class="text-magenta">\1</span>', inner)
+    inner = re.sub(r"#g(.+?)g#", r'<span class="text-green">\1</span>', inner)
+    inner = re.sub(r"#o(.+?)o#", r'<span class="text-orange">\1</span>', inner)
+    inner = re.sub(r"#lp(.+?)lp#", r'<span class="text-light-purple">\1</span>', inner)
+    inner = re.sub(r"#cy(.+?)cy#", r'<span class="text-cyan">\1</span>', inner)
+    inner = re.sub(r"#d(.+?)d#", r'<span class="text-base-content">\1</span>', inner)
+    inner = re.sub(r"#f#(.+?)#f#", r'<span class="text-faded">\1</span>', inner)
+
+    inner = re.sub(r";r(.+?)r;", r'<span class="hl-red">\1</span>', inner)
+    inner = re.sub(r";b(.+?)b;", r'<span class="hl-blue">\1</span>', inner)
+    inner = re.sub(r";y(.+?)y;", r'<span class="hl-yellow">\1</span>', inner)
+    inner = re.sub(r";p(.+?)p;", r'<span class="hl-magenta">\1</span>', inner)
+    inner = re.sub(r";g(.+?)g;", r'<span class="hl-green">\1</span>', inner)
+    inner = re.sub(r";o(.+?)o;", r'<span class="hl-orange">\1</span>', inner)
+
     parts = re.split(r"(<[^>]+>)", inner)
 
     chars = []

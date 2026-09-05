@@ -217,11 +217,9 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   s = s.replace(/^~~~(?=\s*$)/gm, '<hr class="visible-hr">');
   s = s.replace(/^~\^~(?=\s*$)/gm, '<hr class="invisible-hr">');
 
-  s = s.replace(/^\s*\*(\s*\*){2,}\s*$/gm, '<hr>');
-  s = s.replace(/^\s*-([ \t]*-){2,}[ \t]*$/gm, '<hr>');
-  s = s.replace(/^\s*_{3,}\s*$/gm, '<hr>');
-  s = s.replace(/^\s*-([ \t]*-){2,}[ \t]*$/gm, '<hr>');
-  s = s.replace(/^\s*_{3,}\s*$/gm, '<hr>');
+  s = s.replace(/^[ \t]*\*([ \t]*\*){2,}[ \t]*$/gm, '<hr>');
+  s = s.replace(/^[ \t]*-([ \t]*-){2,}[ \t]*$/gm, '<hr>');
+  s = s.replace(/^[ \t]*_{3,}[ \t]*$/gm, '<hr>');
 
   s = s.replace(/@_@(.+?)@_@/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
@@ -252,6 +250,24 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     inner = inner.replace(/\$vcr(.+?)vcr\$/gs, '<span class="vcr-osd-mono">$1</span>');    
     inner = inner.replace(/\$wo(.+?)wo\$/gs, '<span class="outline-white">$1</span>');
     inner = inner.replace(/\$bo(.+?)bo\$/gs, '<span class="outline-black">$1</span>');
+    
+    inner = inner.replace(/#r(.+?)r#/gs, '<span class="text-red">$1</span>');
+    inner = inner.replace(/#b(.+?)b#/gs, '<span class="text-blue">$1</span>');
+    inner = inner.replace(/#y(.+?)y#/gs, '<span class="text-yellow">$1</span>');
+    inner = inner.replace(/#p(.+?)p#/gs, '<span class="text-magenta">$1</span>');
+    inner = inner.replace(/#g(.+?)g#/gs, '<span class="text-green">$1</span>');
+    inner = inner.replace(/#o(.+?)o#/gs, '<span class="text-orange">$1</span>');
+    inner = inner.replace(/#lp(.+?)lp#/gs, '<span class="text-light-purple">$1</span>');
+    inner = inner.replace(/#cy(.+?)cy#/gs, '<span class="text-cyan">$1</span>');
+    inner = inner.replace(/#d(.+?)d#/gs, '<span class="text-black">$1</span>');
+    inner = inner.replace(/#f#(.+?)#f#/gs, '<span class="text-faded">$1</span>');
+
+    inner = inner.replace(/;r(.+?)r;/gs, '<span class="hl-red">$1</span>');
+    inner = inner.replace(/;b(.+?)b;/gs, '<span class="hl-blue">$1</span>');
+    inner = inner.replace(/;y(.+?)y;/gs, '<span class="hl-yellow">$1</span>');
+    inner = inner.replace(/;p(.+?)p;/gs, '<span class="hl-magenta">$1</span>');
+    inner = inner.replace(/;g(.+?)g;/gs, '<span class="hl-green">$1</span>');
+    inner = inner.replace(/;o(.+?)o;/gs, '<span class="hl-orange">$1</span>');
     
     
     const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
