@@ -28,7 +28,7 @@ META_OUTPUT_PATH = REPO_ROOT / "website/src/lib/meta.json"
 
 OUTPUT_ROOT = REPO_ROOT / "website/src/routes/(reader)/read/"
 
-DISCUSSION_MAP_PATH = REPO_ROOT / "discussion_map.json"
+DISCUSSION_MAP_PATH = SCRIPT_DIR / "discussion_map.json"
 
 def load_discussion_map():
     if DISCUSSION_MAP_PATH.exists():
