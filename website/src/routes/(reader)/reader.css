@@ -1784,7 +1784,7 @@ article.reader-container[data-scared] > *:not(.scare-zone) {
   opacity: 0;
   transform: scale(0.92);
   transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
-  text-align: center;
+  text-align: left;
 }
 
 .reader-container .scare-zone.scare-active .scare-page {
