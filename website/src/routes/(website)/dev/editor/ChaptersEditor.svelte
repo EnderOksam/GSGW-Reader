@@ -626,12 +626,13 @@
   ];
 
   const windowsItems = [
+    { syntax: "<pagebreak>...</pagebreak>", name: "scare page", cls: "scare-page", code: "\<pagebreak>\nScare page example\n\</pagebreak>", html: '<p>Boo</p>', expandable: true, meta: "this is a scare page, it will be hidden until the user scrolls to it" },
     { syntax: "~~~", name: "horizontal rule", cls: "", code: "~~~", html: '<hr class="visible-hr">', expandable: true },
-    { syntax: "~^~", name: "section break", cls: "", code: "~^~", html: '<hr class="invisible-hr">', expandable: true },
+    { syntax: "~^~", name: "section break", cls: "", code: "~^~", html: '<p>Text before</p><hr class="invisible-hr"><p>Text after</p>', expandable: true },
     { syntax: "+-...-+", name: "wiki window", cls: "wiki-window", code: "+-\\nDark exploration records\\n\\nwindow example\\n-+", html: '<p><strong>Dark exploration records</strong></p>\n<p>window example</p>', expandable: true, meta: "the first line is metadata and can be canceled out if you put a \\ before it" },
+    { syntax: "+$...$+", name: "plain window", cls: "plain-window", code: "+$\\nplain window example\\n$+", html: '<p>plain window example</p>', expandable: true },
     { syntax: "+=...=+", name: "crt window", cls: "black-window", code: "+=\\ncrt window example\\n=+", html: '<p>crt window example</p>', expandable: true },
     { syntax: "+~...~+", name: "gsgw system window", cls: "system-window", code: "+~\\nTitle\\nBody text\\n~+", html: '<p>Title</p><p>Body text</p>', expandable: true, meta: "the first line becomes a styled title with divider lines, use \\ to suppress" },
-    { syntax: "+$...$+", name: "plain window", cls: "plain-window", code: "+$\\nplain window example\\n$+", html: '<p>plain window example</p>', expandable: true },
     { syntax: "+. .+", name: "bare window", cls: "bare-window", code: "+.\\nbare window example\\n.+", html: '<p>bare window example</p>', expandable: true },
     { syntax: "&-...-&", name: "record window", cls: "record-window", code: "&-\\ndisaster management bureau\\n\\ndmb window example\\n-&", html: '<p><strong>disaster management bureau</strong></p>\n<p>dmb window example</p>', expandable: true, meta: "the first line is metadata and can be canceled out if you put a \\ before it" },
     { syntax: "&$...$&", name: "followup window", cls: "followup-window", code: "&$\\nfollowup window example\\n$&", html: '<p>followup window example</p>', expandable: true },
@@ -885,7 +886,7 @@
                         <div class="{item.cls}">{@html item.html}</div>
                       </div>
                     {:else}
-                      <pre class="text-[9px] font-mono text-primary/60 bg-base-300/60 rounded-lg px-2 py-1.5 overflow-x-auto whitespace-pre">{@html item.code.replace(/\\n/g, '\n')}</pre>
+                      <pre class="text-[9px] font-mono text-primary/60 bg-base-300/60 rounded-lg px-2 py-1.5 overflow-x-auto whitespace-pre">{item.code.replace(/\\n/g, '\n')}</pre>
                     {/if}
                   </div>
                 {/if}
