@@ -45,28 +45,38 @@
   const PRIORITY_THEMES = ["sunset", "light", "retro", "night", "business", "cupcake", "black"];
   const ALL_THEMES = ["sunset","light","dark","cupcake","bumblebee","emerald","corporate","synthwave","retro","cyberpunk","valentine","halloween","garden","forest","aqua","lofi","pastel","fantasy","wireframe","black","luxury","dracula","cmyk","autumn","business","acid","lemonade","night","coffee","winter","dim","nord","sunset"];
   const MISC_THEMES = ALL_THEMES.filter((t) => !PRIORITY_THEMES.includes(t));
+  const BOOK_FONTS = ["Alegreya", "Bookerly", "Roboto", "monospace", "Merriweather"];
+  const SYSTEM_FONTS = [
+    "EB Garamond", "Crimson Pro", "Georgia", "Verdana", "Arial", "sans-serif",
+    "Times New Roman", "serif", "Helvetica", "Tahoma", "system-ui",
+    "Trebuchet MS", "Courier New",
+  ];
+  const ALIGNMENTS = ["left", "center", "right", "justify"] as const;
+  const CARD_PRESETS = [
+    { label: "Small", width: 48 },
+    { label: "Medium", width: 64 },
+    { label: "Large", width: 96 },
+  ] as const;
 
-  let showThemeMenu = $state(false);
+  let settingsDialog: HTMLDialogElement | undefined = $state();
 
-  let settings = $state({
+  const DEFAULT_SETTINGS = {
     font: "Alegreya",
     fontSize: 25,
     fontWeight: 450,
-    lineHeight: 1.8,
-    textAlign: "left" as CanvasTextAlign,
-    hyphens: false,
-    indent: false,
+    textAlign: "left" as (typeof ALIGNMENTS)[number],
     theme: "sunset",
-  });
+    cardMaxWidth: 64,
+  };
+
+  let settings = $state<typeof DEFAULT_SETTINGS>({ ...DEFAULT_SETTINGS });
 
   let chapterVars = $derived(`
     --chapter-font: ${settings.font}, serif;
     --chapter-size: ${settings.fontSize}px;
     --chapter-weight: ${settings.fontWeight};
-    --chapter-lh: ${settings.lineHeight};
-    --chapter-indent: ${settings.indent ? "1.5em" : "0"};
     --chapter-align: ${settings.textAlign};
-    --chapter-hyphens: ${settings.hyphens ? "auto" : "none"};
+    --reader-width: ${settings.cardMaxWidth}rem;
   `);
 
   onMount(() => {
@@ -140,15 +150,16 @@
     try {
       const raw = localStorage.getItem("readerSettings");
       const cur = raw ? JSON.parse(raw) : {};
-      if (cur.theme !== settings.theme) {
-        cur.theme = settings.theme;
-        localStorage.setItem("readerSettings", JSON.stringify(cur));
-      }
+      localStorage.setItem("readerSettings", JSON.stringify({ ...cur, ...settings }));
     } catch {}
   });
 
   function toggleRecord(i: number) {
     expandedRecords[i] = !expandedRecords[i];
+  }
+
+  function resetSettings() {
+    settings = { ...DEFAULT_SETTINGS };
   }
 </script>
 
@@ -186,34 +197,120 @@
           onclick={() => (mode = "interactive")}
         >interactive</button>
       </div>
-      <div class="relative">
-        <button class="topbar-icon" aria-label="Change theme" onclick={() => (showThemeMenu = !showThemeMenu)}>
-          <Icon icon="material-symbols:palette-outline-rounded" class="size-5" />
-        </button>
-        {#if showThemeMenu}
-          <!-- svelte-ignore a11y_click_events_have_key_events -->
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <div class="fixed inset-0 z-40" onclick={() => (showThemeMenu = false)}></div>
-          <div class="theme-menu">
-            <span class="text-xs font-medium">Theme</span>
-            <select class="select select-bordered select-sm w-full mt-2" bind:value={settings.theme}>
-              <optgroup label="Recommended">
-                {#each PRIORITY_THEMES as t}
-                  <option value={t}>{t}</option>
-                {/each}
-              </optgroup>
-              <optgroup label="Other">
-                {#each MISC_THEMES as t}
-                  <option value={t}>{t}</option>
-                {/each}
-              </optgroup>
-            </select>
-          </div>
-        {/if}
-      </div>
+      <button class="topbar-icon" aria-label="Settings" onclick={() => settingsDialog?.showModal()}>
+        <Icon icon="material-symbols:settings-outline-rounded" class="size-5" />
+      </button>
     </div>
     <div class="topbar-right"></div>
   </nav>
+
+  <dialog bind:this={settingsDialog} class="modal sm:modal-middle modal-bottom">
+    <div class="modal-box bg-base-100 p-0 rounded-box shadow-2xl overflow-hidden">
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div class="relative flex justify-between items-center px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg flex items-center gap-2 text-primary">
+            <Icon icon="material-symbols:settings-outline-rounded" class="size-5" /> Settings
+          </span>
+          <div class="flex gap-2">
+            <button class="btn btn-sm btn-ghost text-error rounded-full" onclick={resetSettings}>Reset</button>
+            <form method="dialog">
+              <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+                <Icon icon="mdi:close" class="size-4" />
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-y-auto overscroll-contain max-h-[70vh]">
+        <div class="p-5 space-y-4">
+          <div class="rounded-2xl bg-base-200/40 border border-base-content/5 p-4 space-y-4">
+            <div class="flex items-center gap-2">
+              <Icon icon="mdi:palette-outline" class="size-4 text-primary/60" />
+              <span class="text-xs font-bold uppercase tracking-widest text-base-content/40">Appearance</span>
+            </div>
+            <div class="form-control gap-1.5">
+              <label class="label-text text-xs font-medium">Theme</label>
+              <select class="select select-bordered select-sm w-full rounded-xl" bind:value={settings.theme}>
+                <optgroup label="Recommended">
+                  {#each PRIORITY_THEMES as t}
+                    <option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                  {/each}
+                </optgroup>
+                <optgroup label="Other">
+                  {#each MISC_THEMES as t}
+                    <option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                  {/each}
+                </optgroup>
+              </select>
+            </div>
+            <div class="form-control gap-1.5">
+              <label class="label-text text-xs font-medium">Font</label>
+              <select class="select select-bordered select-sm w-full rounded-xl" bind:value={settings.font}>
+                {#each [BOOK_FONTS, SYSTEM_FONTS] as group, i}
+                  <optgroup label={i === 0 ? "Book Fonts" : "System Fonts"}>
+                    {#each group as f}
+                      <option value={f} style="font-family: {f}">{f}</option>
+                    {/each}
+                  </optgroup>
+                {/each}
+              </select>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-base-200/40 border border-base-content/5 p-4 space-y-4">
+            <div class="flex items-center gap-2">
+              <Icon icon="mdi:text-box-outline" class="size-4 text-primary/60" />
+              <span class="text-xs font-bold uppercase tracking-widest text-base-content/40">Readability</span>
+            </div>
+            <div class="form-control gap-1.5">
+              <label class="label-text text-xs font-medium flex justify-between">
+                <span>Size</span>
+                <span class="text-base-content/30 font-mono">{settings.fontSize}px</span>
+              </label>
+              <input type="range" min="14" max="34" step="1" class="range range-xs range-primary" bind:value={settings.fontSize} />
+            </div>
+            
+            <div class="form-control gap-1.5">
+              <label class="label-text text-xs font-medium">Alignment</label>
+              <div class="join w-full">
+                {#each ALIGNMENTS as align}
+                  <button
+                    class="join-item btn btn-xs grow rounded-xl {settings.textAlign === align ? 'btn-primary' : 'btn-ghost bg-base-200'}"
+                    onclick={() => (settings.textAlign = align)}
+                  >
+                    <Icon icon="material-symbols:format-align-{align}" />
+                  </button>
+                {/each}
+              </div>
+            </div>
+          </div>
+
+          <div class="hidden md:block rounded-2xl bg-base-200/40 border border-base-content/5 p-4 space-y-4">
+            <div class="flex items-center gap-2">
+              <Icon icon="mdi:arrow-expand-horizontal" class="size-4 text-primary/60" />
+              <span class="text-xs font-bold uppercase tracking-widest text-base-content/40">Layout</span>
+            </div>
+            <div class="form-control gap-1.5">
+              <label class="label-text text-xs font-medium">Card size</label>
+              <div class="join w-full">
+                {#each CARD_PRESETS as preset}
+                  <button
+                    class="join-item btn btn-xs grow rounded-xl {settings.cardMaxWidth === preset.width ? 'btn-primary' : 'btn-ghost bg-base-200'}"
+                    onclick={() => (settings.cardMaxWidth = preset.width)}
+                  >
+                    {preset.label}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
 
   <div class="reader-scroll">
     {#if loading}
@@ -538,29 +635,16 @@
     background-color: color-mix(in oklch, var(--color-base-content) 6%, transparent);
   }
 
-  .theme-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 0.5rem;
-    z-index: 50;
-    background-color: var(--color-base-100);
-    border: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
-    border-radius: 0.75rem;
-    box-shadow: 0 10px 30px rgb(0 0 0 / 0.18);
-    padding: 1rem;
-    min-width: 12rem;
-  }
-
   .reader-scroll {
     flex: 1;
     overflow-y: auto;
     padding: 1.5rem;
     scrollbar-width: thin;
+    font-size: var(--chapter-size, 25px);
   }
 
   .reader-main {
-    max-width: 64rem;
+    max-width: var(--reader-width, 64rem);
     margin: 0 auto;
   }
 
@@ -579,13 +663,13 @@
   }
 
   .state-text {
-    font-size: 11px;
+    font-size: calc(var(--chapter-size) * 0.44);
     font-family: ui-monospace, monospace;
     letter-spacing: 0.08em;
   }
 
   .state-link {
-    font-size: 11px;
+    font-size: calc(var(--chapter-size) * 0.44);
     font-family: ui-monospace, monospace;
     color: var(--color-primary, var(--color-base-content));
     text-decoration: underline;
@@ -670,7 +754,7 @@
     .reader-card-outer .reader-card-bg {
       display: none;
     }
-    .reader-card-inner {
+.reader-card-inner {
       padding: 0;
     }
     .reader-scroll {
@@ -714,7 +798,7 @@
   }
 
   .breadcrumb-type {
-    font-size: 9px;
+    font-size: calc(var(--chapter-size) * 0.36);
     font-family: ui-monospace, monospace;
     font-weight: 700;
     text-transform: uppercase;
@@ -728,7 +812,7 @@
 
   .breadcrumb-sep,
   .breadcrumb-text {
-    font-size: 9px;
+    font-size: calc(var(--chapter-size) * 0.36);
     font-family: ui-monospace, monospace;
     color: color-mix(in oklch, var(--color-base-content) 30%, transparent);
   }
@@ -739,7 +823,7 @@
     text-align: left;
     font-variant: normal;
     text-wrap: wrap;
-    font-size: 1.25rem;
+    font-size: calc(var(--chapter-size) * 0.8);
     font-weight: 700;
     color: color-mix(in oklch, var(--color-base-content) 80%, transparent);
     line-height: 1.3;
@@ -753,7 +837,7 @@
     display: flex;
     gap: 1rem;
     margin-top: 0.375rem;
-    font-size: 11px;
+    font-size: calc(var(--chapter-size) * 0.44);
     font-family: ui-monospace, monospace;
     color: color-mix(in oklch, var(--color-base-content) 35%, transparent);
   }
@@ -768,7 +852,7 @@
   }
 
   .card-header-label {
-    font-size: 10px;
+    font-size: calc(var(--chapter-size) * 0.4);
     font-family: ui-monospace, monospace;
     font-weight: 500;
     text-transform: uppercase;
@@ -778,7 +862,7 @@
 
   .card-header-count {
     margin-left: auto;
-    font-size: 9px;
+    font-size: calc(var(--chapter-size) * 0.36);
     font-family: ui-monospace, monospace;
     color: color-mix(in oklch, var(--color-base-content) 25%, transparent);
   }
@@ -791,9 +875,8 @@
     padding: 1.25rem;
     font-family: var(--chapter-font);
     font-size: var(--chapter-size);
-    line-height: var(--chapter-lh);
+    line-height: 1.8;
     text-align: var(--chapter-align);
-    hyphens: var(--chapter-hyphens);
     font-weight: var(--chapter-weight, 400);
     overflow-wrap: break-word;
     word-break: break-word;
@@ -804,10 +887,6 @@
   .chapter-content :global(h2),
   .chapter-content :global(h3) {
     text-wrap: balance;
-  }
-
-  .chapter-content :global(p) {
-    text-indent: var(--chapter-indent);
   }
 
   .card-records {
@@ -843,7 +922,7 @@
   }
 
   .record-row-title {
-    font-size: 12px;
+    font-size: calc(var(--chapter-size) * 0.48);
     font-family: ui-monospace, monospace;
     font-weight: 600;
     color: color-mix(in oklch, var(--color-base-content) 50%, transparent);
@@ -851,7 +930,6 @@
 
   .record-row-body {
     padding: 0 2.75rem 1rem;
-    font-size: 14px;
     line-height: 1.7;
     color: color-mix(in oklch, var(--color-base-content) 40%, transparent);
     white-space: pre-wrap;
@@ -870,7 +948,7 @@
   }
 
   .summary-text {
-    font-size: 12px;
+    font-size: calc(var(--chapter-size) * 0.48);
     line-height: 1.7;
     color: color-mix(in oklch, var(--color-base-content) 45%, transparent);
   }
