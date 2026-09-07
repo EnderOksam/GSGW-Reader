@@ -563,10 +563,13 @@ DEBUT_ACHIEVE_RE = re.compile(r"★=\n(.*?)\n=★", re.DOTALL)
 SMS_WINDOW_RE = re.compile(r"★:\n([\s\S]*?)\n:★", re.DOTALL)
 COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
+FONT_SIZE_RE = re.compile(r"#\^(\d+(?:\.\d+)?)\s+(.+?)\s+\^#", re.DOTALL)
+
 
 SIMPLE_REPLACEMENTS = [
     (TRANSITION_TEXT_RE, lambda m: transition_replacer(m)),
-
+    (FONT_SIZE_RE, lambda m: f'<span style="font-size:{m.group(1)}em">{m.group(2)}</span>'),
+    
     (re.compile(r"(?<!\\)_(.*?)(?<!\\)_", re.DOTALL), r"[\1]{.underline}"),
 
 

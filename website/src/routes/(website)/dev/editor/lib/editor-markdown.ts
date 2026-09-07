@@ -38,6 +38,7 @@ function imgInline(text: string, book: string): string {
 }
 
 const simpleInlineTags: [RegExp, string][] = [
+  [/#\^(\d+(?:\.\d+)?)\s*(.*?)\s*\^#/gs, '<span style="font-size:$1em">$2</span>'],
   [/(?<!\\)_(.*?)(?<!\\)_/gs, '<span class="underline">$1</span>'],
 
   [/@ll@(.*?)@ll@/gs, '<span class="mono mono-left">$1</span>'],
@@ -234,7 +235,10 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     
     inner = inner.replace(/\$\$(.+?)\$\$/gs, '<span class="handwritten">$1</span>');
     inner = inner.replace(/\$h(?!x)(.+?)h\$/gs, '<span class="paulo-bittencourt">$1</span>');
-    
+    inner = inner.replace(/\$hac(.*?)hac\$/gs, '<span class="sf-mike">$1</span>'),
+    inner = inner.replace(/\$hne(.*?)hne\$/gs, '<span class="incheongyoyugsimin">$1</span>'),
+    inner = inner.replace(/\$hd(.*?)hd\$/gs, '<span class="kccimkwontaek">$1</span>'),
+
     inner = inner.replace(/\$c(.+?)c\$/gs, '<span class="contaminated">$1</span>');
     inner = inner.replace(/\$Bh(.+?)Bh\$/gs, '<span class="braun-handwriting">$1</span>');
     inner = inner.replace(/\$clu(.+?)clu\$/gs, '<span class="diphylleia">$1</span>');    
@@ -243,6 +247,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     inner = inner.replace(/\$cri(.+?)cri\$/gs, '<span class="macho">$1</span>');
     inner = inner.replace(/\$gps(.+?)gps\$/gs, '<span class="tenada">$1</span>');
     inner = inner.replace(/\$tf(.+?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>');
+    inner = inner.replace(/\$tt(.*?)tt\$/gs, '<span class="mbc-1961">$1</span>'),
 
     inner = inner.replace(/\$soc(.+?)soc\$/gs, '<span class="kcc-an-changho">$1</span>');
     inner = inner.replace(/\$NE(.+?)NE\$/gs, '<span class="noto-emoji">$1</span>');
@@ -250,7 +255,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     inner = inner.replace(/\$vcr(.+?)vcr\$/gs, '<span class="vcr-osd-mono">$1</span>');    
     inner = inner.replace(/\$wo(.+?)wo\$/gs, '<span class="outline-white">$1</span>');
     inner = inner.replace(/\$bo(.+?)bo\$/gs, '<span class="outline-black">$1</span>');
-    
+
     inner = inner.replace(/#r(.+?)r#/gs, '<span class="text-red">$1</span>');
     inner = inner.replace(/#b(.+?)b#/gs, '<span class="text-blue">$1</span>');
     inner = inner.replace(/#y(.+?)y#/gs, '<span class="text-yellow">$1</span>');

@@ -83,6 +83,8 @@ SCROLL_LEFT_RE = re.compile(r"\|<(.+?)<\|", re.DOTALL)
 SCROLL_RIGHT_RE = re.compile(r"\|>(.+?)>\|", re.DOTALL)
 TRANSITION_TEXT_RE = re.compile(r"\|t\s*(?:\(([^)]*)\))?\s*(.*?)\s*t\|", re.DOTALL)
 
+FONT_SIZE_RE = re.compile(r"#\^(\d+(?:\.\d+)?)\s+(.+?)\s+\^#", re.DOTALL)
+
 FOOTNOTE_RE = re.compile(r"\[(\d+)\]\{([^}]+)\}", re.DOTALL)
 
 TRIPLE_STRIKE_RE = re.compile(r"<ts>([\s\S]*?)</ts>", re.DOTALL)
@@ -125,6 +127,8 @@ COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
 SIMPLE_REPLACEMENTS = [
     (TRANSITION_TEXT_RE, lambda m: transition_replacer(m)),
+    (FONT_SIZE_RE, lambda m: f'<span style="font-size:{m.group(1)}em">{m.group(2)}</span>'),
+
 
     (re.compile(r"(?<!\\)_(.*?)(?<!\\)_", re.DOTALL), r"[\1]{.underline}"),
 
@@ -180,6 +184,11 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$sst(.*?)sst\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
     (re.compile(r"\$ips(.*?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
     (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
+    (re.compile(r"\$tt(.*?)tt\$", re.DOTALL), r'<span class="mbc-1961">\1</span>'),
+    (re.compile(r"\$hac(.*?)hac\$", re.DOTALL), r'<span class="sf-mike">\1</span>'),
+    (re.compile(r"\$hne(.*?)hne\$", re.DOTALL), r'<span class="incheongyoyugsimin">\1</span>'),
+    (re.compile(r"\$hd(.*?)hd\$", re.DOTALL), r'<span class="kccimkwontaek">\1</span>'),
+
 ]
 
 
@@ -437,6 +446,11 @@ def subtle_replacer(match):
     inner = re.sub(r"\$sst(.+?)sst\$", r'<span class="nanum-barun-gothic">\1</span>', inner)
     inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
     inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
+    inner = re.sub(r"\$tt(.*?)tt\$", r'<span class="mbc-1961">\1</span>'),
+    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="sf-mike">\1</span>'),
+    inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>'),
+    inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>'),
+
 
     inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
     inner = re.sub(r"#b(.+?)b#", r'<span class="text-blue">\1</span>', inner)
