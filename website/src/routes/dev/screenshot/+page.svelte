@@ -168,7 +168,7 @@
   $effect(() => {
     if (!loaded || !images.length) return;
     cropWidth;
-    const overlay = document.getElementById("crop-overlay") as HTMLElement | null;
+    const overlay = document.getElementById("crop-overlay") as HTMLElement;
     if (!overlay) return;
 
     const nav = document.querySelector("nav");

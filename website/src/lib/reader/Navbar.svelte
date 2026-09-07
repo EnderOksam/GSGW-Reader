@@ -208,7 +208,7 @@
     }
     const winPins = ["bare-window", "wiki-window", "plain-window"]
       .map((sel) => {
-        const w = readerArticle.querySelector(`.${sel}`);
+        const w = readerArticle!.querySelector(`.${sel}`);
         return w ? `.snippet-preview .${sel} { max-width: ${w.getBoundingClientRect().width}px !important; }` : "";
       })
       .filter(Boolean)
@@ -377,7 +377,7 @@
       modals.settings?.close();
       modals.edit?.close();
       document.documentElement.requestFullscreen().then(() => {
-        screen.orientation?.lock?.("portrait").catch(() => {});
+        (screen.orientation as { lock?: (o: string) => Promise<void>; unlock?: () => void } | null)?.lock?.("portrait").catch(() => {});
       }).catch(console.error);
     } else {
       document.exitFullscreen().then(() => {

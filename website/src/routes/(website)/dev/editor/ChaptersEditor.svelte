@@ -117,7 +117,7 @@
         const titleAttr = title && !size ? ` title="${title}"` : "";
         return `<img src="${src}" alt="${text}"${style}${titleAttr}>`;
       };
-      return marked.parse(body, { renderer, html: true });
+      return marked.parse(body, { renderer });
     } catch {
       return body;
     }
@@ -654,7 +654,7 @@
 </script>
 
 <div class="flex-1 flex flex-col min-h-0 min-w-0">
-{#snippet section(title, items)}
+{#snippet section(title: string, items: { syntax: string; text: string; cls?: string; expandable?: boolean; previewHtml?: string; meta?: string }[])}
   {@const sectionId = title}
   {@const expandable = items.filter(i => i.expandable)}
   {@const regular = items.filter(i => !i.expandable)}
@@ -755,7 +755,7 @@
             <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
           {/if}
         </div>
-        <textarea spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+        <textarea spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
       </div>
     {:else}
       <div class="flex-1 flex flex-col min-h-0 min-w-0">
@@ -830,7 +830,7 @@
         <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
       {/if}
     </div>
-    <textarea spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+    <textarea spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
   </div>
   <div class="flex-1 flex flex-col min-h-0 min-w-0">
     <div class="flex items-center gap-2 px-3 py-2 border-b border-base-content/10 bg-base-200/60 backdrop-blur-sm rounded-t-xl shrink-0">
