@@ -375,7 +375,7 @@
         style="opacity: var(--card-bg-opacity);"
       ></div>
 
-      <div class="px-5 py-8 sm:px-8 sm:py-10 md:px-12 md:py-12">
+      <div class="px-2 sm:px-8 py-8 sm:py-10 md:px-12 md:py-12">
         <article
           class="chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word"
         >

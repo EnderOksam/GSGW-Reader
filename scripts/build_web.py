@@ -458,10 +458,10 @@ def subtle_replacer(match):
     inner = re.sub(r"\$sst(.+?)sst\$", r'<span class="nanum-barun-gothic">\1</span>', inner)
     inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
     inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
-    inner = re.sub(r"\$tt(.*?)tt\$", r'<span class="mbc-1961">\1</span>'),
-    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="sf-mike">\1</span>'),
-    inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>'),
-    inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>'),
+    inner = re.sub(r"\$tt(.*?)tt\$", r'<span class="mbc-1961">\1</span>', inner)
+    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="sf-mike">\1</span>', inner)
+    inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>', inner)
+    inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>', inner)
 
 
     inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
