@@ -149,6 +149,8 @@ hr.invisible-hr {
   font-weight: 400;
   letter-spacing: 0.02em;
   isolation: isolate;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   text-shadow:
     0.5px -1px 0 oklch(0.85 0 0 / 0.2),
     -0.5px 1px 0 oklch(0.85 0 0 / 0.2);
@@ -172,6 +174,8 @@ hr.invisible-hr {
   font-weight: 400;
   letter-spacing: 0.02em;
   isolation: isolate;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   text-shadow:
     2px -3px 0 oklch(0.55 0.22 30 / 0.2),
     -2px -3px 0 oklch(0.65 0.12 190 / 0.2),
@@ -1910,7 +1914,7 @@ article.reader-container[data-scared] > *:not(.scare-zone) {
   opacity: 0;
   transform: scale(0.92);
   transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
-  text-align: left;
+  text-align: inherit;
 }
 
 .reader-container .scare-zone.scare-active .scare-page {

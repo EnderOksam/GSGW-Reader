@@ -2094,7 +2094,6 @@ def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
         "NotoEmoji-Variable.ttf", "NotoSans-Variable.woff2",
         "PauloBittencourt-Bold.ttf", "PauloBittencourt-Regular.ttf",
         "SF-Mike.woff2",
-        "SandollDanpatpang-Italic.otf", "SandollDanpatpang-Regular.otf",
         "Tenada.ttf",
         "VCR_OSD_MONO_1.001.ttf",
         "incheongyoyugsimin.woff2",
