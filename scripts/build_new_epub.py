@@ -563,9 +563,12 @@ DEBUT_ACHIEVE_RE = re.compile(r"★=\n(.*?)\n=★", re.DOTALL)
 SMS_WINDOW_RE = re.compile(r"★:\n([\s\S]*?)\n:★", re.DOTALL)
 COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
+FONT_SIZE_RE = re.compile(r"#\^(\d+(?:\.\d+)?)\s+(.+?)\s+\^#", re.DOTALL)
+
 
 SIMPLE_REPLACEMENTS = [
     (TRANSITION_TEXT_RE, lambda m: transition_replacer(m)),
+    (FONT_SIZE_RE, lambda m: f'<span style="font-size:{m.group(1)}em">{m.group(2)}</span>'),
 
     (re.compile(r"(?<!\\)_(.*?)(?<!\\)_", re.DOTALL), r"[\1]{.underline}"),
 
@@ -619,6 +622,12 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$tf(.*?)tf\$", re.DOTALL), r'<span class="chungju-kimsaeng">\1</span>'),
     (re.compile(r"\$vcr(.*?)vcr\$", re.DOTALL), r'<span class="vcr-osd-mono">\1</span>'),
     (re.compile(r"\$Bh(.*?)Bh\$", re.DOTALL), r'<span class="braun-handwriting">\1</span>'),
+    (re.compile(r"\$tt(.*?)tt\$", re.DOTALL), r'<span class="mbc-1961">\1</span>'),
+    (re.compile(r"\$hac(.*?)hac\$", re.DOTALL), r'<span class="sf-mike">\1</span>'),
+    (re.compile(r"\$hne(.*?)hne\$", re.DOTALL), r'<span class="incheongyoyugsimin">\1</span>'),
+    (re.compile(r"\$hd(.*?)hd\$", re.DOTALL), r'<span class="kccimkwontaek">\1</span>'),
+
+
     (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
     (re.compile(r"\$bo(.*?)bo\$", re.DOTALL), r'<span class="outline-black">\1</span>'),
 ]
@@ -919,6 +928,10 @@ def subtle_replacer(match):
     inner = re.sub(r"\$tf(.+?)tf\$", r'<span class="chungju-kimsaeng">\1</span>', inner)
     inner = re.sub(r"\$vcr(.+?)vcr\$", r'<span class="vcr-osd-mono">\1</span>', inner)
     inner = re.sub(r"\$Bh(.+?)Bh\$", r'<span class="braun-handwriting">\1</span>', inner)
+    inner = re.sub(r"\$tt(.*?)tt\$", r'<span class="mbc-1961">\1</span>'),
+    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="sf-mike">\1</span>'),
+    inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>'),
+    inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>'),
 
     inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
     inner = re.sub(r"#b(.+?)b#", r'<span class="text-blue">\1</span>', inner)
@@ -2056,23 +2069,35 @@ def write_epub(
 
 def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
     font_names = [
-        "ComicNeue-Regular.woff2", "ComicNeue-Bold.woff2",
+        "Autodex.woff2",
+        "BMKkubulim.woff2",
         "Caveat-Variable.woff2",
-        "Lato-Regular.woff2", "Lato-Bold.woff2", "Lato-Italic.woff2", "Lato-BoldItalic.woff2",
-        "GowunBatang-Regular.woff2", "GowunBatang-Bold.woff2",
-        "PauloBittencourt-Regular.ttf", "PauloBittencourt-Bold.ttf",
-        "NanumBarunGothic.woff2", "NanumBarunGothicBold.woff2",
-        "ChungjuKimSaeng.ttf",
-        "VCR_OSD_MONO_1.001.ttf",
-        "GabiaMaeumgyeol.woff2",
-        "NotoSans-Variable.woff2",
-        "NotoEmoji-Variable.ttf",
-        "KCCAnChangho.woff2",
+        "ChungjuKimSaeng.otf",
+        "ComicNeue-Bold.woff2", "ComicNeue-Regular.woff2",
+        "CrimsonPro-Italic-Variable.woff2", "CrimsonPro-Variable.woff2",
+        "Danjo-bold-Regular.woff2",
         "Diphylleia-Variable.woff2",
+        "DungGeunMo.woff2",
+        "EBGaramond-Italic-Variable.woff2", "EBGaramond-Variable.woff2",
+        "GabiaMaeumgyeol.woff2",
+        "GowunBatang-Bold.woff2", "GowunBatang-Regular.woff2",
+        "Hakgyoansim Byeolbichhaneul OTF B.woff2",
+        "Hakgyoansim_NalgaeR.woff2",
+        "IBMPlexSans-Italic-VariableFont_wdth,wght.ttf", "IBMPlexSans-VariableFont_wdth,wght.ttf",
+        "KCC-Sonkeechung.woff2",
+        "KCCAnChangho.woff2",
+        "KCCImkwontaek.woff2",
+        "Lato-Bold.woff2", "Lato-BoldItalic.woff2", "Lato-Italic.woff2", "Lato-Regular.woff2",
+        "MBC1961.woff2",
         "Macho.woff2",
-        "IBMPlexSans-VariableFont_wdth,wght.ttf",
-        "IBMPlexSans-Italic-VariableFont_wdth,wght.ttf",
+        "NanumBarunGothic.woff2", "NanumBarunGothicBold.woff2", "NanumBarunGothicLight.woff2", "NanumBarunGothicUltraLight.woff2",
+        "NotoEmoji-Variable.ttf", "NotoSans-Variable.woff2",
+        "PauloBittencourt-Bold.ttf", "PauloBittencourt-Regular.ttf",
+        "SF-Mike.woff2",
+        "SandollDanpatpang-Italic.otf", "SandollDanpatpang-Regular.otf",
         "Tenada.ttf",
+        "VCR_OSD_MONO_1.001.ttf",
+        "incheongyoyugsimin.woff2",
     ]
     for font_name in font_names:
         src = FONTS_DIR / font_name

@@ -61,6 +61,7 @@ WAVE_RE = re.compile(r"%\^(.*?)\^%", re.DOTALL)
 
 DISTORT_RE = re.compile(r"@@([^@]+)@@", re.DOTALL)
 SUBTLEDISTORT_RE = re.compile(r"@_@(.+?)@_@", re.DOTALL)
+GLITCH_D_RE = re.compile(r"@d@(.+?)@d@", re.DOTALL)
 GROW_RE = re.compile(r"#\^#(.+?)#\^#", re.DOTALL)
 SHRINK_RE = re.compile(r"#v#(.+?)#v#", re.DOTALL)
 
@@ -82,6 +83,8 @@ HEX_AURORA_UP_STATIC_RE = re.compile(r"\$hxaus\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(
 SCROLL_LEFT_RE = re.compile(r"\|<(.+?)<\|", re.DOTALL)
 SCROLL_RIGHT_RE = re.compile(r"\|>(.+?)>\|", re.DOTALL)
 TRANSITION_TEXT_RE = re.compile(r"\|t\s*(?:\(([^)]*)\))?\s*(.*?)\s*t\|", re.DOTALL)
+
+FONT_SIZE_RE = re.compile(r"#\^(\d+(?:\.\d+)?)\s+(.+?)\s+\^#", re.DOTALL)
 
 FOOTNOTE_RE = re.compile(r"\[(\d+)\]\{([^}]+)\}", re.DOTALL)
 
@@ -125,6 +128,8 @@ COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
 SIMPLE_REPLACEMENTS = [
     (TRANSITION_TEXT_RE, lambda m: transition_replacer(m)),
+    (FONT_SIZE_RE, lambda m: f'<span style="font-size:{m.group(1)}em">{m.group(2)}</span>'),
+
 
     (re.compile(r"(?<!\\)_(.*?)(?<!\\)_", re.DOTALL), r"[\1]{.underline}"),
 
@@ -180,6 +185,11 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$sst(.*?)sst\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
     (re.compile(r"\$ips(.*?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
     (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
+    (re.compile(r"\$tt(.*?)tt\$", re.DOTALL), r'<span class="mbc-1961">\1</span>'),
+    (re.compile(r"\$hac(.*?)hac\$", re.DOTALL), r'<span class="sf-mike">\1</span>'),
+    (re.compile(r"\$hne(.*?)hne\$", re.DOTALL), r'<span class="incheongyoyugsimin">\1</span>'),
+    (re.compile(r"\$hd(.*?)hd\$", re.DOTALL), r'<span class="kccimkwontaek">\1</span>'),
+
 ]
 
 
@@ -411,6 +421,17 @@ def distorted_replacer(match):
     )
 
 
+def glitch_d_replacer(match):
+
+    inner = match.group(1)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    plain = re.sub(r"<[^>]+>", "", inner)
+
+    return f'<span class="glitch-d" data-text="{plain}">{inner}</span>'
+
+
 def subtle_replacer(match):
 
     inner = match.group(1)
@@ -437,6 +458,11 @@ def subtle_replacer(match):
     inner = re.sub(r"\$sst(.+?)sst\$", r'<span class="nanum-barun-gothic">\1</span>', inner)
     inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
     inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
+    inner = re.sub(r"\$tt(.*?)tt\$", r'<span class="mbc-1961">\1</span>', inner)
+    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="sf-mike">\1</span>', inner)
+    inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>', inner)
+    inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>', inner)
+
 
     inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
     inner = re.sub(r"#b(.+?)b#", r'<span class="text-blue">\1</span>', inner)
@@ -1168,6 +1194,8 @@ def convert_chapter(content):
         content = content.replace(key, val)
 
     content = DISTORT_RE.sub(distorted_replacer, content)
+
+    content = GLITCH_D_RE.sub(glitch_d_replacer, content)
 
     content = WIKI_WINDOW_RE.sub(wiki_window_replacer, content)
 

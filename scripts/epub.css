@@ -175,6 +175,118 @@
   font-display: swap;
 }
 
+/* --- BMKkubulim --- */
+@font-face {
+  font-family: "BMKkubulim";
+  src: url("../Fonts/BMKkubulim.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- MBC 1961 (normal train sign) --- */
+@font-face {
+  font-family: "MBC 1961";
+  src: url("../Fonts/MBC1961.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Danjo-bold-Regular (Braun's Late-Night Show) --- */
+@font-face {
+  font-family: "Danjo-bold-Regular";
+  src: url("../Fonts/Danjo-bold-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- SF-Mike (Agent Choi's handwriting) --- */
+@font-face {
+  font-family: "SF-Mike";
+  src: url("../Fonts/SF-Mike.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- KimjungchulScript-Light (Agent Choi's handwriting - Korean font)--- */
+@font-face {
+  font-family: "KimjungchulScript-Light";
+  src: url("/fonts/KimjungchulScript-Light.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Autodex (Glass Prison font) --- */
+@font-face {
+  font-family: "Autodex";
+  src: url("../Fonts/Autodex.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Incheong Yoyug Simin (130666 handwriting) --- */
+@font-face {
+  font-family: "incheongyoyugsimin";
+  src: url("../Fonts/incheongyoyugsimin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Hakgyoansim NalgaeR (Teacher corruption font) --- */
+@font-face {
+  font-family: "Hakgyoansim_NalgaeR";
+  src: url("../Fonts/Hakgyoansim_NalgaeR.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- KCCImkwontaek (Desperate Handwriting) --- */
+@font-face {
+  font-family: "KCCImkwontaek";
+  src: url("../Fonts/KCCImkwontaek.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- DungGeunMo (Space Shopping Mall font)--- */
+
+@font-face {
+  font-family: "DungGeunMo";
+  src: url("/fonts/DungGeunMo.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Hakgyoansim Byeolbichhaneul OTF B (Moonlight Tattoo Shop 2)--- */
+
+@font-face {
+  font-family: "Hakgyoansim Byeolbichhaneul OTF B";
+  src: url("/fonts/Hakgyoansim Byeolbichhaneul OTF B.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- KCC Sonkeechung (Looky Mart map handwriting)--- */
+
+@font-face {
+  font-family: "KCC-Sonkeechung";
+  src: url("/fonts/KCC-Sonkeechung.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
 .cover-page {
   text-align: center;
   margin: 0;

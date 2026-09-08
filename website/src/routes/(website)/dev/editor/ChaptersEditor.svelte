@@ -549,19 +549,33 @@
   const fontItems = [
     { syntax: "$$text$$", text: "handwritten script", cls: "handwritten", expandable: true },
     { syntax: "$htexth$", text: "handwritten text", cls: "paulo-bittencourt", expandable: true },
+    { syntax: "$hactexthac$", text: "Agent Choi handwriting", cls: "sf-mike", expandable: true },
+    { syntax: "$hnetexthne$", text: "130666 handwriting", cls: "incheongyoyugsimin", expandable: true },
+    { syntax: "$hdtexthd$", text: "desperate handwriting", cls: "kccimkwontaek", expandable: true },
+
+
     { syntax: "$EbtextEb$", text: "old style text", cls: "eb-garamond", expandable: true },
     { syntax: "$oshtextosh$", text: "old style humanist", cls: "crimson-old-style", expandable: true },
+
+
     { syntax: "$ssrtextssr$", text: "sans serif regular", cls: "noto-sans", expandable: true },
     { syntax: "$ssttextsst$", text: "sans serif thin", cls: "nanum-barun-gothic", expandable: true },
     { syntax: "$ipstextips$", text: "IBM Plex Sans", cls: "ibm-plex-sans", expandable: true },
     { syntax: "$lattextlat$", text: "document text", cls: "lato", expandable: true },
+
+
     { syntax: "$BhtextBh$", text: "braun font", cls: "braun-handwriting", expandable: true },
     { syntax: "$foxtextfox$", text: "fox counseling text", cls: "fox", expandable: true },
     { syntax: "$ctextc$", text: "comic sans text", cls: "contaminated", expandable: true },
     { syntax: "$clutextclu$", text: "church of luminous unknown", cls: "diphylleia", expandable: true },
+
+
     { syntax: "$gpstextgps$", text: "retro blocky text", cls: "tenada", expandable: true },
     { syntax: "$tftexttf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },
+    { syntax: "$tttexttt$", text: "train sign", cls: "mbc-1961", expandable: true },
     { syntax: "$crictextcri$", text: "cheerful research inc.", cls: "macho", expandable: true },
+
+
     { syntax: "$NEtextNE$", text: "noto emoji", cls: "noto-emoji", expandable: true, previewHtml: '<span class="noto-emoji">🥰🥸🤯🧐🤪🥱</span>' },
     { syntax: "$soctextsoc$", text: "cursive script", cls: "kcc-an-changho", expandable: true },
     { syntax: "$vcrtextvcr$", text: "vcr text", cls: "vcr-osd-mono", expandable: true },
@@ -590,21 +604,21 @@
     { syntax: "**text**", text: "bold text", cls: "font-bold" },
     { syntax: "*text*", text: "italic text", cls: "italic" },
     { syntax: "_text_", text: "underline text", cls: "underline" },
-    { syntax: "~~text~~", text: "strikethrough text", cls: "line-through text-base-content/50" },
-    { syntax: "<ts>text</ts>", text: "triple strikethrough", cls: "triple-strike", expandable: true },
-    { syntax: "$agtextag$", text: "silver text", cls: "silver-text", expandable: true },
-    { syntax: "$stexts$", text: "smoke text", cls: "smoke-text", expandable: true },
-    { syntax: "$atexta$", text: "aurora text", cls: "aurora-text", expandable: true },
-    { syntax: "$gtextg$", text: "gold text", cls: "gold-text", expandable: true },
-    { syntax: "$*text*$", text: "sparkle text", cls: "sparkle-text", expandable: true },
-    { syntax: "$(text)$", text: "moon text", cls: "moon-text", expandable: true },
+    { syntax: "~~ text~~", text: "strikethrough text", cls: "line-through text-base-content/50" },
+    { syntax: "<ts> text</ts>", text: "triple strikethrough", cls: "triple-strike", expandable: true },
+    { syntax: "$ag text ag$", text: "silver text", cls: "silver-text", expandable: true },
+    { syntax: "$s text s$", text: "smoke text", cls: "smoke-text", expandable: true },
+    { syntax: "$a text a$", text: "aurora text", cls: "aurora-text", expandable: true },
+    { syntax: "$g text g$", text: "gold text", cls: "gold-text", expandable: true },
+    { syntax: "$* text *$", text: "sparkle text", cls: "sparkle-text", expandable: true },
+    { syntax: "$( text  )$", text: "moon text", cls: "moon-text", expandable: true },
   ];
 
   const changingItems = [
-    { syntax: "#*text*#", text: "large text", cls: "text-large", expandable: true },
-    { syntax: "#><text><#", text: "large centered", cls: "text-large-centered", expandable: true },
+    { syntax: "#* text *#", text: "large text", cls: "text-large", expandable: true },
+    { syntax: "#>< text ><#", text: "large centered", cls: "text-large-centered", expandable: true },
     { syntax: "-# text #-", text: "small text", cls: "text-sub", expandable: true },
-    { syntax: "#^#text#^#", text: "grow text", cls: "text-base-content/70", expandable: true, previewHtml: growPreview() },
+{ syntax: "#^#text#^#", text: "grow text", cls: "text-base-content/70", expandable: true, previewHtml: growPreview() },
     { syntax: "#v#text#v#", text: "shrink text", cls: "text-base-content/70", expandable: true, previewHtml: shrinkPreview() },
     { syntax: "#f#text#f#", text: "fade out", cls: "text-faded", expandable: true },
     { syntax: "#f>#text#f>#", text: "fade right", cls: "text-fade-right", expandable: true },
@@ -620,9 +634,12 @@
     { syntax: "%^text^%", text: "wave up", cls: "wave-up", expandable: true, previewHtml: wavePreview() },
     { syntax: "@@text@@", text: "glitch heavy", cls: "glitch-text", expandable: true },
     { syntax: "@_@text@_@", text: "glitch subtle", cls: "glitch-subtle", expandable: true },
+    { syntax: "@d@text@d@", text: "glitched text", cls: "glitch-d", expandable: true, previewHtml: '<span class="glitch-d" data-text="glitch text">glitch text</span>' },
     { syntax: "|<text<|", text: "scroll left", cls: "scroll-wrap scroll-left", expandable: true },
     { syntax: "|>text>|", text: "scroll right", cls: "scroll-wrap scroll-right", expandable: true },
     { syntax: "|t a > b t|", text: "transition text", cls: "transition-text", expandable: true, meta: "add a time after |t to speed up or slow down the cycle, like |t(0.5s) a > b t|. Default is 1.6s." },
+    { syntax: "#^3 text ^#", text: "custom text size", cls: "text-base-content/70", expandable: true, meta: "add a number after the first ^ to change the font size, like #^2.5text^# for 2.5x size" },
+
   ];
 
   const windowsItems = [

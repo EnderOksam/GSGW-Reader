@@ -386,6 +386,8 @@ def convert_chapter(content):
 
     content = bw.DISTORT_RE.sub(bw.distorted_replacer, content)
 
+    content = bw.GLITCH_D_RE.sub(bw.glitch_d_replacer, content)
+
     # + windows
     content = bw.WIKI_WINDOW_RE.sub(bw.wiki_window_replacer, content)
 
