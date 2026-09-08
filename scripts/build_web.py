@@ -186,7 +186,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$ips(.*?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
     (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
     (re.compile(r"\$tt(.*?)tt\$", re.DOTALL), r'<span class="mbc-1961">\1</span>'),
-    (re.compile(r"\$hac(.*?)hac\$", re.DOTALL), r'<span class="sf-mike">\1</span>'),
+    (re.compile(r"\$hac(.*?)hac\$", re.DOTALL), r'<span class="choi-hand">\1</span>'),
     (re.compile(r"\$hne(.*?)hne\$", re.DOTALL), r'<span class="incheongyoyugsimin">\1</span>'),
     (re.compile(r"\$hd(.*?)hd\$", re.DOTALL), r'<span class="kccimkwontaek">\1</span>'),
 
@@ -459,7 +459,7 @@ def subtle_replacer(match):
     inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
     inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
     inner = re.sub(r"\$tt(.*?)tt\$", r'<span class="mbc-1961">\1</span>', inner)
-    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="sf-mike">\1</span>', inner)
+    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="choi-hand">\1</span>', inner)
     inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>', inner)
     inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>', inner)
 

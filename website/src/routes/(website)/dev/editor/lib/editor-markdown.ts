@@ -81,7 +81,7 @@ const simpleInlineTags: [RegExp, string][] = [
 
   [/\$\$(.*?)\$\$/gs, '<span class="handwritten">$1</span>'],
   [/\$h(?!x)(.*?)h\$/gs, '<span class="paulo-bittencourt">$1</span>'],
-  [/\$hac(?!x)(.*?)hac\$/gs, '<span class="sf-mike">$1</span>'],
+  [/\$hac(?!x)(.*?)hac\$/gs, '<span class="choi-hand">$1</span>'],
   [/\$hne(?!x)(.*?)hne\$/gs, '<span class="incheongyoyugsimin">$1</span>'],
   [/\$hd(?!x)(.*?)hd\$/gs, '<span class="kccimkwontaek">$1</span>'],
   
@@ -239,7 +239,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     
     inner = inner.replace(/\$\$(.+?)\$\$/gs, '<span class="handwritten">$1</span>');
     inner = inner.replace(/\$h(?!x)(.+?)h\$/gs, '<span class="paulo-bittencourt">$1</span>');
-    inner = inner.replace(/\$hac(.*?)hac\$/gs, '<span class="sf-mike">$1</span>'),
+    inner = inner.replace(/\$hac(.*?)hac\$/gs, '<span class="choi-hand">$1</span>'),
     inner = inner.replace(/\$hne(.*?)hne\$/gs, '<span class="incheongyoyugsimin">$1</span>'),
     inner = inner.replace(/\$hd(.*?)hd\$/gs, '<span class="kccimkwontaek">$1</span>'),
 

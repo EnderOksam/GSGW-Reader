@@ -623,7 +623,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$vcr(.*?)vcr\$", re.DOTALL), r'<span class="vcr-osd-mono">\1</span>'),
     (re.compile(r"\$Bh(.*?)Bh\$", re.DOTALL), r'<span class="braun-handwriting">\1</span>'),
     (re.compile(r"\$tt(.*?)tt\$", re.DOTALL), r'<span class="mbc-1961">\1</span>'),
-    (re.compile(r"\$hac(.*?)hac\$", re.DOTALL), r'<span class="sf-mike">\1</span>'),
+    (re.compile(r"\$hac(.*?)hac\$", re.DOTALL), r'<span class="choi-hand">\1</span>'),
     (re.compile(r"\$hne(.*?)hne\$", re.DOTALL), r'<span class="incheongyoyugsimin">\1</span>'),
     (re.compile(r"\$hd(.*?)hd\$", re.DOTALL), r'<span class="kccimkwontaek">\1</span>'),
 
@@ -929,7 +929,7 @@ def subtle_replacer(match):
     inner = re.sub(r"\$vcr(.+?)vcr\$", r'<span class="vcr-osd-mono">\1</span>', inner)
     inner = re.sub(r"\$Bh(.+?)Bh\$", r'<span class="braun-handwriting">\1</span>', inner)
     inner = re.sub(r"\$tt(.*?)tt\$", r'<span class="mbc-1961">\1</span>'),
-    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="sf-mike">\1</span>'),
+    inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="choi-hand">\1</span>'),
     inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>'),
     inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>'),
 
@@ -2090,6 +2090,7 @@ def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
         "Lato-Bold.woff2", "Lato-BoldItalic.woff2", "Lato-Italic.woff2", "Lato-Regular.woff2",
         "MBC1961.woff2",
         "Macho.woff2",
+        "Miraena-mu.woff2",
         "NanumBarunGothic.woff2", "NanumBarunGothicBold.woff2", "NanumBarunGothicLight.woff2", "NanumBarunGothicUltraLight.woff2",
         "NotoEmoji-Variable.ttf", "NotoSans-Variable.woff2",
         "PauloBittencourt-Bold.ttf", "PauloBittencourt-Regular.ttf",

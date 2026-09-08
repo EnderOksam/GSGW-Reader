@@ -549,7 +549,7 @@
   const fontItems = [
     { syntax: "$$text$$", text: "handwritten script", cls: "handwritten", expandable: true },
     { syntax: "$htexth$", text: "handwritten text", cls: "paulo-bittencourt", expandable: true },
-    { syntax: "$hactexthac$", text: "Agent Choi handwriting", cls: "sf-mike", expandable: true },
+    { syntax: "$hactexthac$", text: "Agent Choi handwriting", cls: "choi-hand", expandable: true },
     { syntax: "$hnetexthne$", text: "130666 handwriting", cls: "incheongyoyugsimin", expandable: true },
     { syntax: "$hdtexthd$", text: "desperate handwriting", cls: "kccimkwontaek", expandable: true },
 
