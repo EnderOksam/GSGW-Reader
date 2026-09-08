@@ -490,6 +490,16 @@ body {
   font-display: swap;
 }
 
+/* --- KimjungchulScript-Light (Agent Choi's handwriting - Korean font)--- */
+
+@font-face {
+  font-family: "KimjungchulScript-Light";
+  src: url("/fonts/KimjungchulScript-Light.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* --- Autodex (Glass Prison font)--- */
 
 @font-face {
