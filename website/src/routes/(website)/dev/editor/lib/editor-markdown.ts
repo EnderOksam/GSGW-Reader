@@ -81,6 +81,9 @@ const simpleInlineTags: [RegExp, string][] = [
 
   [/\$\$(.*?)\$\$/gs, '<span class="handwritten">$1</span>'],
   [/\$h(?!x)(.*?)h\$/gs, '<span class="paulo-bittencourt">$1</span>'],
+  [/\$hac(?!x)(.*?)hac\$/gs, '<span class="sf-mike">$1</span>'],
+  [/\$hne(?!x)(.*?)hne\$/gs, '<span class="incheongyoyugsimin">$1</span>'],
+  [/\$hd(?!x)(.*?)hd\$/gs, '<span class="kccimkwontaek">$1</span>'],
   
   [/\$c(.*?)c\$/gs, '<span class="contaminated">$1</span>'],
   [/\$Bh(.*?)Bh\$/gs, '<span class="braun-handwriting">$1</span>'],
@@ -88,6 +91,7 @@ const simpleInlineTags: [RegExp, string][] = [
   [/\$fox(.*?)fox\$/gs, '<span class="fox">$1</span>'],
 
   [/\$tf(.*?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>'],
+  [/\$tt(.*?)tt\$/gs, '<span class="mbc-1961">$1</span>'],
   [/\$cri(.*?)cri\$/gs, '<span class="macho">$1</span>'],
   [/\$gps(.*?)gps\$/gs, '<span class="tenada">$1</span>'],
 

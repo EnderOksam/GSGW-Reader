@@ -885,7 +885,7 @@ hr.invisible-hr {
   font-family: 'Tenada', 'Georgia', serif;
 }
 
-.bmkkubulim {
+.unlucky {
   font-family: 'BMKkubulim', sans-serif;
 }
 
@@ -898,7 +898,7 @@ hr.invisible-hr {
 }
 
 .sf-mike {
-  font-family: 'SF Mike', sans-serif;
+  font-family: 'SF-Mike', sans-serif;
 }
 
 .autodex {
@@ -910,7 +910,19 @@ hr.invisible-hr {
 }
 
 .kccimkwontaek {
-  font-family: 'KCC Imkwontaek', sans-serif;
+  font-family: 'KCCImkwontaek', sans-serif;
+}
+
+.ssm2 {
+  font-family: 'Dunggeunmo', sans-serif;
+}
+
+.mts2 {
+  font-family: 'Hakgyoansim Byeolbichhaneul OTF B', sans-serif;
+}
+
+.hlm {
+  font-family: 'KCC-Sonkeechung', sans-serif;
 }
 
 

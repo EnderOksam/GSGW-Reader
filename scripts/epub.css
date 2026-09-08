@@ -247,6 +247,37 @@
   font-display: swap;
 }
 
+/* --- DungGeunMo (Space Shopping Mall font)--- */
+
+@font-face {
+  font-family: "DungGeunMo";
+  src: url("/fonts/DungGeunMo.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Hakgyoansim Byeolbichhaneul OTF B (Moonlight Tattoo Shop 2)--- */
+
+@font-face {
+  font-family: "Hakgyoansim Byeolbichhaneul OTF B";
+  src: url("/fonts/Hakgyoansim Byeolbichhaneul OTF B.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- KCC Sonkeechung (Looky Mart map handwriting)--- */
+
+@font-face {
+  font-family: "KCC-Sonkeechung";
+  src: url("/fonts/KCC-Sonkeechung.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
 .cover-page {
   text-align: center;
   margin: 0;
