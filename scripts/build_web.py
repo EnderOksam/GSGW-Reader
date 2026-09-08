@@ -61,6 +61,7 @@ WAVE_RE = re.compile(r"%\^(.*?)\^%", re.DOTALL)
 
 DISTORT_RE = re.compile(r"@@([^@]+)@@", re.DOTALL)
 SUBTLEDISTORT_RE = re.compile(r"@_@(.+?)@_@", re.DOTALL)
+GLITCH_D_RE = re.compile(r"@d@(.+?)@d@", re.DOTALL)
 GROW_RE = re.compile(r"#\^#(.+?)#\^#", re.DOTALL)
 SHRINK_RE = re.compile(r"#v#(.+?)#v#", re.DOTALL)
 
@@ -409,6 +410,17 @@ def distorted_replacer(match):
         f'{"".join(chars)}'
         f'</span>'
     )
+
+
+def glitch_d_replacer(match):
+
+    inner = match.group(1)
+
+    inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+
+    plain = re.sub(r"<[^>]+>", "", inner)
+
+    return f'<span class="glitch-d" data-text="{plain}">{inner}</span>'
 
 
 def subtle_replacer(match):
@@ -1168,6 +1180,8 @@ def convert_chapter(content):
         content = content.replace(key, val)
 
     content = DISTORT_RE.sub(distorted_replacer, content)
+
+    content = GLITCH_D_RE.sub(glitch_d_replacer, content)
 
     content = WIKI_WINDOW_RE.sub(wiki_window_replacer, content)
 

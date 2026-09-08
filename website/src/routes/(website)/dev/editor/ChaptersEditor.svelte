@@ -620,6 +620,7 @@
     { syntax: "%^text^%", text: "wave up", cls: "wave-up", expandable: true, previewHtml: wavePreview() },
     { syntax: "@@text@@", text: "glitch heavy", cls: "glitch-text", expandable: true },
     { syntax: "@_@text@_@", text: "glitch subtle", cls: "glitch-subtle", expandable: true },
+    { syntax: "@d@text@d@", text: "glitched text", cls: "glitch-d", expandable: true, previewHtml: '<span class="glitch-d" data-text="glitch text">glitch text</span>' },
     { syntax: "|<text<|", text: "scroll left", cls: "scroll-wrap scroll-left", expandable: true },
     { syntax: "|>text>|", text: "scroll right", cls: "scroll-wrap scroll-right", expandable: true },
     { syntax: "|t a > b t|", text: "transition text", cls: "transition-text", expandable: true, meta: "add a time after |t to speed up or slow down the cycle, like |t(0.5s) a > b t|. Default is 1.6s." },

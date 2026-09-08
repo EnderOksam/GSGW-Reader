@@ -364,6 +364,12 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     return `<span class="glitch-text">${chars.join("")}</span>`;
   });
 
+  s = s.replace(/@d@(.+?)@d@/gs, (_: string, inner: string) => {
+    inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    const plain = inner.replace(/<[^>]+>/g, "");
+    return `<span class="glitch-d" data-text="${plain}">${inner}</span>`;
+  });
+
   s = s.replace(/\$s(.+?)s\$/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     return `<span class="smoke-text">${inner}</span>`;
