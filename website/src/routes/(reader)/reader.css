@@ -894,7 +894,7 @@ hr.invisible-hr {
 }
 
 .contaminated {
-  font-family: 'Comic Neue', 'Comic Sans MS', 'Comic Sans', cursive;
+  font-family: 'Hakgyoansim_NalgaeR', 'Comic Neue', 'Comic Sans MS', 'Comic Sans', cursive;
 }
 
 .paulo-bittencourt {
@@ -969,6 +969,47 @@ hr.invisible-hr {
 .tenada {
   font-family: 'Tenada', 'Georgia', serif;
 }
+
+.unlucky {
+  font-family: 'BMKkubulim', sans-serif;
+}
+
+.mbc-1961 {
+  font-family: 'MBC 1961', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+.danjo {
+  font-family: 'Danjo-bold-Regular', sans-serif;
+}
+
+.sf-mike {
+  font-family: 'SF-Mike', sans-serif;
+}
+
+.autodex {
+  font-family: 'Autodex', sans-serif;
+}
+
+.incheongyoyugsimin {
+  font-family: 'Incheongyoyugsimin', sans-serif;
+}
+
+.kccimkwontaek {
+  font-family: 'KCCImkwontaek', sans-serif;
+}
+
+.ssm2 {
+  font-family: 'Dunggeunmo', sans-serif;
+}
+
+.mts2 {
+  font-family: 'Hakgyoansim Byeolbichhaneul OTF B', sans-serif;
+}
+
+.hlm {
+  font-family: 'KCC-Sonkeechung', sans-serif;
+}
+
 
 .scroll-wrap {
   display: inline-block;
