@@ -1898,7 +1898,7 @@ body .reader-container .sms-center.sms-center {
 }
 
 article.reader-container > * {
-  transition: opacity 0.3s;
+  transition: opacity 0.6s ease;
 }
 
 article.reader-container[data-scared] > *:not(.scare-zone) {
@@ -1908,15 +1908,18 @@ article.reader-container[data-scared] > *:not(.scare-zone) {
 .reader-container .scare-page {
   visibility: hidden;
   opacity: 0;
-  transform: scale(0.92);
-  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+  transform: scale(0.94) translateY(6px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.5s;
   text-align: left;
 }
 
 .reader-container .scare-zone.scare-active .scare-page {
   visibility: visible;
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1) translateY(0);
 }
 
 .reader-container .scare-page p {
