@@ -480,7 +480,7 @@ body {
   font-display: swap;
 }
 
-/* --- SF-Mike (Agent Choi's handwriting)--- */
+/* --- SF-Mike --- */
 
 @font-face {
   font-family: "SF-Mike";
@@ -500,11 +500,22 @@ body {
   font-display: swap;
 }
 
-/* --- Autodex (Glass Prison font)--- */
+/* --- Miraena-mu (Agent Choi's handwriting)--- */
 
 @font-face {
-  font-family: "Autodex";
-  src: url("/fonts/Autodex.woff2") format("woff2");
+  font-family: "Miraena-mu";
+  src: url("/fonts/Miraena-mu.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* --- Jeongseon Arirang (Glass Prison font)--- */
+
+@font-face {
+  font-family: "Jeongseon Arirang";
+  src: url("/fonts/Jeongseon Arirang.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
