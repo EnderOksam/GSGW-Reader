@@ -5,6 +5,17 @@
   --window-accent: oklch(0.55 0.22 30);
 }
 
+/*
+ * Keep font swaps optically consistent when they appear in the same line.
+ * The value is Alegreya's x-height (0.462em), our default reading face.
+ * `font-size-adjust` scales each descendant font to that same x-height while
+ * preserving intentional emphasis supplied by classes such as .text-large.
+ */
+.reader-container,
+.chapter-content {
+  font-size-adjust: 0.462;
+}
+
 .reader-container strong {
   font-size: 1.15em;
 }
@@ -949,6 +960,19 @@ hr.invisible-hr {
   font-family: 'Macho', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 }
 
+/*
+ * These faces have unusually tall capitals relative to their lowercase forms.
+ * Match the default Alegreya cap height (0.658em) rather than the shared
+ * x-height so capitalized text does not look oversized beside body copy.
+ */
+@supports (font-size-adjust: cap-height 0.658) {
+  .macho,
+  .incheongyoyugsimin {
+    font-size-adjust: cap-height 0.658;
+    vertical-align: .08em;
+  }
+}
+
 .ibm-plex-sans {
   font-family: 'IBM Plex Sans', 'Helvetica Neue', 'Arial', sans-serif;
   font-weight: 200;
@@ -980,7 +1004,6 @@ hr.invisible-hr {
 
 .choi-hand {
   font-family: 'Miraena-mu', 'KimjungchulScript-Light', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
-  font-size: calc(var(--chapter-size, 1rem) * 1.12);
 }
 
 .glassprison {
@@ -989,8 +1012,6 @@ hr.invisible-hr {
 
 .incheongyoyugsimin {
   font-family: 'Incheongyoyugsimin', sans-serif;
-  vertical-align: .08em;
-  font-size: calc(var(--chapter-size, 1rem) * 1.12);
 }
 
 .kccimkwontaek {
