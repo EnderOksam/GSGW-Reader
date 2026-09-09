@@ -2069,7 +2069,7 @@ def write_epub(
 
 def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
     font_names = [
-        "Autodex.woff2",
+        "Jeongseon Arirang.woff2",
         "BMKkubulim.woff2",
         "Caveat-Variable.woff2",
         "ChungjuKimSaeng.otf",

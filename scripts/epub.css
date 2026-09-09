@@ -230,10 +230,10 @@
   font-display: swap;
 }
 
-/* --- Autodex (Glass Prison font) --- */
+/* --- Jeongseon Arirang (Glass Prison font) --- */
 @font-face {
-  font-family: "Autodex";
-  src: url("../Fonts/Autodex.woff2") format("woff2");
+  font-family: "Jeongseon Arirang";
+  src: url("../Fonts/Jeongseon Arirang.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
