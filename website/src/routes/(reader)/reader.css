@@ -992,6 +992,7 @@ hr.invisible-hr {
 
 .choi-hand {
   font-family: 'Miraena-mu', 'KimjungchulScript-Light', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
+  font-size: calc(var(--chapter-size, 1rem) * 1.12);
 }
 
 .autodex {
@@ -1000,6 +1001,8 @@ hr.invisible-hr {
 
 .incheongyoyugsimin {
   font-family: 'Incheongyoyugsimin', sans-serif;
+  vertical-align: .08em;
+  font-size: calc(var(--chapter-size, 1rem) * 1.12);
 }
 
 .kccimkwontaek {
