@@ -804,27 +804,15 @@ hr.invisible-hr {
 }
 
 .text-fade-right {
-  display: inline-block;
-  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.6) 0%, transparent 100%);
-  mask-image: linear-gradient(to right, rgba(0,0,0,0.6) 0%, transparent 100%);
-  transition: -webkit-mask-image 0.3s, mask-image 0.3s;
-}
-
-.text-fade-right:hover {
-  -webkit-mask-image: none;
-  mask-image: none;
+  display: inline;
 }
 
 .text-fade-left {
-  display: inline-block;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 100%);
-  mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 100%);
-  transition: -webkit-mask-image 0.3s, mask-image 0.3s;
+  display: inline;
 }
 
-.text-fade-left:hover {
-  -webkit-mask-image: none;
-  mask-image: none;
+.fade-char {
+  opacity: var(--fade-opacity);
 }
 
 .hl-red {

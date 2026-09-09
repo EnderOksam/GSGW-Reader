@@ -126,6 +126,36 @@ SMS_WINDOW_RE = re.compile(r"★:\n([\s\S]*?)\n:★", re.DOTALL)
 COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
 
+def character_fade_replacer(direction):
+    def replace(match):
+        parts = re.split(r"(<[^>]+>)", match.group(1))
+        characters = [
+            char
+            for part in parts
+            for char in ([part] if part.startswith("<") and part.endswith(">") else part)
+        ]
+        visible_count = sum(not char.startswith("<") and char != " " for char in characters)
+        visible_index = 0
+        faded = []
+
+        for char in characters:
+            if char.startswith("<") and char.endswith(">"):
+                faded.append(char)
+                continue
+            if char == " ":
+                faded.append(char)
+                continue
+
+            progress = visible_index / (visible_count - 1) if visible_count > 1 else 0
+            visible_index += 1
+            opacity = 1 - progress if direction == "right" else progress
+            faded.append(f'<span class="fade-char" style="--fade-opacity:{opacity:.2f}">{char}</span>')
+
+        return f'<span class="text-fade-{direction}">{"".join(faded)}</span>'
+
+    return replace
+
+
 SIMPLE_REPLACEMENTS = [
     (TRANSITION_TEXT_RE, lambda m: transition_replacer(m)),
     (FONT_SIZE_RE, lambda m: f'<span style="font-size:{m.group(1)}em">{m.group(2)}</span>'),
@@ -153,9 +183,6 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"#d(.*?)d#", re.DOTALL), r'<span class="text-base-content">\1</span>'),
     (re.compile(r"#f#(.*?)#f#", re.DOTALL), r'<span class="text-faded">\1</span>'),
     (re.compile(r"(?<!\\)\-#\s*(.+?)\s*#-(?!\\)", re.DOTALL), r'<span class="text-sub">\1</span>'),
-    (re.compile(r"#f>#(.*?)#f>#", re.DOTALL), r'<span class="text-fade-right">\1</span>'),
-    (re.compile(r"#f<#(.*?)#f<#", re.DOTALL), r'<span class="text-fade-left">\1</span>'),
-
     (re.compile(r"#\*(.*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
     (re.compile(r"#><(.*?)><#", re.DOTALL), r'<span class="text-large-centered">\1</span>'),
 
@@ -389,6 +416,8 @@ def distorted_replacer(match):
     inner = match.group(1)
 
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+    inner = re.sub(r"#f>#(.*?)#f>#", character_fade_replacer("right"), inner, flags=re.DOTALL)
+    inner = re.sub(r"#f<#(.*?)#f<#", character_fade_replacer("left"), inner, flags=re.DOTALL)
 
     parts = re.split(r"(<[^>]+>)", inner)
 
@@ -1196,6 +1225,9 @@ def convert_chapter(content):
     content = DISTORT_RE.sub(distorted_replacer, content)
 
     content = GLITCH_D_RE.sub(glitch_d_replacer, content)
+
+    content = re.sub(r"#f>#(.*?)#f>#", character_fade_replacer("right"), content, flags=re.DOTALL)
+    content = re.sub(r"#f<#(.*?)#f<#", character_fade_replacer("left"), content, flags=re.DOTALL)
 
     content = WIKI_WINDOW_RE.sub(wiki_window_replacer, content)
 
