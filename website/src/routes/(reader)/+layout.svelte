@@ -169,6 +169,12 @@
         (el as HTMLElement).style.animationDelay = `-${Math.random() * 2.0}s`;
       }
     });
+
+    article.querySelectorAll(".glitch-d").forEach((el) => {
+      if (!(el as HTMLElement).style.animationDelay) {
+        (el as HTMLElement).style.animationDelay = `-${Math.random() * 1.6}s`;
+      }
+    });
   }
 
   afterNavigate(() => {

@@ -246,7 +246,7 @@ hr.invisible-hr {
   color: inherit;
   font-weight: inherit;
   font-size: inherit;
-  animation: glitch-d-jitter 3.2s steps(1, end) infinite;
+  animation: glitch-d-jitter 1.6s steps(1, end) infinite;
 }
 
 .glitch-d::before,
@@ -265,7 +265,7 @@ hr.invisible-hr {
   text-shadow:
     -2px 0 0 oklch(0.72 0.21 30 / 0.65),
      2px 0 0 oklch(0.72 0.21 30 / 0.35);
-  animation: glitch-d-burst-1 3.2s steps(1, end) infinite;
+  animation: glitch-d-burst-1 1.6s steps(1, end) infinite;
 }
 
 .glitch-d::after {
@@ -273,7 +273,7 @@ hr.invisible-hr {
   text-shadow:
      2px 0 0 oklch(0.78 0.16 210 / 0.65),
     -2px 0 0 oklch(0.78 0.16 210 / 0.35);
-  animation: glitch-d-burst-2 2.9s steps(1, end) infinite;
+  animation: glitch-d-burst-2 1.45s steps(1, end) infinite;
 }
 
 @keyframes glitch-d-jitter {
@@ -879,7 +879,6 @@ hr.invisible-hr {
 
 .handwritten {
   font-family: 'Caveat', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
-  font-size: 1.45em;
   font-weight: 500;
 }
 
