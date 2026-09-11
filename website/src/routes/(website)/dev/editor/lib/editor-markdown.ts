@@ -106,6 +106,7 @@ const simpleInlineTags: [RegExp, string][] = [
   [/\$Bh(.*?)Bh\$/gs, '<span class="braun-handwriting">$1</span>'],
   [/\$clu(.*?)clu\$/gs, '<span class="diphylleia">$1</span>'],
   [/\$fox(.*?)fox\$/gs, '<span class="fox">$1</span>'],
+   [/\$jt(.*?)jt\$/gs, '<span class="judgement">$1</span>'],
 
   [/\$tf(.*?)tf\$/gs, '<span class="chungju-kimsaeng">$1</span>'],
   [/\$tt(.*?)tt\$/gs, '<span class="mbc-1961">$1</span>'],
@@ -264,6 +265,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     inner = inner.replace(/\$Bh(.+?)Bh\$/gs, '<span class="braun-handwriting">$1</span>');
     inner = inner.replace(/\$clu(.+?)clu\$/gs, '<span class="diphylleia">$1</span>');    
     inner = inner.replace(/\$fox(.+?)fox\$/gs, '<span class="fox">$1</span>');
+    inner = inner.replace(/\$jt(.+?)jt\$/gs, '<span class="judgement">$1</span>');
 
     inner = inner.replace(/\$cri(.+?)cri\$/gs, '<span class="macho">$1</span>');
     inner = inner.replace(/\$gps(.+?)gps\$/gs, '<span class="tenada">$1</span>');

@@ -897,6 +897,7 @@ hr.invisible-hr {
 
 .contaminated {
   font-family: 'Hakgyoansim_NalgaeR', 'Comic Neue', 'Comic Sans MS', 'Comic Sans', cursive;
+  font-size: 0.92em;
 }
 
 .paulo-bittencourt {
@@ -959,19 +960,6 @@ hr.invisible-hr {
   font-family: 'Macho', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 }
 
-/*
- * These faces have unusually tall capitals relative to their lowercase forms.
- * Match the default Alegreya cap height (0.658em) rather than the shared
- * x-height so capitalized text does not look oversized beside body copy.
- */
-@supports (font-size-adjust: cap-height 0.658) {
-  .macho,
-  .incheongyoyugsimin {
-    font-size-adjust: cap-height 0.658;
-    vertical-align: .08em;
-  }
-}
-
 .ibm-plex-sans {
   font-family: 'IBM Plex Sans', 'Helvetica Neue', 'Arial', sans-serif;
   font-weight: 200;
@@ -1005,7 +993,7 @@ hr.invisible-hr {
   font-family: 'Miraena-mu', 'KimjungchulScript-Light', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
 }
 
-.glassprison {
+.judgement {
   font-family: 'Jeongseon Arirang', sans-serif;
 }
 
@@ -1029,6 +1017,18 @@ hr.invisible-hr {
   font-family: 'KCC-Sonkeechung', sans-serif;
 }
 
+/*
+ * These faces have unusually tall capitals relative to their lowercase forms.
+ * Match the default Alegreya cap height (0.658em) rather than the shared
+ * x-height so capitalized text does not look oversized beside body copy.
+ */
+@supports (font-size-adjust: cap-height 0.658) {
+  .macho,
+  .incheongyoyugsimin {
+    font-size-adjust: cap-height 0.658;
+    vertical-align: .08em;
+  }
+}
 
 .scroll-wrap {
   display: inline-block;

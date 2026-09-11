@@ -511,7 +511,7 @@ body {
 }
 
 
-/* --- Jeongseon Arirang (Glass Prison font)--- */
+/* --- Jeongseon Arirang (Traditional brush font)--- */
 
 @font-face {
   font-family: "Jeongseon Arirang";
@@ -521,7 +521,7 @@ body {
   font-display: swap;
 }
 
-/* --- Incheong Yoyug Simin (130666 handwriting)--- */
+/* --- Incheong Yoyug Simin (new employee handwriting)--- */
 @font-face {
   font-family: "incheongyoyugsimin";
   src: url("/fonts/incheongyoyugsimin.woff2") format("woff2");

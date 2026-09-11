@@ -626,6 +626,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$hne(.*?)hne\$", re.DOTALL), r'<span class="incheongyoyugsimin">\1</span>'),
     (re.compile(r"\$hd(.*?)hd\$", re.DOTALL), r'<span class="kccimkwontaek">\1</span>'),
     (re.compile(r"\$h(?!x)(.*?)h\$", re.DOTALL), r'<span class="paulo-bittencourt">\1</span>'),
+    (re.compile(r"\$jt\(.*?)jt\$", re.DOTALL), r'<span class="judgement">\1</span>'),
 
 
     (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
@@ -932,6 +933,7 @@ def subtle_replacer(match):
     inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>', inner)
     inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>', inner)
     inner = re.sub(r"\$h(?!x)(.+?)h\$", r'<span class="paulo-bittencourt">\1</span>', inner)
+    inner = re.sub(r"\$jt(.*?)jt\$", r'<span class="judgement">\1</span>', inner)
 
     inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
     inner = re.sub(r"#b(.+?)b#", r'<span class="text-blue">\1</span>', inner)
@@ -1944,6 +1946,20 @@ def content_opf(
         ("Fonts/IBMPlexSans-VariableFont_wdth,wght.ttf", "font-ibm-plex-sans", "font/sfnt"),
         ("Fonts/IBMPlexSans-Italic-VariableFont_wdth,wght.ttf", "font-ibm-plex-sans-italic", "font/sfnt"),
         ("Fonts/Tenada.ttf", "font-tenada", "font/sfnt"),
+        ("Fonts/BMKkubulim.woff2", "font-bm-kubulim", "font/woff2"),
+        ("Fonts/MBC1961.woff2", "font-mbc-1961", "font/woff2"),
+        ("Fonts/Danjo-bold-Regular.woff2", "font-danjo-bold-regular", "font/woff2"),
+        ("Fonts/SF-Mike.woff2", "font-sf-mike", "font/woff2"),
+        ("Fonts/KimjungchulScript-Light.woff2", "font-kimjungchulscript-light", "font/woff2"),
+        ("Fonts/Miraena-mu.woff2", "font-miraena-mu", "font/woff2"),
+        ("Fonts/Jeongseon Arirang.woff2", "font-jeongseon-arirang", "font/woff2"),
+        ("Fonts/incheongyoyugsimin.woff2", "font-incheongyoyugsimin", "font/woff2"),
+        ("Fonts/Hakgyoansim_NalgaeR.woff2", "font-hakgyoansim_nalgaer", "font/woff2"),
+        ("Fonts/KCCImkwontaek.woff2", "font-kccimkwontaek.woff2", "font/woff2"),
+        ("Fonts/DungGeunMo.woff2", "font-dunggeunmo.woff2", "font/woff2"),
+        ("Fonts/Hakgyoansim Byeolbichhaneul OTF B.woff2", "font-hakgyoansim-byeolbichhaneul", "font/woff2"),
+        ("Fonts/KCC-Sonkeechung.woff2", "font-kcc-sonkeechung", "font/woff2"),
+
     ]
     for href, fid, media in FONT_FILES:
         manifest_items.append(
@@ -2069,7 +2085,6 @@ def write_epub(
 
 def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
     font_names = [
-        "Jeongseon Arirang.woff2",
         "BMKkubulim.woff2",
         "Caveat-Variable.woff2",
         "ChungjuKimSaeng.otf",
@@ -2084,6 +2099,8 @@ def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
         "Hakgyoansim Byeolbichhaneul OTF B.woff2",
         "Hakgyoansim_NalgaeR.woff2",
         "IBMPlexSans-Italic-VariableFont_wdth,wght.ttf", "IBMPlexSans-VariableFont_wdth,wght.ttf",
+        "incheongyoyugsimin.woff2",
+        "Jeongseon Arirang.woff2",
         "KCC-Sonkeechung.woff2",
         "KCCAnChangho.woff2",
         "KCCImkwontaek.woff2",
@@ -2097,7 +2114,7 @@ def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
         "SF-Mike.woff2",
         "Tenada.ttf",
         "VCR_OSD_MONO_1.001.ttf",
-        "incheongyoyugsimin.woff2",
+    
     ]
     for font_name in font_names:
         src = FONTS_DIR / font_name

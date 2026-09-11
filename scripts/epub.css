@@ -230,7 +230,7 @@
   font-display: swap;
 }
 
-/* --- Jeongseon Arirang (Glass Prison font) --- */
+/* --- Jeongseon Arirang (Traditional brush font) --- */
 @font-face {
   font-family: "Jeongseon Arirang";
   src: url("../Fonts/Jeongseon Arirang.woff2") format("woff2");
@@ -239,7 +239,7 @@
   font-display: swap;
 }
 
-/* --- Incheong Yoyug Simin (130666 handwriting) --- */
+/* --- Incheong Yoyug Simin (new employee handwriting) --- */
 @font-face {
   font-family: "incheongyoyugsimin";
   src: url("../Fonts/incheongyoyugsimin.woff2") format("woff2");
@@ -658,7 +658,7 @@ figcaption {
 }
 
 .contaminated {
-  font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+  font-family: 'Hakgyoansim_NalgaeR', 'Comic Neue', 'Comic Sans MS', cursive;
 }
 
 .lato {
