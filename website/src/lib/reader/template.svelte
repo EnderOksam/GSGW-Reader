@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import css from "../../../../reader.css?url";
+  import readerCss from "../../../../reader.css?inline";
   import "$lib/reader/reader-windows.css";
 
   import { readerState } from "$lib/reader.svelte";
@@ -80,18 +80,12 @@
 
 
 
-<svelte:head>
-
-  <link rel="stylesheet" href={css}>
-
-</svelte:head>
-
-
-
 <article
   class="reader-container"
 
 >
+
+  {@html '<style>' + readerCss + '</style>'}
 
   {@html html_content}
 

@@ -18,11 +18,16 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
     return () => previewObserver.disconnect();
   }
 
-  const LOCK_DURATION = 2500;
+  const LOCK_DURATION = 800;
+  const REVEAL_DELAY = 180;
+  const EASE_BACK_MS = 240;
+  const SETTLE_WAIT_MS = 900;
 
   const triggered = new Set<Element>();
   let lockTimer: ReturnType<typeof setTimeout> | null = null;
+  let revealTimer: ReturnType<typeof setTimeout> | null = null;
   let scrollLocked = false;
+  let returnAnim = false;
   let lockScrollY = 0;
 
   const onWheel = (e: WheelEvent) => {
@@ -39,9 +44,26 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
     }
   };
 
+  // Ease back to the locked position instead of yanking instantly — keeps the
+  // "can't look away" tension without the mechanical snap.
+  function easeBackTo(targetY: number) {
+    if (returnAnim) return;
+    returnAnim = true;
+    const startY = window.scrollY;
+    const startTime = performance.now();
+    const step = (now: number) => {
+      const t = Math.min((now - startTime) / EASE_BACK_MS, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      window.scrollTo(0, startY + (targetY - startY) * eased);
+      if (t < 1) requestAnimationFrame(step);
+      else returnAnim = false;
+    };
+    requestAnimationFrame(step);
+  }
+
   const onScroll = () => {
-    if (scrollLocked) {
-      window.scrollTo(0, lockScrollY);
+    if (scrollLocked && window.scrollY !== lockScrollY) {
+      easeBackTo(lockScrollY);
     }
   };
 
@@ -49,18 +71,16 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
   window.addEventListener("touchmove", onTouchMove, { passive: false });
   window.addEventListener("scroll", onScroll, { passive: true });
 
-  function lockScroll() {
-    lockScrollY = window.scrollY;
+  function setLock(y: number) {
+    lockScrollY = y;
     scrollLocked = true;
   }
 
-  function unlockScroll() {
-    scrollLocked = false;
-  }
-
   function endLock() {
-    unlockScroll();
+    scrollLocked = false;
+    returnAnim = false;
     if (lockTimer) clearTimeout(lockTimer);
+    if (revealTimer) clearTimeout(revealTimer);
     window.removeEventListener("click", onClickCancel);
     const article = document.querySelector<HTMLElement>("article[data-scared]");
     if (article) article.removeAttribute("data-scared");
@@ -72,8 +92,26 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
     const rect = win.getBoundingClientRect();
     const target =
       window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
-    window.scrollTo(0, target);
-    lockScrollY = window.scrollY;
+    window.scrollTo({ top: target, behavior: "smooth" });
+    return target;
+  }
+
+  // Wait for the smooth scroll to settle before locking so the lock never
+  // fights the animated arrival. Falls back to a max wait so the forced
+  // pause still engages if the reader interrupts the scroll.
+  function lockWhenSettled(target: number) {
+    const startedAt = performance.now();
+    const settle = () => {
+      if (
+        Math.abs(window.scrollY - target) < 2 ||
+        performance.now() - startedAt > SETTLE_WAIT_MS
+      ) {
+        setLock(target);
+      } else {
+        requestAnimationFrame(settle);
+      }
+    };
+    requestAnimationFrame(settle);
   }
 
   function activate(zone: HTMLElement) {
@@ -83,13 +121,17 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
     const win = zone.querySelector<HTMLElement>(".scare-window");
     if (!win) return;
 
-    zone.classList.add("scare-active");
     const article = zone.closest("article");
     if (article) article.setAttribute("data-scared", "");
 
-    snapToCenter(win);
-    lockScroll();
+    const target = snapToCenter(win);
+    lockWhenSettled(target);
     window.addEventListener("click", onClickCancel, { passive: true });
+
+    // Reveal the horror a beat after the world dims around it.
+    revealTimer = setTimeout(() => {
+      zone.classList.add("scare-active");
+    }, REVEAL_DELAY);
 
     if (lockTimer) clearTimeout(lockTimer);
     lockTimer = setTimeout(endLock, LOCK_DURATION);
