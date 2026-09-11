@@ -126,6 +126,36 @@ SMS_WINDOW_RE = re.compile(r"★:\n([\s\S]*?)\n:★", re.DOTALL)
 COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
 
+def character_fade_replacer(direction):
+    def replace(match):
+        parts = re.split(r"(<[^>]+>)", match.group(1))
+        characters = [
+            char
+            for part in parts
+            for char in ([part] if part.startswith("<") and part.endswith(">") else part)
+        ]
+        visible_count = sum(not char.startswith("<") and char != " " for char in characters)
+        visible_index = 0
+        faded = []
+
+        for char in characters:
+            if char.startswith("<") and char.endswith(">"):
+                faded.append(char)
+                continue
+            if char == " ":
+                faded.append(char)
+                continue
+
+            progress = visible_index / (visible_count - 1) if visible_count > 1 else 0
+            visible_index += 1
+            opacity = 1 - progress if direction == "right" else progress
+            faded.append(f'<span class="fade-char" style="--fade-opacity:{opacity:.2f}">{char}</span>')
+
+        return f'<span class="text-fade-{direction}">{"".join(faded)}</span>'
+
+    return replace
+
+
 SIMPLE_REPLACEMENTS = [
     (TRANSITION_TEXT_RE, lambda m: transition_replacer(m)),
     (FONT_SIZE_RE, lambda m: f'<span style="font-size:{m.group(1)}em">{m.group(2)}</span>'),
@@ -153,9 +183,6 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"#d(.*?)d#", re.DOTALL), r'<span class="text-base-content">\1</span>'),
     (re.compile(r"#f#(.*?)#f#", re.DOTALL), r'<span class="text-faded">\1</span>'),
     (re.compile(r"(?<!\\)\-#\s*(.+?)\s*#-(?!\\)", re.DOTALL), r'<span class="text-sub">\1</span>'),
-    (re.compile(r"#f>#(.*?)#f>#", re.DOTALL), r'<span class="text-fade-right">\1</span>'),
-    (re.compile(r"#f<#(.*?)#f<#", re.DOTALL), r'<span class="text-fade-left">\1</span>'),
-
     (re.compile(r"#\*(.*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
     (re.compile(r"#><(.*?)><#", re.DOTALL), r'<span class="text-large-centered">\1</span>'),
 
@@ -166,11 +193,9 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r";g(.*?)g;", re.DOTALL), r'<span class="hl-green">\1</span>'),
     (re.compile(r";o(.*?)o;", re.DOTALL), r'<span class="hl-orange">\1</span>'),
 
-    (re.compile(r"\$c(.*?)c\$", re.DOTALL), r'<span class="contaminated">\1</span>'),
     (re.compile(r"\$Eb(.*?)Eb\$", re.DOTALL), r'<span class="eb-garamond">\1</span>'),
     (re.compile(r"\$lat(.*?)lat\$", re.DOTALL), r'<span class="lato">\1</span>'),
     (re.compile(r"\$fox(.*?)fox\$", re.DOTALL), r'<span class="fox">\1</span>'),
-    (re.compile(r"\$h(?!x)(.*?)h\$", re.DOTALL), r'<span class="paulo-bittencourt">\1</span>'),
     (re.compile(r"\$tf(.*?)tf\$", re.DOTALL), r'<span class="chungju-kimsaeng">\1</span>'),
     (re.compile(r"\$vcr(.*?)vcr\$", re.DOTALL), r'<span class="vcr-osd-mono">\1</span>'),
     (re.compile(r"\$Bh(.*?)Bh\$", re.DOTALL), r'<span class="braun-handwriting">\1</span>'),
@@ -182,6 +207,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$clu(.*?)clu\$", re.DOTALL), r'<span class="diphylleia">\1</span>'),
     (re.compile(r"\$osh(.*?)osh\$", re.DOTALL), r'<span class="crimson-old-style">\1</span>'),
     (re.compile(r"\$cri(.*?)cri\$", re.DOTALL), r'<span class="macho">\1</span>'),
+    (re.compile(r"\$c(.*?)c\$", re.DOTALL), r'<span class="contaminated">\1</span>'),
     (re.compile(r"\$sst(.*?)sst\$", re.DOTALL), r'<span class="nanum-barun-gothic">\1</span>'),
     (re.compile(r"\$ips(.*?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
     (re.compile(r"\$gps(.*?)gps\$", re.DOTALL), r'<span class="tenada">\1</span>'),
@@ -189,6 +215,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$hac(.*?)hac\$", re.DOTALL), r'<span class="choi-hand">\1</span>'),
     (re.compile(r"\$hne(.*?)hne\$", re.DOTALL), r'<span class="incheongyoyugsimin">\1</span>'),
     (re.compile(r"\$hd(.*?)hd\$", re.DOTALL), r'<span class="kccimkwontaek">\1</span>'),
+    (re.compile(r"\$h(?!x)(.*?)h\$", re.DOTALL), r'<span class="paulo-bittencourt">\1</span>'),
 
 ]
 
@@ -389,6 +416,8 @@ def distorted_replacer(match):
     inner = match.group(1)
 
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
+    inner = re.sub(r"#f>#(.*?)#f>#", character_fade_replacer("right"), inner, flags=re.DOTALL)
+    inner = re.sub(r"#f<#(.*?)#f<#", character_fade_replacer("left"), inner, flags=re.DOTALL)
 
     parts = re.split(r"(<[^>]+>)", inner)
 
@@ -442,10 +471,8 @@ def subtle_replacer(match):
     inner = re.sub(r"\$lat(.+?)lat\$", r'<span class="lato">\1</span>', inner)
     inner = re.sub(r"\$fox(.+?)fox\$", r'<span class="fox">\1</span>', inner)
     inner = re.sub(r"\$Eb(.+?)Eb\$", r'<span class="eb-garamond">\1</span>', inner)
-    inner = re.sub(r"\$c(.+?)c\$", r'<span class="contaminated">\1</span>', inner)
     inner = re.sub(r"\$wo(.+?)wo\$", r'<span class="outline-white">\1</span>', inner)
     inner = re.sub(r"\$bo(.+?)bo\$", r'<span class="outline-black">\1</span>', inner)
-    inner = re.sub(r"\$h(?!x)(.+?)h\$", r'<span class="paulo-bittencourt">\1</span>', inner)
     inner = re.sub(r"\$tf(.+?)tf\$", r'<span class="chungju-kimsaeng">\1</span>', inner)
     inner = re.sub(r"\$vcr(.+?)vcr\$", r'<span class="vcr-osd-mono">\1</span>', inner)
     inner = re.sub(r"\$Bh(.+?)Bh\$", r'<span class="braun-handwriting">\1</span>', inner)
@@ -455,6 +482,7 @@ def subtle_replacer(match):
     inner = re.sub(r"\$clu(.+?)clu\$", r'<span class="diphylleia">\1</span>', inner)
     inner = re.sub(r"\$osh(.+?)osh\$", r'<span class="crimson-old-style">\1</span>', inner)
     inner = re.sub(r"\$cri(.+?)cri\$", r'<span class="macho">\1</span>', inner)
+    inner = re.sub(r"\$c(.+?)c\$", r'<span class="contaminated">\1</span>', inner)
     inner = re.sub(r"\$sst(.+?)sst\$", r'<span class="nanum-barun-gothic">\1</span>', inner)
     inner = re.sub(r"\$ips(.+?)ips\$", r'<span class="ibm-plex-sans">\1</span>', inner)
     inner = re.sub(r"\$gps(.+?)gps\$", r'<span class="tenada">\1</span>', inner)
@@ -462,6 +490,7 @@ def subtle_replacer(match):
     inner = re.sub(r"\$hac(.*?)hac\$", r'<span class="choi-hand">\1</span>', inner)
     inner = re.sub(r"\$hne(.*?)hne\$", r'<span class="incheongyoyugsimin">\1</span>', inner)
     inner = re.sub(r"\$hd(.*?)hd\$", r'<span class="kccimkwontaek">\1</span>', inner)
+    inner = re.sub(r"\$h(?!x)(.+?)h\$", r'<span class="paulo-bittencourt">\1</span>', inner)
 
 
     inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
@@ -1196,6 +1225,9 @@ def convert_chapter(content):
     content = DISTORT_RE.sub(distorted_replacer, content)
 
     content = GLITCH_D_RE.sub(glitch_d_replacer, content)
+
+    content = re.sub(r"#f>#(.*?)#f>#", character_fade_replacer("right"), content, flags=re.DOTALL)
+    content = re.sub(r"#f<#(.*?)#f<#", character_fade_replacer("left"), content, flags=re.DOTALL)
 
     content = WIKI_WINDOW_RE.sub(wiki_window_replacer, content)
 

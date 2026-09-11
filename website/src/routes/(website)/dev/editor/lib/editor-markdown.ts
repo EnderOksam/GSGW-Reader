@@ -28,6 +28,25 @@ function fmtInline(text: string): string {
     .replace(/\*(.+?)\*/g, "<em>$1</em>");
 }
 
+function characterFade(inner: string, direction: "left" | "right"): string {
+  const parts = inner.split(/(<[^>]+>)/);
+  const characters = parts.flatMap(part => part.startsWith("<") && part.endsWith(">") ? [part] : [...part]);
+  const visibleCount = characters.filter(char => !char.startsWith("<") && char !== " ").length;
+  let visibleIndex = 0;
+
+  const faded = characters.map(char => {
+    if (char.startsWith("<") && char.endsWith(">")) return char;
+    if (char === " ") return char;
+
+    const progress = visibleCount > 1 ? visibleIndex / (visibleCount - 1) : 0;
+    visibleIndex += 1;
+    const opacity = direction === "right" ? 1 - progress : progress;
+    return `<span class="fade-char" style="--fade-opacity:${opacity.toFixed(2)}">${char}</span>`;
+  });
+
+  return faded.join("");
+}
+
 function imgInline(text: string, book: string): string {
   return text.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, (_m: string, alt: string, href: string) => {
     const src = href.startsWith("http") || href.startsWith("/")
@@ -62,8 +81,6 @@ const simpleInlineTags: [RegExp, string][] = [
   [/#d(.*?)d#/gs, '<span class="text-black">$1</span>'],
   [/#f#(.*?)#f#/gs, '<span class="text-faded">$1</span>'],
   [/(?<!\\)-#\s*(.+?)\s*#-(?!\\)/gs, '<span class="text-sub">$1</span>'],
-  [/#f>#(.*?)#f>#/gs, '<span class="text-fade-right">$1</span>'],
-  [/#f<#(.*?)#f<#/gs, '<span class="text-fade-left">$1</span>'],
   [/;r(.*?)r;/gs, '<span class="hl-red">$1</span>'],
   [/;b(.*?)b;/gs, '<span class="hl-blue">$1</span>'],
   [/;y(.*?)y;/gs, '<span class="hl-yellow">$1</span>'],
@@ -366,6 +383,8 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/@@([^@]+)@@/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    inner = inner.replace(/#f>#(.*?)#f>#/gs, (_match, fadeInner) => `<span class="text-fade-right">${characterFade(fadeInner, "right")}</span>`);
+    inner = inner.replace(/#f<#(.*?)#f<#/gs, (_match, fadeInner) => `<span class="text-fade-left">${characterFade(fadeInner, "left")}</span>`);
     const chars = inner.split(/(<[^>]+>)/).flatMap((part: string) => {
       if (part.startsWith("<") && part.endsWith(">")) return [part];
       return [...part].map(c => c === " " ? " " : `<span class="char">${c}</span>`);
@@ -378,6 +397,9 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
     const plain = inner.replace(/<[^>]+>/g, "");
     return `<span class="glitch-d" data-text="${plain}">${inner}</span>`;
   });
+
+  s = s.replace(/#f>#(.*?)#f>#/gs, (_match, inner) => `<span class="text-fade-right">${characterFade(inner, "right")}</span>`);
+  s = s.replace(/#f<#(.*?)#f<#/gs, (_match, inner) => `<span class="text-fade-left">${characterFade(inner, "left")}</span>`);
 
   s = s.replace(/\$s(.+?)s\$/gs, (_: string, inner: string) => {
     inner = inner.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
