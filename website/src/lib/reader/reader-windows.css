@@ -601,7 +601,7 @@
   max-width: 88%;
   position: relative;
   box-shadow: 0 0 20px oklch(0 0 0 / 0.6);
-  padding: 1em;
+  padding: 1.5em 2em 1em;
   text-align: center;
   font-weight: 700;
   font-size: 1.3em;
