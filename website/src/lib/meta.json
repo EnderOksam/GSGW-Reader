@@ -2882,13 +2882,11 @@
         "index": 323,
         "section": "Chapter 323",
         "slug": "323"
-      }
-    ],
-    "unformattedtl": [
+      },
       {
         "title": "The Sacrifice of Sekwang, I",
         "category": "Part 2",
-        "discussion": 653,
+        "discussion": 0,
         "index": 324,
         "section": "Chapter 324",
         "slug": "324"
@@ -2896,7 +2894,7 @@
       {
         "title": "The Sacrifice of Sekwang, II",
         "category": "Part 2",
-        "discussion": 654,
+        "discussion": 0,
         "index": 325,
         "section": "Chapter 325",
         "slug": "325"
@@ -2904,7 +2902,7 @@
       {
         "title": "The Cheerful Coin",
         "category": "Part 2",
-        "discussion": 655,
+        "discussion": 0,
         "index": 326,
         "section": "Chapter 326",
         "slug": "326"
@@ -2912,7 +2910,7 @@
       {
         "title": "The Rabbit Doll Cult, I",
         "category": "Part 2",
-        "discussion": 657,
+        "discussion": 0,
         "index": 327,
         "section": "Chapter 327",
         "slug": "327"
@@ -2920,7 +2918,7 @@
       {
         "title": "The Rabbit Doll Cult, II",
         "category": "Part 2",
-        "discussion": 775,
+        "discussion": 0,
         "index": 328,
         "section": "Chapter 328",
         "slug": "328"
@@ -2928,7 +2926,7 @@
       {
         "title": "The Rabbit Doll Cult, III",
         "category": "Part 2",
-        "discussion": 658,
+        "discussion": 0,
         "index": 329,
         "section": "Chapter 329",
         "slug": "329"
@@ -2936,7 +2934,7 @@
       {
         "title": "The Rabbit Doll Cult, IV",
         "category": "Part 2",
-        "discussion": 660,
+        "discussion": 0,
         "index": 330,
         "section": "Chapter 330",
         "slug": "330"
@@ -2944,45 +2942,47 @@
       {
         "title": "The Rabbit Doll Cult, V",
         "category": "Part 2",
-        "discussion": 663,
+        "discussion": 0,
         "index": 331,
         "section": "Chapter 331",
         "slug": "331"
       },
       {
-        "title": "Chapter 332",
+        "title": "Hanbit Department Store, I",
         "category": "Part 2",
-        "discussion": 664,
+        "discussion": 0,
         "index": 332,
         "section": "Chapter 332",
         "slug": "332"
       },
       {
-        "title": "Chapter 333",
+        "title": "Hanbit Department Store, II",
         "category": "Part 2",
-        "discussion": 665,
+        "discussion": 0,
         "index": 333,
         "section": "Chapter 333",
         "slug": "333"
       },
       {
-        "title": "Chapter 334",
+        "title": "Hanbit Department Store, III",
         "category": "Part 2",
-        "discussion": 666,
+        "discussion": 0,
         "index": 334,
         "section": "Chapter 334",
         "slug": "334"
       },
       {
-        "title": "Chapter 335",
+        "title": "The Sekwang Special City Disaster, I",
         "category": "Part 2",
-        "discussion": 1176,
+        "discussion": 0,
         "index": 335,
         "section": "Chapter 335",
         "slug": "335"
-      },
+      }
+    ],
+    "unformattedtl": [
       {
-        "title": "Chapter 336",
+        "title": "The Sekwang Special City Disaster, II",
         "category": "Part 2",
         "discussion": 1178,
         "index": 336,

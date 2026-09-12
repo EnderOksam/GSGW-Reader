@@ -577,6 +577,9 @@
 
   line-height: 1.7;
   text-align: left;
+}
+
+.reader-container .paper-boat strong {
   font-size: 1em;
 }
 
