@@ -22,7 +22,7 @@ publisher: "GSGW-Reader"
 
 # Internal Script Variables
 metaBook: "gsgw"
-metaTl: "unfinishedtl"
+metaTl: "unformattedtl"
 collection: "Got Dropped into a Ghost Story, Still Gotta Work"
 group-position: 1
 

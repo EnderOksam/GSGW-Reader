@@ -674,6 +674,10 @@ figcaption {
   font-family: 'Paulo Bittencourt', 'Segoe Script', 'Bradley Hand', 'Snell Roundhand', 'Apple Chancery', cursive;
 }
 
+.judgement {
+  font-family: 'Jeongseon Arirang', 'Hakgyoansim_NalgaeR', cursive;
+}
+
 .nanum-barun-gothic {
   font-family: 'Nanum Barun Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   font-weight: 200;

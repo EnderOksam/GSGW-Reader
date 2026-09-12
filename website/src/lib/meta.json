@@ -2388,7 +2388,7 @@
         "slug": "261"
       },
       {
-        "title": "Midnight Station [Royal Casino], I",
+        "title": "Midnight Station [Body Casino], I",
         "category": "Part 2",
         "discussion": 1035,
         "index": 262,
@@ -2396,7 +2396,7 @@
         "slug": "262"
       },
       {
-        "title": "Midnight Station [Royal Casino], II",
+        "title": "Midnight Station [Body Casino], II",
         "category": "Part 2",
         "discussion": 1043,
         "index": 263,
@@ -2404,7 +2404,7 @@
         "slug": "263"
       },
       {
-        "title": "Midnight Station [Royal Casino], III",
+        "title": "Midnight Station [Body Casino], III",
         "category": "Part 2",
         "discussion": 1164,
         "index": 264,
@@ -2412,7 +2412,7 @@
         "slug": "264"
       },
       {
-        "title": "Midnight Station [Royal Casino], IV",
+        "title": "Midnight Station [Body Casino], IV",
         "category": "Part 2",
         "discussion": 1189,
         "index": 265,
@@ -2420,7 +2420,7 @@
         "slug": "265"
       },
       {
-        "title": "Midnight Station [Royal Casino], V",
+        "title": "Midnight Station [Body Casino], V",
         "category": "Part 2",
         "discussion": 1163,
         "index": 266,
@@ -2428,7 +2428,7 @@
         "slug": "266"
       },
       {
-        "title": "Midnight Station [Royal Casino], V",
+        "title": "Midnight Station [Body Casino], V",
         "category": "Part 2",
         "discussion": 1195,
         "index": 267,
@@ -2436,7 +2436,7 @@
         "slug": "267"
       },
       {
-        "title": "Midnight Station [Royal Casino], VI",
+        "title": "Midnight Station [Body Casino], VI",
         "category": "Part 2",
         "discussion": 1181,
         "index": 268,
@@ -2884,9 +2884,9 @@
         "slug": "323"
       }
     ],
-    "unfinishedtl": [
+    "unformattedtl": [
       {
-        "title": "Chapter 324",
+        "title": "The Sacrifice of Sekwang, I",
         "category": "Part 2",
         "discussion": 653,
         "index": 324,
@@ -2894,7 +2894,7 @@
         "slug": "324"
       },
       {
-        "title": "Chapter 325",
+        "title": "The Sacrifice of Sekwang, II",
         "category": "Part 2",
         "discussion": 654,
         "index": 325,
@@ -2902,7 +2902,7 @@
         "slug": "325"
       },
       {
-        "title": "Chapter 326",
+        "title": "The Cheerful Coin",
         "category": "Part 2",
         "discussion": 655,
         "index": 326,
@@ -2910,7 +2910,7 @@
         "slug": "326"
       },
       {
-        "title": "Chapter 327",
+        "title": "The Rabbit Doll Cult, I",
         "category": "Part 2",
         "discussion": 657,
         "index": 327,
@@ -2918,7 +2918,7 @@
         "slug": "327"
       },
       {
-        "title": "Chapter 328",
+        "title": "The Rabbit Doll Cult, II",
         "category": "Part 2",
         "discussion": 775,
         "index": 328,
@@ -2926,7 +2926,7 @@
         "slug": "328"
       },
       {
-        "title": "Chapter 329",
+        "title": "The Rabbit Doll Cult, III",
         "category": "Part 2",
         "discussion": 658,
         "index": 329,
@@ -2934,7 +2934,7 @@
         "slug": "329"
       },
       {
-        "title": "Chapter 330",
+        "title": "The Rabbit Doll Cult, IV",
         "category": "Part 2",
         "discussion": 660,
         "index": 330,
@@ -2942,7 +2942,7 @@
         "slug": "330"
       },
       {
-        "title": "Chapter 331",
+        "title": "The Rabbit Doll Cult, V",
         "category": "Part 2",
         "discussion": 663,
         "index": 331,

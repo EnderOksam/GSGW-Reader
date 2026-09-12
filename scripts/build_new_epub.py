@@ -626,7 +626,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$hne(.*?)hne\$", re.DOTALL), r'<span class="incheongyoyugsimin">\1</span>'),
     (re.compile(r"\$hd(.*?)hd\$", re.DOTALL), r'<span class="kccimkwontaek">\1</span>'),
     (re.compile(r"\$h(?!x)(.*?)h\$", re.DOTALL), r'<span class="paulo-bittencourt">\1</span>'),
-    (re.compile(r"\$jt\(.*?)jt\$", re.DOTALL), r'<span class="judgement">\1</span>'),
+    (re.compile(r"\$jt(?!x)(.*?)jt\$", re.DOTALL), r'<span class="judgement">\1</span>'),
 
 
     (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
@@ -2127,7 +2127,7 @@ def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
 def find_chapter_dirs(book_id: str) -> list[Path]:
     root = CHAPTERS_ROOT / book_id
     if book_id == "gsgw":
-        return [root / "fantl", root / "unfinishedtl", root / "MTL"]
+        return [root / "fantl", root / "unformattedtl", root / "MTL"]
     if book_id == "debut":
         return [root / "DebutFormatted", root / "DebutPlainTxt"]
     return []

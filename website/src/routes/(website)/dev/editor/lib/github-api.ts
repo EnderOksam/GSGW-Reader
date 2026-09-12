@@ -2,7 +2,7 @@ export const REPO = "EnderOksam/GSGW-Reader";
 export const BRANCH = "main";
 
 export const BOOKS = [
-  { slug: "gsgw", label: "Ghost Story, Gotta Work", translations: ["fantl", "MTL", "unfinishedtl"] },
+  { slug: "gsgw", label: "Ghost Story, Gotta Work", translations: ["fantl", "MTL", "unformattedtl"] },
   { slug: "debut", label: "Debut Or Die", translations: ["debutplaintxt", "debutformatted"] },
 ];
 
