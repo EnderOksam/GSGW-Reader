@@ -51,16 +51,14 @@
 }
 
 img {
-  border-radius: 0.5em;
-  max-height: 85vh;
-  width: auto;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: none;
   margin: auto;
 }
 
 @media (max-width: 640px) {
-  img {
-    max-height: 60vh;
-  }
   .text-large {
     font-size: 1.15em;
   }
@@ -70,7 +68,8 @@ img {
 }
 
 figcaption {
-  font-size: medium;
+  font-size: small;
+  opacity: 30%;
   margin-top: 0.5em;
   text-align: center;
 }
@@ -1945,10 +1944,14 @@ article.reader-container[data-scared] > *:not(.scare-zone) {
   margin: 0.8rem 0;
 }
 
-.reader-container .scare-page img {
-  max-width: 100%;
-  height: auto;
-  max-height: 55vh;
+@media (max-width: 640px) {
+  .reader-container .scare-page img {
+    width: 100vw;
+    max-width: 100vw;
+    height: auto;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+  }
 }
 
 .scare-zone[data-preview] {
