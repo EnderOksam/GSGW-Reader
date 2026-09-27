@@ -2135,3 +2135,29 @@ article.reader-container[data-scared] > *:not(.scare-zone) {
   opacity: 1;
   transform: none;
 }
+
+/* Author color tags must beat the fixed colors that window styles paint onto
+   strong/b/em/i. Those rules use !important, so an author tag written as
+   `#r**bold r#` (color wrapping the bold) rendered white inside system, black
+   and sticky windows. Inheriting from the color span restores the tag color
+   while leaving plain `**bold**` inside those windows untouched.
+   `[style*="color:"]` covers the hex tags (`#hx(#ffffff)…hx#`), which emit an
+   inline color rather than a class. `:not([class^="text-"])` keeps a bold run
+   that carries its own color class from being forced back to its parent's. */
+body .reader-container
+  :is(
+    .text-red,
+    .text-blue,
+    .text-yellow,
+    .text-magenta,
+    .text-green,
+    .text-orange,
+    .text-light-purple,
+    .text-cyan,
+    .text-base-content,
+    .text-black,
+    [style*="color:"]
+  )
+  :is(strong, b, em, i):not([class^="text-"]) {
+  color: inherit !important;
+}
