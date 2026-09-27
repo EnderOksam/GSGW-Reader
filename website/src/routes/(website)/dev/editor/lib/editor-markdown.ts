@@ -319,7 +319,7 @@ const simpleInlineTags: [RegExp, string][] = [
   [/@c@(.*?)@c@/gs, '<span class="align-center">$1</span>'],
   [/@r@(.*?)@r@/gs, '<span class="align-right">$1</span>'],
 
-  [/#\*(.*?)\*#/gs, '<span class="text-large">$1</span>'],
+  [/#\*(?!\*)((?:(?!\*\*).)*?)\*#/gs, '<span class="text-large">$1</span>'],
   [/#><(.*?)><#/gs, '<span class="text-large-centered">$1</span>'],
   [/#r(.*?)r#/gs, '<span class="text-red">$1</span>'],
   [/#b(.*?)b#/gs, '<span class="text-blue">$1</span>'],

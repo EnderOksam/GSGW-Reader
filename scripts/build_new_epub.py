@@ -684,7 +684,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"#f>#(.*?)#f>#", re.DOTALL), r'<span class="text-fade-right">\1</span>'),
     (re.compile(r"#f<#(.*?)#f<#", re.DOTALL), r'<span class="text-fade-left">\1</span>'),
 
-    (re.compile(r"#\*(.*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
+    (re.compile(r"#\*(?!\*)((?:(?!\*\*).)*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
     (re.compile(r"#><(.*?)><#", re.DOTALL), r'<span class="text-large-centered">\1</span>'),
 
     (re.compile(r";r(.*?)r;", re.DOTALL), r'<span class="hl-red">\1</span>'),
