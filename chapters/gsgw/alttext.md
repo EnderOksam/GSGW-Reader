@@ -19,7 +19,7 @@ Yeongeun -> Youngeun
 (Go Yeongeun)
 
 ## Heoun
-Heoun -> Heowoon
+Heoun -> Heowoon, Heo-eun
 (Jang Heoun)
 
 ## Jekang
@@ -49,5 +49,4 @@ Azure Dragon -> Cheongryong
 Vermillion Bird -> Jujak
 
 ## Huanglong
-
 Huanglong -> Yellow Dragon
