@@ -817,11 +817,6 @@ hr.invisible-hr {
   content: none;
 }
 
-[data-ws-no-text-color] [style*="color:"] {
-  color: inherit !important;
-  -webkit-text-fill-color: inherit !important;
-}
-
 [data-ws-no-bold-large] body .reader-container p strong,
 [data-ws-no-bold-large] .reader-container .braun-tv-text {
   font-size: inherit;
