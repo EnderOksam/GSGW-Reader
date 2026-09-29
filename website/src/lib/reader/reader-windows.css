@@ -829,6 +829,11 @@
   margin-bottom: 0;
 }
 
+.reader-container .padding-window.paragraph-indent p {
+  padding-left: 5.5em;
+  text-indent: -5.5em;
+}
+
 [data-ws-no-braun-color] .reader-container .braun-tv-text,
 [data-ws-no-braun-color] .reader-container .braun-doll-text {
   color: inherit;

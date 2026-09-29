@@ -443,7 +443,7 @@ def convert_chapter(content):
 
     content = bw.BRAUN_TV_TEXT_RE.sub(bw.braun_text_replacer("braun-tv-text"), content)
     content = bw.BRAUN_DOLL_TEXT_RE.sub(bw.braun_text_replacer("braun-doll-text"), content)
-    content = bw.PADDING_WINDOW_RE.sub(bw.braun_text_replacer("padding-window"), content)
+    content = bw.PADDING_WINDOW_RE.sub(bw.padding_window_replacer, content)
 
     # star windows (debut-specific)
     content = DEBUT_ALERT_RE.sub(bw.debut_alert_replacer, content)

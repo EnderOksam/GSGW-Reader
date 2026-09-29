@@ -125,7 +125,7 @@ PAPER_BOAT_WINDOW_RE = re.compile(r"!pb\n(.*?)\npb!", re.DOTALL)
 BRAUN_WINDOW_RE = re.compile(r"!\[\n(.*?)\n\]!", re.DOTALL)
 BRAUN_TV_TEXT_RE = re.compile(r"\$[Bb][Rr][Tt]\n(.*?)\n[Bb][Rr][Tt]\$", re.DOTALL)
 BRAUN_DOLL_TEXT_RE = re.compile(r"\$[Bb][Rr][Dd]\n(.*?)\n[Bb][Rr][Dd]\$", re.DOTALL)
-PADDING_WINDOW_RE = re.compile(r"\$p\n(.*?)\np\$", re.DOTALL)
+PADDING_WINDOW_RE = re.compile(r"\$p(?:[ \t]+class=\"([\w-]+)\")?\n(.*?)\np\$", re.DOTALL)
 
 DEBUT_WINDOW_RE = re.compile(r"★-\n(.*?)\n-★", re.DOTALL)
 DEBUT_ALERT_RE = re.compile(r"★!\n(.*?)\n!★", re.DOTALL)
@@ -336,7 +336,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"#f#(.*?)#f#", re.DOTALL), r'<span class="text-faded">\1</span>'),
     (re.compile(r"#wh(.*?)wh#", re.DOTALL), r'<span class="wiki-header">\1</span>'),
     (re.compile(r"(?<!\\)\-#\s*(.+?)\s*#-(?!\\)", re.DOTALL), r'<span class="text-sub">\1</span>'),
-    (re.compile(r"#\*(?!\*)((?:(?!\*\*).)*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
+    (re.compile(r"#\*(?!\*)(.*?)\*#", re.DOTALL), r'<span class="text-large">\1</span>'),
 
     (re.compile(r"#><(.*?)><#", re.DOTALL), r'<span class="text-large-centered">\1</span>'),
 
@@ -930,6 +930,12 @@ def braun_text_replacer(class_name):
         inner = re.sub(r"\n+", "\n\n", match.group(1))
         return f"\n{make_window(class_name, inner)}\n"
     return replacer
+
+
+def padding_window_replacer(match):
+    extra_class = match.group(1)
+    inner = re.sub(r"\n+", "\n\n", match.group(2))
+    return f"\n{make_window("padding-window", inner, extra_class)}\n"
 
 
 def wiki_window_replacer(match):
@@ -1598,7 +1604,7 @@ def convert_chapter(content):
 
     content = BRAUN_TV_TEXT_RE.sub(braun_text_replacer("braun-tv-text"), content)
     content = BRAUN_DOLL_TEXT_RE.sub(braun_text_replacer("braun-doll-text"), content)
-    content = PADDING_WINDOW_RE.sub(braun_text_replacer("padding-window"), content)
+    content = PADDING_WINDOW_RE.sub(padding_window_replacer, content)
 
     content = NEW_PAGE_WINDOW_RE.sub(scare_zone_replacer, content)
 
