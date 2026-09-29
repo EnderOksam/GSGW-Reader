@@ -731,7 +731,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/\$Brt\n(.*?)\nBrt\$/gis, (_: string, inner: string) => "\n" + makeWindow("braun-tv-text", toParagraphs(fmtInline(inner))) + "\n");
   s = s.replace(/\$Brd\n(.*?)\nBrd\$/gis, (_: string, inner: string) => "\n" + makeWindow("braun-doll-text", toParagraphs(fmtInline(inner))) + "\n");
-  s = s.replace(/\$p\n(.*?)\np\$/gs, (_: string, inner: string) => "\n" + makeWindow("padding-window", toParagraphs(fmtInline(inner))) + "\n");
+  s = s.replace(/\$p(?:[ \t]+class="([\w-]+)")?\n(.*?)\np\$/gs, (_: string, cls: string | undefined, inner: string) => "\n" + makeWindow("padding-window", toParagraphs(fmtInline(inner)), cls) + "\n");
 
   s = s.replace(/★!\n(.*?)\n!★/gs, (_: string, inner: string) => makeWindow("debut-alert", inner));
 

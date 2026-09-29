@@ -1705,6 +1705,11 @@ pre.gauge {
   margin-bottom: 0;
 }
 
+.padding-window.paragraph-indent p {
+  padding-left: 5.5em;
+  text-indent: -5.5em;
+}
+
 .bare-window {
   margin: 2.5rem auto;
   background: transparent;
