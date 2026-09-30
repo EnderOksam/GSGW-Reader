@@ -1760,13 +1760,42 @@ pre.gauge {
   width: min(400px, 92%);
   margin: 2.6rem auto;
   padding: 2.6em 2.2em 2.2em;
-  background-color: #fff !important;
-  background-image: linear-gradient(#fff, #fff) !important;
   color: #000000 !important;
   -webkit-text-fill-color: #000 !important;
   text-align: left;
-  border: 1px solid #aaa !important;
   outline: none;
+
+  /*
+   * No clip-path (it stops the box from splitting across pages).
+   * The paper is painted as plain rectangles, leaving the top-right
+   * 36px x 36px square unpainted, so the page shows through there.
+   * Rectangles are sliced normally when the box breaks across pages.
+   */
+  border: 0 !important;
+  border-left: 1px solid #aaa !important;
+  border-bottom: 1px solid #aaa !important;
+  background-color: transparent !important;
+  /* The FIRST layer is painted on top, so the edge lines come first
+     and the white paper rectangles come last. */
+  background-image:
+    linear-gradient(#aaa, #aaa),   /* top edge line                       */
+    linear-gradient(#aaa, #aaa),   /* right edge line (below the corner)  */
+    linear-gradient(#fff, #fff),   /* top strip (stops before the corner) */
+    linear-gradient(#fff, #fff)    /* body (starts below the corner)      */
+    !important;
+  background-repeat: no-repeat;
+  background-origin: border-box;
+  background-clip: border-box;
+  background-size:
+    calc(100% - 36px) 1px,
+    1px calc(100% - 36px),
+    calc(100% - 36px) 36px,
+    100% calc(100% - 36px);
+  background-position:
+    left top,
+    right bottom,
+    left top,
+    left bottom;
 
   break-inside: auto;
   page-break-inside: auto;
@@ -1781,16 +1810,17 @@ pre.gauge {
 .paper-boat::after {
   content: "";
   position: absolute;
-  top: -1px;
-  right: -1px;
+  top: 0;
+  right: 0;
   width: 0;
   height: 0;
 
   /*
    * Creates the triangular folded-paper piece.
+   * Only the lower-left triangle is coloured; the top border is
+   * transparent so the corner shows the page behind it.
    */
-  border-top: 36px solid #ffffff;
-  border-top-color: Canvas;
+  border-top: 36px solid transparent;
   border-left: 36px solid #f1f1f1;
 
   /*
@@ -2197,10 +2227,6 @@ pre.gauge {
 @media (prefers-color-scheme: dark) {
   :root[__ibooks_internal_theme] {
     color-scheme: dark;
-  }
-
-  :root[__ibooks_internal_theme] .paper-boat::after {
-    border-top-color: #000000;
   }
 
   .note-window p,

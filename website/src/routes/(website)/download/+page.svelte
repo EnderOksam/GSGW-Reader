@@ -36,12 +36,12 @@
       variants: [
         { id: "plaintext", label: "Plain Text", description: variantDefs[0].description, parts: [
           { id: "part1", label: "Part 1", range: "Chapters 0–208", status: "Formatted" },
-          { id: "part2", label: "Part 2", range: "Chapters 209–371", status: "WIP" },
+          { id: "part2", label: "Part 2", range: "Chapters 209–371", status: "Formatted" },
           { id: "part3", label: "Part 3", range: "Chapter 372 – Current", status: "Ongoing" },
         ] },
         { id: "default", label: "Default", description: variantDefs[1].description, parts: [
           { id: "part1", label: "Part 1", range: "Chapters 0–208", status: "Formatted" },
-          { id: "part2", label: "Part 2", range: "Chapters 209–371", status: "WIP" },
+          { id: "part2", label: "Part 2", range: "Chapters 209–371", status: "Formatted" },
           { id: "part3", label: "Part 3", range: "Chapter 372 – Current", status: "Ongoing" },
         ] },
       ],
