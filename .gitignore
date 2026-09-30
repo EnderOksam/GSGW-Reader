@@ -158,3 +158,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 misc/discussions.py
 misc/discussions.py
+scripts/.DS_Store

@@ -1759,7 +1759,7 @@ pre.gauge {
   box-sizing: border-box;
   width: min(400px, 92%);
   margin: 2.6rem auto;
-  padding: 2.5em 2.2em 2.2em;
+  padding: 2.6em 2.2em 2.2em;
   background-color: #fff !important;
   background-image: linear-gradient(#fff, #fff) !important;
   color: #000000 !important;
@@ -1767,27 +1767,65 @@ pre.gauge {
   text-align: left;
   border: 1px solid #aaa !important;
   outline: none;
-  clip-path: polygon(
-    0 0,
-    calc(100% - 36px) 0,
-    100% 36px,
-    100% 100%,
-    0 100%
-  );
+
+  break-inside: auto;
+  page-break-inside: auto;
 }
 
+/*
+ * Folded corner.
+ *
+ * This uses normal CSS borders instead of clip-path, so the main
+ * .paper-boat element remains safely fragmentable by EPUB readers.
+ */
 .paper-boat::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 0;
+  height: 0;
+
+  /*
+   * Creates the triangular folded-paper piece.
+   */
+  border-top: 36px solid #ffffff;
+  border-top-color: Canvas;
+  border-left: 36px solid #f1f1f1;
+
+  /*
+   * Gives the fold its gray outline.
+   */
+  filter: drop-shadow(-1px 1px 0 #aaa);
+
+  z-index: 5;
+}
+
+/*
+ * Add the diagonal fold line.
+ */
+.paper-boat::before {
   content: "";
   position: absolute;
   top: 0;
   right: 0;
+
   width: 36px;
   height: 36px;
-  background: #f1f1f1;
-  clip-path: polygon(0 0, 0 36px, 36px 36px);
+
+  /*
+   * The two borders reproduce the original:
+   *
+   *   border-left: 1px solid #aaa;
+   *   border-bottom: 1px solid #aaa;
+   *
+   * while the diagonal is supplied by the folded triangle above.
+   */
   border-left: 1px solid #aaa;
   border-bottom: 1px solid #aaa;
-  z-index: 5;
+
+  box-sizing: border-box;
+  z-index: 4;
 }
 
 .paper-boat p,
@@ -1806,6 +1844,9 @@ pre.gauge {
   margin: 0.6em 0;
   line-height: 1.7;
   text-align: left;
+
+  break-inside: auto;
+  page-break-inside: auto;
 }
 
 .paper-boat p:first-child {
@@ -2154,6 +2195,14 @@ pre.gauge {
 
 /* Apple Books dark-theme fix for light special windows. SMS is intentionally untouched. */
 @media (prefers-color-scheme: dark) {
+  :root[__ibooks_internal_theme] {
+    color-scheme: dark;
+  }
+
+  :root[__ibooks_internal_theme] .paper-boat::after {
+    border-top-color: #000000;
+  }
+
   .note-window p,
   .sticky-window p,
   .paper-boat p {
@@ -2177,7 +2226,7 @@ pre.gauge {
      comment ever uses a text-red/text-blue/etc span, brightness(0) will
      flatten it to black too - mutually exclusive with the colored-span
      fix below for the same element. */
-.alert-window .comment-post-title,
+  .alert-window .comment-post-title,
    .alert-window .comment-post-desc > p,
    .alert-window .comment > span,
    .alert-window .reply-body {
