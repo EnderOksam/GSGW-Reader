@@ -647,37 +647,37 @@ figcaption {
 .text-red {
   color: #ff4d00 !important;
   -webkit-text-fill-color: #ff4d00 !important;
-  font-weight: bold;
+  font-weight: inherit;
 }
 
 .text-blue {
   color: #2244fa !important;
   -webkit-text-fill-color: #2244fa !important;
-  font-weight: bold;
+  font-weight: inherit;
 }
 
 .text-yellow {
   color: #fff700 !important;
   -webkit-text-fill-color: #fff700 !important;
-  font-weight: bold;
+  font-weight: inherit;
 }
 
 .text-magenta {
   color: #d946ef !important;
   -webkit-text-fill-color: #d946ef !important;
-  font-weight: bold;
+  font-weight: inherit;
 }
 
 .text-green {
   color: #22c55e !important;
   -webkit-text-fill-color: #22c55e !important;
-  font-weight: bold;
+  font-weight: inherit;
 }
 
 .text-orange {
   color: #fb8246 !important;
   -webkit-text-fill-color: #fb8246 !important;
-  font-weight: bold;
+  font-weight: inherit;
 }
 
 .hl-red {
@@ -1879,6 +1879,10 @@ pre.gauge {
   page-break-inside: auto;
 }
 
+.paper-boat strong {
+  font-size: 1em;
+}
+
 .paper-boat p:first-child {
   margin-top: 0;
 }
@@ -2230,9 +2234,13 @@ pre.gauge {
   }
 
   .note-window p,
-  .sticky-window p,
-  .paper-boat p {
+  .sticky-window p, li {
     filter: brightness(0) !important;
+  }
+
+  .paper-boat .paper-boat-plain-text {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
 
   /* Same fix, applied to alert-window's comment text. A missing first line

@@ -625,9 +625,9 @@ def scare_page_body(converted: str, centered: bool = False) -> str:
     The wrapper uses class names (.epub-pagebreak/.epub-pagebreak-content)
     instead of headings so automated chapter indexers never mistake a scare
     page for a structural entry. Any <h1>-<h6> that pandoc produced inside
-    the scare content is demoted to a span before wrapping. Short scare
-    pages (fewer than 80 visible characters) get .epub-pagebreak-center so
-    the content hugs the vertical-middle of the viewport.
+    the scare content is demoted to a span before wrapping. Short scare pages
+    and pages containing only wiki/record windows get .epub-pagebreak-center
+    so the content hugs the vertical-middle of the viewport.
     """
     def demote_open(match: re.Match) -> str:
         return f'<span class="epub-pagebreak-title"{match.group(2)}>'
@@ -647,11 +647,56 @@ def is_short_scare(content: str, threshold: int | None = None) -> bool:
     """True when a scare page's visible text is under ``threshold`` characters.
 
     Matches the pre-split behaviour of the EPUB pipeline: scare pages with
-    fewer than 80 rendered characters are treated as short (sentence/one-shot
+    fewer than 120 rendered characters are treated as short (sentence/one-shot
     screams) and get centered on the viewport.
     """
     length = len(strip_markup(content).strip())
-    return length < (threshold if threshold is not None else 80)
+    return length < (threshold if threshold is not None else 120)
+
+
+def is_window_only_scare(converted: str) -> bool:
+    """True when every top-level element is a wiki or record window."""
+    class WindowOnlyParser(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self.stack: list[str] = []
+            self.window_count = 0
+            self.valid = True
+
+        def handle_starttag(
+            self, tag: str, attrs: list[tuple[str, str | None]]
+        ) -> None:
+            if not self.stack:
+                classes = next((value for name, value in attrs if name == "class"), "")
+                if tag != "div" or not {"wiki-window", "record-window"}.intersection(
+                    (classes or "").split()
+                ):
+                    self.valid = False
+                else:
+                    self.window_count += 1
+            if tag not in XHTML_VOID_ELEMENTS:
+                self.stack.append(tag)
+
+        def handle_startendtag(
+            self, tag: str, attrs: list[tuple[str, str | None]]
+        ) -> None:
+            self.handle_starttag(tag, attrs)
+            if tag not in XHTML_VOID_ELEMENTS:
+                self.handle_endtag(tag)
+
+        def handle_endtag(self, tag: str) -> None:
+            if tag in self.stack:
+                while self.stack:
+                    if self.stack.pop() == tag:
+                        break
+
+        def handle_data(self, data: str) -> None:
+            if not self.stack and data.strip():
+                self.valid = False
+
+    parser = WindowOnlyParser()
+    parser.feed(converted)
+    return parser.valid and parser.window_count > 0 and not parser.stack
 
 
 SIMPLE_REPLACEMENTS = [
@@ -2138,6 +2183,10 @@ XHTML_VOID_ELEMENTS = {
     "area", "base", "br", "col", "embed", "hr", "img", "input",
     "link", "meta", "param", "source", "track", "wbr",
 }
+PAPER_BOAT_COLOR_CLASSES = {
+    "text-red", "text-blue", "text-yellow", "text-magenta",
+    "text-green", "text-orange", "text-light-purple", "text-cyan",
+}
 
 
 class _XhtmlTreeBuilder(HTMLParser):
@@ -2155,6 +2204,7 @@ class _XhtmlTreeBuilder(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.out: list[str] = []
         self.open_stack: list[str] = []
+        self.text_context: list[tuple[bool, bool, bool]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         tag = tag.lower()
@@ -2163,6 +2213,14 @@ class _XhtmlTreeBuilder(HTMLParser):
             return
         self.out.append(self._format_tag(tag, attrs, self_closing=False))
         self.open_stack.append(tag)
+        parent_context = self.text_context[-1] if self.text_context else (False, False, False)
+        class_value = next((value for name, value in attrs if name.lower() == "class"), None)
+        class_names = set((class_value or "").split())
+        self.text_context.append((
+            parent_context[0] or "paper-boat" in class_names,
+            parent_context[1] or tag == "p",
+            parent_context[2] or bool(class_names & PAPER_BOAT_COLOR_CLASSES),
+        ))
 
     def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         self.out.append(self._format_tag(tag.lower(), attrs, self_closing=True))
@@ -2174,12 +2232,19 @@ class _XhtmlTreeBuilder(HTMLParser):
         if tag in self.open_stack:
             while self.open_stack:
                 open_tag = self.open_stack.pop()
+                self.text_context.pop()
                 self.out.append(f"</{open_tag}>")
                 if open_tag == tag:
                     break
 
     def handle_data(self, data: str) -> None:
-        self.out.append(html.escape(data, quote=False))
+        escaped = html.escape(data, quote=False)
+        if self.text_context:
+            in_paper_boat, in_paragraph, in_authored_color = self.text_context[-1]
+            if in_paper_boat and in_paragraph and not in_authored_color and data:
+                self.out.append(f'<span class="paper-boat-plain-text">{escaped}</span>')
+                return
+        self.out.append(escaped)
 
     def handle_comment(self, data: str) -> None:
         self.out.append(f"<!--{data}-->")
@@ -2588,7 +2653,8 @@ def build_chapter_items(
 
         if segment.is_scare:
             suffix = f"scare_{segment.index}"
-            body = scare_page_body(body, centered=is_short_scare(segment.content))
+            centered = is_short_scare(segment.content) or is_window_only_scare(body)
+            body = scare_page_body(body, centered=centered)
             in_toc = False
         else:
             story_count += 1
