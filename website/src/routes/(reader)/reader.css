@@ -1042,6 +1042,7 @@ body:not(.snippet-preview) .reader-container pre.gauge {
 
 .fox {
   font-family: 'Gowun Batang', 'Georgia', serif;
+  font-size: 1.08em;
 }
 
 .eb-garamond {
