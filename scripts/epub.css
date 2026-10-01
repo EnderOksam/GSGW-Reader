@@ -2234,7 +2234,8 @@ pre.gauge {
   }
 
   .note-window p,
-  .sticky-window p, li {
+  .sticky-window p,
+  .paper-boat li {
     filter: brightness(0) !important;
   }
 
@@ -2243,46 +2244,23 @@ pre.gauge {
     -webkit-text-fill-color: #000000 !important;
   }
 
-  /* Same fix, applied to alert-window's comment text. A missing first line
-     in comment boxes is this exact bug: Apple Books' dark-mode text
-     recoloring can slip a near-white/transparent run into the first line
-     even with color/-webkit-text-fill-color forced to black - the
-     brightness(0) filter crushes it to black regardless of what color
-     iBooks tried to assign it. Targeted at the innermost text-bearing
-     element in each case (.comment > span, not .comment itself; reply-body,
-     not the whole .comment-reply row) so the filter never touches a parent
-     that owns its own background color - .comment's #eaeaea bubble and the
-     depth-1/2/3 gray tints would otherwise get crushed to black right along
-     with the text, since filter flattens the whole box, backgrounds
-     included, not just text. comment-post-desc is targeted via its child
-     <p> only (not the div itself) so any image inside it (e.g. the ch1 ID
-     card figure) isn't also flattened to a black silhouette. NOTE: if a
-     comment ever uses a text-red/text-blue/etc span, brightness(0) will
-     flatten it to black too - mutually exclusive with the colored-span
-     fix below for the same element. */
   .alert-window .comment-post-title,
-   .alert-window .comment-post-desc > p,
-   .alert-window .comment > span,
-   .alert-window .reply-body {
-     filter: brightness(0) !important;
-   }
+  .alert-window .comment-post-desc > p,
+  .alert-window .comment > .comment-body,
+  .alert-window .reply-body {
+    filter: brightness(0) !important;
+  }
 
-   /* The brightness(0) rule above also catches image-only paragraphs in
-      comment-post-desc, flattening figures (e.g. the ch1 ID card) to a black
-      silhouette. Restore them. Higher specificity + later position wins;
-      readers without :has() support simply keep the old behavior.
-      The artwork is drawn on a fully transparent canvas and is only legible
-      over a light surface, so give it the alert-window's own light card
-      color (#f2f2f2) in dark mode; in light mode it blends in seamlessly. */
-   .alert-window .comment-post-desc > p:has(img) {
-     filter: none !important;
-   }
-   .alert-window .comment-post-desc img {
-     display: block;
-     margin: 0 auto;
-     padding: 0.5rem;
-     background-color: #f2f2f2 !important;
-   }
+  .alert-window .comment-post-desc > p:has(img) {
+    filter: none !important;
+  }
+
+  .alert-window .comment-post-desc img {
+    display: block;
+    margin: 0 auto;
+    padding: 0.5rem;
+    background-color: #f2f2f2 !important;
+  }
 }
 /* Preserve inline/special colors inside Wiki windows */
 .wiki-window .text-red,
@@ -2329,7 +2307,6 @@ pre.gauge {
   -webkit-text-fill-color: #22d3ee !important;
 }
 
-/* FINAL COMMENT TEXT COLOR FIX */
 .alert-window .comment-post-title,
 .alert-window .comment-post-desc,
 .alert-window .comment,
@@ -2350,12 +2327,6 @@ pre.gauge {
   -webkit-text-fill-color: #000000 !important;
 }
 
-/* reply-icon deliberately excluded from the block above: it was in that
-   selector list before, which forced it black and silently overrode its
-   own dedicated gray (#999999) rule further up the file, since both rules
-   have equal specificity and this one came later. Re-asserted here so the
-   nested-reply arrow (↳) keeps its gray tint instead of matching the
-   surrounding black comment text. */
 .alert-window .reply-icon {
   color: #999999 !important;
   -webkit-text-fill-color: #999999 !important;

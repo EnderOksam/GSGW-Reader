@@ -1686,7 +1686,7 @@ def comment_window_replacer(match):
             if depth is None:
                 html_parts.append(text)
             elif depth == 0:
-                html_parts.append(f'<div class="comment">{text}</div>')
+                html_parts.append(f'<div class="comment"><span class="comment-body">{text}</span></div>')
             else:
                 html_parts.append(
                     f'<div class="comment-reply depth-{depth}">'
@@ -2096,7 +2096,7 @@ def convert_chapter(content, ctx):
     if footnotes:
         lines = []
         for num in sorted(footnotes):
-            lines.append(f'<li value="{num}" id="fn-{num}">{footnotes[num]} <a href="#fn-ref-{num}" class="fn-back" aria-label="Back to reference {num} in text">↩</a></li>')
+            lines.append(f'<li value="{num}" id="fn-{num}">{footnotes[num]} <a href="#fn-ref-{num}" class="fn-back" aria-label="Back to reference {num} in text">&#x21A9;</a></li>')
         footnotes_html = '<div class="footnotes-section">\n<hr class="footnotes-divider" />\n<p class="footnotes-title">Footnotes</p>\n<ol>\n' + '\n'.join(lines) + '\n</ol>\n</div>\n'
 
     try:
@@ -2647,6 +2647,10 @@ def build_chapter_items(
     items: list[EpubItem] = []
     story_count = 0
     for segment in segments:
+        # Skip empty story gaps so no blank page is emitted.
+        if not segment.is_scare and not segment.content.strip():
+            continue
+
         body, footnotes_html = convert_chapter(segment.content, ctx)
         if footnotes_html:
             body += "\n" + footnotes_html
@@ -2655,11 +2659,11 @@ def build_chapter_items(
             suffix = f"scare_{segment.index}"
             centered = is_short_scare(segment.content) or is_window_only_scare(body)
             body = scare_page_body(body, centered=centered)
-            in_toc = False
         else:
             story_count += 1
             suffix = f"part{story_count}" if has_scares else None
-            in_toc = story_count == 1
+
+        in_toc = not items
 
         items.append(
             EpubItem(
