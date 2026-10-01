@@ -15,7 +15,7 @@
 Darkness Exploration Records -> Dark Exploration Records
 
 ## Soleum
-Soleum -> Soreum
+Soleum -> Soreum, Sol-eum
 
 ## Yeongeun
 Yeongeun -> Youngeun
