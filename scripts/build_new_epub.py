@@ -626,8 +626,9 @@ def scare_page_body(converted: str, centered: bool = False) -> str:
     instead of headings so automated chapter indexers never mistake a scare
     page for a structural entry. Any <h1>-<h6> that pandoc produced inside
     the scare content is demoted to a span before wrapping. Short scare pages
-    and pages containing only wiki/record windows get .epub-pagebreak-center
-    so the content hugs the vertical-middle of the viewport.
+    and pages containing only wiki/record/plain/follow-up windows get
+    .epub-pagebreak-center so the content hugs the vertical-middle of the
+    viewport.
     """
     def demote_open(match: re.Match) -> str:
         return f'<span class="epub-pagebreak-title"{match.group(2)}>'
@@ -668,7 +669,7 @@ def is_window_only_scare(converted: str) -> bool:
         ) -> None:
             if not self.stack:
                 classes = next((value for name, value in attrs if name == "class"), "")
-                if tag != "div" or not {"wiki-window", "record-window"}.intersection(
+                if tag != "div" or not {"wiki-window", "record-window", "plain-window", "followup-window"}.intersection(
                     (classes or "").split()
                 ):
                     self.valid = False
