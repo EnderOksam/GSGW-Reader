@@ -55,6 +55,14 @@
     height?: number | null;
   };
 
+  type AnnouncementEmbed = {
+    title?: string | null;
+    description?: string | null;
+    url?: string | null;
+    image?: string | null;
+    thumbnail?: string | null;
+  };
+
   type Announcement = {
     title: string;
     date: string;
@@ -64,6 +72,7 @@
     messageId?: string;
     discordUrl?: string;
     attachments?: AnnouncementAttachment[];
+    embeds?: AnnouncementEmbed[];
   };
 
   const announcements = announcementsData.announcements as Announcement[];
@@ -359,6 +368,40 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                     <Icon icon="mdi:open-in-new" class="size-3" />
                   </a>
                 {/if}
+              </div>
+            {/if}
+            {#if a.embeds?.length}
+              <div class="flex flex-col gap-2 w-full mt-1">
+                {#each a.embeds as embed}
+                  <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+                    {#if embed.image}
+                      <img src={embed.image} alt="" class="w-full max-h-72 object-cover" loading="lazy" />
+                    {/if}
+                    <div class="flex gap-3 p-3">
+                      <div class="min-w-0 flex-1">
+                        {#if embed.title}
+                          {#if embed.url}
+                            <a href={embed.url} target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-accent hover:underline">{embed.title}</a>
+                          {:else}
+                            <p class="text-xs font-semibold text-white">{embed.title}</p>
+                          {/if}
+                        {/if}
+                        {#if embed.description}
+                          <p class="text-[11px] text-base-content/60 whitespace-pre-wrap mt-1 line-clamp-4">{embed.description}</p>
+                        {/if}
+                        {#if embed.url && !embed.title}
+                          <a href={embed.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-accent/80 hover:text-accent mt-1">
+                            Open link
+                            <Icon icon="mdi:open-in-new" class="size-3" />
+                          </a>
+                        {/if}
+                      </div>
+                      {#if embed.thumbnail}
+                        <img src={embed.thumbnail} alt="" class="size-16 shrink-0 rounded-md object-cover bg-black/20" loading="lazy" />
+                      {/if}
+                    </div>
+                  </div>
+                {/each}
               </div>
             {/if}
             {#if a.attachments?.length}
