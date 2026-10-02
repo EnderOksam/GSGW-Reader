@@ -121,16 +121,21 @@ def parse_message(message: dict[str, Any]) -> dict[str, Any] | None:
     if not content and not attachments and not embeds:
         return None
 
-    title, short, long = split_announcement(content)
+    title, _, _ = split_announcement(content)
     if not title:
         embed_title = next((item.get("title") for item in embeds if item.get("title")), None)
         title = embed_title or "Discord announcement"
+
+    # The modal uses the date as its visible heading, so preserve the complete
+    # Discord message as the body instead of consuming its first line as a title.
+    short = content
+    long = ""
     if not short:
         embed_description = next(
             (item.get("description") for item in embeds if item.get("description")),
             None,
         )
-        short = embed_description or "See the attached announcement."
+        short = embed_description or ""
 
     timestamp = datetime.fromisoformat(message["timestamp"].replace("Z", "+00:00"))
     author = message.get("author") or {}
