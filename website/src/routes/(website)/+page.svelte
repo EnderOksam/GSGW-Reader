@@ -14,12 +14,17 @@
   let showBanner = $state(false);
   let ackCount = $state(0);
   let infoSeen = $state(false);
+  let hasUnreadAnnouncements = $state(false);
 
   onMount(() => {
     const stored = localStorage.getItem("gsgw-ack");
     ackCount = stored ? parseInt(stored, 10) : 0;
     if (ackCount < 2) showBanner = true;
     infoSeen = localStorage.getItem("gsgw-info-seen") === "1";
+
+    const latestAnnouncementId = announcements[0]?.messageId;
+    const lastSeenAnnouncementId = localStorage.getItem("gsgw-last-announcement");
+    hasUnreadAnnouncements = Boolean(latestAnnouncementId && latestAnnouncementId !== lastSeenAnnouncementId);
   });
 
   function handleInfoClick() {
@@ -44,6 +49,15 @@
 
   const announcements = announcementsData.announcements;
   let expandedAnnouncement = $state<number | null>(null);
+
+  function openAnnouncements() {
+    announcementsModal.showModal();
+    const latestAnnouncementId = announcements[0]?.messageId;
+    if (latestAnnouncementId) {
+      localStorage.setItem("gsgw-last-announcement", latestAnnouncementId);
+      hasUnreadAnnouncements = false;
+    }
+  }
 
   function toggleAnnouncement(index: number) {
     expandedAnnouncement = expandedAnnouncement === index ? null : index;
@@ -228,9 +242,11 @@ On that day, I ended up transmigrating as a character in that very fantasy world
         </div>
       {/if}
       <div class="tooltip relative" data-tip="Recent announcements">
-        <button onclick={() => announcementsModal.showModal()} class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-warning/20 border border-white/10 hover:border-warning/40 text-warning/80 hover:text-warning shadow-lg backdrop-blur-md transition-all duration-300">
+        <button onclick={openAnnouncements} class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-warning/20 border border-white/10 hover:border-warning/40 text-warning/80 hover:text-warning shadow-lg backdrop-blur-md transition-all duration-300">
           <Icon icon="mdi:bell-outline" class="size-5 md:size-7" />
-          <span class="absolute top-2 right-2 inline-block w-2 h-2 rounded-full bg-warning animate-pulse shadow-[0_0_6px_2px_rgba(255,224,102,0.45)] pointer-events-none"></span>
+          {#if hasUnreadAnnouncements}
+            <span class="absolute top-2 right-2 inline-block w-2 h-2 rounded-full bg-warning animate-pulse shadow-[0_0_6px_2px_rgba(255,224,102,0.45)] pointer-events-none"></span>
+          {/if}
         </button>
       </div>
     </div>
@@ -301,7 +317,40 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           </span>
           <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
           {#if expandedAnnouncement === i}
-            <span class="block text-xs text-base-content/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</span>
+            {#if a.long}
+              <span class="block text-xs text-base-content/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</span>
+            {/if}
+            {#if a.author || a.discordUrl}
+              <span class="flex items-center justify-between gap-3 w-full border-t border-white/5 pt-2 mt-1">
+                {#if a.author}
+                  <span class="text-[10px] text-base-content/40">Posted by {a.author}</span>
+                {:else}
+                  <span></span>
+                {/if}
+                {#if a.discordUrl}
+                  <a href={a.discordUrl} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()} class="inline-flex items-center gap-1 text-[10px] font-semibold text-accent/80 hover:text-accent">
+                    View on Discord
+                    <Icon icon="mdi:open-in-new" class="size-3" />
+                  </a>
+                {/if}
+              </span>
+            {/if}
+            {#if a.attachments?.length}
+              <span class="flex flex-col gap-2 w-full mt-1">
+                {#each a.attachments as attachment}
+                  {#if attachment.contentType?.startsWith("image/")}
+                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()} class="block overflow-hidden rounded-lg border border-white/5">
+                      <img src={attachment.url} alt={attachment.filename || "Announcement attachment"} class="w-full max-h-72 object-contain bg-black/20" loading="lazy" />
+                    </a>
+                  {:else}
+                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()} class="inline-flex items-center gap-1 text-[10px] text-accent/80 hover:text-accent">
+                      <Icon icon="mdi:paperclip" class="size-3" />
+                      {attachment.filename || "Attachment"}
+                    </a>
+                  {/if}
+                {/each}
+              </span>
+            {/if}
           {/if}
           {#if a.long && a.long !== a.short}
             <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
