@@ -86,13 +86,22 @@ def split_announcement(content: str) -> tuple[str, str, str]:
         return "", "", ""
 
     lines = content.splitlines()
-    title = clean_inline_markdown(lines[0])
-    body = "\n".join(lines[1:]).strip()
+    first_line = lines[0].strip()
+    explicit_title = bool(
+        re.fullmatch(r"\\*\\*(.+?)\\*\\*", first_line)
+        or re.fullmatch(r"#{1,6}\\s+(.+)", first_line)
+    )
 
-    # A message with no explicit title still gets a useful card title.
-    if not body:
-        body = title
-        title = "Discord announcement"
+    if explicit_title:
+        title = clean_inline_markdown(first_line)
+        body = "\n".join(lines[1:]).strip()
+    else:
+        title = clean_inline_markdown(first_line)
+        body = content
+
+    # Keep ordinary Discord messages useful without requiring special title syntax.
+    if len(title) > 80:
+        title = title[:77].rstrip() + "..."
 
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", body) if p.strip()]
     short = paragraphs[0] if paragraphs else body
@@ -114,9 +123,14 @@ def parse_message(message: dict[str, Any]) -> dict[str, Any] | None:
 
     title, short, long = split_announcement(content)
     if not title:
-        title = "Discord announcement"
+        embed_title = next((item.get("title") for item in embeds if item.get("title")), None)
+        title = embed_title or "Discord announcement"
     if not short:
-        short = "See the attached announcement."
+        embed_description = next(
+            (item.get("description") for item in embeds if item.get("description")),
+            None,
+        )
+        short = embed_description or "See the attached announcement."
 
     timestamp = datetime.fromisoformat(message["timestamp"].replace("Z", "+00:00"))
     author = message.get("author") or {}
