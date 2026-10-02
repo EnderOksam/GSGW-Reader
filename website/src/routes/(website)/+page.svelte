@@ -332,8 +332,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
             class="w-full text-left flex flex-col gap-1"
           >
             <span class="flex items-center justify-between gap-3 w-full">
-              <span class="text-sm font-semibold leading-tight text-white">{a.title}</span>
-              <time class="text-[10px] text-base-content/40 tabular-nums shrink-0">{a.date}</time>
+              <time class="text-sm font-semibold leading-tight text-white">{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>
             </span>
             <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
             {#if a.long && a.long !== a.short}
