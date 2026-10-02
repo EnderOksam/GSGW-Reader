@@ -1,4 +1,4 @@
-# Announcement info for editors
+# Announcement Guide for Editors
 
 # Each "## Title [Date]" line starts one announcement.
 # The first paragraph is the SHORT announcement (shown in the list).
@@ -6,9 +6,9 @@
 
 # Leave the LONG part out to make the short text the full announcement.
 
-## recent announcements added [2026-10-1]
-Added recent announcements
+## Recent Announcements added [2026-10-1]
+Added Recent Announcements
 
-announcements are an easy way for lead editors to have a way of announcing changes, and other things directly on the site for people who dont use discord, all done via a markdown file and updates whenever the site redeploys
+Announcements are an easy way for lead editors to have a way of announcing changes and other things directly on the site for people who don’t use Discord, all done via a Markdown file and updates whenever the site redeploys.
 
-these are ordered by newest first and prob will go through backlogging previous announcements - Ender
+These are ordered by newest first and prob will go through backlogging previous announcements - Ender
