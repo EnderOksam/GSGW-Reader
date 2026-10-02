@@ -227,7 +227,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           </a>
         </div>
       {/if}
-      <div class="tooltip relative" data-tip="Recent announcements">
+      <div class="tooltip relative" data-tip="Recent Announcements">
         <button onclick={() => announcementsModal.showModal()} class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-warning/20 border border-white/10 hover:border-warning/40 text-warning/80 hover:text-warning shadow-lg backdrop-blur-md transition-all duration-300">
           <Icon icon="mdi:bell-outline" class="size-5 md:size-7" />
           <span class="absolute top-2 right-2 inline-block w-2 h-2 rounded-full bg-warning animate-pulse shadow-[0_0_6px_2px_rgba(255,224,102,0.45)] pointer-events-none"></span>
@@ -279,7 +279,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
       <h3 class="text-lg font-bold text-warning flex items-center gap-2">
         <Icon icon="mdi:bell-outline" class="size-5" />
-        Recent announcements
+        Recent Announcements
       </h3>
       <form method="dialog">
         <button class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-white" aria-label="Close">
