@@ -11,8 +11,11 @@
 # Soleum, Soleum2 -> Soreum, Soreum2
 # (short description you want to give this alt text, optional)
 
+## Darkness Exploration Records
+Darkness Exploration Records -> Dark Exploration Records
+
 ## Soleum
-Soleum -> Soreum
+Soleum -> Soreum, Sol-eum
 
 ## Yeongeun
 Yeongeun -> Youngeun
@@ -23,15 +26,21 @@ Heoun -> Heowoon, Heo-eun
 (Jang Heoun)
 
 ## Jekang
-Jekang -> Jaekang
+Jekang -> Jaekang, Jegang
 (Kwak Jekang)
+
+## Round-off Team
+Round-off Team -> Cleanup Team, Reserve Team
+
+## Cheerful Theme Park
+Cheerful Theme Park -> Gaiety Theme Park
+
+## Cheerful Research Institute
+Cheerful Research Institute -> Gaiety Research Institute
 
 ## [Name]
 [Name] -> Ireum
-(Ireum-nim)
-
-## Darkness Exploration Records
-Darkness Exploration Records -> Dark Exploration Records
+(Ireum-nim) 
 
 ## Lord Cat
 Lord Cat -> Cat-nim
@@ -40,7 +49,7 @@ Lord Cat -> Cat-nim
 White Tiger -> Baekho
 
 ## Black Tortoise
-Black Tortoise -> Hyunmoo
+Black Tortoise -> Hyunmoo, Hyunmu
 
 ## Azure Dragon
 Azure Dragon -> Cheongryong

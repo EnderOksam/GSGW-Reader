@@ -646,7 +646,7 @@
     { syntax: "$c text c$", text: "teacher contamination text", cls: "contaminated", expandable: true },
     { syntax: "$clu text clu$", text: "church of luminous unknown", cls: "diphylleia", expandable: true },
     { syntax: "$jt text jt$", text: "traditional brush text", cls: "judgement", expandable: true },
-    { syntax: "$bdt text bdt$", text: "blue dragon text", cls: "bluedragon", expandable: true },
+    { syntax: "$bdt text bdt$", text: "Blue Dragon text", cls: "bluedragon", expandable: true },
 
     { syntax: "$gps text gps$", text: "retro stencil text", cls: "tenada", expandable: true },
     { syntax: "$tf text tf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },
