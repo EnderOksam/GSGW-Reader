@@ -18,4 +18,4 @@ GSGW Part 2 EPUB WIP → Formatted
 
 All formatted chapters for Part 2 are now live in the EPUB. As a reminder, scheduled EPUB releases drop on the 1st and 15th of every month.
 
-Minor Note: We occasionally release updates outside of the regular schedule when rolling out bug fixes or new EPUB features. Feel free to check the date on the site to see when it was last updated!
+Minor Note: We occasionally release updates outside of the regular schedule when rolling out bug fixes or new EPUB features. Feel free to check the date on the site to see when it was last updated! In case there’s a new edit of a chapter under Parts 1 or 2, it’ll be reflected on the next EPUB release.
