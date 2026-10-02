@@ -1,12 +1,16 @@
 import json
 import re
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_ROOT = SCRIPT_DIR.parent
 
 ALTTEXT_OUTPUT_PATH = REPO_ROOT / "website/src/lib/alttext.json"
+
+ANNOUNCEMENTS_MD = SCRIPT_DIR / "announcements.md"
+ANNOUNCEMENTS_OUTPUT_PATH = REPO_ROOT / "website/src/lib/announcements.json"
 
 REFERENCES_DIR = REPO_ROOT / "images" / "gsgw" / "references"
 STATIC_DIR = REPO_ROOT / "website" / "static" / "characters"
@@ -65,6 +69,94 @@ def build_alttext():
         encoding="utf-8",
     )
     print(f"Alt text config written: {ALTTEXT_OUTPUT_PATH} ({len(data['variants'])} variants)")
+    return data
+
+
+# =========================================================
+# ANNOUNCEMENTS
+# =========================================================
+
+def parse_announcement_date(value: str):
+    if not value:
+        return None
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%d-%m-%Y", "%d/%m/%Y", "%B %d, %Y", "%b %d, %Y"):
+        try:
+            return datetime.strptime(value.strip(), fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def parse_announcements_md(md_path):
+    if not md_path.exists():
+        return {"announcements": []}
+
+    content = md_path.read_text(encoding="utf-8")
+    announcements = []
+    current = None
+    paragraph = []
+
+    def flush_paragraph():
+        nonlocal paragraph
+        if current is not None and paragraph:
+            text = " ".join(paragraph).strip()
+            if text:
+                if not current["short"]:
+                    current["short"] = text
+                else:
+                    current["long"] = f"{current['long']}\n\n{text}".strip() if current["long"] else text
+        paragraph = []
+
+    for raw in content.splitlines():
+        stripped = raw.strip()
+
+        if stripped.startswith("## "):
+            flush_paragraph()
+            heading = stripped[3:].strip()
+            title = heading
+            date = ""
+            match = re.search(r"\[([^\]]+)\]\s*$", heading)
+            if match:
+                date = match.group(1).strip()
+                title = heading[:match.start()].strip()
+            current = {"title": title, "date": date, "short": "", "long": ""}
+            announcements.append(current)
+            continue
+
+        if not stripped:
+            flush_paragraph()
+            continue
+
+        if stripped.startswith("#"):
+            continue
+
+        if current is not None:
+            paragraph.append(stripped)
+
+    flush_paragraph()
+
+    for announcement in announcements:
+        if not announcement["long"]:
+            announcement["long"] = announcement["short"]
+
+    announcements = [a for a in announcements if a["title"]]
+
+    dated = [a for a in announcements if parse_announcement_date(a["date"])]
+    undated = [a for a in announcements if not parse_announcement_date(a["date"])]
+    dated.sort(key=lambda a: parse_announcement_date(a["date"]), reverse=True)
+    announcements = dated + undated
+
+    return {"announcements": announcements}
+
+
+def build_announcements():
+    data = parse_announcements_md(ANNOUNCEMENTS_MD)
+    ANNOUNCEMENTS_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    ANNOUNCEMENTS_OUTPUT_PATH.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    print(f"Announcements written: {ANNOUNCEMENTS_OUTPUT_PATH} ({len(data['announcements'])} announcements)")
     return data
 
 
@@ -241,6 +333,7 @@ def build_characters():
 
 def main():
     build_alttext()
+    build_announcements()
     build_characters()
 
 

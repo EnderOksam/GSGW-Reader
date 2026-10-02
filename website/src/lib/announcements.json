@@ -1,0 +1,10 @@
+{
+  "announcements": [
+    {
+      "title": "recent announcement",
+      "date": "2026-10-1",
+      "short": "Added recent announcements",
+      "long": "announcements are an easy way for lead editors to have a way of announcing changes, and other things directly on the site for people who dont use discord, all done via a markdown file and updates whenever the site redeploys\n\nthese are ordered by newest first and prob will go through backlogging previous announcements - Ender"
+    }
+  ]
+}

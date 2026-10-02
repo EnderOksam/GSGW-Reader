@@ -9,15 +9,23 @@
   import imgManwha from "$lib/assets/webtoon-cover.webp";
   import imgDebut from "$lib/assets/debut.webp";
   import imgBanner from "$lib/assets/web-gsgw-banner.jpg";
+  import announcementsData from "$lib/announcements.json";
 
   let showBanner = $state(false);
   let ackCount = $state(0);
+  let infoSeen = $state(false);
 
   onMount(() => {
     const stored = localStorage.getItem("gsgw-ack");
     ackCount = stored ? parseInt(stored, 10) : 0;
     if (ackCount < 2) showBanner = true;
+    infoSeen = localStorage.getItem("gsgw-info-seen") === "1";
   });
+
+  function handleInfoClick() {
+    infoSeen = true;
+    localStorage.setItem("gsgw-info-seen", "1");
+  }
 
   function handleAck() {
     ackCount++;
@@ -31,7 +39,15 @@
   }
 
   let contributeModal: HTMLDialogElement;
+  let announcementsModal: HTMLDialogElement;
   let gsgwVariant = $state<"webnovel" | "manwha">("webnovel");
+
+  const announcements = announcementsData.announcements;
+  let expandedAnnouncement = $state<number | null>(null);
+
+  function toggleAnnouncement(index: number) {
+    expandedAnnouncement = expandedAnnouncement === index ? null : index;
+  }
 
   function handleUderClick(e: MouseEvent) {
     e.preventDefault();
@@ -139,9 +155,11 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 
 <div class="relative h-dvh flex flex-col items-center justify-center gap-3 md:gap-8 py-8 px-8 md:p-12 overflow-hidden">
     <div class="flex flex-col items-center gap-3 md:gap-8 w-full max-w-7xl">
-    <h1 class="crt-title text-5xl sm:text-7xl md:text-7xl lg:text-8xl font-bold leading-none md:leading-tight text-center whitespace-nowrap">
-      <span class="block md:inline -ml-14 md:ml-0">GSGW</span><span class="block md:inline pl-12 md:pl-0">-Reader</span>
-    </h1>
+    <div class="relative flex flex-col items-center">
+      <h1 class="crt-title text-5xl sm:text-7xl md:text-7xl lg:text-8xl font-bold leading-none md:leading-tight text-center whitespace-nowrap">
+        <span class="block md:inline -ml-14 md:ml-0">GSGW</span><span class="block md:inline pl-12 md:pl-0">-Reader</span>
+      </h1>
+    </div>
 
     <div class="hidden md:flex items-center justify-center gap-4">
       {@render bookCard(uderBook, handleUderClick)}
@@ -194,55 +212,113 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           <Icon icon="mdi:github" class="size-5 md:size-7" />
         </a>
       </div>
-      <StarField>
+      {#if !infoSeen}
+        <StarField>
+          <div class="tooltip" data-tip="Info">
+            <a href="/info" onclick={handleInfoClick} class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-base-100/20 border border-white/10 hover:border-white/30 text-white/50 hover:text-white shadow-lg backdrop-blur-md transition-all duration-300 info-glow">
+              <Icon icon="mdi:information-outline" class="size-5 md:size-7" />
+            </a>
+          </div>
+        </StarField>
+      {:else}
         <div class="tooltip" data-tip="Info">
-          <a href="/info" class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-base-100/20 border border-white/10 hover:border-white/30 text-white/50 hover:text-white shadow-lg backdrop-blur-md transition-all duration-300 info-glow">
+          <a href="/info" class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-base-100/20 border border-white/10 hover:border-white/30 text-white/50 hover:text-white shadow-lg backdrop-blur-md transition-all duration-300">
             <Icon icon="mdi:information-outline" class="size-5 md:size-7" />
           </a>
         </div>
-      </StarField>
+      {/if}
+      <div class="tooltip relative" data-tip="Recent announcements">
+        <button onclick={() => announcementsModal.showModal()} class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-warning/20 border border-white/10 hover:border-warning/40 text-warning/80 hover:text-warning shadow-lg backdrop-blur-md transition-all duration-300">
+          <Icon icon="mdi:bell-outline" class="size-5 md:size-7" />
+          <span class="absolute top-2 right-2 inline-block w-2 h-2 rounded-full bg-warning animate-pulse shadow-[0_0_6px_2px_rgba(255,224,102,0.45)] pointer-events-none"></span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-<dialog bind:this={contributeModal} class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box bg-base-100 p-0 rounded-box shadow-2xl overflow-hidden max-w-sm mx-auto">
-    <div class="relative">
-      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
-      <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
-        <span class="font-bold text-lg text-primary flex items-center gap-2">
-          <Icon icon="material-symbols:edit-outline-rounded" class="size-5" /> Contribute
-        </span>
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
-            <Icon icon="mdi:close" class="size-4" />
-          </button>
-        </form>
-      </div>
+<dialog bind:this={contributeModal} class="modal backdrop:!bg-black/60 backdrop:!backdrop-blur-sm modal-bottom sm:modal-middle">
+  <div class="modal-box max-w-sm bg-[#0d0d0d]/95 border border-primary/15 p-0 rounded-2xl shadow-2xl">
+    <div class="p-6 border-b border-white/5 flex items-center justify-between">
+      <h3 class="text-lg font-bold text-primary flex items-center gap-2">
+        <Icon icon="material-symbols:edit-outline-rounded" class="size-5" />
+        Contribute
+      </h3>
+      <form method="dialog">
+        <button class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-white" aria-label="Close">
+          <Icon icon="mdi:close" class="size-4" />
+        </button>
+      </form>
     </div>
-    <div class="p-5 space-y-3">
-      <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors">
+    <div class="p-6 space-y-3">
+      <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" class="group flex items-center gap-4 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
         <div class="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
           <Icon icon="mdi:book-open-page-variant" class="size-5 text-primary" />
         </div>
         <div class="min-w-0">
-          <span class="block text-sm font-semibold">Read the Guide</span>
-          <span class="block text-xs text-base-content/40 mt-0.5">Learn how to make edits to chapters</span>
+          <span class="block text-sm font-semibold text-white">Read the Guide</span>
+          <span class="block text-xs text-base-content/50 mt-0.5">Learn how to make edits to chapters</span>
         </div>
       </a>
-      <a href="/dev/editor" class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors">
+      <a href="/dev/editor" class="group flex items-center gap-4 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
         <div class="shrink-0 w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
           <Icon icon="material-symbols:edit-note-rounded" class="size-5 text-secondary" />
         </div>
         <div class="min-w-0">
-          <span class="block text-sm font-semibold">Open the Web Editor</span>
-          <span class="block text-xs text-base-content/40 mt-0.5">Preview how your changes would look in the reader</span>
+          <span class="block text-sm font-semibold text-white">Open the Web Editor</span>
+          <span class="block text-xs text-base-content/50 mt-0.5">Preview how your changes would look in the reader</span>
         </div>
       </a>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
 </dialog>
+
+<dialog bind:this={announcementsModal} class="modal backdrop:!bg-black/60 backdrop:!backdrop-blur-sm modal-bottom sm:modal-middle">
+  <div class="modal-box max-w-lg bg-[#0d0d0d]/95 border border-warning/15 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
+    <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
+      <h3 class="text-lg font-bold text-warning flex items-center gap-2">
+        <Icon icon="mdi:bell-outline" class="size-5" />
+        Recent announcements
+      </h3>
+      <form method="dialog">
+        <button class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-white" aria-label="Close">
+          <Icon icon="mdi:close" class="size-4" />
+        </button>
+      </form>
+    </div>
+    <div class="p-6 space-y-3 overflow-y-auto">
+      {#each announcements as a, i}
+        <button
+          type="button"
+          onclick={() => toggleAnnouncement(i)}
+          aria-expanded={expandedAnnouncement === i}
+          class="group w-full text-left flex flex-col gap-1 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
+        >
+          <span class="flex items-center justify-between gap-3 w-full">
+            <span class="text-sm font-semibold leading-tight text-white">{a.title}</span>
+            <time class="text-[10px] text-base-content/40 tabular-nums shrink-0">{a.date}</time>
+          </span>
+          <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
+          {#if expandedAnnouncement === i}
+            <span class="block text-xs text-base-content/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</span>
+          {/if}
+          {#if a.long && a.long !== a.short}
+            <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
+              <Icon icon="mdi:chevron-down" class="size-3.5 transition-transform duration-300 {expandedAnnouncement === i ? 'rotate-180' : ''}" />
+              {expandedAnnouncement === i ? 'Show less' : 'Read more'}
+            </span>
+          {/if}
+        </button>
+      {:else}
+        <p class="text-xs text-center text-base-content/40 py-4">No announcements right now.</p>
+      {/each}
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+
 
 <style>
   .crt-title {
