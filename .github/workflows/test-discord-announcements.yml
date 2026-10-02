@@ -1,0 +1,47 @@
+name: Test Discord Announcements
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch Discord announcements
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: python scripts/fetch_discord_announcements.py
+
+      - name: Validate generated JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("website/src/lib/announcements.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          announcements = data.get("announcements")
+
+          if not isinstance(announcements, list):
+              raise SystemExit("announcements.json does not contain an announcements list.")
+
+          print(f"Fetched {len(announcements)} announcement(s).")
+          for announcement in announcements[:10]:
+              print(f"- {announcement.get('date', '')}: {announcement.get('title', '')}")
+          PY
+
+      - name: Upload announcements JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: discord-announcements
+          path: website/src/lib/announcements.json
+          if-no-files-found: error
+          retention-days: 7
