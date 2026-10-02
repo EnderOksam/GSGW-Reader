@@ -47,7 +47,26 @@
   let announcementsModal: HTMLDialogElement;
   let gsgwVariant = $state<"webnovel" | "manwha">("webnovel");
 
-  const announcements = announcementsData.announcements;
+  type AnnouncementAttachment = {
+    url: string;
+    filename: string;
+    contentType?: string | null;
+    width?: number | null;
+    height?: number | null;
+  };
+
+  type Announcement = {
+    title: string;
+    date: string;
+    short: string;
+    long?: string;
+    author?: string;
+    messageId?: string;
+    discordUrl?: string;
+    attachments?: AnnouncementAttachment[];
+  };
+
+  const announcements = announcementsData.announcements as Announcement[];
   let expandedAnnouncement = $state<number | null>(null);
 
   function openAnnouncements() {
@@ -305,60 +324,62 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     </div>
     <div class="p-6 space-y-3 overflow-y-auto">
       {#each announcements as a, i}
-        <button
-          type="button"
-          onclick={() => toggleAnnouncement(i)}
-          aria-expanded={expandedAnnouncement === i}
-          class="group w-full text-left flex flex-col gap-1 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
-        >
-          <span class="flex items-center justify-between gap-3 w-full">
-            <span class="text-sm font-semibold leading-tight text-white">{a.title}</span>
-            <time class="text-[10px] text-base-content/40 tabular-nums shrink-0">{a.date}</time>
-          </span>
-          <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
+        <article class="group w-full text-left flex flex-col gap-1 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+          <button
+            type="button"
+            onclick={() => toggleAnnouncement(i)}
+            aria-expanded={expandedAnnouncement === i}
+            class="w-full text-left flex flex-col gap-1"
+          >
+            <span class="flex items-center justify-between gap-3 w-full">
+              <span class="text-sm font-semibold leading-tight text-white">{a.title}</span>
+              <time class="text-[10px] text-base-content/40 tabular-nums shrink-0">{a.date}</time>
+            </span>
+            <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
+            {#if a.long && a.long !== a.short}
+              <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
+                <Icon icon="mdi:chevron-down" class="size-3.5 transition-transform duration-300 {expandedAnnouncement === i ? 'rotate-180' : ''}" />
+                {expandedAnnouncement === i ? 'Show less' : 'Read more'}
+              </span>
+            {/if}
+          </button>
           {#if expandedAnnouncement === i}
             {#if a.long}
-              <span class="block text-xs text-base-content/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</span>
+              <p class="text-xs text-base-content/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</p>
             {/if}
             {#if a.author || a.discordUrl}
-              <span class="flex items-center justify-between gap-3 w-full border-t border-white/5 pt-2 mt-1">
+              <div class="flex items-center justify-between gap-3 w-full border-t border-white/5 pt-2 mt-1">
                 {#if a.author}
                   <span class="text-[10px] text-base-content/40">Posted by {a.author}</span>
                 {:else}
                   <span></span>
                 {/if}
                 {#if a.discordUrl}
-                  <a href={a.discordUrl} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()} class="inline-flex items-center gap-1 text-[10px] font-semibold text-accent/80 hover:text-accent">
+                  <a href={a.discordUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-accent/80 hover:text-accent">
                     View on Discord
                     <Icon icon="mdi:open-in-new" class="size-3" />
                   </a>
                 {/if}
-              </span>
+              </div>
             {/if}
             {#if a.attachments?.length}
-              <span class="flex flex-col gap-2 w-full mt-1">
+              <div class="flex flex-col gap-2 w-full mt-1">
                 {#each a.attachments as attachment}
                   {#if attachment.contentType?.startsWith("image/")}
-                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()} class="block overflow-hidden rounded-lg border border-white/5">
+                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="block overflow-hidden rounded-lg border border-white/5">
                       <img src={attachment.url} alt={attachment.filename || "Announcement attachment"} class="w-full max-h-72 object-contain bg-black/20" loading="lazy" />
                     </a>
                   {:else}
-                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" onclick={(e) => e.stopPropagation()} class="inline-flex items-center gap-1 text-[10px] text-accent/80 hover:text-accent">
+                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] text-accent/80 hover:text-accent">
                       <Icon icon="mdi:paperclip" class="size-3" />
                       {attachment.filename || "Attachment"}
                     </a>
                   {/if}
                 {/each}
-              </span>
+              </div>
             {/if}
           {/if}
-          {#if a.long && a.long !== a.short}
-            <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
-              <Icon icon="mdi:chevron-down" class="size-3.5 transition-transform duration-300 {expandedAnnouncement === i ? 'rotate-180' : ''}" />
-              {expandedAnnouncement === i ? 'Show less' : 'Read more'}
-            </span>
-          {/if}
-        </button>
+        </article>
       {:else}
         <p class="text-xs text-center text-base-content/40 py-4">No announcements right now.</p>
       {/each}
