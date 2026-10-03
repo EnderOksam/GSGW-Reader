@@ -32,6 +32,11 @@ jobs:
         working-directory: website
         run: npm ci
 
+      - name: Fetch Discord announcements
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: python scripts/fetch_discord_announcements.py
+
       - name: Build chapters
         run: |
           python scripts/build_uder.py
