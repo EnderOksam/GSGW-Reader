@@ -15,10 +15,20 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Get announcement cache key
+        id: announcement-cache-key
+        run: echo "key=discord-announcements-$(date -u +%Y-%m-%d)-manual-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+
       - name: Fetch Discord announcements
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
         run: python scripts/fetch_discord_announcements.py
+
+      - name: Save refreshed announcements
+        uses: actions/cache/save@v4
+        with:
+          path: website/src/lib/announcements.json
+          key: ${{ steps.announcement-cache-key.outputs.key }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
