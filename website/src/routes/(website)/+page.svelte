@@ -139,11 +139,11 @@
 </script>
 
 {#snippet discordText(text: string)}
-  <span class="whitespace-pre-wrap">
+  <span>
     {#each text.split("\n") as line, lineIndex}
       {#if lineIndex > 0}<br />{/if}
       {@const isSubtext = line.startsWith("-# ")}
-      <span class={isSubtext ? "text-[10px] text-base-content/40" : ""}>
+      <span class={isSubtext ? "whitespace-pre-wrap text-[10px] text-base-content/40" : "whitespace-pre-wrap"}>
         {#each discordInlineParts(isSubtext ? line.slice(3) : line) as part}
           {#if part.type === "bold"}<strong class="font-bold text-base-content/80">{part.text}</strong>
           {:else if part.type === "italic"}<em>{part.text}</em>
