@@ -24,16 +24,18 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: website/src/lib/announcements.json
-          key: discord-announcements-${{ steps.announcement-date.outputs.date }}
+          key: discord-announcements-${{ steps.announcement-date.outputs.date }}-normal-${{ github.run_id }}-normal-${{ github.run_id }}
+          restore-keys: |
+            discord-announcements-${{ steps.announcement-date.outputs.date }}-
 
       - name: Fetch Discord announcements
-        if: steps.announcement-cache.outputs.cache-hit != 'true'
+        if: steps.announcement-cache.outputs.cache-matched-key == ''
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
         run: python scripts/fetch_discord_announcements.py
 
       - name: Save today's announcements
-        if: steps.announcement-cache.outputs.cache-hit != 'true'
+        if: steps.announcement-cache.outputs.cache-matched-key == ''
         uses: actions/cache/save@v4
         with:
           path: website/src/lib/announcements.json
