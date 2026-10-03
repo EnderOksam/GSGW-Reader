@@ -130,7 +130,22 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
     # Discord message as the body instead of consuming its first line as a title.
     # Role mentions are promoted to the modal heading, so don't repeat their
     # raw Discord tokens (for example <@&123456789>) in the body.
-    short = re.sub(r"<@&\\d+>", "", content).strip()
+    # Keep role mentions only as heading tags, turn user mentions into readable
+    # display names, and omit custom Discord emoji markup from announcement text.
+    short = re.sub(r"<@&\d+>", "", content)
+    mention_names = {
+        str(item["id"]): ((item.get("member") or {}).get("nick") or item.get("global_name") or item.get("username") or "Unknown user")
+        for item in message.get("mentions", [])
+        if item.get("id")
+    }
+    short = re.sub(
+        r"<@!?(\d+)>",
+        lambda match: mention_names.get(match.group(1), "Unknown user"),
+        short,
+    )
+    short = re.sub(r"<a?:[A-Za-z0-9_~]+:\d+>", "", short)
+    short = re.sub(r"[ \t]+\n", "\n", short)
+    short = re.sub(r"\n{3,}", "\n\n", short).strip()
     long = ""
     if not short:
         embed_description = next(
@@ -174,6 +189,14 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
         )
     ]
 
+    tags = [
+        ("GSGW Releases" if role_names[role_id].casefold() == "gsgw releases" else role_names[role_id])
+        for role_id in message.get("mention_roles", [])
+        if role_id in role_names and role_names[role_id].casefold() in {"announcements", "gsgw releases"}
+    ]
+    if not tags:
+        return None
+
     message_id = str(message["id"])
     return {
         "title": title,
@@ -181,11 +204,7 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
         "short": short,
         "long": long,
         "author": author.get("global_name") or author.get("username") or "",
-        "tags": [
-            ("GSGW Releases" if role_names[role_id].casefold() == "gsgw releases" else role_names[role_id])
-            for role_id in message.get("mention_roles", [])
-            if role_id in role_names
-        ],
+        "tags": tags,
         "messageId": message_id,
         "discordUrl": f"https://discord.com/channels/{GUILD_ID}/{CHANNEL_ID}/{message_id}",
         "attachments": normalized_attachments,

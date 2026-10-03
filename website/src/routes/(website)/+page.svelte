@@ -139,11 +139,11 @@
 </script>
 
 {#snippet discordText(text: string)}
-  <span class="whitespace-pre-wrap">
+  <span>
     {#each text.split("\n") as line, lineIndex}
       {#if lineIndex > 0}<br />{/if}
       {@const isSubtext = line.startsWith("-# ")}
-      <span class={isSubtext ? "text-[10px] text-base-content/40" : ""}>
+      <span class={isSubtext ? "whitespace-pre-wrap text-[10px] text-base-content/40" : "whitespace-pre-wrap"}>
         {#each discordInlineParts(isSubtext ? line.slice(3) : line) as part}
           {#if part.type === "bold"}<strong class="font-bold text-base-content/80">{part.text}</strong>
           {:else if part.type === "italic"}<em>{part.text}</em>
@@ -378,7 +378,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           >
             <span class="flex items-center justify-between gap-3 w-full">
               <span class="text-sm font-semibold leading-tight text-white">
-                {#if a.tags?.length}{a.tags.join(" · ")} · {/if}<time>{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>
+                {#if a.tags?.length}{a.tags.join(" · ")} {/if}[<time>{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>]
               </span>
             </span>
             <span class="block text-xs text-base-content/60">{@render discordText(a.short)}</span>
