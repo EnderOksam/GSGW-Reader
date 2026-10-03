@@ -15,6 +15,30 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Get announcement cache date
+        id: announcement-date
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore today's announcements
+        id: announcement-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: website/src/lib/announcements.json
+          key: discord-announcements-${{ steps.announcement-date.outputs.date }}
+
+      - name: Fetch Discord announcements
+        if: steps.announcement-cache.outputs.cache-hit != 'true'
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: python scripts/fetch_discord_announcements.py
+
+      - name: Save today's announcements
+        if: steps.announcement-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: website/src/lib/announcements.json
+          key: discord-announcements-${{ steps.announcement-date.outputs.date }}
+
       - name: Install Pandoc
         run: sudo apt-get install -y pandoc
 
