@@ -378,7 +378,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           >
             <span class="flex items-center justify-between gap-3 w-full">
               <span class="text-sm font-semibold leading-tight text-white">
-                {#if a.tags?.length}{a.tags.join(" · ")} {/if}[<time>{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>]
+                {#if a.tags?.length}{a.tags.join(" · ")}&nbsp;&nbsp;&nbsp;{/if}[<time>{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>]
               </span>
             </span>
             <span class="block text-xs text-base-content/60">{@render discordText(a.short)}</span>
