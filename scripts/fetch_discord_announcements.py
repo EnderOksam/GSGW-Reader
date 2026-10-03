@@ -110,7 +110,12 @@ def split_announcement(content: str) -> tuple[str, str, str]:
     return title, short, long
 
 
-def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[str, Any] | None:
+def parse_message(
+    message: dict[str, Any],
+    role_names: dict[str, str],
+    member_names: dict[str, str],
+    channel_names: dict[str, str],
+) -> dict[str, Any] | None:
     content = (message.get("content") or "").strip()
     attachments = message.get("attachments") or []
     embeds = message.get("embeds") or []
@@ -126,21 +131,24 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
         embed_title = next((item.get("title") for item in embeds if item.get("title")), None)
         title = embed_title or "Discord announcement"
 
-    # The modal uses the date as its visible heading, so preserve the complete
-    # Discord message as the body instead of consuming its first line as a title.
-    # Role mentions are promoted to the modal heading, so don't repeat their
-    # raw Discord tokens (for example <@&123456789>) in the body.
-    # Keep role mentions only as heading tags, turn user mentions into readable
-    # display names, and omit custom Discord emoji markup from announcement text.
-    short = re.sub(r"<@&\d+>", "", content)
-    mention_names = {
-        str(item["id"]): ((item.get("member") or {}).get("nick") or item.get("global_name") or item.get("username") or "Unknown user")
-        for item in message.get("mentions", [])
-        if item.get("id")
-    }
+    # Preserve the complete Discord message as the body. Announcements is a
+    # category marker and is removed, while release roles double as visible
+    # titles and stay in the body using their readable role names.
+    release_roles = {"gsgw releases", "dod releases"}
+
+    def replace_role_mention(match: re.Match[str]) -> str:
+        role_name = role_names.get(match.group(1), "")
+        return f"@{role_name}" if role_name.casefold() in release_roles else ""
+
+    short = re.sub(r"<@&(\d+)>", replace_role_mention, content)
     short = re.sub(
         r"<@!?(\d+)>",
-        lambda match: mention_names.get(match.group(1), "Unknown user"),
+        lambda match: member_names.get(match.group(1), "Unknown user"),
+        short,
+    )
+    short = re.sub(
+        r"<#(\d+)>",
+        lambda match: f"#{channel_names.get(match.group(1), 'unknown-channel')}",
         short,
     )
     short = re.sub(r"<a?:[A-Za-z0-9_~]+:\d+>", "", short)
@@ -189,10 +197,11 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
         )
     ]
 
+    supported_roles = {"announcements", "gsgw releases", "dod releases"}
     tags = [
-        ("GSGW Releases" if role_names[role_id].casefold() == "gsgw releases" else role_names[role_id])
+        role_names[role_id]
         for role_id in message.get("mention_roles", [])
-        if role_id in role_names and role_names[role_id].casefold() in {"announcements", "gsgw releases"}
+        if role_id in role_names and role_names[role_id].casefold() in supported_roles
     ]
     if not tags:
         return None
@@ -220,14 +229,50 @@ def main() -> None:
         if role.get("id") and role.get("name")
     }
 
+    messages = fetch_messages()
+
+    mentioned_user_ids = {
+        str(mention["id"])
+        for message in messages
+        for mention in message.get("mentions", [])
+        if mention.get("id")
+    }
+    member_names: dict[str, str] = {}
+    for user_id in mentioned_user_ids:
+        member = discord_get(f"/guilds/{GUILD_ID}/members/{user_id}")
+        user = member.get("user") or {}
+        member_names[user_id] = (
+            member.get("nick")
+            or user.get("global_name")
+            or user.get("username")
+            or "Unknown user"
+        )
+
+    mentioned_channel_ids = set(
+        re.findall(r"<#(\d+)>", "\n".join(message.get("content") or "" for message in messages))
+    )
+    channel_names: dict[str, str] = {}
+    for channel_id in mentioned_channel_ids:
+        channel = discord_get(f"/channels/{channel_id}")
+        channel_names[channel_id] = channel.get("name") or "unknown-channel"
+
     announcements = [
         parsed
-        for message in fetch_messages()
-        if (parsed := parse_message(message, role_names)) is not None
+        for message in messages
+        if (
+            parsed := parse_message(
+                message,
+                role_names,
+                member_names,
+                channel_names,
+            )
+        )
+        is not None
     ]
 
     # Discord snowflakes increase over time, so this puts newest messages first.
     announcements.sort(key=lambda item: int(item["messageId"]), reverse=True)
+    announcements = announcements[:15]
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(
