@@ -128,7 +128,9 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
 
     # The modal uses the date as its visible heading, so preserve the complete
     # Discord message as the body instead of consuming its first line as a title.
-    short = content
+    # Role mentions are promoted to the modal heading, so don't repeat their
+    # raw Discord tokens (for example <@&123456789>) in the body.
+    short = re.sub(r"<@&\\d+>", "", content).strip()
     long = ""
     if not short:
         embed_description = next(
