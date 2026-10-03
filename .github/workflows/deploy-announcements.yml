@@ -1,10 +1,10 @@
-name: Deploy to Cloudflare Pages
+name: Deploy Discord Announcements
 
 on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-announcements:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,11 +16,11 @@ jobs:
           python-version: "3.12"
 
 
-      - name: Install Pandoc
-        run: sudo apt-get install -y pandoc
+      - name: Fetch Discord announcements
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: python scripts/fetch_discord_announcements.py
 
-      - name: Install Python dependencies
-        run: pip install python-frontmatter imagesize Pillow
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -32,12 +32,6 @@ jobs:
       - name: Install npm dependencies
         working-directory: website
         run: npm ci
-
-      - name: Build chapters
-        run: |
-          python scripts/build_uder.py
-          python scripts/build_web.py
-          python scripts/build_debut.py
 
       - name: Build website
         working-directory: website
