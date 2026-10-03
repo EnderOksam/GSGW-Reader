@@ -110,7 +110,7 @@ def split_announcement(content: str) -> tuple[str, str, str]:
     return title, short, long
 
 
-def parse_message(message: dict[str, Any]) -> dict[str, Any] | None:
+def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[str, Any] | None:
     content = (message.get("content") or "").strip()
     attachments = message.get("attachments") or []
     embeds = message.get("embeds") or []
@@ -179,6 +179,11 @@ def parse_message(message: dict[str, Any]) -> dict[str, Any] | None:
         "short": short,
         "long": long,
         "author": author.get("global_name") or author.get("username") or "",
+        "tags": [
+            f"@{role_names[role_id]}"
+            for role_id in message.get("mention_roles", [])
+            if role_id in role_names
+        ],
         "messageId": message_id,
         "discordUrl": f"https://discord.com/channels/{GUILD_ID}/{CHANNEL_ID}/{message_id}",
         "attachments": normalized_attachments,
@@ -187,10 +192,17 @@ def parse_message(message: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def main() -> None:
+    roles = discord_get(f"/guilds/{GUILD_ID}/roles")
+    role_names = {
+        str(role["id"]): role["name"]
+        for role in roles
+        if role.get("id") and role.get("name")
+    }
+
     announcements = [
         parsed
         for message in fetch_messages()
-        if (parsed := parse_message(message)) is not None
+        if (parsed := parse_message(message, role_names)) is not None
     ]
 
     # Discord snowflakes increase over time, so this puts newest messages first.
