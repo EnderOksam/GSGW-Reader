@@ -1,0 +1,39 @@
+name: Sync Discord Announcements
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-announcements:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch Discord announcements
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: python scripts/fetch_discord_announcements.py
+
+      - name: Commit updated announcements
+        run: |
+          if git diff --quiet -- website/src/lib/announcements.json; then
+            echo "Announcements are already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add website/src/lib/announcements.json
+          git commit -m "Sync Discord announcements"
+          git push origin HEAD:${{ github.ref_name }}

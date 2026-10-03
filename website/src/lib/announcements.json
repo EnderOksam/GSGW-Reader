@@ -1,10 +1,306 @@
 {
   "announcements": [
     {
-      "title": "recent announcement",
-      "date": "2026-10-1",
-      "short": "Added recent announcements",
-      "long": "announcements are an easy way for lead editors to have a way of announcing changes, and other things directly on the site for people who dont use discord, all done via a markdown file and updates whenever the site redeploys\n\nthese are ordered by newest first and prob will go through backlogging previous announcements - Ender"
+      "title": "<@&1518774394757845132>",
+      "date": "2026-10-03",
+      "short": "@GSGW Releases\n\n- **PART 3** Chapters 372-381 moved to FANTL\n-# additional edit by 𝐋𝐞𝐢 (me)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "GSGW Releases"
+      ],
+      "messageId": "1555836513005211718",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555836513005211718",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
+          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
+          "url": "https://ireum.pages.dev/book/gsgw/",
+          "image": null,
+          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
+        }
+      ]
+    },
+    {
+      "title": "<@&1518776921771606188>",
+      "date": "2026-10-01",
+      "short": "[I made a ppt showcasing our site's features! Check it out, you might learn something new~](https://docs.google.com/presentation/d/e/2PACX-1vSpFFMxbtg5uDfUNnbVLF-a8BnMy0SGZcb1DHm9wY0sl72iPtgz-_NYcGlCrZ2fBCHmLXCNS5PPQXzw/pub?start=false&loop=false&delayms=3000)\n\nI was going to post it on reddit but I'm kinda scared with the whole kkp crackdown so this will live here for now in the faq...",
+      "long": "",
+      "author": "senyen",
+      "tags": [
+        "Announcements"
+      ],
+      "messageId": "1555339061680672960",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555339061680672960",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "ireum.pages.dev showcase",
+          "description": "GSGW READER An English fan translation & custom web reader ireum.pages.dev TRANSLATION PRESERVATION IMMERSION Got Stuck In A Ghost Story, Still Gotta Work",
+          "url": "https://docs.google.com/presentation/d/e/2PACX-1vSpFFMxbtg5uDfUNnbVLF-a8BnMy0SGZcb1DHm9wY0sl72iPtgz-_NYcGlCrZ2fBCHmLXCNS5PPQXzw/pub?start=false&loop=false&delayms=3000",
+          "image": null,
+          "thumbnail": "https://lh7-us.googleusercontent.com/docs/AHkbwyLu-QsvJUVLFc-cls6k1jluoZL2kTyMgoVHNrXWAx6OrQF7g-ql9RdqCvIQeZZ8cJPS4OnN6mXmJAyK-CqXRjlXIEs__FeHK8nFXU_eBlZusp2UjU8=w1200-h630-p"
+        }
+      ]
+    },
+    {
+      "title": "<@&1518776921771606188>",
+      "date": "2026-10-01",
+      "short": "All Part 2 formatted chapters are now reflected in the EPUB! Part 2 EPUB WIP → Formatted 🎉\n-# The scheduled EPUB release (1st and 15th of every month).\n\nMinor note: We sometimes release an EPUB outside the regular schedule when fixing issues or adding new EPUB features. Feel free to check the date on the site to see when the EPUB was last updated.\n-# In case there’s a new edit of a chapter under part 1-2, it’ll be reflected in the next EPUB release.",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "Announcements"
+      ],
+      "messageId": "1555093524490493954",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555093524490493954",
+      "attachments": [
+        {
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6ac1e834&is=6ac096b4&hm=012f8240c33fdf65b95a7ff116eb3ef79078dbb44e6bdf1dee530fea25ab64ef&",
+          "filename": "IMG_1421.png",
+          "contentType": "image/jpeg",
+          "width": 1668,
+          "height": 2124
+        }
+      ],
+      "embeds": []
+    },
+    {
+      "title": "<@&1518776921771606188>",
+      "date": "2026-09-28",
+      "short": "Current Status of Chapters\n\n**Part 1**\n* Copy editing + Formatting ✅\n* Formatting + TL check against original ✅\n* Deep proofreading underway\n\n**Part 2**\n* Copy editing + Formatting ✅\n* Needs formatting checked against original\n* Needs TL checked against original\n\n**Part 3**\n* Copy editing + Formatting ✅\n* Needs formatting checked against original (add in fonts + new styling developed since originally TLed)\n\n※ Format checking covers the following as necessary:\n* Line breaks\n* Text styling\n* Custom fonts\n* Scare page(s)\n\nAnyone with access to the app version of the novel and is willing to learn our formatting syntax is greatly encouraged to help out 🙏",
+      "long": "",
+      "author": "senyen",
+      "tags": [
+        "Announcements"
+      ],
+      "messageId": "1554065363937796157",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1554065363937796157",
+      "attachments": [],
+      "embeds": []
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-09-26",
+      "short": "@GSGW Releases\n- **PART 2** Chapters 352-371 formatted by Tarragona and 𝐋𝐞𝐢 (me)\n- **Manhwa** Chapter 37\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n> Part 2 is finally done!\n-# Some parts may still be proofread and re-edited in the future!\n\nOthers:\n- Added Yellow Dragon as Alt Text\n- Added Bold Text Enlargement and Divider Type under Window Settings",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "GSGW Releases"
+      ],
+      "messageId": "1553268819798261862",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1553268819798261862",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
+          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
+          "url": "https://ireum.pages.dev/book/gsgw/",
+          "image": null,
+          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
+        }
+      ]
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-09-19",
+      "short": "@GSGW Releases\n- **PART 2** Chapters 336-351 formatted by Tarragona and 𝐋𝐞𝐢 (me)\n- **Manhwa** Chapter 36\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOther Developments by Sen\n* Window styling can be applied via pressing the button on the web editor.\n* EPUB now has the scrolling text animation.\n* Fixed some styling in EPUB.\n* Made an English ver. of the original cover (see Synopsis).\n* Glitch subtle, glitch heavy, shake-per-char, wave up animation can break by word if you add the correct syntax (See [Format Layout guide](https://docs.google.com/document/d/15nmxzglbrf-I9IWltWwt9eknZKQj8qgIrh1fglFN08M/edit?usp=sharing) for syntax).\n* New Character ID for Baek Seokju",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "GSGW Releases"
+      ],
+      "messageId": "1550758821717217331",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1550758821717217331",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
+          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
+          "url": "https://ireum.pages.dev/book/gsgw/",
+          "image": null,
+          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
+        },
+        {
+          "title": "Format Layouts - ireum.dev.pages",
+          "description": "Format Layouts General Text ※ Note : author actually rarely uses italics in general text, bold text is reserved mostly for wiki entries, document text, certain Yogwae text, and shouting dialogue which all appear infrequently. > However, editors may do at their discretion for clarity. Please make ...",
+          "url": "https://docs.google.com/document/d/15nmxzglbrf-I9IWltWwt9eknZKQj8qgIrh1fglFN08M/edit?usp=sharing",
+          "image": null,
+          "thumbnail": "https://lh7-us.googleusercontent.com/docs/AHkbwyJfx3j6wp6mqQFXJWBKY6bT7typRUqGxcnCK76Sw3LLASeEWuEp2FTi6gdQhwHozUOB1R3nIfz1xZXHyQPrHRMBCY8_OvKZ0woZmk42ZX05Hq1r0cc=w1200-h630-p"
+        }
+      ]
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-09-14",
+      "short": "@GSGW Releases\n- **PART 1** Editing complete! by Sen (me)\nNow going through a 2nd round of intensive proofreading~\n- **PART 2** Chapters 324-335 formatted by Seirios and 𝐋𝐞𝐢\n- **Manhwa** Chapters 34-35\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOthers:\n* New fonts & text effects available\n* Various bug fixes\n* UnfinishedTL renamed ➡️ UnformattedTL for clarity",
+      "long": "",
+      "author": "senyen",
+      "tags": [
+        "GSGW Releases"
+      ],
+      "messageId": "1548949506618302484",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1548949506618302484",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
+          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
+          "url": "https://ireum.pages.dev/book/gsgw/",
+          "image": null,
+          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
+        }
+      ]
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-09-04",
+      "short": "@GSGW Releases\n- **PART 1** Earlier Chapters edited by Sen (up to ch 184)\n- **PART 2** Chapters 314-323 formatted by Seirios, destiny, and me (𝐋𝐞𝐢)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n@DoD Releases\n- DOD Chapters 344-365 formatted by me (𝐋𝐞𝐢)\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOthers:\n- Alt Text Feature Available: You can now choose your preferred translation for certain words!\n-# You can find it under Settings -> Alt Text -> Pick your preferences",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "DoD Releases",
+        "GSGW Releases"
+      ],
+      "messageId": "1545418648796012605",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1545418648796012605",
+      "attachments": [],
+      "embeds": []
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-08-29",
+      "short": "@GSGW Releases\n- **PART 1** Earlier Chapters edited by Sen (up to ch 178)\n- **PART 2** Chapters 304-313 formatted by Seirios and me (𝐋𝐞𝐢)\n- **Manhwa** Chapter 33\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n@DoD Releases\n- DOD Chapters 325-343 formatted by me (𝐋𝐞𝐢)\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOthers:\n- New Fonts Available\n- Text-Wrap: Pretty Applied to the Website\n- Randomized Shake Animations Improvements\n- New ID Illustrations for Lee Jaheon, ||Braun|| (Good Friend), and Jin Nasol",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "DoD Releases",
+        "GSGW Releases"
+      ],
+      "messageId": "1543187373544833195",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1543187373544833195",
+      "attachments": [],
+      "embeds": []
+    },
+    {
+      "title": "<@&1518776921771606188>",
+      "date": "2026-08-25",
+      "short": "# U-DER now Live ([reddit post](https://www.reddit.com/r/DroppedInAGhostStory/comments/1vxmib8/uder_now_live/#lightbox))\nU-DER is now available for the public and good for uploading records\n\n@GSGW Releases -\n- **PART 1** Earlier Chapters edited by Sen (up to 158)\n- **Manhwa** Chapter 31 and 32 Released\n\nOther Changes:\n- Epubs have a new build script that renders them more closely to how they look on the web reader\n- The U-DER Editor now lets you import existing records to work on from those\n- More bug fixing and stuff added from #suggestions-and-bug-fixes",
+      "long": "",
+      "author": "Ender Oksam",
+      "tags": [
+        "Announcements",
+        "GSGW Releases"
+      ],
+      "messageId": "1541627080037367938",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1541627080037367938",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "U-DER now Live",
+          "description": "After two more months of development the gsgw-reader project now hosts U-DER this post is meant to showcase a bit of what U-DER (Unofficial Dark…",
+          "url": "https://www.reddit.com/r/DroppedInAGhostStory/comments/1vxmib8/uder_now_live/",
+          "image": "https://share.redd.it/preview/post/1vxmib8",
+          "thumbnail": null
+        }
+      ]
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-08-17",
+      "short": "@GSGW Releases\n- **PART 1** Earlier Chapters edited by Sen (up to 133)\n- **PART 2** Chapters 293-303 formatted by Seirios and destiny and 𝐋𝐞𝐢\n- **Manhwa** Chapter 30\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n  U-DER submissions\nalmost everything that is needed for uder to go live is done, just need some story submissions so I can put them up on the site\n\nif you wish to submit uder records or interactive stories you can make them in the [editor ](https://ireum.pages.dev/dev/editor/) (select U-DER on the top right on desktop) and once exported send them to me or put them in #suggestions-and-bug-fixes\n\nhere is some work Sen did with the node story for showcase",
+      "long": "",
+      "author": "Ender Oksam",
+      "tags": [
+        "Announcements",
+        "GSGW Releases"
+      ],
+      "messageId": "1538794398559637504",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1538794398559637504",
+      "attachments": [
+        {
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1538794398140076082/image.png?ex=6ac1eff5&is=6ac09e75&hm=90c805f181973465fd1f58ff33094be78a22776e6f91c09011f341ec90b493ca&",
+          "filename": "image.png",
+          "contentType": "image/webp",
+          "width": 1302,
+          "height": 767
+        }
+      ],
+      "embeds": []
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-08-15",
+      "short": "@GSGW Releases\n- **PART 1** Earlier Chapters edited by Sen\n- **PART 2** Chapters 288-292 formatted by Seirios and destiny and 𝐋𝐞𝐢\n- **PART 3** Chapters 406-407 translated and formatted by ZestysDaddy\n- **Manhwa** Chapter 29\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOther:\n- New Fonts Added !\n- UI improvements by Ender Oksam",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "GSGW Releases"
+      ],
+      "messageId": "1538081601483702272",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1538081601483702272",
+      "attachments": [],
+      "embeds": []
+    },
+    {
+      "title": "<@&1518776921771606188>",
+      "date": "2026-08-12",
+      "short": "## Author Hiatus Announcement\n\nThe author has announced an urgent hiatus starting this week due to a scheduled surgery. They expect to return after recovering, with the hiatus estimated to last around 1.5–2 months. Please see the attached notice for the full details, and let’s wish the author a safe surgery and smooth recovery\n\n-# image from Inertia loves the editing team",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "Announcements"
+      ],
+      "messageId": "1536970168901832714",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1536970168901832714",
+      "attachments": [
+        {
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1536970168683462697/image.png?ex=6ac1e483&is=6ac09303&hm=852d4ae7ace6d04870c35b5f8b607e36ad5f6c51253004718a84b6be50275b25&",
+          "filename": "image.png",
+          "contentType": "image/jpeg",
+          "width": 630,
+          "height": 263
+        }
+      ],
+      "embeds": []
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-08-11",
+      "short": "@GSGW Releases\n- **PART 1** Earlier Chapters edited by Sen\n- **PART 2** Chapters 278-287 formatted by Seirios and destiny\n- **PART 3** Chapters 404-405 translated and formatted by ZestysDaddy\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n@DoD Releases\n- DOD Chapters 321-324 formatted by 𝐋𝐞𝐢 and destiny\n\n[Read DOD](https://ireum.pages.dev/book/debut/)",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "DoD Releases",
+        "GSGW Releases"
+      ],
+      "messageId": "1536732484061102230",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1536732484061102230",
+      "attachments": [],
+      "embeds": []
+    },
+    {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-08-07",
+      "short": "@GSGW Releases\n- **PART 2** Chapters 269-277 formatted by me, 𝐋𝐞𝐢  and Seirios !\n\n[Read GSGW!](https://ireum.pages.dev/book/gsgw/)\n\n-# did it quicker than expected and its a pretty good chunk of chapters so i decided to announce! (even though theres been a recent announcement) anyhow enjoyyy",
+      "long": "",
+      "author": "destiny",
+      "tags": [
+        "GSGW Releases"
+      ],
+      "messageId": "1535337047747862528",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1535337047747862528",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
+          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
+          "url": "https://ireum.pages.dev/book/gsgw/",
+          "image": null,
+          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
+        }
+      ]
     }
   ]
 }
