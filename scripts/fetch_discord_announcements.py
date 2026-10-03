@@ -189,6 +189,14 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
         )
     ]
 
+    tags = [
+        ("GSGW Releases" if role_names[role_id].casefold() == "gsgw releases" else role_names[role_id])
+        for role_id in message.get("mention_roles", [])
+        if role_id in role_names and role_names[role_id].casefold() in {"announcements", "gsgw releases"}
+    ]
+    if not tags:
+        return None
+
     message_id = str(message["id"])
     return {
         "title": title,
@@ -196,11 +204,7 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
         "short": short,
         "long": long,
         "author": author.get("global_name") or author.get("username") or "",
-        "tags": [
-            ("GSGW Releases" if role_names[role_id].casefold() == "gsgw releases" else role_names[role_id])
-            for role_id in message.get("mention_roles", [])
-            if role_id in role_names
-        ],
+        "tags": tags,
         "messageId": message_id,
         "discordUrl": f"https://discord.com/channels/{GUILD_ID}/{CHANNEL_ID}/{message_id}",
         "attachments": normalized_attachments,
