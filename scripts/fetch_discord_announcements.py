@@ -180,7 +180,7 @@ def parse_message(message: dict[str, Any], role_names: dict[str, str]) -> dict[s
         "long": long,
         "author": author.get("global_name") or author.get("username") or "",
         "tags": [
-            f"@{role_names[role_id]}"
+            ("GSGW Releases" if role_names[role_id].casefold() == "gsgw releases" else role_names[role_id])
             for role_id in message.get("mention_roles", [])
             if role_id in role_names
         ],
