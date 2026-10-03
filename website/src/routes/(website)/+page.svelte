@@ -69,6 +69,7 @@
     short: string;
     long?: string;
     author?: string;
+    tags?: string[];
     messageId?: string;
     discordUrl?: string;
     attachments?: AnnouncementAttachment[];
@@ -341,7 +342,9 @@ On that day, I ended up transmigrating as a character in that very fantasy world
             class="w-full text-left flex flex-col gap-1"
           >
             <span class="flex items-center justify-between gap-3 w-full">
-              <time class="text-sm font-semibold leading-tight text-white">{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>
+              <span class="text-sm font-semibold leading-tight text-white">
+                {#if a.tags?.length}{a.tags.join(" · ")} · {/if}<time>{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>
+              </span>
             </span>
             <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
             {#if a.long && a.long !== a.short}
