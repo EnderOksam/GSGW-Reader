@@ -79,6 +79,21 @@
   const announcements = announcementsData.announcements as Announcement[];
   let expandedAnnouncement = $state<number | null>(null);
 
+  function discordInlineParts(text: string) {
+    const tokenPattern = /(\*\*[^\n]+?\*\*|__[^\n]+?__|~~[^\n]+?~~|\*[^\n*]+?\*|_[^\n_]+?_|\`[^\n]+?\`|\[[^\]]+\]\(https?:\/\/[^\s)]+\))/g;
+    return text.split(tokenPattern).filter(Boolean).map((part) => {
+      if (part.startsWith("**") && part.endsWith("**")) return { type: "bold", text: part.slice(2, -2) };
+      if (part.startsWith("__") && part.endsWith("__")) return { type: "underline", text: part.slice(2, -2) };
+      if (part.startsWith("~~") && part.endsWith("~~")) return { type: "strike", text: part.slice(2, -2) };
+      if (part.startsWith("*") && part.endsWith("*")) return { type: "italic", text: part.slice(1, -1) };
+      if (part.startsWith("_") && part.endsWith("_")) return { type: "italic", text: part.slice(1, -1) };
+      if (part.startsWith("\`") && part.endsWith("\`")) return { type: "code", text: part.slice(1, -1) };
+      const link = part.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/);
+      if (link) return { type: "link", text: link[1], url: link[2] };
+      return { type: "text", text: part };
+    });
+  }
+
   function openAnnouncements() {
     announcementsModal.showModal();
     const latestAnnouncementId = announcements[0]?.messageId;
@@ -122,6 +137,26 @@
     tagClass: "text-warning",
   };
 </script>
+
+{#snippet discordText(text: string)}
+  <span class="whitespace-pre-wrap">
+    {#each text.split("\n") as line, lineIndex}
+      {#if lineIndex > 0}<br />{/if}
+      {@const isSubtext = line.startsWith("-# ")}
+      <span class={isSubtext ? "text-[10px] text-base-content/40" : ""}>
+        {#each discordInlineParts(isSubtext ? line.slice(3) : line) as part}
+          {#if part.type === "bold"}<strong class="font-bold text-base-content/80">{part.text}</strong>
+          {:else if part.type === "italic"}<em>{part.text}</em>
+          {:else if part.type === "underline"}<u>{part.text}</u>
+          {:else if part.type === "strike"}<s>{part.text}</s>
+          {:else if part.type === "code"}<code class="rounded bg-black/30 px-1 py-0.5 font-mono text-[0.9em]">{part.text}</code>
+          {:else if part.type === "link"}<a href={part.url} target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">{part.text}</a>
+          {:else}{part.text}{/if}
+        {/each}
+      </span>
+    {/each}
+  </span>
+{/snippet}
 
 <svelte:head>
   <title>GSGW-Reader</title>
@@ -346,7 +381,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                 {#if a.tags?.length}{a.tags.join(" · ")} · {/if}<time>{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>
               </span>
             </span>
-            <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
+            <span class="block text-xs text-base-content/60">{@render discordText(a.short)}</span>
             {#if a.long && a.long !== a.short}
               <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
                 <Icon icon="mdi:chevron-down" class="size-3.5 transition-transform duration-300 {expandedAnnouncement === i ? 'rotate-180' : ''}" />
@@ -356,7 +391,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           </button>
           {#if expandedAnnouncement === i}
             {#if a.long}
-              <p class="text-xs text-base-content/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</p>
+              <div class="text-xs text-base-content/60 border-t border-white/5 pt-2 mt-1">{@render discordText(a.long)}</div>
             {/if}
             {#if a.author || a.discordUrl}
               <div class="flex items-center justify-between gap-3 w-full border-t border-white/5 pt-2 mt-1">
