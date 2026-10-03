@@ -14,8 +14,8 @@ from pathlib import Path
 from typing import Any
 
 API_BASE = "https://discord.com/api/v10"
-GUILD_ID = "1555448748983713934"
-CHANNEL_ID = "1555448864931053628"
+GUILD_ID = "1502484309460647976"
+CHANNEL_ID = "1502485142520729660"
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_PATH = REPO_ROOT / "website" / "src" / "lib" / "announcements.json"
 
