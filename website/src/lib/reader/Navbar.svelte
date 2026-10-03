@@ -6,7 +6,7 @@
   import { readerState } from "$lib/reader.svelte";
   import ReferencePanel from "./ReferencePanel.svelte";
   import readerCss from "../../routes/(reader)/reader.css?inline";
-  import readerWindowsCss from "./reader-windows.css?inline";
+  import readerWindowsCss from "./reader-windows.css?raw";
   import { searchChapterContent, renderSnippet as renderSearchSnippet, storeSnippetTarget } from "$lib/content-search";
   import type { ContentMatch } from "$lib/content-search";
   import { browser } from "$app/environment";
@@ -250,13 +250,59 @@
       })
       .filter(Boolean)
       .join("\n");
+    // Windows that get their vertical rhythm from padding (not margins) must keep
+    // it when they land on the preview's edge, otherwise they lose the spacing below.
+    const notPadded = ["padding-window", "braun-tv-text", "braun-doll-text"]
+      .map((cls) => `:not(.${cls})`)
+      .join("");
+    // $p / $Brt / $Brd carry all of their above-and-below spacing from `padding: 1em 0`
+    // and are only defined in reader-windows.css, so pin them here as well to keep the
+    // snippet identical to the reader regardless of whether that sheet made it in.
+    const windowCss = `
+      .snippet-preview .padding-window,
+      .snippet-preview .braun-tv-text,
+      .snippet-preview .braun-doll-text { padding: 1em 0 !important; }
+      .snippet-preview .braun-tv-text {
+        font-weight: 700;
+        font-size: 1.15em;
+        color: light-dark(oklch(0.532 0.077 62.8), color-mix(in oklch, var(--color-base-content) 45%, oklch(0.532 0.077 62.8)));
+      }
+      .snippet-preview .braun-doll-text {
+        color: light-dark(oklch(0.62 0.09 337.9), color-mix(in oklch, var(--color-base-content) 60%, oklch(0.865 0.049 337.9)));
+      }
+      .snippet-preview .padding-window p,
+      .snippet-preview .braun-tv-text p,
+      .snippet-preview .braun-doll-text p { margin: 0 0 1em; }
+      .snippet-preview .padding-window p:last-child,
+      .snippet-preview .braun-tv-text p:last-child,
+      .snippet-preview .braun-doll-text p:last-child { margin-bottom: 0; }
+      [data-ws-no-braun-color] .snippet-preview .braun-tv-text,
+      [data-ws-no-braun-color] .snippet-preview .braun-doll-text { color: inherit; }
+      /* Let the window's own padding be the only vertical space around it. Without this
+         the preceding paragraph's margin stacks on top of padding-top, so the gap above
+         is twice the gap below and the block reads as having space only before it. */
+      .snippet-preview > *:has(+ .padding-window),
+      .snippet-preview > *:has(+ .braun-tv-text),
+      .snippet-preview > *:has(+ .braun-doll-text) { margin-bottom: 0 !important; }
+      .snippet-preview > .padding-window + *,
+      .snippet-preview > .braun-tv-text + *,
+      .snippet-preview > .braun-doll-text + * { margin-top: 0 !important; }
+    `;
     styleEl.textContent = readerCss + "\n" + readerWindowsCss + "\n" + `
-      .snippet-preview > :first-child { margin-top: 0 !important; padding-top: 0 !important; }
-      .snippet-preview > :last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+      .snippet-preview > :first-child${notPadded} { margin-top: 0 !important; padding-top: 0 !important; }
+      .snippet-preview > :last-child${notPadded} { margin-bottom: 0 !important; padding-bottom: 0 !important; }
       .snippet-preview p { margin-bottom: 1.1em; }
       .snippet-preview p:last-child { margin-bottom: 0; }
+      ${windowCss}
       ${winPins}
     `;
+    // Belt and braces: these three windows get all of their spacing from padding, and
+    // they're the only windows with no other visual treatment, so when the sheet above
+    // doesn't reach the preview they collapse into plain text. Pin it inline too.
+    for (const el of snippetPreviewEl.querySelectorAll<HTMLElement>(".padding-window, .braun-tv-text, .braun-doll-text")) {
+      el.style.setProperty("padding-top", "1em", "important");
+      el.style.setProperty("padding-bottom", "1em", "important");
+    }
   }
 
   async function renderSnippet() {

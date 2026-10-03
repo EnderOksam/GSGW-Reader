@@ -129,17 +129,57 @@
     if (mdScroll) mdScroll.scrollTop = mdTop;
     if (readerScroll) readerScroll.scrollTop = readerTop;
   }
-  let wrapBefore = $state(typeof localStorage !== "undefined" ? localStorage.getItem("gsgw-wrap-before") ?? "" : "");
-  let wrapAfter = $state(typeof localStorage !== "undefined" ? localStorage.getItem("gsgw-wrap-after") ?? "" : "");
+  type WrapNode = { before: string; after: string };
+
+  const WRAP_NODES_KEY = "gsgw-wrap-nodes";
+
+  function loadWrapNodes(): { parent: WrapNode; children: WrapNode[] } {
+    const empty = { parent: { before: "", after: "" }, children: [] as WrapNode[] };
+    if (typeof localStorage === "undefined") return empty;
+    try {
+      const saved = localStorage.getItem(WRAP_NODES_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed.parent === "object" && parsed.parent !== null) {
+          return {
+            parent: {
+              before: String(parsed.parent.before ?? ""),
+              after: String(parsed.parent.after ?? ""),
+            },
+            children: Array.isArray(parsed.children)
+              ? parsed.children.map((c: any) => ({ before: String(c?.before ?? ""), after: String(c?.after ?? "") }))
+              : [],
+          };
+        }
+      }
+    } catch {}
+    const parent = {
+      before: localStorage.getItem("gsgw-wrap-before") ?? "",
+      after: localStorage.getItem("gsgw-wrap-after") ?? "",
+    };
+    localStorage.removeItem("gsgw-wrap-before");
+    localStorage.removeItem("gsgw-wrap-after");
+    return { parent, children: [] };
+  }
+
+  const initialWrap = loadWrapNodes();
+  let wrapParent = $state<WrapNode>(initialWrap.parent);
+  let wrapChildren = $state<WrapNode[]>(initialWrap.children);
 
   $effect(() => {
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem("gsgw-wrap-before", wrapBefore);
-      localStorage.setItem("gsgw-wrap-after", wrapAfter);
-    }
+    if (typeof localStorage === "undefined") return;
+    localStorage.setItem(WRAP_NODES_KEY, JSON.stringify({ parent: wrapParent, children: wrapChildren }));
   });
 
-  async function insertCustomWrap() {
+  function addWrapChild() {
+    wrapChildren = [...wrapChildren, { before: "", after: "" }];
+  }
+
+  function removeWrapChild(index: number) {
+    wrapChildren = wrapChildren.filter((_, i) => i !== index);
+  }
+
+  async function insertWrap(node: WrapNode) {
     if (!activeTextarea) return;
     const el = activeTextarea;
     const start = el.selectionStart;
@@ -151,10 +191,10 @@
     const after = current.slice(end);
     const mdTop = mdScroll?.scrollTop ?? 0;
     const readerTop = readerScroll?.scrollTop ?? 0;
-    input = before + wrapBefore + inner + wrapAfter + after;
+    input = before + node.before + inner + node.after + after;
     await tick();
     el.focus();
-    el.setSelectionRange(start + wrapBefore.length, start + wrapBefore.length + inner.length);
+    el.setSelectionRange(start + node.before.length, start + node.before.length + inner.length);
     if (mdScroll) mdScroll.scrollTop = mdTop;
     if (readerScroll) readerScroll.scrollTop = readerTop;
   }
@@ -802,38 +842,89 @@
 {/snippet}
 
 {#snippet customWrap()}
-  <div class="bg-base-300/40 rounded-xl border border-base-content/10">
-    <div class="px-3 py-2 flex items-center gap-2">
-      <Icon icon="mdi:ray-start-arrow" class="size-3.5 text-base-content/30 shrink-0" />
-      <span class="text-[10px] font-mono font-medium text-base-content/50 uppercase tracking-wider">Custom</span>
-    </div>
-    <div class="px-2 pb-2 space-y-1">
-      <div class="flex items-center gap-1">
-        <input
-          type="text"
-          bind:value={wrapBefore}
-          placeholder="before"
-          spellcheck="false"
-          class="flex-1 min-w-0 bg-base-300/60 text-base-content/70 text-[11px] font-mono px-2 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80"
-        />
-        <span class="text-[10px] font-mono text-base-content/30 shrink-0">text</span>
-        <input
-          type="text"
-          bind:value={wrapAfter}
-          placeholder="after"
-          spellcheck="false"
-          class="flex-1 min-w-0 bg-base-300/60 text-base-content/70 text-[11px] font-mono px-2 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80"
-        />
+  <div class="space-y-2">
+    <div class="bg-base-300/40 rounded-xl border border-base-content/10">
+      <div class="px-3 py-2 flex items-center gap-2">
+        <Icon icon="mdi:ray-start-arrow" class="size-3.5 text-base-content/30 shrink-0" />
+        <span class="text-[10px] font-mono font-medium text-base-content/50 uppercase tracking-wider">Custom</span>
+        <button
+          onclick={addWrapChild}
+          class="ml-auto p-1 rounded-lg text-base-content/30 hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer shrink-0"
+          title="Add custom wrap"
+        >
+          <Icon icon="mdi:plus" class="size-4" />
+        </button>
       </div>
-      <button
-        onclick={insertCustomWrap}
-        class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-base-content/[3%] transition-colors cursor-pointer text-left"
-      >
-        <span class="text-[10px] font-mono text-base-content/15 shrink-0">{wrapBefore || '‹'} text {wrapAfter || '›'}</span>
-        <span class="text-[10px] text-base-content/15 shrink-0">→</span>
-        <span class="text-[11px] text-base-content/50 truncate">wrap selection</span>
-      </button>
+      <div class="px-2 pb-2 space-y-1">
+        <div class="flex items-center gap-1">
+          <input
+            type="text"
+            bind:value={wrapParent.before}
+            placeholder="before"
+            spellcheck="false"
+            class="flex-1 min-w-0 bg-base-300/60 text-base-content/70 text-[11px] font-mono px-2 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80"
+          />
+          <span class="text-[10px] font-mono text-base-content/30 shrink-0">text</span>
+          <input
+            type="text"
+            bind:value={wrapParent.after}
+            placeholder="after"
+            spellcheck="false"
+            class="flex-1 min-w-0 bg-base-300/60 text-base-content/70 text-[11px] font-mono px-2 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80"
+          />
+        </div>
+        <button
+          onclick={() => insertWrap(wrapParent)}
+          class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-base-content/[3%] transition-colors cursor-pointer text-left"
+        >
+          <span class="text-[10px] font-mono text-base-content/15 shrink-0">{wrapParent.before || '‹'} text {wrapParent.after || '›'}</span>
+          <span class="text-[10px] text-base-content/15 shrink-0">→</span>
+          <span class="text-[11px] text-base-content/50 truncate">wrap selection</span>
+        </button>
+      </div>
     </div>
+    {#each wrapChildren as _, i}
+      <div class="bg-base-300/40 rounded-xl border border-base-content/10">
+        <div class="px-3 py-2 flex items-center gap-2">
+          <Icon icon="mdi:ray-start-arrow" class="size-3.5 text-base-content/30 shrink-0" />
+          <span class="text-[10px] font-mono font-medium text-base-content/50 uppercase tracking-wider">Custom {i + 2}</span>
+          <button
+            onclick={() => removeWrapChild(i)}
+            class="ml-auto p-1 rounded-lg text-base-content/30 hover:text-error hover:bg-error/10 transition-colors cursor-pointer shrink-0"
+            title="Delete custom wrap"
+          >
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </div>
+        <div class="px-2 pb-2 space-y-1">
+          <div class="flex items-center gap-1">
+            <input
+              type="text"
+              bind:value={wrapChildren[i].before}
+              placeholder="before"
+              spellcheck="false"
+              class="flex-1 min-w-0 bg-base-300/60 text-base-content/70 text-[11px] font-mono px-2 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80"
+            />
+            <span class="text-[10px] font-mono text-base-content/30 shrink-0">text</span>
+            <input
+              type="text"
+              bind:value={wrapChildren[i].after}
+              placeholder="after"
+              spellcheck="false"
+              class="flex-1 min-w-0 bg-base-300/60 text-base-content/70 text-[11px] font-mono px-2 py-1.5 rounded-lg outline-none border border-base-content/10 placeholder:text-base-content/20 transition-colors focus:border-primary/30 focus:text-base-content/80"
+            />
+          </div>
+          <button
+            onclick={() => insertWrap(wrapChildren[i])}
+            class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-base-content/[3%] transition-colors cursor-pointer text-left"
+          >
+            <span class="text-[10px] font-mono text-base-content/15 shrink-0">{wrapChildren[i].before || '‹'} text {wrapChildren[i].after || '›'}</span>
+            <span class="text-[10px] text-base-content/15 shrink-0">→</span>
+            <span class="text-[11px] text-base-content/50 truncate">wrap selection</span>
+          </button>
+        </div>
+      </div>
+    {/each}
   </div>
 {/snippet}
 

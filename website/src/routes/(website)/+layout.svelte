@@ -174,6 +174,11 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     background: transparent;
   }
 
+  :global(html:root),
+  :global(html[data-theme]) {
+    background: #0d0d0d;
+  }
+
 
 
   .bg {

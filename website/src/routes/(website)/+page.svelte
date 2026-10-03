@@ -156,8 +156,8 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 <div class="relative h-dvh flex flex-col items-center justify-center gap-3 md:gap-8 py-8 px-8 md:p-12 overflow-hidden">
     <div class="flex flex-col items-center gap-3 md:gap-8 w-full max-w-7xl">
     <div class="relative flex flex-col items-center">
-      <h1 class="crt-title text-5xl sm:text-7xl md:text-7xl lg:text-8xl font-bold leading-none md:leading-tight text-center whitespace-nowrap">
-        <span class="block md:inline -ml-14 md:ml-0">GSGW</span><span class="block md:inline pl-12 md:pl-0">-Reader</span>
+      <h1 class="crt-title -translate-y-8 md:translate-y-0 text-[clamp(2.5rem,11.5vw,4rem)] sm:text-7xl md:text-7xl lg:text-8xl font-bold leading-none md:leading-tight text-center whitespace-nowrap">
+        <span>GSGW</span><span>-Reader</span>
       </h1>
     </div>
 
@@ -238,35 +238,35 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 </div>
 
 <dialog bind:this={contributeModal} class="modal backdrop:!bg-black/60 backdrop:!backdrop-blur-sm modal-bottom sm:modal-middle">
-  <div class="modal-box max-w-sm bg-[#0d0d0d]/95 border border-primary/15 p-0 rounded-2xl shadow-2xl">
-    <div class="p-6 border-b border-white/5 flex items-center justify-between">
-      <h3 class="text-lg font-bold text-primary flex items-center gap-2">
+  <div class="modal-box w-full sm:max-w-sm max-h-[85dvh] flex flex-col bg-[#0d0d0d]/95 border border-[#fb8462]/15 p-0 rounded-2xl shadow-2xl">
+    <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
+      <h3 class="text-lg font-bold text-[#fb8462] flex items-center gap-2">
         <Icon icon="material-symbols:edit-outline-rounded" class="size-5" />
         Contribute
       </h3>
       <form method="dialog">
-        <button class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-white" aria-label="Close">
+        <button class="btn btn-ghost btn-xs btn-circle text-white/50 hover:text-white" aria-label="Close">
           <Icon icon="mdi:close" class="size-4" />
         </button>
       </form>
     </div>
-    <div class="p-6 space-y-3">
+    <div class="p-6 pt-4 space-y-3 overflow-y-auto pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <a href="https://github.com/EnderOksam/GSGW-Reader/blob/main/contributing.md" target="_blank" class="group flex items-center gap-4 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
-        <div class="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <Icon icon="mdi:book-open-page-variant" class="size-5 text-primary" />
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-[#fb8462]/10 flex items-center justify-center">
+          <Icon icon="mdi:book-open-page-variant" class="size-5 text-[#fb8462]" />
         </div>
         <div class="min-w-0">
           <span class="block text-sm font-semibold text-white">Read the Guide</span>
-          <span class="block text-xs text-base-content/50 mt-0.5">Learn how to make edits to chapters</span>
+          <span class="block text-xs text-white/50 mt-0.5">Learn how to make edits to chapters</span>
         </div>
       </a>
       <a href="/dev/editor" class="group flex items-center gap-4 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
-        <div class="shrink-0 w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-          <Icon icon="material-symbols:edit-note-rounded" class="size-5 text-secondary" />
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-[#ff3a7a]/10 flex items-center justify-center">
+          <Icon icon="material-symbols:edit-note-rounded" class="size-5 text-[#ff3a7a]" />
         </div>
         <div class="min-w-0">
           <span class="block text-sm font-semibold text-white">Open the Web Editor</span>
-          <span class="block text-xs text-base-content/50 mt-0.5">Preview how your changes would look in the reader</span>
+          <span class="block text-xs text-white/50 mt-0.5">Preview how your changes would look in the reader</span>
         </div>
       </a>
     </div>
@@ -275,14 +275,14 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 </dialog>
 
 <dialog bind:this={announcementsModal} class="modal backdrop:!bg-black/60 backdrop:!backdrop-blur-sm modal-bottom sm:modal-middle">
-  <div class="modal-box max-w-lg bg-[#0d0d0d]/95 border border-warning/15 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
+  <div class="modal-box max-w-lg bg-[#0d0d0d]/95 border border-[#ffd644]/15 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
     <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
-      <h3 class="text-lg font-bold text-warning flex items-center gap-2">
+      <h3 class="text-lg font-bold text-[#ffd644] flex items-center gap-2">
         <Icon icon="mdi:bell-outline" class="size-5" />
         Recent announcements
       </h3>
       <form method="dialog">
-        <button class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-white" aria-label="Close">
+        <button class="btn btn-ghost btn-xs btn-circle text-white/50 hover:text-white" aria-label="Close">
           <Icon icon="mdi:close" class="size-4" />
         </button>
       </form>
@@ -297,21 +297,21 @@ On that day, I ended up transmigrating as a character in that very fantasy world
         >
           <span class="flex items-center justify-between gap-3 w-full">
             <span class="text-sm font-semibold leading-tight text-white">{a.title}</span>
-            <time class="text-[10px] text-base-content/40 tabular-nums shrink-0">{a.date}</time>
+            <time class="text-[10px] text-white/40 tabular-nums shrink-0">{a.date}</time>
           </span>
-          <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
+          <span class="block text-xs text-white/60 whitespace-pre-wrap">{a.short}</span>
           {#if expandedAnnouncement === i}
-            <span class="block text-xs text-base-content/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</span>
+            <span class="block text-xs text-white/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</span>
           {/if}
           {#if a.long && a.long !== a.short}
-            <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
+            <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#ffd644]/80 mt-0.5">
               <Icon icon="mdi:chevron-down" class="size-3.5 transition-transform duration-300 {expandedAnnouncement === i ? 'rotate-180' : ''}" />
               {expandedAnnouncement === i ? 'Show less' : 'Read more'}
             </span>
           {/if}
         </button>
       {:else}
-        <p class="text-xs text-center text-base-content/40 py-4">No announcements right now.</p>
+        <p class="text-xs text-center text-white/40 py-4">No announcements right now.</p>
       {/each}
     </div>
   </div>
