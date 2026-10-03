@@ -14,12 +14,17 @@
   let showBanner = $state(false);
   let ackCount = $state(0);
   let infoSeen = $state(false);
+  let hasUnreadAnnouncements = $state(false);
 
   onMount(() => {
     const stored = localStorage.getItem("gsgw-ack");
     ackCount = stored ? parseInt(stored, 10) : 0;
     if (ackCount < 2) showBanner = true;
     infoSeen = localStorage.getItem("gsgw-info-seen") === "1";
+
+    const latestAnnouncementId = announcements[0]?.messageId;
+    const lastSeenAnnouncementId = localStorage.getItem("gsgw-last-announcement");
+    hasUnreadAnnouncements = Boolean(latestAnnouncementId && latestAnnouncementId !== lastSeenAnnouncementId);
   });
 
   function handleInfoClick() {
@@ -42,8 +47,61 @@
   let announcementsModal: HTMLDialogElement;
   let gsgwVariant = $state<"webnovel" | "manwha">("webnovel");
 
-  const announcements = announcementsData.announcements;
+  type AnnouncementAttachment = {
+    url: string;
+    filename: string;
+    contentType?: string | null;
+    width?: number | null;
+    height?: number | null;
+  };
+
+  type AnnouncementEmbed = {
+    title?: string | null;
+    description?: string | null;
+    url?: string | null;
+    image?: string | null;
+    thumbnail?: string | null;
+  };
+
+  type Announcement = {
+    title: string;
+    date: string;
+    short: string;
+    long?: string;
+    author?: string;
+    tags?: string[];
+    messageId?: string;
+    discordUrl?: string;
+    attachments?: AnnouncementAttachment[];
+    embeds?: AnnouncementEmbed[];
+  };
+
+  const announcements = announcementsData.announcements as Announcement[];
   let expandedAnnouncement = $state<number | null>(null);
+
+  function discordInlineParts(text: string) {
+    const tokenPattern = /(\*\*[^\n]+?\*\*|__[^\n]+?__|~~[^\n]+?~~|\*[^\n*]+?\*|_[^\n_]+?_|\`[^\n]+?\`|\[[^\]]+\]\(https?:\/\/[^\s)]+\))/g;
+    return text.split(tokenPattern).filter(Boolean).map((part) => {
+      if (part.startsWith("**") && part.endsWith("**")) return { type: "bold", text: part.slice(2, -2) };
+      if (part.startsWith("__") && part.endsWith("__")) return { type: "underline", text: part.slice(2, -2) };
+      if (part.startsWith("~~") && part.endsWith("~~")) return { type: "strike", text: part.slice(2, -2) };
+      if (part.startsWith("*") && part.endsWith("*")) return { type: "italic", text: part.slice(1, -1) };
+      if (part.startsWith("_") && part.endsWith("_")) return { type: "italic", text: part.slice(1, -1) };
+      if (part.startsWith("\`") && part.endsWith("\`")) return { type: "code", text: part.slice(1, -1) };
+      const link = part.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/);
+      if (link) return { type: "link", text: link[1], url: link[2] };
+      return { type: "text", text: part };
+    });
+  }
+
+  function openAnnouncements() {
+    announcementsModal.showModal();
+    const latestAnnouncementId = announcements[0]?.messageId;
+    if (latestAnnouncementId) {
+      localStorage.setItem("gsgw-last-announcement", latestAnnouncementId);
+      hasUnreadAnnouncements = false;
+    }
+  }
 
   function toggleAnnouncement(index: number) {
     expandedAnnouncement = expandedAnnouncement === index ? null : index;
@@ -79,6 +137,26 @@
     tagClass: "text-warning",
   };
 </script>
+
+{#snippet discordText(text: string)}
+  <span class="whitespace-pre-wrap">
+    {#each text.split("\n") as line, lineIndex}
+      {#if lineIndex > 0}<br />{/if}
+      {@const isSubtext = line.startsWith("-# ")}
+      <span class={isSubtext ? "text-[10px] text-base-content/40" : ""}>
+        {#each discordInlineParts(isSubtext ? line.slice(3) : line) as part}
+          {#if part.type === "bold"}<strong class="font-bold text-base-content/80">{part.text}</strong>
+          {:else if part.type === "italic"}<em>{part.text}</em>
+          {:else if part.type === "underline"}<u>{part.text}</u>
+          {:else if part.type === "strike"}<s>{part.text}</s>
+          {:else if part.type === "code"}<code class="rounded bg-black/30 px-1 py-0.5 font-mono text-[0.9em]">{part.text}</code>
+          {:else if part.type === "link"}<a href={part.url} target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">{part.text}</a>
+          {:else}{part.text}{/if}
+        {/each}
+      </span>
+    {/each}
+  </span>
+{/snippet}
 
 <svelte:head>
   <title>GSGW-Reader</title>
@@ -227,10 +305,12 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           </a>
         </div>
       {/if}
-      <div class="tooltip relative" data-tip="Recent Announcements">
-        <button onclick={() => announcementsModal.showModal()} class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-warning/20 border border-white/10 hover:border-warning/40 text-warning/80 hover:text-warning shadow-lg backdrop-blur-md transition-all duration-300">
+      <div class="tooltip relative" data-tip="Recent announcements">
+        <button onclick={openAnnouncements} class="btn btn-square btn-lg md:btn-xl bg-black/60 hover:bg-warning/20 border border-white/10 hover:border-warning/40 text-warning/80 hover:text-warning shadow-lg backdrop-blur-md transition-all duration-300">
           <Icon icon="mdi:bell-outline" class="size-5 md:size-7" />
-          <span class="absolute top-2 right-2 inline-block w-2 h-2 rounded-full bg-warning animate-pulse shadow-[0_0_6px_2px_rgba(255,224,102,0.45)] pointer-events-none"></span>
+          {#if hasUnreadAnnouncements}
+            <span class="absolute top-2 right-2 inline-block w-2 h-2 rounded-full bg-warning animate-pulse shadow-[0_0_6px_2px_rgba(255,224,102,0.45)] pointer-events-none"></span>
+          {/if}
         </button>
       </div>
     </div>
@@ -279,7 +359,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
       <h3 class="text-lg font-bold text-warning flex items-center gap-2">
         <Icon icon="mdi:bell-outline" class="size-5" />
-        Recent Announcements
+        Recent announcements
       </h3>
       <form method="dialog">
         <button class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-white" aria-label="Close">
@@ -289,27 +369,97 @@ On that day, I ended up transmigrating as a character in that very fantasy world
     </div>
     <div class="p-6 space-y-3 overflow-y-auto">
       {#each announcements as a, i}
-        <button
-          type="button"
-          onclick={() => toggleAnnouncement(i)}
-          aria-expanded={expandedAnnouncement === i}
-          class="group w-full text-left flex flex-col gap-1 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
-        >
-          <span class="flex items-center justify-between gap-3 w-full">
-            <span class="text-sm font-semibold leading-tight text-white">{a.title}</span>
-            <time class="text-[10px] text-base-content/40 tabular-nums shrink-0">{a.date}</time>
-          </span>
-          <span class="block text-xs text-base-content/60 whitespace-pre-wrap">{a.short}</span>
-          {#if expandedAnnouncement === i}
-            <span class="block text-xs text-base-content/60 whitespace-pre-wrap border-t border-white/5 pt-2 mt-1">{a.long}</span>
-          {/if}
-          {#if a.long && a.long !== a.short}
-            <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
-              <Icon icon="mdi:chevron-down" class="size-3.5 transition-transform duration-300 {expandedAnnouncement === i ? 'rotate-180' : ''}" />
-              {expandedAnnouncement === i ? 'Show less' : 'Read more'}
+        <article class="group w-full text-left flex flex-col gap-1 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+          <button
+            type="button"
+            onclick={() => toggleAnnouncement(i)}
+            aria-expanded={expandedAnnouncement === i}
+            class="w-full text-left flex flex-col gap-1"
+          >
+            <span class="flex items-center justify-between gap-3 w-full">
+              <span class="text-sm font-semibold leading-tight text-white">
+                {#if a.tags?.length}{a.tags.join(" · ")} · {/if}<time>{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>
+              </span>
             </span>
+            <span class="block text-xs text-base-content/60">{@render discordText(a.short)}</span>
+            {#if a.long && a.long !== a.short}
+              <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
+                <Icon icon="mdi:chevron-down" class="size-3.5 transition-transform duration-300 {expandedAnnouncement === i ? 'rotate-180' : ''}" />
+                {expandedAnnouncement === i ? 'Show less' : 'Read more'}
+              </span>
+            {/if}
+          </button>
+          {#if expandedAnnouncement === i}
+            {#if a.long}
+              <div class="text-xs text-base-content/60 border-t border-white/5 pt-2 mt-1">{@render discordText(a.long)}</div>
+            {/if}
+            {#if a.author || a.discordUrl}
+              <div class="flex items-center justify-between gap-3 w-full border-t border-white/5 pt-2 mt-1">
+                {#if a.author}
+                  <span class="text-[10px] text-base-content/40">Posted by {a.author}</span>
+                {:else}
+                  <span></span>
+                {/if}
+                {#if a.discordUrl}
+                  <a href={a.discordUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-accent/80 hover:text-accent">
+                    View on Discord
+                    <Icon icon="mdi:open-in-new" class="size-3" />
+                  </a>
+                {/if}
+              </div>
+            {/if}
+            {#if a.embeds?.length}
+              <div class="flex flex-col gap-2 w-full mt-1">
+                {#each a.embeds as embed}
+                  <div class="overflow-hidden rounded-lg border border-white/10 bg-black/20">
+                    {#if embed.image}
+                      <img src={embed.image} alt="" class="w-full max-h-72 object-cover" loading="lazy" />
+                    {/if}
+                    <div class="flex gap-3 p-3">
+                      <div class="min-w-0 flex-1">
+                        {#if embed.title}
+                          {#if embed.url}
+                            <a href={embed.url} target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-accent hover:underline">{embed.title}</a>
+                          {:else}
+                            <p class="text-xs font-semibold text-white">{embed.title}</p>
+                          {/if}
+                        {/if}
+                        {#if embed.description}
+                          <p class="text-[11px] text-base-content/60 whitespace-pre-wrap mt-1 line-clamp-4">{embed.description}</p>
+                        {/if}
+                        {#if embed.url && !embed.title}
+                          <a href={embed.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-accent/80 hover:text-accent mt-1">
+                            Open link
+                            <Icon icon="mdi:open-in-new" class="size-3" />
+                          </a>
+                        {/if}
+                      </div>
+                      {#if embed.thumbnail}
+                        <img src={embed.thumbnail} alt="" class="size-16 shrink-0 rounded-md object-cover bg-black/20" loading="lazy" />
+                      {/if}
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            {/if}
+            {#if a.attachments?.length}
+              <div class="flex flex-col gap-2 w-full mt-1">
+                {#each a.attachments as attachment}
+                  {#if attachment.contentType?.startsWith("image/")}
+                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="block overflow-hidden rounded-lg border border-white/5">
+                      <img src={attachment.url} alt={attachment.filename || "Announcement attachment"} class="w-full max-h-72 object-contain bg-black/20" loading="lazy" />
+                    </a>
+                  {:else}
+                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] text-accent/80 hover:text-accent">
+                      <Icon icon="mdi:paperclip" class="size-3" />
+                      {attachment.filename || "Attachment"}
+                    </a>
+                  {/if}
+                {/each}
+              </div>
+            {/if}
           {/if}
-        </button>
+        </article>
       {:else}
         <p class="text-xs text-center text-base-content/40 py-4">No announcements right now.</p>
       {/each}
