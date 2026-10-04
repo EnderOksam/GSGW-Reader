@@ -1,6 +1,28 @@
 {
   "announcements": [
     {
+      "title": "<@&1523884481780650104>",
+      "date": "2026-10-04",
+      "short": "@DoD Releases\n\n- DOD Chapters 366-375 edited and formatted by 𝐋𝐞𝐢 (me)\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOthers (By: Sen and Ender Oksam)\n- Homepage Updates: Improved readability and consistent color styling.\n- Snippet Updates: ⁠text-faded⁠ styling now appears directly in snippets.\n- Brighter Faded Text Toggle: Added a new setting so you can easily toggle for brighter faded text.",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "DoD Releases"
+      ],
+      "messageId": "1556283929697198081",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1556283929697198081",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Debut or Die",
+          "description": "An aspiring civil servant passes out and awakens 3 years in the past in an unfamiliar body.\n\nBefore he can even assess the situation, he's given a mission: Debut or Die!",
+          "url": "https://ireum.pages.dev/book/debut/",
+          "image": null,
+          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/debut-banner.iS5kkjif.png"
+        }
+      ]
+    },
+    {
       "title": "<@&1518774394757845132>",
       "date": "2026-10-03",
       "short": "@GSGW Releases\n\n- **PART 3** Chapters 372-381 moved to FANTL\n-# additional edit by 𝐋𝐞𝐢 (me)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)",
@@ -57,7 +79,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555093524490493954",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6ac1e834&is=6ac096b4&hm=012f8240c33fdf65b95a7ff116eb3ef79078dbb44e6bdf1dee530fea25ab64ef&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6ac3e274&is=6ac290f4&hm=c3b5c6a331a40b458fa4e0145db94370e3c6af553f14df56ca6ed0d696d4b3e3&",
           "filename": "IMG_1421.png",
           "contentType": "image/jpeg",
           "width": 1668,
@@ -186,7 +208,7 @@
     {
       "title": "<@&1518776921771606188>",
       "date": "2026-08-25",
-      "short": "# U-DER now Live ([reddit post](https://www.reddit.com/r/DroppedInAGhostStory/comments/1vxmib8/uder_now_live/#lightbox))\nU-DER is now available for the public and good for uploading records\n\n@GSGW Releases -\n- **PART 1** Earlier Chapters edited by Sen (up to 158)\n- **Manhwa** Chapter 31 and 32 Released\n\nOther Changes:\n- Epubs have a new build script that renders them more closely to how they look on the web reader\n- The U-DER Editor now lets you import existing records to work on from those\n- More bug fixing and stuff added from #suggestions-and-bug-fixes",
+      "short": "#* U-DER now Live ([reddit post](https://www.reddit.com/r/DroppedInAGhostStory/comments/1vxmib8/uder_now_live/#lightbox)) *#\nU-DER is now available for the public and good for uploading records\n\n@GSGW Releases -\n- **PART 1** Earlier Chapters edited by Sen (up to 158)\n- **Manhwa** Chapter 31 and 32 Released\n\nOther Changes:\n- Epubs have a new build script that renders them more closely to how they look on the web reader\n- The U-DER Editor now lets you import existing records to work on from those\n- More bug fixing and stuff added from #suggestions-and-bug-fixes",
       "long": "",
       "author": "Ender Oksam",
       "tags": [
@@ -220,7 +242,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1538794398559637504",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1538794398140076082/image.png?ex=6ac1eff5&is=6ac09e75&hm=90c805f181973465fd1f58ff33094be78a22776e6f91c09011f341ec90b493ca&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1538794398140076082/image.png?ex=6ac34175&is=6ac1eff5&hm=7d399d590df1655e5a2b7239a7a0669badf9b6be84e2a333215cf9636c17e415&",
           "filename": "image.png",
           "contentType": "image/webp",
           "width": 1302,
@@ -246,7 +268,7 @@
     {
       "title": "<@&1518776921771606188>",
       "date": "2026-08-12",
-      "short": "## Author Hiatus Announcement\n\nThe author has announced an urgent hiatus starting this week due to a scheduled surgery. They expect to return after recovering, with the hiatus estimated to last around 1.5–2 months. Please see the attached notice for the full details, and let’s wish the author a safe surgery and smooth recovery\n\n-# image from Inertia loves the editing team",
+      "short": "#* Author Hiatus Announcement *#\nThe author has announced an urgent hiatus starting this week due to a scheduled surgery. They expect to return after recovering, with the hiatus estimated to last around 1.5–2 months. Please see the attached notice for the full details, and let’s wish the author a safe surgery and smooth recovery\n\n-# image from Inertia loves the editing team",
       "long": "",
       "author": "𝐋𝐞𝐢",
       "tags": [
@@ -256,7 +278,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1536970168901832714",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1536970168683462697/image.png?ex=6ac1e483&is=6ac09303&hm=852d4ae7ace6d04870c35b5f8b607e36ad5f6c51253004718a84b6be50275b25&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1536970168683462697/image.png?ex=6ac3dec3&is=6ac28d43&hm=8ba4070413bb29367ced34accbcb5db5dc1e0645fc12bfa12c1a953596cffa3c&",
           "filename": "image.png",
           "contentType": "image/jpeg",
           "width": 630,
@@ -279,28 +301,6 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1536732484061102230",
       "attachments": [],
       "embeds": []
-    },
-    {
-      "title": "<@&1518774394757845132>",
-      "date": "2026-08-07",
-      "short": "@GSGW Releases\n- **PART 2** Chapters 269-277 formatted by me, 𝐋𝐞𝐢  and Seirios !\n\n[Read GSGW!](https://ireum.pages.dev/book/gsgw/)\n\n-# did it quicker than expected and its a pretty good chunk of chapters so i decided to announce! (even though theres been a recent announcement) anyhow enjoyyy",
-      "long": "",
-      "author": "destiny",
-      "tags": [
-        "GSGW Releases"
-      ],
-      "messageId": "1535337047747862528",
-      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1535337047747862528",
-      "attachments": [],
-      "embeds": [
-        {
-          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
-          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
-          "url": "https://ireum.pages.dev/book/gsgw/",
-          "image": null,
-          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
-        }
-      ]
     }
   ]
 }
