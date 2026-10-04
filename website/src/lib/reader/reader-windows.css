@@ -1063,6 +1063,7 @@
 [data-ws-misc-plaintext] .reader-container .system-window:not(.no-fl-dividers) > p:first-of-type {
   padding: 0;
   background-image: none;
+  font-size: 1em;
 }
 
 [data-ws-misc-plaintext] .reader-container .system-window:hover {
@@ -1080,7 +1081,7 @@
   margin: 3rem auto;
   text-align: center !important;
   font-family: inherit;
-  font-size: inherit;
+  font-size: clamp(1em, 8vw, 2em);
   color: oklch(0.95 0 0) !important;
   text-shadow: none;
   overflow: visible;
@@ -1104,7 +1105,6 @@
   border-radius: 0;
   box-shadow: none;
   background-image: none;
-  max-width: none;
   padding: 1.5em 2em 1em;
   margin: 3rem auto;
   text-align: center !important;
@@ -1119,6 +1119,30 @@
   color: oklch(0.95 0 0) !important;
   text-align: center !important;
   line-height: 1.6;
+}
+
+[data-ws-crt-plaintext] .reader-container .black-window:has(.transition-text) {
+  display: contents;
+}
+
+[data-ws-crt-plaintext] .reader-container .black-window:has(.transition-text) p:has(.transition-text),
+[data-ws-crt-plaintext] .reader-container .black-window:has(.transition-text) .transition-text {
+  display: contents;
+}
+
+[data-ws-crt-plaintext] .reader-container .black-window:has(.transition-text) .transition-item {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 88%;
+  margin: 3rem auto;
+  padding: 1.5em 2em 1em;
+  background: oklch(0 0 0);
+  color: oklch(0.95 0 0) !important;
+  text-align: center !important;
+  text-shadow: none;
+  opacity: 1 !important;
+  animation: none !important;
 }
 
 [data-ws-crt-plaintext] .reader-container .black-window a,

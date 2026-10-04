@@ -800,6 +800,13 @@ hr.invisible-hr {
   letter-spacing: normal;
 }
 
+[data-ws-no-text-color] .moon-text {
+  position: static;
+  display: inline;
+  -webkit-text-stroke: 0;
+  font-family: "Noto Sans", sans-serif;
+}
+
 [data-ws-no-text-color] .hex-outline {
   -webkit-text-stroke: 0;
   text-stroke: 0;
@@ -1419,7 +1426,7 @@ body .reader-container .braun-screen.braun-screen p {
 body .reader-container .sticky-window.sticky-window,
 body .reader-container .sticky-window.sticky-window p,
 body .reader-container .sticky-window.sticky-window li {
-  color: oklch(0.15 0 0) !important;
+  color: oklch(0.15 0 0);
 }
 
 body .reader-container .debut-window.debut-window {
