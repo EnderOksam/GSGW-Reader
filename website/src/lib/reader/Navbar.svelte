@@ -294,6 +294,7 @@
       .snippet-preview > :last-child${notPadded} { margin-bottom: 0 !important; padding-bottom: 0 !important; }
       .snippet-preview p { margin-bottom: 1.1em; }
       .snippet-preview p:last-child { margin-bottom: 0; }
+      :where(.snippet-preview) .text-faded { opacity: 0.35; }
       ${windowCss}
       ${winPins}
     `;
