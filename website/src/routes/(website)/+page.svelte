@@ -143,14 +143,14 @@
     {#each text.split("\n") as line, lineIndex}
       {#if lineIndex > 0}<br />{/if}
       {@const isSubtext = line.startsWith("-# ")}
-      <span class={isSubtext ? "whitespace-pre-wrap text-[10px] text-base-content/40" : "whitespace-pre-wrap"}>
+      <span class={isSubtext ? "whitespace-pre-wrap text-[10px] text-white/60" : "whitespace-pre-wrap"}>
         {#each discordInlineParts(isSubtext ? line.slice(3) : line) as part}
-          {#if part.type === "bold"}<strong class="font-bold text-base-content/80">{part.text}</strong>
+          {#if part.type === "bold"}<strong class="font-bold text-white/90">{part.text}</strong>
           {:else if part.type === "italic"}<em>{part.text}</em>
           {:else if part.type === "underline"}<u>{part.text}</u>
           {:else if part.type === "strike"}<s>{part.text}</s>
           {:else if part.type === "code"}<code class="rounded bg-black/30 px-1 py-0.5 font-mono text-[0.9em]">{part.text}</code>
-          {:else if part.type === "link"}<a href={part.url} target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">{part.text}</a>
+          {:else if part.type === "link"}<a href={part.url} target="_blank" rel="noopener noreferrer" class="text-[#b91c1c] hover:underline">{part.text}</a>
           {:else}{part.text}{/if}
         {/each}
       </span>
@@ -355,9 +355,9 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 </dialog>
 
 <dialog bind:this={announcementsModal} class="modal backdrop:!bg-black/60 backdrop:!backdrop-blur-sm modal-bottom sm:modal-middle">
-  <div class="modal-box max-w-lg bg-[#0d0d0d]/95 border border-[#ffd644]/15 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
+  <div class="modal-box text-white max-w-lg bg-[#0d0d0d]/95 border border-[#b91c1c]/15 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
     <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
-      <h3 class="text-lg font-bold text-[#ffd644] flex items-center gap-2">
+      <h3 class="text-lg font-bold text-[#b91c1c] flex items-center gap-2">
         <Icon icon="mdi:bell-outline" class="size-5" />
         Recent announcements
       </h3>
@@ -381,9 +381,9 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                 {#if a.tags?.length}{a.tags.join(" · ")}&nbsp;&nbsp;&nbsp;{/if}[<time>{new Date(`${a.date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</time>]
               </span>
             </span>
-            <span class="block text-xs text-base-content/60">{@render discordText(a.short)}</span>
+            <span class="block text-xs text-white/75">{@render discordText(a.short)}</span>
             {#if a.long && a.long !== a.short}
-              <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-warning/80 mt-0.5">
+              <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#b91c1c] mt-0.5">
                 <Icon icon="mdi:chevron-down" class="size-3.5 transition-transform duration-300 {expandedAnnouncement === i ? 'rotate-180' : ''}" />
                 {expandedAnnouncement === i ? 'Show less' : 'Read more'}
               </span>
@@ -391,17 +391,17 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           </button>
           {#if expandedAnnouncement === i}
             {#if a.long}
-              <div class="text-xs text-base-content/60 border-t border-white/5 pt-2 mt-1">{@render discordText(a.long)}</div>
+              <div class="text-xs text-white/75 border-t border-white/5 pt-2 mt-1">{@render discordText(a.long)}</div>
             {/if}
             {#if a.author || a.discordUrl}
               <div class="flex items-center justify-between gap-3 w-full border-t border-white/5 pt-2 mt-1">
                 {#if a.author}
-                  <span class="text-[10px] text-base-content/40">Posted by {a.author}</span>
+                  <span class="text-[10px] text-white/60">Posted by {a.author}</span>
                 {:else}
                   <span></span>
                 {/if}
                 {#if a.discordUrl}
-                  <a href={a.discordUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-accent/80 hover:text-accent">
+                  <a href={a.discordUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#b91c1c]/90 hover:text-[#b91c1c]">
                     View on Discord
                     <Icon icon="mdi:open-in-new" class="size-3" />
                   </a>
@@ -419,16 +419,16 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                       <div class="min-w-0 flex-1">
                         {#if embed.title}
                           {#if embed.url}
-                            <a href={embed.url} target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-accent hover:underline">{embed.title}</a>
+                            <a href={embed.url} target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-[#b91c1c] hover:underline">{embed.title}</a>
                           {:else}
                             <p class="text-xs font-semibold text-white">{embed.title}</p>
                           {/if}
                         {/if}
                         {#if embed.description}
-                          <p class="text-[11px] text-base-content/60 whitespace-pre-wrap mt-1 line-clamp-4">{embed.description}</p>
+                          <p class="text-[11px] text-white/75 whitespace-pre-wrap mt-1 line-clamp-4">{embed.description}</p>
                         {/if}
                         {#if embed.url && !embed.title}
-                          <a href={embed.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-accent/80 hover:text-accent mt-1">
+                          <a href={embed.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#b91c1c]/90 hover:text-[#b91c1c] mt-1">
                             Open link
                             <Icon icon="mdi:open-in-new" class="size-3" />
                           </a>
@@ -450,7 +450,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                       <img src={attachment.url} alt={attachment.filename || "Announcement attachment"} class="w-full max-h-72 object-contain bg-black/20" loading="lazy" />
                     </a>
                   {:else}
-                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] text-accent/80 hover:text-accent">
+                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] text-[#b91c1c]/90 hover:text-[#b91c1c]">
                       <Icon icon="mdi:paperclip" class="size-3" />
                       {attachment.filename || "Attachment"}
                     </a>
@@ -461,7 +461,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
           {/if}
         </article>
       {:else}
-        <p class="text-xs text-center text-white/40 py-4">No announcements right now.</p>
+        <p class="text-xs text-center text-white/60 py-4">No announcements right now.</p>
       {/each}
     </div>
   </div>

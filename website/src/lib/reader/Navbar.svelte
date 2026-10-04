@@ -63,17 +63,18 @@
   let snippetPrimaryColor = $state("oklch(var(--p))");
 
   function loadWindowSettings() {
-    if (!browser) return { customTextColors: true, braunColor: true, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false };
+    if (!browser) return { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false };
     try {
       const saved = localStorage.getItem("windowSettings");
-      if (saved) return { customTextColors: true, braunColor: true, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, ...JSON.parse(saved) };
+      if (saved) return { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, ...JSON.parse(saved) };
     } catch { /* ignore */ }
-    return { customTextColors: true, braunColor: true, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false };
+    return { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false };
   }
   let windowSettings = $state(loadWindowSettings());
   const WINDOW_SETTING_ATTRS = [
     { attr: "data-ws-no-text-color", get: (s: typeof windowSettings) => !s.customTextColors },
     { attr: "data-ws-no-braun-color", get: (s: typeof windowSettings) => !s.braunColor },
+    { attr: "data-ws-bright-gray-text", get: (s: typeof windowSettings) => s.brightGrayText },
     { attr: "data-ws-dmb-plaintext", get: (s: typeof windowSettings) => !s.dmbDerStyle },
     { attr: "data-ws-paper-plaintext", get: (s: typeof windowSettings) => !s.paperStyle },
     { attr: "data-ws-misc-plaintext", get: (s: typeof windowSettings) => !s.miscStyle },
@@ -1064,6 +1065,11 @@
           label="Custom text colors"
           value={windowSettings.customTextColors}
           onChange={(v) => (windowSettings.customTextColors = v)}
+        />
+        <WindowToggle
+          label="Bright gray text"
+          value={windowSettings.brightGrayText}
+          onChange={(v) => (windowSettings.brightGrayText = v)}
         />
         <WindowToggle
           label="Braun text color"
