@@ -165,6 +165,14 @@ def parse_message(
         return f"@{role_name}" if role_name.casefold() in release_roles else ""
 
     short = re.sub(r"<@&(\d+)>", replace_role_mention, content)
+
+    # Preserve Discord level-1/2 headings using the reader's heading styling.
+    short = re.sub(
+        r"(?m)^#{1,2}[ \t]+(.+?)\s*$",
+        lambda match: f"#* {match.group(1).strip()} *#",
+        short,
+    )
+
     short = re.sub(
         r"<@!?(\d+)>",
         lambda match: member_names.get(match.group(1), "Unknown user"),
