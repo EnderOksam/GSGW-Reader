@@ -80,8 +80,9 @@
   let expandedAnnouncement = $state<number | null>(null);
 
   function discordInlineParts(text: string) {
-    const tokenPattern = /(\*\*[^\n]+?\*\*|__[^\n]+?__|~~[^\n]+?~~|\*[^\n*]+?\*|_[^\n_]+?_|`[^\n]+?`|\[[^\]]+\]\(https?:\/\/\S+\))/g;
+    const tokenPattern = /(@GSGW Releases|@DoD Releases?|\*\*[^\n]+?\*\*|__[^\n]+?__|~~[^\n]+?~~|\*[^\n*]+?\*|_[^\n_]+?_|`[^\n]+?`|\[[^\]]+\]\(https?:\/\/\S+\))/g;
     return text.split(tokenPattern).filter(Boolean).map((part) => {
+      if (part === "@GSGW Releases" || part === "@DoD Release" || part === "@DoD Releases") return { type: "releaseRole", text: part };
       if (part.startsWith("**") && part.endsWith("**")) return { type: "bold", text: part.slice(2, -2) };
       if (part.startsWith("__") && part.endsWith("__")) return { type: "underline", text: part.slice(2, -2) };
       if (part.startsWith("~~") && part.endsWith("~~")) return { type: "strike", text: part.slice(2, -2) };
@@ -146,7 +147,8 @@
       {@const readerHeading = line.match(/^#\*\s*(.*?)\s*\*#$/)}
       <span class={readerHeading ? "whitespace-pre-wrap block text-base font-bold text-warning my-1" : isSubtext ? "whitespace-pre-wrap text-[10px] text-white/60" : "whitespace-pre-wrap"}>
         {#each discordInlineParts(readerHeading ? readerHeading[1] : isSubtext ? line.slice(3) : line) as part}
-          {#if part.type === "bold"}<strong class="font-bold text-white/90">{part.text}</strong>
+          {#if part.type === "releaseRole"}<span class="inline-flex items-center rounded px-1.5 py-0.5 font-semibold bg-warning/20 text-warning ring-1 ring-inset ring-warning/30">{part.text}</span>
+          {:else if part.type === "bold"}<strong class="font-bold text-white/90">{part.text}</strong>
           {:else if part.type === "italic"}<em>{part.text}</em>
           {:else if part.type === "underline"}<u>{part.text}</u>
           {:else if part.type === "strike"}<s>{part.text}</s>
