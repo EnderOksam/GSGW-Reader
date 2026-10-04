@@ -80,7 +80,7 @@
   let expandedAnnouncement = $state<number | null>(null);
 
   function discordInlineParts(text: string) {
-    const tokenPattern = /(\*\*[^\n]+?\*\*|__[^\n]+?__|~~[^\n]+?~~|\*[^\n*]+?\*|_[^\n_]+?_|\`[^\n]+?\`|\[[^\]]+\]\(https?:\/\/[^\s)]+\))/g;
+    const tokenPattern = /(\*\*[^\n]+?\*\*|__[^\n]+?__|~~[^\n]+?~~|\*[^\n*]+?\*|_[^\n_]+?_|`[^\n]+?`|\[[^\]]+\]\(https?:\/\/\S+\))/g;
     return text.split(tokenPattern).filter(Boolean).map((part) => {
       if (part.startsWith("**") && part.endsWith("**")) return { type: "bold", text: part.slice(2, -2) };
       if (part.startsWith("__") && part.endsWith("__")) return { type: "underline", text: part.slice(2, -2) };
@@ -88,7 +88,7 @@
       if (part.startsWith("*") && part.endsWith("*")) return { type: "italic", text: part.slice(1, -1) };
       if (part.startsWith("_") && part.endsWith("_")) return { type: "italic", text: part.slice(1, -1) };
       if (part.startsWith("\`") && part.endsWith("\`")) return { type: "code", text: part.slice(1, -1) };
-      const link = part.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/);
+      const link = part.match(/^\[([^\]]+)\]\((https?:\/\/\S+)\)$/);
       if (link) return { type: "link", text: link[1], url: link[2] };
       return { type: "text", text: part };
     });
@@ -143,8 +143,9 @@
     {#each text.split("\n") as line, lineIndex}
       {#if lineIndex > 0}<br />{/if}
       {@const isSubtext = line.startsWith("-# ")}
-      <span class={isSubtext ? "whitespace-pre-wrap text-[10px] text-white/60" : "whitespace-pre-wrap"}>
-        {#each discordInlineParts(isSubtext ? line.slice(3) : line) as part}
+      {@const readerHeading = line.match(/^#\*\s*(.*?)\s*\*#$/)}
+      <span class={readerHeading ? "whitespace-pre-wrap block text-base font-bold text-warning my-1" : isSubtext ? "whitespace-pre-wrap text-[10px] text-white/60" : "whitespace-pre-wrap"}>
+        {#each discordInlineParts(readerHeading ? readerHeading[1] : isSubtext ? line.slice(3) : line) as part}
           {#if part.type === "bold"}<strong class="font-bold text-white/90">{part.text}</strong>
           {:else if part.type === "italic"}<em>{part.text}</em>
           {:else if part.type === "underline"}<u>{part.text}</u>
