@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -37,14 +38,37 @@ def discord_get(path: str, params: dict[str, str] | None = None) -> Any:
         },
     )
 
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            return json.load(response)
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"Discord API returned HTTP {exc.code}: {detail}") from exc
-    except urllib.error.URLError as exc:
-        raise RuntimeError(f"Could not reach Discord API: {exc.reason}") from exc
+    max_rate_limit_retries = 5
+    for attempt in range(max_rate_limit_retries + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                return json.load(response)
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            if exc.code == 429 and attempt < max_rate_limit_retries:
+                try:
+                    payload = json.loads(detail)
+                    retry_after = float(payload.get("retry_after", 1.0))
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    retry_after = 1.0
+
+                # Discord reports retry_after in seconds. Add a small buffer so
+                # the next request does not land on the rate-limit boundary.
+                wait_seconds = max(retry_after, 0.0) + 0.25
+                print(
+                    f"Discord rate limit hit; retrying in {wait_seconds:.3f}s "
+                    f"(attempt {attempt + 1}/{max_rate_limit_retries})."
+                )
+                time.sleep(wait_seconds)
+                continue
+
+            raise RuntimeError(
+                f"Discord API returned HTTP {exc.code}: {detail}"
+            ) from exc
+        except urllib.error.URLError as exc:
+            raise RuntimeError(f"Could not reach Discord API: {exc.reason}") from exc
+
+    raise RuntimeError("Discord API rate limit retries exhausted.")
 
 
 def fetch_messages() -> list[dict[str, Any]]:
