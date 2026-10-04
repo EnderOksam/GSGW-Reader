@@ -357,7 +357,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
 <dialog bind:this={announcementsModal} class="modal backdrop:!bg-black/60 backdrop:!backdrop-blur-sm modal-bottom sm:modal-middle">
   <div class="modal-box text-white max-w-lg bg-[#0d0d0d]/95 border border-[#b91c1c]/15 p-0 rounded-2xl shadow-2xl max-h-[85dvh] flex flex-col">
     <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
-      <h3 class="text-lg font-bold text-[#b91c1c] flex items-center gap-2">
+      <h3 class="text-lg font-bold text-warning flex items-center gap-2">
         <Icon icon="mdi:bell-outline" class="size-5" />
         Recent announcements
       </h3>
