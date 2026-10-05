@@ -1801,6 +1801,11 @@ pre.gauge {
   page-break-inside: auto;
 }
 
+.paper-boat.paper-boat-nanum-barun-gothic {
+  font-family: 'Nanum Barun Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  font-weight: 200;
+}
+
 /*
  * Folded corner.
  *
@@ -2505,4 +2510,13 @@ pre.gauge {
 .alert-window [class*="highlight-"] {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
+}
+
+/* Optional left alignment for comment windows (★$ left). */
+.alert-window.comment-window-left {
+  text-align: left;
+}
+
+.alert-window.comment-window-left * {
+  text-align: inherit !important;
 }

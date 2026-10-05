@@ -10,7 +10,7 @@ function makeWindow(cls: string, inner: string, extra?: string): string {
 // with its own close marker, nested windows are rendered first, and each is
 // masked as a single-line token while the enclosing window is parsed.
 function processCommentWindows(s: string, book: string): string {
-  const OPEN_RE = /^[ \t]*★\$\s*$/gm;
+  const OPEN_RE = /^[ \t]*★\$(?:[ \t]+left)?[ \t]*$/gm;
   const CLOSE_RE = /^[ \t]*\$★\s*$/gm;
   let counter = 0;
 
@@ -44,7 +44,7 @@ function processCommentWindows(s: string, book: string): string {
     return result;
   }
 
-  function renderWindow(body: string): string {
+  function renderWindow(body: string, left: boolean): string {
     const lines = body.split("\n");
     let title = "";
     let desc = "";
@@ -98,7 +98,7 @@ function processCommentWindows(s: string, book: string): string {
       }
       html += "</div>\n";
     }
-    return makeWindow("alert-window", html);
+    return makeWindow("alert-window", html, left ? "comment-window-left" : undefined);
   }
 
   function mask(body: string): { text: string; tokens: Record<string, string> } {
@@ -110,7 +110,8 @@ function processCommentWindows(s: string, book: string): string {
     for (const [openStart, openEnd, closeStart, closeEnd] of windows) {
       out += body.slice(last, openStart);
       const inner = mask(body.slice(openEnd, closeStart));
-      let html = renderWindow(inner.text);
+      const left = body.slice(openStart, openEnd).trim().endsWith("left");
+      let html = renderWindow(inner.text, left);
       for (const key in inner.tokens) html = html.split(key).join(inner.tokens[key]);
       counter++;
       const key = `\u0000CW${counter}\u0000`;
@@ -725,7 +726,8 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
 
   s = s.replace(/!\$\n(.*?)\n\$!/gs, (_: string, inner: string) => makeWindow("sticky-window", inner));
 
-  s = s.replace(/!pb\n(.*?)\npb!/gs, (_: string, inner: string) => makeWindow("paper-boat", inner));
+  s = s.replace(/!pb(?: (doc))?\n(.*?)\npb!/gs, (_: string, doc: string | undefined, inner: string) =>
+    makeWindow("paper-boat", inner, doc ? "paper-boat-nanum-barun-gothic" : undefined));
 
   s = s.replace(/!\[\n(.*?)\n\]!/gs, (_: string, inner: string) => makeWindow("braun-screen", inner));
 

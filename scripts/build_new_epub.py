@@ -573,7 +573,7 @@ AMPERSAND_WINDOW_RE = re.compile(r"&\$\n(.*?)\n\$&", re.DOTALL)
 
 NOTE_WINDOW_RE = re.compile(r"![-]+\n(.*?)\n[-]+!", re.DOTALL)
 STICKY_WINDOW_RE = re.compile(r"!\$\n(.*?)\n\$!", re.DOTALL)
-PAPER_BOAT_WINDOW_RE = re.compile(r"!pb\n(.*?)\npb!", re.DOTALL)
+PAPER_BOAT_WINDOW_RE = re.compile(r"!pb(?: (?P<doc>doc))?\n(.*?)\npb!", re.DOTALL)
 BRAUN_WINDOW_RE = re.compile(r"!\[\n(.*?)\n\]!", re.DOTALL)
 BRAUN_TV_TEXT_RE = re.compile(r"\$[Bb][Rr][Tt]\n(.*?)\n[Bb][Rr][Tt]\$", re.DOTALL)
 BRAUN_DOLL_TEXT_RE = re.compile(r"\$[Bb][Rr][Dd]\n(.*?)\n[Bb][Rr][Dd]\$", re.DOTALL)
@@ -1695,13 +1695,14 @@ def comment_window_replacer(match):
                     f'<span class="reply-body">{text}</span></div>'
                 )
         html_parts.append('</div>')
-    return make_window("alert-window", "\n\n".join(html_parts))
+    return make_window("alert-window", "\n\n".join(html_parts),
+                       "comment-window-left" if getattr(match, "left", False) else None)
 
 
 
 def _comment_window_markers():
     return (
-        re.compile(r"^[ \t]*★\$\s*$", re.MULTILINE),
+        re.compile(r"^[ \t]*★\$(?:[ \t]+left)?[ \t]*$", re.MULTILINE),
         re.compile(r"^[ \t]*\$★\s*$", re.MULTILINE),
     )
 
@@ -1732,8 +1733,9 @@ def _outermost_comment_windows(text):
 class _CommentWindowMatch:
     """Shim exposing match.group(1) to comment_window_replacer."""
 
-    def __init__(self, text):
+    def __init__(self, text, left=False):
         self._text = text
+        self.left = left
 
     def group(self, n=0):
         if n in (0, 1):
@@ -1763,7 +1765,8 @@ def replace_comment_windows(text, replacer):
             out.append(body[last:open_start])
             inner = body[open_end:close_start]
             masked_inner, subs = mask(inner)
-            html = replacer(_CommentWindowMatch(masked_inner))
+            left = body[open_start:open_end].strip().endswith("left")
+            html = replacer(_CommentWindowMatch(masked_inner, left))
             for key, val in subs.items():
                 html = html.replace(key, val)
             counter[0] += 1
@@ -2070,7 +2073,7 @@ def convert_chapter(content, ctx):
     )
 
     content = PAPER_BOAT_WINDOW_RE.sub(
-        lambda m: make_window("paper-boat", m.group(1)),
+        lambda m: make_window("paper-boat", m.group(2), "paper-boat-nanum-barun-gothic" if m.group("doc") else None),
         content
     )
 

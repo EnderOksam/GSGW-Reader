@@ -433,7 +433,7 @@ def convert_chapter(content):
         content
     )
     content = bw.PAPER_BOAT_WINDOW_RE.sub(
-        lambda m: bw.make_window("paper-boat", m.group(1)),
+        lambda m: bw.make_window("paper-boat", m.group(2), "paper-boat-nanum-barun-gothic" if m.group("doc") else None),
         content
     )
     content = bw.BRAUN_WINDOW_RE.sub(

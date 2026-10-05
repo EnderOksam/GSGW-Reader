@@ -539,6 +539,11 @@
   filter: drop-shadow(0 7px 18px rgba(0, 0, 0, 0.10));
 }
 
+.reader-container .paper-boat.paper-boat-nanum-barun-gothic {
+  font-family: 'Nanum Barun Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  font-weight: 200;
+}
+
 /* RIGHT DOG-EAR */
 
 .reader-container .paper-boat::after {
@@ -1577,4 +1582,13 @@ html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon {
 .reader-container .alert-window .scroll-fill:first-child,
 .reader-container .sms-window .scroll-fill:first-child {
   margin-top: -0.5em;
+}
+
+/* Optional left alignment for comment windows (★$ left). */
+.reader-container .alert-window.comment-window-left {
+  text-align: left;
+}
+
+.reader-container .alert-window.comment-window-left * {
+  text-align: inherit !important;
 }
