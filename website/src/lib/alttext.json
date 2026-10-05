@@ -1,13 +1,24 @@
 {
   "variants": [
     {
+      "name": "Darkness Exploration Records",
+      "description": "",
+      "searches": [
+        "Darkness Exploration Records"
+      ],
+      "options": [
+        "Dark Exploration Records"
+      ]
+    },
+    {
       "name": "Soleum",
       "description": "",
       "searches": [
         "Soleum"
       ],
       "options": [
-        "Soreum"
+        "Soreum",
+        "Sol-eum"
       ]
     },
     {
@@ -38,7 +49,39 @@
         "Jekang"
       ],
       "options": [
-        "Jaekang"
+        "Jaekang",
+        "Jegang"
+      ]
+    },
+    {
+      "name": "Round-off Team",
+      "description": "",
+      "searches": [
+        "Round-off Team"
+      ],
+      "options": [
+        "Cleanup Team",
+        "Reserve Team"
+      ]
+    },
+    {
+      "name": "Cheerful Theme Park",
+      "description": "",
+      "searches": [
+        "Cheerful Theme Park"
+      ],
+      "options": [
+        "Gaiety Theme Park"
+      ]
+    },
+    {
+      "name": "Cheerful Research Institute",
+      "description": "",
+      "searches": [
+        "Cheerful Research Institute"
+      ],
+      "options": [
+        "Gaiety Research Institute"
       ]
     },
     {
@@ -49,16 +92,6 @@
       ],
       "options": [
         "Ireum"
-      ]
-    },
-    {
-      "name": "Darkness Exploration Records",
-      "description": "",
-      "searches": [
-        "Darkness Exploration Records"
-      ],
-      "options": [
-        "Dark Exploration Records"
       ]
     },
     {
@@ -88,7 +121,8 @@
         "Black Tortoise"
       ],
       "options": [
-        "Hyunmoo"
+        "Hyunmoo",
+        "Hyunmu"
       ]
     },
     {

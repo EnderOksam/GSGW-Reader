@@ -2,87 +2,7 @@
   "gsgw": {
     "mtl": [
       {
-        "title": "The Apocalypse Has Arrived",
-        "category": "Part 3",
-        "discussion": 704,
-        "index": 372,
-        "section": "Chapter 372",
-        "slug": "372"
-      },
-      {
-        "title": "Where Is Your ID?",
-        "category": "Part 3",
-        "discussion": 705,
-        "index": 373,
-        "section": "Chapter 373",
-        "slug": "373"
-      },
-      {
-        "title": "Chapter 374",
-        "category": "Part 3",
-        "discussion": 1430,
-        "index": 374,
-        "section": "Chapter 374",
-        "slug": "374"
-      },
-      {
-        "title": "Chapter 375",
-        "category": "Part 3",
-        "discussion": 1431,
-        "index": 375,
-        "section": "Chapter 375",
-        "slug": "375"
-      },
-      {
-        "title": "Chapter 376",
-        "category": "Part 3",
-        "discussion": 493,
-        "index": 376,
-        "section": "Chapter 376",
-        "slug": "376"
-      },
-      {
-        "title": "Chapter 377",
-        "category": "Part 3",
-        "discussion": 510,
-        "index": 377,
-        "section": "Chapter 377",
-        "slug": "377"
-      },
-      {
-        "title": "Chapter 378",
-        "category": "Part 3",
-        "discussion": 511,
-        "index": 378,
-        "section": "Chapter 378",
-        "slug": "378"
-      },
-      {
-        "title": "Chapter 379",
-        "category": "Part 3",
-        "discussion": 512,
-        "index": 379,
-        "section": "Chapter 379",
-        "slug": "379"
-      },
-      {
-        "title": "Chapter 380",
-        "category": "Part 3",
-        "discussion": 513,
-        "index": 380,
-        "section": "Chapter 380",
-        "slug": "380"
-      },
-      {
-        "title": "Chapter 381",
-        "category": "Part 3",
-        "discussion": 514,
-        "index": 381,
-        "section": "Chapter 381",
-        "slug": "381"
-      },
-      {
-        "title": "Chapter 382",
+        "title": "[Let There Be No Light], IV",
         "category": "Part 3",
         "discussion": 515,
         "index": 382,
@@ -90,7 +10,7 @@
         "slug": "382"
       },
       {
-        "title": "Chapter 383",
+        "title": "Lover of Paradise, I",
         "category": "Part 3",
         "discussion": 548,
         "index": 383,
@@ -924,7 +844,7 @@
         "slug": "78"
       },
       {
-        "title": "[Within the Shadow of Darkness], IIX",
+        "title": "[Within the Shadow of Darkness], IX",
         "category": "Part 1",
         "discussion": 122,
         "index": 79,
@@ -932,7 +852,7 @@
         "slug": "79"
       },
       {
-        "title": "[Within the Shadow of Darkness], IX",
+        "title": "[Within the Shadow of Darkness], X",
         "category": "Part 1",
         "discussion": 262,
         "index": 80,
@@ -940,7 +860,7 @@
         "slug": "80"
       },
       {
-        "title": "[Within the Shadow of Darkness], X",
+        "title": "[Within the Shadow of Darkness], XI",
         "category": "Part 1",
         "discussion": 64,
         "index": 81,
@@ -2902,7 +2822,7 @@
       {
         "title": "The Cheerful Coin",
         "category": "Part 2",
-        "discussion": 655,
+        "discussion": 1610,
         "index": 326,
         "section": "Chapter 326",
         "slug": "326"
@@ -2918,7 +2838,7 @@
       {
         "title": "The Rabbit Doll Cult, II",
         "category": "Part 2",
-        "discussion": 775,
+        "discussion": 1612,
         "index": 328,
         "section": "Chapter 328",
         "slug": "328"
@@ -3110,7 +3030,7 @@
       {
         "title": "Sekwang Sealing Ritual, VI",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 691,
         "index": 352,
         "section": "Chapter 352",
         "slug": "352"
@@ -3118,7 +3038,7 @@
       {
         "title": "Sekwang Sealing Ritual, VII",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1015,
         "index": 353,
         "section": "Chapter 353",
         "slug": "353"
@@ -3126,7 +3046,7 @@
       {
         "title": "Sekwang Sealing Ritual, VIII",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1418,
         "index": 354,
         "section": "Chapter 354",
         "slug": "354"
@@ -3134,7 +3054,7 @@
       {
         "title": "Sekwang Sealing Ritual, IX",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1419,
         "index": 355,
         "section": "Chapter 355",
         "slug": "355"
@@ -3142,7 +3062,7 @@
       {
         "title": "Sekwang Sealing Ritual, X",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1420,
         "index": 356,
         "section": "Chapter 356",
         "slug": "356"
@@ -3150,7 +3070,7 @@
       {
         "title": "The Summoned One",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 693,
         "index": 357,
         "section": "Chapter 357",
         "slug": "357"
@@ -3158,7 +3078,7 @@
       {
         "title": "The Good Friend",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 694,
         "index": 358,
         "section": "Chapter 358",
         "slug": "358"
@@ -3166,7 +3086,7 @@
       {
         "title": "Flower Golden Resort [Monorail City], I",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1421,
         "index": 359,
         "section": "Chapter 359",
         "slug": "359"
@@ -3174,7 +3094,7 @@
       {
         "title": "Flower Golden Resort [Monorail City], II",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1422,
         "index": 360,
         "section": "Chapter 360",
         "slug": "360"
@@ -3182,7 +3102,7 @@
       {
         "title": "Flower Golden Resort [Monorail City], III",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1127,
         "index": 361,
         "section": "Chapter 361",
         "slug": "361"
@@ -3190,7 +3110,7 @@
       {
         "title": "The Fox\u2019s Last Client",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 967,
         "index": 362,
         "section": "Chapter 362",
         "slug": "362"
@@ -3198,7 +3118,7 @@
       {
         "title": "Rag Doll",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1423,
         "index": 363,
         "section": "Chapter 363",
         "slug": "363"
@@ -3206,7 +3126,7 @@
       {
         "title": "Original Flower Golden Resort",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1424,
         "index": 364,
         "section": "Chapter 364",
         "slug": "364"
@@ -3214,7 +3134,7 @@
       {
         "title": "130666\u2019s Employment Contract",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1425,
         "index": 365,
         "section": "Chapter 365",
         "slug": "365"
@@ -3222,7 +3142,7 @@
       {
         "title": "Azure Dragon\u2019s Descent",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1426,
         "index": 366,
         "section": "Chapter 366",
         "slug": "366"
@@ -3230,7 +3150,7 @@
       {
         "title": "Rain Ritual, I",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1427,
         "index": 367,
         "section": "Chapter 367",
         "slug": "367"
@@ -3238,7 +3158,7 @@
       {
         "title": "Rain Ritual, II",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1428,
         "index": 368,
         "section": "Chapter 368",
         "slug": "368"
@@ -3246,7 +3166,7 @@
       {
         "title": "The Collected Dream",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 696,
         "index": 369,
         "section": "Chapter 369",
         "slug": "369"
@@ -3254,7 +3174,7 @@
       {
         "title": "The Promised Wish",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 1429,
         "index": 370,
         "section": "Chapter 370",
         "slug": "370"
@@ -3262,10 +3182,90 @@
       {
         "title": "The Homecoming",
         "category": "Part 2",
-        "discussion": 0,
+        "discussion": 699,
         "index": 371,
         "section": "Chapter 371",
         "slug": "371"
+      },
+      {
+        "title": "The Apocalypse Has Arrived",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 372,
+        "section": "Chapter 372",
+        "slug": "372"
+      },
+      {
+        "title": "Where Is Your ID?",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 373,
+        "section": "Chapter 373",
+        "slug": "373"
+      },
+      {
+        "title": "Daydream Inc. [Namhae Branch], I",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 374,
+        "section": "Chapter 374",
+        "slug": "374"
+      },
+      {
+        "title": "Daydream Inc. [Namhae Branch], II",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 375,
+        "section": "Chapter 375",
+        "slug": "375"
+      },
+      {
+        "title": "[I'll Let You Go Now], I",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 376,
+        "section": "Chapter 376",
+        "slug": "376"
+      },
+      {
+        "title": "[I'll Let You Go Now], II",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 377,
+        "section": "Chapter 377",
+        "slug": "377"
+      },
+      {
+        "title": "Three Years",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 378,
+        "section": "Chapter 378",
+        "slug": "378"
+      },
+      {
+        "title": "[Let There Be No Light], I",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 379,
+        "section": "Chapter 379",
+        "slug": "379"
+      },
+      {
+        "title": "[Let There Be No Light], II",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 380,
+        "section": "Chapter 380",
+        "slug": "380"
+      },
+      {
+        "title": "[Let There Be No Light], III",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 381,
+        "section": "Chapter 381",
+        "slug": "381"
       }
     ],
     "unformattedtl": []
