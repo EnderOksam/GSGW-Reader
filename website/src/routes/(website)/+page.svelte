@@ -80,7 +80,7 @@
   let expandedAnnouncement = $state<number | null>(null);
 
   function discordInlineParts(text: string) {
-    const tokenPattern = /(@GSGW Releases|@DoD Releases?|\*\*[^\n]+?\*\*|__[^\n]+?__|~~[^\n]+?~~|\*[^\n*]+?\*|_[^\n_]+?_|`[^\n]+?`|\[[^\]]+\]\(https?:\/\/\S+\))/g;
+    const tokenPattern = /(@GSGW Releases|@DoD Releases?|\*\*[^\n]+?\*\*|__[^\n]+?__|~~[^\n]+?~~|\*[^\n*]+?\*|_[^\n_]+?_|`[^\n]+?`|\[[^\]]+\]\(https?:\/\/(?:\\.|[^\s()\\]|\((?:\\.|[^\s()\\])*\))+\))/g;
     return text.split(tokenPattern).filter(Boolean).map((part) => {
       if (part === "@GSGW Releases" || part === "@DoD Release" || part === "@DoD Releases") return { type: "releaseRole", text: part };
       if (part.startsWith("**") && part.endsWith("**")) return { type: "bold", text: part.slice(2, -2) };
@@ -89,8 +89,8 @@
       if (part.startsWith("*") && part.endsWith("*")) return { type: "italic", text: part.slice(1, -1) };
       if (part.startsWith("_") && part.endsWith("_")) return { type: "italic", text: part.slice(1, -1) };
       if (part.startsWith("\`") && part.endsWith("\`")) return { type: "code", text: part.slice(1, -1) };
-      const link = part.match(/^\[([^\]]+)\]\((https?:\/\/\S+)\)$/);
-      if (link) return { type: "link", text: link[1], url: link[2] };
+      const link = part.match(/^\[([^\]]+)\]\((https?:\/\/(?:\\.|[^\s()\\]|\((?:\\.|[^\s()\\])*\))+)\)$/);
+      if (link) return { type: "link", text: link[1], url: link[2].replace(/\\([()])/g, "$1").replace(/\\([()])/g, "$1") };
       return { type: "text", text: part };
     });
   }
@@ -153,7 +153,7 @@
           {:else if part.type === "underline"}<u>{part.text}</u>
           {:else if part.type === "strike"}<s>{part.text}</s>
           {:else if part.type === "code"}<code class="rounded bg-black/30 px-1 py-0.5 font-mono text-[0.9em]">{part.text}</code>
-          {:else if part.type === "link"}<a href={part.url} target="_blank" rel="noopener noreferrer" class="text-[#b91c1c] hover:underline">{part.text}</a>
+          {:else if part.type === "link"}<a href={part.url} target="_blank" rel="noopener noreferrer" class="text-[#E68C78] hover:underline">{part.text}</a>
           {:else}{part.text}{/if}
         {/each}
       </span>
@@ -404,7 +404,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                   <span></span>
                 {/if}
                 {#if a.discordUrl}
-                  <a href={a.discordUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#b91c1c]/90 hover:text-[#b91c1c]">
+                  <a href={a.discordUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#E68C78] hover:text-[#E68C78]">
                     View on Discord
                     <Icon icon="mdi:open-in-new" class="size-3" />
                   </a>
@@ -422,7 +422,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                       <div class="min-w-0 flex-1">
                         {#if embed.title}
                           {#if embed.url}
-                            <a href={embed.url} target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-[#b91c1c] hover:underline">{embed.title}</a>
+                            <a href={embed.url} target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-[#E68C78] hover:underline">{embed.title}</a>
                           {:else}
                             <p class="text-xs font-semibold text-white">{embed.title}</p>
                           {/if}
@@ -431,7 +431,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                           <p class="text-[11px] text-white/75 whitespace-pre-wrap mt-1 line-clamp-4">{embed.description}</p>
                         {/if}
                         {#if embed.url && !embed.title}
-                          <a href={embed.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#b91c1c]/90 hover:text-[#b91c1c] mt-1">
+                          <a href={embed.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-semibold text-[#E68C78] hover:text-[#E68C78] mt-1">
                             Open link
                             <Icon icon="mdi:open-in-new" class="size-3" />
                           </a>
@@ -453,7 +453,7 @@ On that day, I ended up transmigrating as a character in that very fantasy world
                       <img src={attachment.url} alt={attachment.filename || "Announcement attachment"} class="w-full max-h-72 object-contain bg-black/20" loading="lazy" />
                     </a>
                   {:else}
-                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] text-[#b91c1c]/90 hover:text-[#b91c1c]">
+                    <a href={attachment.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] text-[#E68C78] hover:text-[#E68C78]">
                       <Icon icon="mdi:paperclip" class="size-3" />
                       {attachment.filename || "Attachment"}
                     </a>

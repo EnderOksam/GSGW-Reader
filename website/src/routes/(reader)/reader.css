@@ -825,13 +825,11 @@ hr.invisible-hr {
 }
 
 [data-ws-bright-gray-text] .text-faded {
-  color: oklch(from var(--color-base-content) calc(l * 0.65) 0 0) !important;
-  opacity: 1 !important;
-  transition: opacity 0.2s, filter 0.2s;
+  opacity: 0.65;
 }
 
 [data-ws-bright-gray-text] .text-faded:hover {
-  filter: brightness(1.25);
+  opacity: 0.85;
 }
 
 [data-ws-no-bold-large] body .reader-container p strong,
