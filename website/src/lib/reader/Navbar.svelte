@@ -208,6 +208,11 @@
       snippetPreviewEl.style.color = cs.color;
       snippetPreviewEl.style.lineHeight = cs.lineHeight;
       snippetPreviewEl.style.textAlign = cs.textAlign;
+      // These rules are inherited from the chapter layout in the reader, but
+      // the off-screen snippet lives outside that wrapper.
+      snippetPreviewEl.style.overflowWrap = cs.overflowWrap;
+      snippetPreviewEl.style.wordBreak = cs.wordBreak;
+      snippetPreviewEl.style.hyphens = cs.hyphens;
       const chapterSize = cs.getPropertyValue("--chapter-size").trim();
       const chapterFont = cs.getPropertyValue("--chapter-font").trim();
       const chapterWeight = cs.getPropertyValue("--chapter-weight").trim();
@@ -314,6 +319,7 @@
     await tick();
 
     try {
+      await document.fonts.ready;
       const readerBgEl = document.querySelector<HTMLElement>(".bg-base-100");
       const bg = readerBgEl ? getComputedStyle(readerBgEl).backgroundColor : "#0d0d0d";
 
