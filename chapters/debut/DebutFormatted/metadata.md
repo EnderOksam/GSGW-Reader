@@ -59,15 +59,15 @@ this should look like it's inside a yellow window
 this should look like a "Paper window"
 pb!
 
++=
+this should look like a "CRT window"
+=+
+
 ★:
 this should look like a "SMS window"
 -left-oriented text message
 right-oriented text message-
 :★
-
-+=
-this should look like a "CRT window"
-=+
 
 ★!
 this should look like an "Alert Window"
