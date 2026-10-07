@@ -337,7 +337,7 @@
     --card-bg-opacity: {prefs.config.solidBackground ? 1 : 0};
   "
 >
-  <div class="fixed inset-0 -z-10 bg-[oklch(var(--b1))]"></div>
+  <div class="fixed inset-0 -z-10 bg-base-100"></div>
   <!-- Scroll gradient -->
   <div
     class="scroll-gradient fixed inset-0 pointer-events-none hidden sm:block"
@@ -557,7 +557,7 @@
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: var(--fallback-b1, oklch(var(--b1) / 1));
+    background-color: var(--color-base-100);
   }
 
   :global(html) {

@@ -13,6 +13,7 @@
   import { goto } from "$app/navigation";
   import alttextData from "$lib/alttext.json";
   import WindowToggle from "./WindowToggle.svelte";
+  import MarginToggle from "./MarginToggle.svelte";
 
   // --- Types ---
   interface Chapter {
@@ -62,13 +63,19 @@
   let snippetCopied = $state(false);
   let snippetPrimaryColor = $state("oklch(var(--p))");
 
-  function loadWindowSettings() {
-    if (!browser) return { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false };
+  const WINDOW_SETTINGS_DEFAULTS = { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, windowGutter: -32, textGutter: 0 };
+  const TEXT_GUTTER_MIN = -24;
+  function loadWindowSettings(): typeof WINDOW_SETTINGS_DEFAULTS {
+    if (!browser) return { ...WINDOW_SETTINGS_DEFAULTS };
     try {
       const saved = localStorage.getItem("windowSettings");
-      if (saved) return { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, ...JSON.parse(saved) };
+      if (saved) {
+        const merged = { ...WINDOW_SETTINGS_DEFAULTS, ...JSON.parse(saved) };
+        merged.textGutter = Math.max(TEXT_GUTTER_MIN, merged.textGutter ?? 0);
+        return merged;
+      }
     } catch { /* ignore */ }
-    return { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false };
+    return { ...WINDOW_SETTINGS_DEFAULTS };
   }
   let windowSettings = $state(loadWindowSettings());
   const WINDOW_SETTING_ATTRS = [
@@ -89,6 +96,8 @@
       for (const { attr, get } of WINDOW_SETTING_ATTRS) {
         document.documentElement.toggleAttribute(attr, get(windowSettings));
       }
+      document.documentElement.style.setProperty("--window-gutter", `${windowSettings.windowGutter}px`);
+      document.documentElement.style.setProperty("--text-gutter", `${windowSettings.textGutter}px`);
     }
   });
 
@@ -1064,6 +1073,15 @@
           value={windowSettings.miscStyle}
           onChange={(v) => (windowSettings.miscStyle = v)}
         />
+        <MarginToggle
+          label="Window side margins"
+          value={windowSettings.windowGutter}
+          onChange={(v) => (windowSettings.windowGutter = v)}
+          presets={[
+            { label: "Default", value: -32 },
+            { label: "Compact", value: 28 },
+          ]}
+        />
         <div class="flex items-center gap-2 pt-4">
           <span class="text-[11px] font-bold uppercase tracking-widest text-base-content/40">Text</span>
           <div class="h-px flex-1 bg-base-content/10"></div>
@@ -1092,6 +1110,16 @@
           label="Bold text enlargement"
           value={windowSettings.boldLarge}
           onChange={(v) => (windowSettings.boldLarge = v)}
+        />
+        <MarginToggle
+          label="Text side margins"
+          value={windowSettings.textGutter}
+          onChange={(v) => (windowSettings.textGutter = v)}
+          min={TEXT_GUTTER_MIN}
+          presets={[
+            { label: "Default", value: 0 },
+            { label: "Compact", value: 40 },
+          ]}
         />
         <div class="flex items-center gap-2 pt-4">
           <span class="text-[11px] font-bold uppercase tracking-widest text-base-content/40">Misc.</span>

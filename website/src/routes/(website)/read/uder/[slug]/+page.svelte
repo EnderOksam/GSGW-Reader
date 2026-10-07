@@ -749,16 +749,16 @@
       border: none;
       border-radius: 0;
       box-shadow: none;
-      background: none;
     }
-    .reader-card-outer .reader-card-bg {
-      display: none;
-    }
-.reader-card-inner {
+    .reader-card-inner {
       padding: 0;
     }
     .reader-scroll {
-      padding: 0 0.75rem 1.5rem;
+      padding: 0 0 1.5rem;
+    }
+    .reader-main {
+      max-width: 100%;
+      margin: 0;
     }
     .uder-grid {
       grid-template-columns: 1fr;

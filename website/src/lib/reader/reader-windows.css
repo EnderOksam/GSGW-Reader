@@ -16,7 +16,7 @@
   margin: 0 auto;
   padding: 1.25rem;
   line-height: var(--chapter-lh, 1.6);
-  color: oklch(from var(--bc) l 0 h);
+  color: var(--color-base-content);
   font-family: var(--chapter-font, 'Inter', system-ui, sans-serif);
 }
 
@@ -33,7 +33,7 @@
   background: linear-gradient(145deg, oklch(0.18 0.02 280), oklch(0.2 0.02 280));
   border: 1px solid oklch(0.55 0.06 270 / 0.15);
   border-radius: 10px;
-  max-width: 98%;
+  max-width: calc(98% - var(--window-gutter, 0px) * 2);
   position: relative;
     box-shadow:
       0 4px 24px oklch(0 0 0 / 0.4),
@@ -47,7 +47,7 @@
 
 @media (min-width: 640px) {
   .reader-container .wiki-window {
-    max-width: 88%;
+    max-width: calc(88% - var(--window-gutter, 0px) * 2);
     padding: 1.5em 2em 1em;
   }
 }
@@ -115,7 +115,7 @@
   background: linear-gradient(145deg, oklch(0.15 0.04 270), oklch(0.18 0.05 270));
   border: 1px solid oklch(0.55 0.08 260 / 0.15);
   border-radius: 10px;
-  max-width: 98%;
+  max-width: calc(98% - var(--window-gutter, 0px) * 2);
   position: relative;
   box-shadow:
     0 4px 24px oklch(0 0 0 / 0.4),
@@ -129,7 +129,7 @@
 
 @media (min-width: 640px) {
   .reader-container .record-window {
-    max-width: 88%;
+    max-width: calc(88% - var(--window-gutter, 0px) * 2);
     padding: 1.5em 2em 1em;
   }
 }
@@ -197,7 +197,7 @@
   background: linear-gradient(145deg, oklch(0.18 0.02 280), oklch(0.2 0.02 280));
   border: 1px solid oklch(0.55 0.06 270 / 0.15);
   border-radius: 10px;
-  max-width: 98%;
+  max-width: calc(98% - var(--window-gutter, 0px) * 2);
   position: relative;
     box-shadow:
       0 4px 24px oklch(0 0 0 / 0.4),
@@ -211,7 +211,7 @@
 
 @media (min-width: 640px) {
   .reader-container .plain-window {
-    max-width: 88%;
+    max-width: calc(88% - var(--window-gutter, 0px) * 2);
   }
 }
 
@@ -266,7 +266,7 @@
   background: linear-gradient(145deg, oklch(0.15 0.04 270), oklch(0.18 0.05 270));
   border: 1px solid oklch(0.55 0.08 260 / 0.15);
   border-radius: 10px;
-  max-width: 98%;
+  max-width: calc(98% - var(--window-gutter, 0px) * 2);
   position: relative;
     box-shadow:
       0 4px 24px oklch(0 0 0 / 0.4),
@@ -280,7 +280,7 @@
 
 @media (min-width: 640px) {
   .reader-container .followup-window {
-    max-width: 88%;
+    max-width: calc(88% - var(--window-gutter, 0px) * 2);
   }
 }
 
@@ -335,7 +335,7 @@
   background: transparent;
   border: 1px solid oklch(0.85 0 0 / 0.55);
   border-radius: 4px;
-  max-width: 90%;
+  max-width: calc(90% - var(--window-gutter, 0px) * 2);
   padding: 1.5em 2em;
   text-align: center;
   color: inherit;
@@ -346,7 +346,7 @@
 
 @media (min-width: 640px) {
   .reader-container .bare-window {
-    max-width: 75%;
+    max-width: calc(75% - var(--window-gutter, 0px) * 2);
   }
 }
 
@@ -386,7 +386,7 @@
   background: oklch(0.96 0.02 90);
   border: 1px solid oklch(0.88 0.03 90);
   border-radius: 4px;
-  max-width: 98%;
+  max-width: calc(98% - var(--window-gutter, 0px) * 2);
   position: relative;
   box-shadow:
     -4px 4px 0 oklch(0.75 0.12 90),
@@ -398,7 +398,7 @@
 
 @media (min-width: 640px) {
   .reader-container .note-window {
-    max-width: 88%;
+    max-width: calc(88% - var(--window-gutter, 0px) * 2);
     padding: 1.25em 1.75em 1em;
   }
 }
@@ -615,7 +615,7 @@
   background: oklch(0 0 0);
   border: 1px solid oklch(0.25 0 0);
   border-radius: 4px;
-  max-width: 88%;
+  max-width: calc(88% - var(--window-gutter, 0px) * 2);
   position: relative;
   box-shadow: 0 0 20px oklch(0 0 0 / 0.6);
   padding: 1.5em 2em 1em;
@@ -695,7 +695,7 @@
     radial-gradient(ellipse at center, oklch(0.04 0.005 90) 0%, oklch(0.03 0.003 90) 60%, oklch(0.02 0.002 90) 100%);
   border: 10px solid oklch(0.3 0.02 50);
   border-radius: 36px;
-  max-width: 90%;
+  max-width: calc(90% - var(--window-gutter, 0px) * 2);
   position: relative;
   box-shadow:
     0 0 30px oklch(0 0 0 / 0.8),
@@ -1139,7 +1139,7 @@
   display: block;
   box-sizing: border-box;
   width: 100%;
-  max-width: 88%;
+  max-width: calc(88% - var(--window-gutter, 0px) * 2);
   margin: 3rem auto;
   padding: 1.5em 2em 1em;
   background: oklch(0 0 0);
@@ -1320,7 +1320,7 @@ html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon {
   background: oklch(0.15 0 0);
   border: 1px solid oklch(0.3 0 0);
   border-radius: 4px;
-  max-width: 88%;
+  max-width: calc(88% - var(--window-gutter, 0px) * 2);
   position: relative;
   box-shadow: 0 0 20px oklch(0 0 0 / 0.6);
   padding: 1.5em 2em 1em;
@@ -1591,4 +1591,10 @@ html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon {
 
 .reader-container .alert-window.comment-window-left * {
   text-align: inherit !important;
+}
+
+/* --- Adjustable body-text side margins (windows keep their own gutter) --- */
+.reader-container > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure, table, span),
+.reader-container :is(.padding-window, .braun-tv-text, .braun-doll-text) > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre) {
+  margin-inline: var(--text-gutter, 0px);
 }
