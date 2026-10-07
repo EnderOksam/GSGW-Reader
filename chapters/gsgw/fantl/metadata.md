@@ -58,11 +58,35 @@ This EPUB also uses some custom formatting. If your current EPUB reader does not
 this should look like it's inside a yellow window
 -!
 
+!pb
+this should look like a "Paper window"
+pb!
+
 ★:
 this should look like a "SMS window"
 -left-oriented text message
 right-oriented text message-
 :★
+
++-
+Darkness Exploration Records
+
+this should look like a "Wiki window"
+-+
+
++~
+Title
+
+this should look like a "GSGW System window"
+~+
+
++=
+this should look like a "CRT window"
+=+
+
+![
+this should look like "Braun screen window"
+]!
 
 ★$
 [Title]
@@ -73,29 +97,9 @@ Description
 └└ Nested Reply
 $★
 
-+-
-Darkness Exploration Records
-
-this should look like a "Wiki window"
--+
-
-+=
-this should look like a "CRT window"
-=+
-
-+~
-Title
-
-this should look like a "GSGW System window"
-~+
-
-!pb
-this should look like a "Paper window"
-pb!
-
-![
-this should look like "Braun screen window"
-]!
+★!
+this should look like an "Alert Window"
+!★
 
 Illustrations by:
 
@@ -108,3 +112,5 @@ Illustrations by:
 #* @chiiiiliii on X *#
 
 #* @yjh\_ism on X *#
+
+#* @\_heydestiny on X *#
