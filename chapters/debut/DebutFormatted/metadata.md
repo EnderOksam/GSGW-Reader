@@ -70,7 +70,7 @@ this should look like a "CRT window"
 =+
 
 ★!
-this should look like a "Debut Alert Window"
+this should look like an "Alert Window"
 !★
 
 ★$
