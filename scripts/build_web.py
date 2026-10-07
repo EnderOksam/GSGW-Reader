@@ -1430,7 +1430,7 @@ def transition_replacer(match):
     )
 
 
-def convert_chapter(content):
+def convert_chapter(content, *, chapter1_gsgw=False):
 
     content = process_twitter_urls(content)
 
@@ -1570,7 +1570,9 @@ def convert_chapter(content):
         lambda m: make_window(
             "plain-window",
             m.group(1),
-            "ch1-darkness-welcome" if "Welcome, Explorer of the Darkness." in m.group(1) else None,
+            "ch1-darkness-welcome"
+            if chapter1_gsgw and "Welcome, Explorer of the Darkness." in m.group(1)
+            else None,
         ),
         content
     )
@@ -1669,7 +1671,9 @@ def convert_chapter(content):
 
 def process_task(task, template_str):
 
-    html_content, footnotes_html = convert_chapter(task["content"])
+    html_content, footnotes_html = convert_chapter(
+        task["content"], chapter1_gsgw=task.get("chapter1_gsgw", False)
+    )
 
     safe_html = (
         html_content
@@ -1863,6 +1867,7 @@ def main():
 
                 tasks_data.append({
                     "content": post.content,
+                    "chapter1_gsgw": bookID == "gsgw" and str(slug) == "1",
                     "meta": post.metadata,
                     "dest": out_dir / "+page.svelte"
                 })

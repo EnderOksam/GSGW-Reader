@@ -1656,3 +1656,46 @@ html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcom
 .reader-container .alert-window.comment-window-left * {
   text-align: inherit !important;
 }
+
+
+/* Only the Chapter 1 entrance banner follows Misc Windows → Plaintext.
+   Keep the sizing copy visible and remove the duplicated animated track. */
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome {
+  display: block;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  width: auto;
+  max-width: none;
+  padding: 0;
+  font: inherit;
+  color: inherit !important;
+}
+
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome p,
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome span {
+  font: inherit !important;
+  color: inherit !important;
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-wrap,
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-sizer,
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-text {
+  display: contents;
+  visibility: visible;
+  white-space: normal;
+  padding: 0;
+  animation: none !important;
+  transform: none !important;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-track {
+  display: none !important;
+  animation: none !important;
+  transform: none !important;
+}
