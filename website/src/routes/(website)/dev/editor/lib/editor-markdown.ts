@@ -308,6 +308,30 @@ function imgInline(text: string, book: string): string {
   });
 }
 
+// Resolve innermost color pairs first, including repeated wrappers of one color.
+function formatColors(text: string): string {
+  const colors: [string, string][] = [
+    ["r", "red"],
+    ["b", "blue"],
+    ["y", "yellow"],
+    ["p", "magenta"],
+    ["g", "green"],
+    ["o", "orange"],
+    ["lp", "light-purple"],
+    ["cy", "cyan"],
+    ["d", "black"],
+  ];
+  let previous: string;
+  do {
+    previous = text;
+    for (const [marker, color] of colors) {
+      const pair = new RegExp(`#${marker}((?:(?!#${marker})[\\s\\S])*?)${marker}#`, "g");
+      text = text.replace(pair, `<span class="text-${color}">$1</span>`);
+    }
+  } while (text !== previous);
+  return text;
+}
+
 const simpleInlineTags: [RegExp, string][] = [
   [/#\^(\d+(?:\.\d+)?)\s*(.*?)\s*\^#/gs, '<span style="font-size:$1em">$2</span>'],
   [/(?<!\\)_(.*?)(?<!\\)_/gs, '<span class="underline">$1</span>'],
@@ -322,15 +346,6 @@ const simpleInlineTags: [RegExp, string][] = [
 
   [/#\*(?!\*)(.*?)\*#/gs, '<span class="text-large">$1</span>'],
   [/#><(.*?)><#/gs, '<span class="text-large-centered">$1</span>'],
-  [/#r(.*?)r#/gs, '<span class="text-red">$1</span>'],
-  [/#b(.*?)b#/gs, '<span class="text-blue">$1</span>'],
-  [/#y(.*?)y#/gs, '<span class="text-yellow">$1</span>'],
-  [/#p(.*?)p#/gs, '<span class="text-magenta">$1</span>'],
-  [/#g(.*?)g#/gs, '<span class="text-green">$1</span>'],
-  [/#o(.*?)o#/gs, '<span class="text-orange">$1</span>'],
-  [/#lp(.*?)lp#/gs, '<span class="text-light-purple">$1</span>'],
-  [/#cy(.*?)cy#/gs, '<span class="text-cyan">$1</span>'],
-  [/#d(.*?)d#/gs, '<span class="text-black">$1</span>'],
   [/#f#(.*?)#f#/gs, '<span class="text-faded">$1</span>'],
   [/#wh(.*?)wh#/gs, '<span class="wiki-header">$1</span>'],
   
@@ -395,6 +410,7 @@ function renderFootnoteText(text: string): string {
     return key;
   });
 
+  s = formatColors(s);
   for (const [re, repl] of simpleInlineTags) {
     s = s.replace(re, repl);
   }
@@ -457,6 +473,13 @@ function renderFootnoteText(text: string): string {
 
 export function preprocessMarkdown(text: string, book: string = "gsgw"): string {
   let s = text.replace(/\r\n/g, "\n");
+  // Protect Markdown escapes before custom formatting turns text into HTML.
+  // Restore as entities afterwards so literal punctuation cannot become markup.
+  const escapedPunctuation: string[] = [];
+  s = s.replace(/\\([!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])/g, (_match, punctuation: string) => {
+    const index = escapedPunctuation.push(`&#${punctuation.charCodeAt(0)};`) - 1;
+    return `\u0000ESC${index}\u0000`;
+  });
 
   // transition text — must run first so it splits on ">" before formatting
   // tags convert to HTML (which also contains ">")
@@ -572,6 +595,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   let pid = 0;
   s = s.replace(/!\[.*?\]\(.*?\)/g, (m: string) => { const k = `\x00IMG${pid++}\x00`; placeholders.set(k, m); return k; });
 
+  s = formatColors(s);
   for (const [re, repl] of simpleInlineTags) {
     s = s.replace(re, repl);
   }
@@ -834,7 +858,7 @@ export function preprocessMarkdown(text: string, book: string = "gsgw"): string 
   s = s.replace(/\*(.+?)\*/g, "<em>$1</em>");
 
   s = replaceTwitterUrls(s);
-  return s;
+  return s.replace(/\u0000ESC(\d+)\u0000/g, (_match, index: string) => escapedPunctuation[Number(index)]);
 }
 
 function makeScarePage(inner: string): string {

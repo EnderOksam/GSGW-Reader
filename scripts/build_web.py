@@ -1106,7 +1106,7 @@ FOOTNOTE_TAG_REPLACEMENTS = [
     (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),
      lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL),
-     lambda m: f'<span class="hex-outline" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>'),
+     lambda m: f'<span class="hex-outline{" ch1-darkness-title" if " ".join(m.group(2).split()) == "[Prophecy of the Apocalypse: Darkness Exploration Records]" else ""}" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxa\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxa\$", re.DOTALL),
      lambda m: hex_aurora_replacer(m)),
     (re.compile(r"\$hxas\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxas\$", re.DOTALL),
@@ -1430,7 +1430,7 @@ def transition_replacer(match):
     )
 
 
-def convert_chapter(content):
+def convert_chapter(content, *, chapter1_gsgw=False):
 
     content = process_twitter_urls(content)
 
@@ -1528,7 +1528,7 @@ def convert_chapter(content):
     content = HEX_COLOR_RE.sub(lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>', content)
 
     content = HEX_OUTLINE_RE.sub(
-        lambda m: f'<span class="hex-outline" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>',
+        lambda m: f'<span class="hex-outline{" ch1-darkness-title" if " ".join(m.group(2).split()) == "[Prophecy of the Apocalypse: Darkness Exploration Records]" else ""}" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>',
         content
     )
 
@@ -1567,7 +1567,13 @@ def convert_chapter(content):
     content = SYSTEM_WINDOW_RE.sub(system_window_replacer, content)
 
     content = PLAIN_WINDOW_RE.sub(
-        lambda m: make_window("plain-window", m.group(1)),
+        lambda m: make_window(
+            "plain-window",
+            m.group(1),
+            "ch1-darkness-welcome"
+            if chapter1_gsgw and "Welcome, Explorer of the Darkness." in m.group(1)
+            else None,
+        ),
         content
     )
 
@@ -1665,7 +1671,9 @@ def convert_chapter(content):
 
 def process_task(task, template_str):
 
-    html_content, footnotes_html = convert_chapter(task["content"])
+    html_content, footnotes_html = convert_chapter(
+        task["content"], chapter1_gsgw=task.get("chapter1_gsgw", False)
+    )
 
     safe_html = (
         html_content
@@ -1859,6 +1867,7 @@ def main():
 
                 tasks_data.append({
                     "content": post.content,
+                    "chapter1_gsgw": bookID == "gsgw" and str(slug) == "1",
                     "meta": post.metadata,
                     "dest": out_dir / "+page.svelte"
                 })

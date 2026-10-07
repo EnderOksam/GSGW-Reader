@@ -1261,6 +1261,44 @@ html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window::after
   display: none;
 }
 
+/* Chapter 1 Daydream employee ID: keep the graphical card when styled,
+   but expose only its three text fields in Misc windows plaintext mode. */
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) img,
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) br {
+  display: none;
+}
+
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) .comment-post-header.comment-post-header,
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) .comment-post-desc.comment-post-desc {
+  display: contents;
+}
+
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) .comment-post-title.comment-post-title,
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) .comment-post-desc.comment-post-desc > * {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+/* Toggle-off employee ID uses bold reader text, centered. */
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]),
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) * {
+  font: inherit !important;
+  font-weight: bold !important;
+  font-style: normal !important;
+  color: inherit !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
 html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window p {
   color: inherit;
 }
@@ -1597,4 +1635,76 @@ html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon {
 .reader-container > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure, table, span),
 .reader-container :is(.padding-window, .braun-tv-text, .braun-doll-text) > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre) {
   margin-inline: var(--text-gutter, 0px);
+}
+
+/* Only the Chapter 1 entrance banner follows Misc Windows → Plaintext.
+   Keep the sizing copy visible and remove the duplicated animated track. */
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome {
+  display: block;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  width: auto;
+  max-width: none;
+  padding: 0;
+  margin: 3rem auto;
+  overflow: visible;
+  text-align: center !important;
+  font: inherit;
+  color: inherit !important;
+}
+
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome p,
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome span {
+  font: inherit !important;
+  font-weight: bold !important;
+  color: inherit !important;
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-wrap,
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-sizer,
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-text {
+  display: contents;
+  visibility: visible;
+  white-space: normal;
+  padding: 0;
+  animation: none !important;
+  transform: none !important;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-track {
+  display: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Keep the plaintext welcome message centered and bracketed. */
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome p {
+  text-align: center !important;
+}
+
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-sizer::before {
+  content: "[";
+}
+
+html[data-ws-misc-plaintext] .reader-container .ch1-darkness-welcome .scroll-sizer::after {
+  content: "]";
+}
+
+/* Preserve emphasis on the Chapter 1 headings when styling is off. */
+html[data-ws-no-text-color] .reader-container .ch1-darkness-welcome p,
+html[data-ws-no-text-color] .reader-container .ch1-darkness-welcome span,
+html[data-ws-no-text-color] .reader-container .ch1-darkness-title {
+  font-weight: bold !important;
+}
+
+html[data-ws-no-text-color] .reader-container .alert-window:has(img[src*="ch1_1.webp"]) .comment-post-title,
+html[data-ws-no-text-color] .reader-container .alert-window:has(img[src*="ch1_1.webp"]) .comment-post-desc,
+html[data-ws-no-text-color] .reader-container .alert-window:has(img[src*="ch1_1.webp"]) .comment-post-desc * {
+  font-weight: bold !important;
 }

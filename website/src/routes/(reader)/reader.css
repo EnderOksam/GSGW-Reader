@@ -786,6 +786,7 @@ hr.invisible-hr {
 [data-ws-no-text-color] .hex-aurora-up,
 [data-ws-no-text-color] .hex-aurora-up-static,
 [data-ws-no-text-color] .gold-text,
+[data-ws-no-text-color] .sparkle-text,
 [data-ws-no-text-color] .silver-text,
 [data-ws-no-text-color] .moon-text {
   color: inherit;
@@ -793,6 +794,8 @@ hr.invisible-hr {
   -webkit-background-clip: border-box;
   background-clip: border-box;
   -webkit-text-fill-color: currentColor;
+  -webkit-text-stroke: 0;
+  text-stroke: 0;
   text-shadow: none;
   filter: none;
   animation: none;
@@ -817,6 +820,8 @@ hr.invisible-hr {
 
 [data-ws-no-text-color] .gold-text::before,
 [data-ws-no-text-color] .gold-text::after,
+[data-ws-no-text-color] .sparkle-text::before,
+[data-ws-no-text-color] .sparkle-text::after,
 [data-ws-no-text-color] .silver-text::before,
 [data-ws-no-text-color] .silver-text::after,
 [data-ws-no-text-color] .moon-text::before,
