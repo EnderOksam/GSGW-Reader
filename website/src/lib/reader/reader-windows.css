@@ -1261,6 +1261,30 @@ html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window::after
   display: none;
 }
 
+/* Chapter 1 Daydream employee ID: keep the graphical card when styled,
+   but expose only its three text fields in Misc windows plaintext mode. */
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) img,
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) br {
+  display: none;
+}
+
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) .comment-post-header.comment-post-header,
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) .comment-post-desc.comment-post-desc {
+  display: contents;
+}
+
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) .comment-post-title.comment-post-title,
+html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window:has(img[src*="ch1_1.webp"]) .comment-post-desc.comment-post-desc > * {
+  display: block;
+  margin: 0;
+  padding: 0;
+  color: inherit !important;
+  font: inherit;
+  font-style: normal;
+  text-align: inherit;
+  opacity: 1;
+}
+
 html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window p {
   color: inherit;
 }
@@ -1582,6 +1606,46 @@ html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon {
 .reader-container .alert-window .scroll-fill:first-child,
 .reader-container .sms-window .scroll-fill:first-child {
   margin-top: -0.5em;
+}
+
+/* Chapter 1 pop-up entrance banner: Misc plaintext keeps only the wording. */
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome {
+  display: block;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  width: auto;
+  max-width: none;
+  padding: 0;
+  margin: 3rem auto;
+  color: inherit !important;
+  font: inherit;
+  text-align: inherit;
+  overflow: visible;
+}
+
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome .scroll-wrap,
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome .scroll-sizer,
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome .scroll-track,
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome .scroll-text {
+  display: contents;
+  animation: none !important;
+  transform: none !important;
+  font: inherit;
+  color: inherit !important;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
+}
+
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome .scroll-track {
+  display: none;
+}
+
+html[data-ws-misc-plaintext] .reader-container .plain-window.ch1-darkness-welcome .hex-outline {
+  color: inherit !important;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
 }
 
 /* Optional left alignment for comment windows (★$ left). */

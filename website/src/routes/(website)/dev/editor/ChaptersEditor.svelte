@@ -4,6 +4,7 @@
   import Icon from "@iconify/svelte";
   import { slide } from "svelte/transition";
   import { tick } from "svelte";
+  import { punctuationDisplay } from "./lib/smart-punctuation";
   import { preprocessMarkdown } from "./lib/editor-markdown";
   import { REPO, BRANCH, BOOKS, tlDir, fetchChapterList, fetchChapterFile, fetchChapterPreview, extractMeta } from "./lib/github-api";
   import { loadCache as loadChapterCache, saveCache as saveChapterCache, saveChapterEdit } from "./lib/chapter-cache";
@@ -944,7 +945,9 @@
             <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
           {/if}
         </div>
-        <textarea spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+    <div class="punctuation-editor relative flex-1 min-h-0 overflow-hidden">
+        <textarea use:punctuationDisplay={input} spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="w-full h-full font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+    </div>
       </div>
     {:else}
       <div class="flex-1 flex flex-col min-h-0 min-w-0">
@@ -1022,7 +1025,9 @@
         <span class="text-[10px] font-mono text-base-content/25 truncate">{selected}</span>
       {/if}
     </div>
-    <textarea spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="flex-1 font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+    <div class="punctuation-editor relative flex-1 min-h-0 overflow-hidden">
+    <textarea use:punctuationDisplay={input} spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="w-full h-full font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+    </div>
   </div>
   <div class="flex-1 flex flex-col min-h-0 min-w-0">
     <div class="flex items-center gap-2 px-3 py-2 border-b border-base-content/10 bg-base-200/60 backdrop-blur-sm rounded-t-xl shrink-0">
@@ -1412,6 +1417,21 @@
 </div>
 
 <style>
+  .punctuation-editor :global(.punctuation-input) { color: transparent; caret-color: var(--color-base-content); }
+  .punctuation-editor :global(.punctuation-input::selection) { color: var(--color-base-content); background: var(--color-primary); }
+  .punctuation-editor :global(.punctuation-mirror) {
+    position: absolute; top: 0; left: 0;
+    border-style: solid; border-color: transparent;
+    color: color-mix(in oklab, var(--color-base-content) 80%, transparent);
+    white-space: pre-wrap; overflow-wrap: break-word; overflow: hidden;
+    pointer-events: none; user-select: none;
+  }
+  .punctuation-editor :global(.punctuation-source) { position: relative; color: transparent; }
+  .punctuation-editor :global(.punctuation-glyph) {
+    position: absolute; inset: 0;
+    color: color-mix(in oklab, var(--color-base-content) 80%, transparent); text-align: center;
+  }
+
   .chapter-content {
     font-family: var(--chapter-font, 'Alegreya', serif);
     font-size: var(--chapter-size);

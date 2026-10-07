@@ -1567,7 +1567,11 @@ def convert_chapter(content):
     content = SYSTEM_WINDOW_RE.sub(system_window_replacer, content)
 
     content = PLAIN_WINDOW_RE.sub(
-        lambda m: make_window("plain-window", m.group(1)),
+        lambda m: make_window(
+            "plain-window",
+            m.group(1),
+            "ch1-darkness-welcome" if "Welcome, Explorer of the Darkness." in m.group(1) else None,
+        ),
         content
     )
 
