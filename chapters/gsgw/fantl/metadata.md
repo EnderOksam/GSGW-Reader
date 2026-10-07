@@ -97,6 +97,12 @@ Description
 └└ Nested Reply
 $★
 
+★-
+Title
+[Label text]
+Content
+-★
+
 ★!
 this should look like an "Alert Window"
 !★
