@@ -62,12 +62,6 @@ this should look like it's inside a yellow window
 this should look like a "Paper window"
 pb!
 
-★:
-this should look like a "SMS window"
--left-oriented text message
-right-oriented text message-
-:★
-
 +-
 Darkness Exploration Records
 
@@ -87,6 +81,12 @@ this should look like a "CRT window"
 ![
 this should look like "Braun screen window"
 ]!
+
+★:
+this should look like a "SMS window"
+-left-oriented text message
+right-oriented text message-
+:★
 
 ★$
 [Title]
