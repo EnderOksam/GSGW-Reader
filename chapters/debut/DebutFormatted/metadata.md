@@ -55,11 +55,19 @@ This EPUB also uses some custom formatting. If your current EPUB reader does not
 this should look like it's inside a yellow window
 -!
 
+!pb
+this should look like a "Paper window"
+pb!
+
 ★:
 this should look like a "SMS window"
 -left-oriented text message
 right-oriented text message-
 :★
+
++=
+this should look like a "CRT window"
+=+
 
 ★!
 this should look like a "Debut Alert Window"
