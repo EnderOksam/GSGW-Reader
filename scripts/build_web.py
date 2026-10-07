@@ -1106,7 +1106,7 @@ FOOTNOTE_TAG_REPLACEMENTS = [
     (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),
      lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL),
-     lambda m: f'<span class="hex-outline" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>'),
+     lambda m: f'<span class="hex-outline{" ch1-darkness-title" if " ".join(m.group(2).split()) == "[Prophecy of the Apocalypse: Darkness Exploration Records]" else ""}" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxa\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxa\$", re.DOTALL),
      lambda m: hex_aurora_replacer(m)),
     (re.compile(r"\$hxas\(([^)]+)\)\(([^)]+)\)\(([^)]+)\)(.*?)hxas\$", re.DOTALL),
@@ -1528,7 +1528,7 @@ def convert_chapter(content, *, chapter1_gsgw=False):
     content = HEX_COLOR_RE.sub(lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>', content)
 
     content = HEX_OUTLINE_RE.sub(
-        lambda m: f'<span class="hex-outline" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>',
+        lambda m: f'<span class="hex-outline{" ch1-darkness-title" if " ".join(m.group(2).split()) == "[Prophecy of the Apocalypse: Darkness Exploration Records]" else ""}" style="--hxo-color:{m.group(1)}">{m.group(2)}</span>',
         content
     )
 
