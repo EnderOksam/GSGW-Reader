@@ -38,6 +38,10 @@ page-progression-direction: ltr
 
 **Last Updated:** {{DATE}}
 
+The EPUB is automatically generated and updated on the 1st and 15th of every month. Any chapter edits made between releases will be included in the next scheduled EPUB update.
+
+You can get the latest EPUB from our website, **_ireum.pages.dev_**
+
 **Edited by:** Readers 
 
 **Big contributions by:** Ender (enderoksam), Dominus (dominusz), Destiny (heydestiny), Lei (moonsoleum), Beiruu (everythingtbs), Sen (senyen), and Seirios (lawofentropy)
