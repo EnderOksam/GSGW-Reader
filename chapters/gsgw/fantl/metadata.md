@@ -7,7 +7,7 @@ creator:
     text: "Baek Deoksoo"
 contributor:
   - role: translator
-    text: "Salt Goblin"
+    text: "Salt Goblin, Ugly Sunfish, Goop and Geminel, Beiruu"
 identifier:
   - scheme: URN
     text: "urn:uuid:gsgw-reader-gsgw-webnovel"
@@ -40,7 +40,7 @@ page-progression-direction: ltr
 
 The EPUB is automatically generated and updated on the 1st and 15th of every month. Any chapter edits made between releases will be included in the next scheduled EPUB update.
 
-Read the latest version online or download the latest EPUB from our website at **_ireum.pages.dev_**
+Read the latest version online or download the latest EPUB from our website at <a href="https://ireum.pages.dev/">**_ireum.pages.dev_**</a>
 
 **Edited by:** Readers 
 
@@ -48,50 +48,34 @@ Read the latest version online or download the latest EPUB from our website at *
 
 This chapter is ignored by the website and is included exclusively in the EPUB for credits and other additional information. 
 
-This EPUB also uses some custom formatting. If your current EPUB reader does not display the formatting correctly, you may want to consider using a different EPUB reader.
+This EPUB also uses some custom formatting. If your current EPUB reader does not display the formatting correctly, you may want to consider using a reader that supports EPUB3 files.
 
-![](FormattingReference.webp)
 
 #r this line should show up as red text r#
 
 #b this line should show up as blue text b#
 
-!-
-this should look like it's inside a yellow window
--!
 
-!pb
-this should look like a "Paper window"
-pb!
+Compare the following windows to the image of the windows to determine if your reader supports the formatting (window image may not be the same size as rendered window).
 
 +-
 Darkness Exploration Records
 
-this should look like a "Wiki window"
+This is a "Wiki window"
 -+
 
-+~
-Title
-
-this should look like a "GSGW System window"
-~+
-
-+=
-this should look like a "CRT window"
-=+
-
-![
-this should look like "Braun screen window"
-]!
+![](wikiwindow_epub.webp)
 
 ★:
-this should look like a "SMS window"
+This is a "SMS window"
 -left-oriented text message
 right-oriented text message-
 :★
 
+![](smswindow_epub.webp)
+
 ★$
-[Title]
+[This is a "Comment window" ]
 : Sub-Title
 Description
 -Comment
@@ -99,23 +83,8 @@ Description
 └└ Nested Reply
 $★
 
-★-
-Title
-[Label text]
-Content
--★
+![](commentwindow_epub.webp)
 
-★!
-this should look like an "Debut Alert Window"
-!★
-
-★=
-[Achievement]
-[
-item one
-item two
-]
-=★
 
 Illustrations by:
 
