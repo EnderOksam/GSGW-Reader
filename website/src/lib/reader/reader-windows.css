@@ -1250,7 +1250,7 @@ html[data-ws-misc-plaintext] .reader-container .alert-window.alert-window {
   width: auto;
   max-width: none;
   padding: 0;
-  margin: 3rem auto;
+  margin: 2em auto;
   text-align: inherit;
   color: inherit !important;
   overflow: visible;
@@ -1309,6 +1309,15 @@ html[data-ws-misc-plaintext] .reader-container .comment-post-header.comment-post
   border-bottom: 0;
 }
 
+/* Bracket the post title and description without enclosing the comments
+   or the employee ID card, which reuses the post header markup. */
+html[data-ws-misc-plaintext] .reader-container .alert-window:not(:has(img[src*="ch1_1.webp"])) > .comment-post-header::before,
+html[data-ws-misc-plaintext] .reader-container .alert-window:not(:has(img[src*="ch1_1.webp"])) > .comment-post-header::after {
+  content: "-----------";
+  display: block;
+  color: inherit;
+}
+
 html[data-ws-misc-plaintext] .reader-container .comment-post-title.comment-post-title {
   color: inherit;
   font-size: 1.1em;
@@ -1320,7 +1329,7 @@ html[data-ws-misc-plaintext] .reader-container .comment-post-desc.comment-post-d
 }
 
 html[data-ws-misc-plaintext] .reader-container .comment-section.comment-section {
-  padding: 0.5rem 0 1rem;
+  padding: 0;
 }
 
 html[data-ws-misc-plaintext] .reader-container .comment.comment {
@@ -1329,6 +1338,14 @@ html[data-ws-misc-plaintext] .reader-container .comment.comment {
   border-radius: 0;
   color: inherit;
   text-align: inherit;
+}
+
+/* Keep the top-level comment marker visible in plaintext mode, mirroring
+   the reply icon that already prefixes replies. */
+html[data-ws-misc-plaintext] .reader-container .comment.comment::before {
+  content: "- ";
+  color: inherit;
+  opacity: 0.7;
 }
 
 html[data-ws-misc-plaintext] .reader-container .comment-reply.comment-reply,
@@ -1348,6 +1365,23 @@ html[data-ws-misc-plaintext] .reader-container .reply-body.reply-body {
 html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon {
   color: inherit;
   opacity: 0.7;
+  visibility: hidden;
+  position: relative;
+  width: 0.9ch;
+  display: inline-block;
+  font-size: 1em;
+  line-height: 1;
+  vertical-align: baseline;
+}
+
+html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon::before {
+  content: "∟";
+  visibility: visible;
+  position: absolute;
+  left: 0;
+  font-size: 1em;
+  line-height: 1;
+  transform: translateY(0.1em);
 }
 
 
