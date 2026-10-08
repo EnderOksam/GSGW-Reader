@@ -47,6 +47,8 @@ This chapter is ignored by the website and is included exclusively in the EPUB f
 
 This EPUB also uses some custom formatting. If your current EPUB reader does not display the formatting correctly, you may want to consider using a different EPUB reader.
 
+![](FormattingReference_1.webp)
+
 #r this line should show up as red text r#
 
 #b this line should show up as blue text b#
@@ -69,10 +71,6 @@ this should look like a "SMS window"
 right-oriented text message-
 :★
 
-★!
-this should look like an "Debut Alert Window"
-!★
-
 ★$
 [Title]
 : Sub-Title
@@ -82,16 +80,20 @@ Description
 └└ Nested Reply
 $★
 
-★=
-[Achievement]
-[
-Item one
-Item two
-]
-=★
-
 ★-
 Title
 [Label text]
 Content
 -★
+
+★!
+this should look like an "Debut Alert Window"
+!★
+
+★=
+[Achievement]
+[
+item one
+item two
+]
+=★
