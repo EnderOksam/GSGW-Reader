@@ -104,7 +104,7 @@ Content
 -★
 
 ★!
-this should look like an "Alert Window"
+this should look like an "Debut Alert Window"
 !★
 
 Illustrations by:
