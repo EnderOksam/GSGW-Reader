@@ -109,6 +109,14 @@ Content
 this should look like an "Debut Alert Window"
 !★
 
+★=
+[Achievement]
+[
+item one
+item two
+]
+=★
+
 Illustrations by:
 
 #* @uoongpig on X *#
