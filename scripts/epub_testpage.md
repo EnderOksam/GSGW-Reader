@@ -65,7 +65,7 @@ $vcr VCR Text vcr$
 ***
 
 +-
-Dark exploration records
+Dark Exploration Records
 
 window example
 -+
@@ -89,7 +89,7 @@ bare window example
 .+
 
 &-
-Disaster management bureau
+Disaster Management Bureau
 
 dmb window example
 -&
@@ -117,18 +117,18 @@ braun screen example
 ]!
 
 ★:
-- PMD: left message
+- left message
 right message -
 centered message
 :★
 
 ★$
-[Title]
+[Title **bold text**]
 : Sub-Title
 Description
--Comment
-└ reply
-└└reply reply
+-Comment *italic*
+└ *Reply*
+└└Nested **reply**
 $★
 
 +=

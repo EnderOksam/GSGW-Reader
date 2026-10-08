@@ -2337,6 +2337,19 @@ pre.gauge {
   -webkit-text-fill-color: #999999 !important;
 }
 
+/* Inline emphasis follows its title, comment or reply color in EPUB readers. */
+.alert-window strong,
+.alert-window b,
+.alert-window em,
+.alert-window i,
+.alert-window .comment strong,
+.alert-window .comment b,
+.alert-window .comment em,
+.alert-window .comment i {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+}
+
 /* FINAL IBOOKS WINDOW COLOR PRESERVATION */
 .ibooks-dark-theme-use-custom-text-color {
   -webkit-text-fill-color: inherit !important;

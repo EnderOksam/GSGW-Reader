@@ -1813,6 +1813,12 @@ body .reader-container .reply-body.reply-body {
   text-align: justify;
 }
 
+/* Keep inline emphasis in the same color as its title, comment or reply. */
+body .reader-container .alert-window.alert-window
+  :is(strong, b, em, i):not([class^="text-"]) {
+  color: inherit;
+}
+
 /* =========================================================
    SMS WINDOW (★:)
    ========================================================= */

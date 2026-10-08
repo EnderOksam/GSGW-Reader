@@ -40,7 +40,7 @@ page-progression-direction: ltr
 
 The EPUB is automatically generated and updated on the 1st and 15th of every month. Any chapter edits made between releases will be included in the next scheduled EPUB update.
 
-Read the latest version online or download the latest EPUB from our website at <a href="https://ireum.pages.dev/">**_ireum.pages.dev_**</a>
+Read the latest version online or download the latest EPUB from our website at <a style="color: #1a73e8;" href="https://ireum.pages.dev/">**_ireum.pages.dev_**</a>
 
 **Edited by:** Readers 
 
@@ -68,8 +68,8 @@ This is a "Wiki window"
 
 ★:
 This is a "SMS window"
--left-oriented text message
-right-oriented text message-
+-left message
+right message-
 :★
 
 ![](smswindow_epub.webp)

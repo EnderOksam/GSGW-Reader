@@ -897,6 +897,10 @@ def scrub_window_inner(inner):
 def make_window(class_name, inner, extra_class=None):
 
     inner = scrub_window_inner(inner)
+    if class_name == "alert-window":
+        # Match the editor's inline italics without relying on Pandoc to parse
+        # Markdown inside the comment/reply HTML elements.
+        inner = re.sub(r"\*(.+?)\*", r"<em>\1</em>", inner)
 
     cls = class_name
 

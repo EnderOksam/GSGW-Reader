@@ -1307,6 +1307,11 @@ def make_window(class_name, inner, extra_class=None):
     inner = re.sub(r"\*\*\*(.+?)\*\*\*", r"<strong><em>\1</em></strong>", inner, flags=re.DOTALL)
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner, flags=re.DOTALL)
 
+    if class_name == "alert-window":
+        # Render comment/reply italics explicitly, matching the web builder
+        # and editor instead of relying on Markdown inside raw HTML.
+        inner = re.sub(r"\*(.+?)\*", r"<em>\1</em>", inner)
+
     cls = class_name
 
     if extra_class:
