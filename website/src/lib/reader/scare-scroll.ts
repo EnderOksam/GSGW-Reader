@@ -28,19 +28,20 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
   let lockTimer: ReturnType<typeof setTimeout> | null = null;
   let revealTimer: ReturnType<typeof setTimeout> | null = null;
   let scrollLocked = false;
+  let scrollArriving = false;
   let returnAnim = false;
   let lockScrollY = 0;
   let lockSession = 0;
 
   const onWheel = (e: WheelEvent) => {
-    if (scrollLocked) {
+    if (scrollLocked || scrollArriving) {
       e.preventDefault();
       e.stopPropagation();
     }
   };
 
   const onTouchMove = (e: TouchEvent) => {
-    if (scrollLocked) {
+    if (scrollLocked || scrollArriving) {
       e.preventDefault();
       e.stopPropagation();
     }
@@ -51,7 +52,7 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
   // already in progress when the lock engaged still gets the forced pause —
   // lifting and re-touching (or just tapping) always gets you out.
   const onTouchStart = () => {
-    if (scrollLocked) endLock();
+    if (scrollLocked || scrollArriving) endLock();
   };
 
   // Ease back to the locked position instead of yanking instantly — keeps the
@@ -83,6 +84,7 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
 
   function setLock(y: number, session: number) {
     if (session !== lockSession) return;
+    scrollArriving = false;
     lockScrollY = y;
     scrollLocked = true;
     // The forced pause only "counts" once the scroll has settled to the scare,
@@ -93,6 +95,7 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
   }
 
   function endLock() {
+    scrollArriving = false;
     scrollLocked = false;
     lockSession += 1;
     returnAnim = false;
@@ -115,9 +118,11 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
   function snapToCenter(win: HTMLElement) {
     const rect = win.getBoundingClientRect();
     const tall = rect.height > window.innerHeight;
-    const target = tall
+    const desired = tall
       ? window.scrollY + rect.top - SCARE_TOP_OFFSET
       : window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const target = Math.max(0, Math.min(desired, maxScroll));
     window.scrollTo({ top: target, behavior: "smooth" });
     return target;
   }
@@ -135,6 +140,9 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
         Math.abs(window.scrollY - target) < 2 ||
         performance.now() - startedAt > SETTLE_WAIT_MS
       ) {
+        // An interrupted native animation (notably during wheel scrolling in
+        // Firefox) must still reach the target before the pause begins.
+        window.scrollTo({ top: target, behavior: "instant" });
         setLock(target, session);
       } else {
         requestAnimationFrame(settle);
@@ -153,6 +161,8 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
     const article = zone.closest("article");
     if (article) article.setAttribute("data-scared", "");
 
+    // Block continuing wheel/touch input during arrival as well as the pause.
+    scrollArriving = true;
     const target = snapToCenter(win);
     const session = ++lockSession;
     lockWhenSettled(target, session);
