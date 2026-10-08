@@ -50,6 +50,8 @@ This chapter is ignored by the website and is included exclusively in the EPUB f
 
 This EPUB also uses some custom formatting. If your current EPUB reader does not display the formatting correctly, you may want to consider using a different EPUB reader.
 
+![](FormattingReference.webp)
+
 #r this line should show up as red text r#
 
 #b this line should show up as blue text b#
