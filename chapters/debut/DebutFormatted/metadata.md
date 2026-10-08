@@ -61,9 +61,25 @@ this should look like it's inside a yellow window
 this should look like a "Paper window"
 pb!
 
++-
+Darkness Exploration Records
+
+this should look like a "Wiki window"
+-+
+
++~
+Title
+
+this should look like a "GSGW System window"
+~+
+
 +=
 this should look like a "CRT window"
 =+
+
+![
+this should look like "Braun screen window"
+]!
 
 ★:
 this should look like a "SMS window"
