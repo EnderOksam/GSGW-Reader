@@ -1665,11 +1665,78 @@ html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon::before {
   text-align: inherit !important;
 }
 
-/* --- Adjustable body-text side margins (windows keep their own gutter) --- */
-.reader-container > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure, table, span),
-.reader-container .scare-page > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure, table, span),
-.reader-container :is(.padding-window, .braun-tv-text, .braun-doll-text) {
+/* --- Adjustable body-text side margins --- */
+
+/* Regular chapter text */
+.reader-container > :is(
+  p, h1, h2, h3, h4, h5, h6,
+  ul, ol, blockquote, pre, figure, table, span
+),
+
+/* Regular text inside scare pages */
+.reader-container .scare-page > p:not(:has(img)),
+.reader-container .scare-page > :is(
+  h1, h2, h3, h4, h5, h6,
+  ul, ol, blockquote, pre, table, span
+),
+
+/* Text-only wrappers directly in chapters */
+.reader-container > :is(
+  .padding-window,
+  .braun-tv-text,
+  .braun-doll-text
+),
+
+/* Text-only wrappers directly inside scare pages */
+.reader-container .scare-page > :is(
+  .padding-window,
+  .braun-tv-text,
+  .braun-doll-text
+) {
   margin-inline: var(--text-gutter, 0px);
+}
+
+
+/* --- Styled window margin fixes --- */
+
+/* Prevent nested $p wrappers from inheriting body-text gutters */
+.reader-container :is(
+  .paper-boat,
+  .note-window,
+  .alert-window,
+  .plain-window,
+  .black-window,
+  .bare-window,
+  .sticky-window,
+  .record-window,
+  .wiki-window,
+  .system-window,
+  .sms-window,
+  .followup-window,
+  .debut-window
+) .padding-window {
+  margin-inline: 0;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Wrap unusually long text inside affected windows */
+.reader-container :is(
+  .paper-boat,
+  .note-window,
+  .alert-window
+) .padding-window p {
+  overflow-wrap: anywhere;
+}
+
+/* Also handle paragraphs directly inside affected windows */
+.reader-container :is(
+  .paper-boat,
+  .note-window,
+  .alert-window
+) > p {
+  overflow-wrap: anywhere;
 }
 
 /* Only the Chapter 1 entrance banner follows Misc Windows → Plaintext.
