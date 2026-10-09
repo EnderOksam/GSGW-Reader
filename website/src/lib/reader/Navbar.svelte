@@ -65,6 +65,7 @@
 
   const WINDOW_SETTINGS_DEFAULTS = { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, windowGutter: -32, textGutter: 0 };
   const TEXT_GUTTER_MIN = -24;
+  const WINDOW_GUTTER_MIN = -40;
   function loadWindowSettings(): typeof WINDOW_SETTINGS_DEFAULTS {
     if (!browser) return { ...WINDOW_SETTINGS_DEFAULTS };
     try {
@@ -72,6 +73,7 @@
       if (saved) {
         const merged = { ...WINDOW_SETTINGS_DEFAULTS, ...JSON.parse(saved) };
         merged.textGutter = Math.max(TEXT_GUTTER_MIN, merged.textGutter ?? 0);
+        merged.windowGutter = Math.max(WINDOW_GUTTER_MIN, merged.windowGutter ?? WINDOW_SETTINGS_DEFAULTS.windowGutter);
         return merged;
       }
     } catch { /* ignore */ }
@@ -1077,6 +1079,7 @@
           label="Window side margins"
           value={windowSettings.windowGutter}
           onChange={(v) => (windowSettings.windowGutter = v)}
+          min={WINDOW_GUTTER_MIN}
           presets={[
             { label: "Default", value: -32 },
             { label: "Compact", value: 28 },

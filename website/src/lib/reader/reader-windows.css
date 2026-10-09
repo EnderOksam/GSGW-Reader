@@ -1667,7 +1667,8 @@ html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon::before {
 
 /* --- Adjustable body-text side margins (windows keep their own gutter) --- */
 .reader-container > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure, table, span),
-.reader-container :is(.padding-window, .braun-tv-text, .braun-doll-text) > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre) {
+.reader-container .scare-page > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre, figure, table, span),
+.reader-container :is(.padding-window, .braun-tv-text, .braun-doll-text) {
   margin-inline: var(--text-gutter, 0px);
 }
 
