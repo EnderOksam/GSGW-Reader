@@ -64,8 +64,8 @@
   let snippetPrimaryColor = $state("oklch(var(--p))");
 
   const WINDOW_SETTINGS_DEFAULTS = { customTextColors: true, braunColor: true, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, windowGutter: -32, textGutter: 0 };
-  const TEXT_GUTTER_MIN = -24;
-  const WINDOW_GUTTER_MIN = -40;
+  const TEXT_GUTTER_MIN = -68;
+  const WINDOW_GUTTER_MIN = -50;
   function loadWindowSettings(): typeof WINDOW_SETTINGS_DEFAULTS {
     if (!browser) return { ...WINDOW_SETTINGS_DEFAULTS };
     try {
