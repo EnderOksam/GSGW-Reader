@@ -549,7 +549,7 @@
 
   .chapter-content :global(p) {
     text-indent: var(--chapter-indent);
-    text-wrap: pretty;
+    text-wrap: wrap;
   }
 
   :global(:fullscreen) {
