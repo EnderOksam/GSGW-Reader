@@ -1668,32 +1668,43 @@ html[data-ws-misc-plaintext] .reader-container .reply-icon.reply-icon::before {
 /* --- Adjustable body-text side margins --- */
 
 /* Regular chapter text */
-.reader-container > :is(
+.reader-container:not(.snippet-preview) > :is(
   p, h1, h2, h3, h4, h5, h6,
   ul, ol, blockquote, pre, figure, table, span
 ),
 
 /* Regular text inside scare pages */
-.reader-container .scare-page > p:not(:has(img)),
-.reader-container .scare-page > :is(
+.reader-container:not(.snippet-preview) .scare-page > p:not(:has(img)),
+.reader-container:not(.snippet-preview) .scare-page > :is(
   h1, h2, h3, h4, h5, h6,
   ul, ol, blockquote, pre, table, span
 ),
 
 /* Text-only wrappers directly in chapters */
-.reader-container > :is(
+.reader-container:not(.snippet-preview) > :is(
   .padding-window,
   .braun-tv-text,
   .braun-doll-text
 ),
 
 /* Text-only wrappers directly inside scare pages */
-.reader-container .scare-page > :is(
+.reader-container:not(.snippet-preview) .scare-page > :is(
   .padding-window,
   .braun-tv-text,
   .braun-doll-text
 ) {
   margin-inline: var(--text-gutter, 0px);
+}
+
+.reader-container:not(.snippet-preview) > hr:not(.visible-hr):not(.invisible-hr),
+.reader-container:not(.snippet-preview) .scare-page > hr:not(.visible-hr):not(.invisible-hr) {
+  margin-inline: calc(var(--text-gutter, 0px) * 0.8);
+}
+
+.reader-container:not(.snippet-preview) > hr.visible-hr,
+.reader-container:not(.snippet-preview) .scare-page > hr.visible-hr {
+  margin-inline: auto;
+  width: calc(60% - var(--text-gutter, 0px) * 0.96);
 }
 
 

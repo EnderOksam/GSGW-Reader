@@ -306,6 +306,7 @@
       .snippet-preview > .braun-doll-text + * { margin-top: 0 !important; }
     `;
     styleEl.textContent = readerCss + "\n" + readerWindowsCss + "\n" + `
+      .snippet-preview { --text-gutter: 0px; --window-gutter: 0px; }
       .snippet-preview > :first-child${notPadded} { margin-top: 0 !important; padding-top: 0 !important; }
       .snippet-preview > :last-child${notPadded} { margin-bottom: 0 !important; padding-bottom: 0 !important; }
       .snippet-preview p { margin-bottom: 1.1em; }
