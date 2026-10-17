@@ -736,7 +736,8 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r";r(.*?)r;", re.DOTALL), r'<span class="hl-red">\1</span>'),
     (re.compile(r";b(.*?)b;", re.DOTALL), r'<span class="hl-blue">\1</span>'),
     (re.compile(r";y(.*?)y;", re.DOTALL), r'<span class="hl-yellow">\1</span>'),
-    (re.compile(r";p(.*?)p;", re.DOTALL), r'<span class="hl-magenta">\1</span>'),
+    # Neither end of a purple highlight may consume part of &nbsp;.
+    (re.compile(r"(?<!&nbsp);p(.*?)(?<!&nbs)p;", re.DOTALL), r'<span class="hl-magenta">\1</span>'),
     (re.compile(r";g(.*?)g;", re.DOTALL), r'<span class="hl-green">\1</span>'),
     (re.compile(r";o(.*?)o;", re.DOTALL), r'<span class="hl-orange">\1</span>'),
 
@@ -1136,7 +1137,7 @@ def subtle_replacer(match, word_level=False):
     inner = re.sub(r";r(.+?)r;", r'<span class="hl-red">\1</span>', inner)
     inner = re.sub(r";b(.+?)b;", r'<span class="hl-blue">\1</span>', inner)
     inner = re.sub(r";y(.+?)y;", r'<span class="hl-yellow">\1</span>', inner)
-    inner = re.sub(r";p(.+?)p;", r'<span class="hl-magenta">\1</span>', inner)
+    inner = re.sub(r"(?<!&nbsp);p(.+?)(?<!&nbs)p;", r'<span class="hl-magenta">\1</span>', inner)
     inner = re.sub(r";g(.+?)g;", r'<span class="hl-green">\1</span>', inner)
     inner = re.sub(r";o(.+?)o;", r'<span class="hl-orange">\1</span>', inner)
 
@@ -2375,6 +2376,10 @@ def content_opf(
             )
 
     FONT_FILES = [
+        ("Fonts/Libron-Regular.woff2", "font-libron-regular", "font/woff2"),
+        ("Fonts/Libron-Italic.woff2", "font-libron-italic", "font/woff2"),
+        ("Fonts/Libron-Bold.woff2", "font-libron-bold", "font/woff2"),
+        ("Fonts/Libron-BoldItalic.woff2", "font-libron-bold-italic", "font/woff2"),
         ("Fonts/ComicNeue-Regular.woff2", "font-comic-neue-regular", "font/woff2"),
         ("Fonts/ComicNeue-Bold.woff2", "font-comic-neue-bold", "font/woff2"),
         ("Fonts/Caveat-Variable.woff2", "font-caveat", "font/woff2"),
@@ -2415,7 +2420,7 @@ def content_opf(
         ("Fonts/DungGeunMo.woff2", "font-dunggeunmo.woff2", "font/woff2"),
         ("Fonts/Hakgyoansim Byeolbichhaneul OTF B.woff2", "font-hakgyoansim-byeolbichhaneul", "font/woff2"),
         ("Fonts/KCC-Sonkeechung.woff2", "font-kcc-sonkeechung", "font/woff2"),
-            ("Fonts/MapoFlowerIsland.woff2", "font-mapo-flower-island", "font/woff2"),
+        ("Fonts/MapoFlowerIsland.woff2", "font-mapo-flower-island", "font/woff2"),
         ("Fonts/BMEuljiro10yearslater.woff2", "font-bm-euljiro-10-years-later", "font/woff2"),
 
     ]
@@ -2544,6 +2549,10 @@ def write_epub(
 
 def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
     font_names = [
+        "Libron-Regular.woff2",
+        "Libron-Italic.woff2",
+        "Libron-Bold.woff2",
+        "Libron-BoldItalic.woff2",
         "BMKkubulim.woff2",
         "BMEuljiro10yearslater.woff2",
         "Caveat-Variable.woff2",

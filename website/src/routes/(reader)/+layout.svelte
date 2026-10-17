@@ -28,7 +28,7 @@
   class UserPreferences {
     config = $state({
       theme: "sunset",
-      font: "Alegreya",
+      font: "Libron",
       fontSize: 25,
       fontWeight: 450,
       lineHeight: 1.8,
@@ -64,7 +64,7 @@
     reset() {
       this.config = {
         theme: "sunset",
-        font: "Alegreya",
+        font: "Libron",
         fontSize: 25,
         fontWeight: 450,
         lineHeight: 1.8,

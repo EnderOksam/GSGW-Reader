@@ -592,6 +592,17 @@
   text-align: left;
 }
 
+/* Keep alignment markers inset only on the side opposite their alignment. */
+.reader-container .paper-boat .align-left,
+.reader-container .paper-boat .mono-left {
+  padding-right: 8%;
+}
+
+.reader-container .paper-boat .align-right,
+.reader-container .paper-boat .mono-right {
+  padding-left: 8%;
+}
+
 .reader-container .paper-boat strong {
   font-size: 1em;
 }

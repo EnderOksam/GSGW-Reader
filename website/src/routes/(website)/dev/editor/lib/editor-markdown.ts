@@ -205,7 +205,7 @@ function glitchSubtleTokens(inner: string): string[] {
   inner = inner.replace(/;r(.+?)r;/gs, '<span class="hl-red">$1</span>');
   inner = inner.replace(/;b(.+?)b;/gs, '<span class="hl-blue">$1</span>');
   inner = inner.replace(/;y(.+?)y;/gs, '<span class="hl-yellow">$1</span>');
-  inner = inner.replace(/;p(.+?)p;/gs, '<span class="hl-magenta">$1</span>');
+  inner = inner.replace(/(?<!&nbsp);p(.+?)(?<!&nbs)p;/gs, '<span class="hl-magenta">$1</span>');
   inner = inner.replace(/;g(.+?)g;/gs, '<span class="hl-green">$1</span>');
   inner = inner.replace(/;o(.+?)o;/gs, '<span class="hl-orange">$1</span>');
 
@@ -367,7 +367,8 @@ const simpleInlineTags: [RegExp, string][] = [
   [/;r(.*?)r;/gs, '<span class="hl-red">$1</span>'],
   [/;b(.*?)b;/gs, '<span class="hl-blue">$1</span>'],
   [/;y(.*?)y;/gs, '<span class="hl-yellow">$1</span>'],
-  [/;p(.*?)p;/gs, '<span class="hl-magenta">$1</span>'],
+  // Neither end of a purple highlight may consume part of &nbsp;.
+  [/(?<!&nbsp);p(.*?)(?<!&nbs)p;/gs, '<span class="hl-magenta">$1</span>'],
   [/;g(.*?)g;/gs, '<span class="hl-green">$1</span>'],
   [/;o(.*?)o;/gs, '<span class="hl-orange">$1</span>'],
 
