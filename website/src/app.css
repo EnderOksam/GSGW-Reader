@@ -5,6 +5,81 @@
   themes: all;
 }
 
+/* SCP Foundation: paper, charcoal, and deep red. */
+@plugin "daisyui/theme" {
+  name: "scp-foundation";
+  default: false;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #f4f4f4;
+  --color-base-200: #e8e8e8;
+  --color-base-300: #d3d3d3;
+  --color-base-content: #222222;
+  --color-primary: #990000;
+  --color-primary-content: #ffffff;
+  --color-secondary: #333333;
+  --color-secondary-content: #ffffff;
+  --color-accent: #7a0000;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1a1a1a;
+  --color-neutral-content: #f4f4f4;
+  --color-info: #36576b;
+  --color-info-content: #ffffff;
+  --color-success: #356044;
+  --color-success-content: #ffffff;
+  --color-warning: #e0b44c;
+  --color-warning-content: #222222;
+  --color-error: #b01b1b;
+  --color-error-content: #ffffff;
+
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+
+@plugin "daisyui/theme" {
+  name: "scp-foundation-dark";
+  default: false;
+  prefersdark: false;
+  color-scheme: dark;
+
+  --color-base-100: #181818;
+  --color-base-200: #222222;
+  --color-base-300: #333333;
+  --color-base-content: #e8e8e8;
+  --color-primary: #ff3838;
+  --color-primary-content: #180404;
+  --color-secondary: #bcbcbc;
+  --color-secondary-content: #181818;
+  --color-accent: #ee3030;
+  --color-accent-content: #180404;
+  --color-neutral: #101010;
+  --color-neutral-content: #e8e8e8;
+  --color-info: #249cdb;
+  --color-info-content: #04121a;
+  --color-success: #1aaf5d;
+  --color-success-content: #031509;
+  --color-warning: #f0ad00;
+  --color-warning-content: #1a1200;
+  --color-error: #ff2929;
+  --color-error-content: #180404;
+
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
 
 body {
   font-family: 'Alegreya';
