@@ -5,6 +5,41 @@
   themes: all;
 }
 
+@plugin "daisyui/theme" {
+  name: "ireum-pages";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: #080909;
+  --color-base-200: #111313;
+  --color-base-300: #222625;
+  --color-base-content: #eee9df;
+  --color-primary: #ff3b40;
+  --color-primary-content: #190405;
+  --color-secondary: #fb8462;
+  --color-secondary-content: #210c06;
+  --color-accent: #00c9a7;
+  --color-accent-content: #001b16;
+  --color-neutral: #040505;
+  --color-neutral-content: #eee9df;
+  --color-info: #38afe6;
+  --color-info-content: #04151e;
+  --color-success: #45ba77;
+  --color-success-content: #061a0e;
+  --color-warning: #edb840;
+  --color-warning-content: #211702;
+  --color-error: #ff4949;
+  --color-error-content: #210505;
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
+}
+
 /* SCP Foundation: paper, charcoal, and deep red. */
 @plugin "daisyui/theme" {
   name: "scp-foundation";

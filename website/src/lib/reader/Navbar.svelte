@@ -412,8 +412,9 @@
   }
 
   // --- Constants: Themes ---
-  const PRIORITY_THEMES = ["sunset", "scp-foundation", "scp-foundation-dark", "light", "retro", "night", "business", "cupcake", "black"];
+  const PRIORITY_THEMES = ["ireum-pages", "sunset", "scp-foundation", "scp-foundation-dark", "light", "retro", "night", "business", "cupcake", "black"];
   const ALL_THEMES = [
+    "ireum-pages",
     "sunset", "scp-foundation", "scp-foundation-dark", "light", "dark", "cupcake", "bumblebee", "emerald", "corporate",
     "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden",
     "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black",
@@ -812,7 +813,7 @@
             <select class="select select-bordered select-sm w-full rounded-xl" bind:value={prefs.config.theme}>
               <optgroup label="Recommended">
                 {#each PRIORITY_THEMES as t}
-                  <option value={t}>{t === "scp-foundation" ? "SCP Foundation" : t === "scp-foundation-dark" ? "SCP Foundation Dark" : t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                  <option value={t}>{t === "ireum-pages" ? "Ireum Pages" : t === "scp-foundation" ? "SCP Foundation" : t === "scp-foundation-dark" ? "SCP Foundation Dark" : t.charAt(0).toUpperCase() + t.slice(1)}</option>
                 {/each}
               </optgroup>
               <optgroup label="Other">
