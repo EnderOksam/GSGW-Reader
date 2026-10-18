@@ -469,7 +469,7 @@
           </span>
         {/if}
         {#if comment.author.isLegacy}
-          <span class="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600" title="Migrated from the original GitHub comments">
+          <span class="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600" title="Commented before the new comment system">
             <Icon icon="lucide:history" class="size-3" /> legacy
           </span>
         {/if}
