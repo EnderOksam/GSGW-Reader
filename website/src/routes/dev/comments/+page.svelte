@@ -260,15 +260,26 @@
         </button>
       </div>
     {:else if meReady}
-      <button
-        type="button"
-        class="inline-flex items-center gap-1.5 rounded-full border border-[#5865F2]/30 bg-[#5865F2]/10 py-1 pl-1.5 pr-2.5 text-xs font-semibold text-[#5865F2] transition-colors hover:bg-[#5865F2]/20"
-        title="Sign in with Discord"
-        onclick={() => (window.location.href = api.loginUrl(page.url.pathname))}
-      >
-        <Icon icon="mdi:discord" class="size-3.5" />
-        Sign in
-      </button>
+      <div class="flex items-center gap-1.5">
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-full border border-[#5865F2]/30 bg-[#5865F2]/10 py-1 pl-1.5 pr-2.5 text-xs font-semibold text-[#5865F2] transition-colors hover:bg-[#5865F2]/20"
+          title="Sign in with Discord"
+          onclick={() => (window.location.href = api.loginUrl(page.url.pathname))}
+        >
+          <Icon icon="mdi:discord" class="size-3.5" />
+          Discord
+        </button>
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-full border border-base-content/20 bg-base-content/5 py-1 pl-1.5 pr-2.5 text-xs font-semibold text-base-content/80 transition-colors hover:bg-base-content/10"
+          title="Sign in with GitHub"
+          onclick={() => (window.location.href = api.githubLoginUrl(page.url.pathname))}
+        >
+          <Icon icon="mdi:github" class="size-3.5" />
+          GitHub
+        </button>
+      </div>
     {/if}
   </nav>
 

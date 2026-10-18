@@ -227,7 +227,7 @@
 
   async function reactChapter(emoji: string) {
     if (!me) {
-      error = "Sign in with Discord to react.";
+      error = "Sign in to react.";
       return;
     }
     try {
@@ -241,7 +241,7 @@
 
   async function react(id: number, emoji: string) {
     if (!me) {
-      error = "Sign in with Discord to react.";
+      error = "Sign in to react.";
       return;
     }
     try {
@@ -506,10 +506,10 @@
         {#if me}
           <button type="button" class="ml-0.5 rounded-lg px-2 py-1 text-xs font-medium transition-colors hover:bg-base-content/5 hover:text-primary {replyTo === comment.id ? 'text-primary' : 'text-base-content/50'}" onclick={() => (replyTo = replyTo === comment.id ? null : comment.id)}>Reply</button>
         {/if}
-        {#if me && me.login === comment.author.login && comment.author.provider === "discord"}
+        {#if me && me.id === comment.author.id}
           <button type="button" class="rounded-lg px-2 py-1 text-xs font-medium text-base-content/50 transition-colors hover:bg-base-content/5 hover:text-primary" onclick={() => startEdit(comment)}>Edit</button>
         {/if}
-        {#if me && (me.isAdmin || (me.login === comment.author.login && comment.author.provider === "discord"))}
+        {#if me && (me.isAdmin || me.id === comment.author.id)}
           <button type="button" class="rounded-lg px-2 py-1 text-xs font-medium text-base-content/50 transition-colors hover:bg-error/10 hover:text-error" onclick={() => removeComment(comment.id)}>Delete</button>
         {/if}
       </div>

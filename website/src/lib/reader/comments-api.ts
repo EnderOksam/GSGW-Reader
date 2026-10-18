@@ -1,4 +1,5 @@
 export interface CommentAuthor {
+  id: number;
   login: string;
   displayName: string;
   avatarUrl: string | null;
@@ -118,6 +119,10 @@ export function getCounts(chapters: string[]): Promise<{ counts: Record<string, 
 
 export function loginUrl(returnTo: string): string {
   return `/api/auth/discord?returnTo=${encodeURIComponent(returnTo)}`;
+}
+
+export function githubLoginUrl(returnTo: string): string {
+  return `/api/auth/github?returnTo=${encodeURIComponent(returnTo)}`;
 }
 
 export function logoutUrl(returnTo: string): string {

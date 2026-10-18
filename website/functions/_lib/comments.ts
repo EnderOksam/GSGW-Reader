@@ -34,6 +34,7 @@ export function serializeComments(rows: CommentRow[], reactions: CommentReaction
     updatedAt: row.updated_at,
     edited: row.edited === 1,
     author: {
+      id: row.user_id,
       login: row.login,
       displayName: row.display_name || row.login,
       avatarUrl: row.avatar_url,
