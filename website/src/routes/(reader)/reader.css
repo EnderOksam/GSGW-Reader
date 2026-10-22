@@ -2079,7 +2079,9 @@ body .reader-container .alert-window.alert-window
 }
 
 /* Pause hidden scare page animations until the scare reveals */
-.reader-container .scare-zone:not(.scare-active):not([data-preview]) .scare-page * {
+.reader-container .scare-zone:not(.scare-active):not([data-preview]) :is(.scare-page, .scare-page *),
+.reader-container .scare-zone:not(.scare-active):not([data-preview]) :is(.scare-page, .scare-page *)::before,
+.reader-container .scare-zone:not(.scare-active):not([data-preview]) :is(.scare-page, .scare-page *)::after {
   animation-play-state: paused !important;
 }
 

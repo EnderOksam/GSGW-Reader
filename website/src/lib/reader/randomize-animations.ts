@@ -39,9 +39,15 @@ export function observeAnimationVisibility(): void {
   document
     .querySelectorAll("article.reader-container")
     .forEach((article) => {
-      article.querySelectorAll(ANIMATED_SELECTOR).forEach((el) => {
-        animationVisibilityObserver!.observe(el);
+      const targets = new Set<Element>();
+      article.querySelectorAll(`${ANIMATED_SELECTOR},.scare-window`).forEach((el) => {
+        // Use the stable wrapper for scares rather than the transformed text
+        // inside. Its descendants share one visibility state after reveal.
+        const target = el.closest(".scare-window") ?? el;
+        if (target !== el) el.removeAttribute("data-anim-off");
+        targets.add(target);
       });
+      for (const target of targets) animationVisibilityObserver!.observe(target);
     });
 }
 

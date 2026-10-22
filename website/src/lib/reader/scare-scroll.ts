@@ -26,7 +26,7 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
 
   const triggered = new Set<Element>();
   let lockTimer: ReturnType<typeof setTimeout> | null = null;
-  let revealTimer: ReturnType<typeof setTimeout> | null = null;
+  const revealTimers = new Set<ReturnType<typeof setTimeout>>();
   let scrollLocked = false;
   let scrollArriving = false;
   let returnAnim = false;
@@ -103,10 +103,6 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
       clearTimeout(lockTimer);
       lockTimer = null;
     }
-    if (revealTimer) {
-      clearTimeout(revealTimer);
-      revealTimer = null;
-    }
     window.removeEventListener("click", onClickCancel);
     window.removeEventListener("touchstart", onTouchStart);
   }
@@ -151,10 +147,13 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
 
   function activate(zone: HTMLElement) {
     if (triggered.has(zone)) return;
-    triggered.add(zone);
 
     const win = zone.querySelector<HTMLElement>(".scare-window");
     if (!win) return;
+    triggered.add(zone);
+
+    // A new scare replaces the previous scroll lock, but both must reveal.
+    endLock();
 
     // Block continuing wheel/touch input during arrival as well as the pause.
     scrollArriving = true;
@@ -164,10 +163,13 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
     window.addEventListener("click", onClickCancel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
 
-    // Reveal the horror a beat after the world dims around it.
-    revealTimer = setTimeout(() => {
+    // Releasing the scroll lock must never cancel a triggered scare's reveal.
+    // Track each timer separately in case several scares enter together.
+    const revealTimer = setTimeout(() => {
+      revealTimers.delete(revealTimer);
       zone.classList.add("scare-active");
     }, REVEAL_DELAY);
+    revealTimers.add(revealTimer);
   }
 
   const observer = new IntersectionObserver(
@@ -207,5 +209,7 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
     window.removeEventListener("touchmove", onTouchMove);
     window.removeEventListener("scroll", onScroll);
     endLock();
+    for (const timer of revealTimers) clearTimeout(timer);
+    revealTimers.clear();
   };
 }
