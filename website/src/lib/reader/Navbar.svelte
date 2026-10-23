@@ -857,7 +857,7 @@
           </div>
 
           <div class="flex items-center justify-between gap-3">
-            <span class="min-w-0 truncate text-sm font-medium">Illustrations</span>
+            <span class="min-w-0 truncate text-sm font-medium">Twitter Illustrations</span>
             <div class="flex items-center gap-2">
               <div class="flex shrink-0 rounded-full bg-base-100 p-0.5 ring-1 ring-base-content/10">
                 {#each ["default", "minimal", "off"] as style}
