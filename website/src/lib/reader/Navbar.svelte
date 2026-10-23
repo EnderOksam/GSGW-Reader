@@ -17,6 +17,8 @@
   import WindowSample from "./WindowSample.svelte";
   import TextEffectsPreview from "./TextEffectsPreview.svelte";
   import { windowsItems } from "./windows-catalog";
+  import { ARTISTS } from "$lib/artists";
+  import { setDisabledArtists } from "./twitter-embeds";
 
   // --- Types ---
   interface Chapter {
@@ -38,6 +40,7 @@
     snippet: null as HTMLDialogElement | null,
     altText: null as HTMLDialogElement | null,
     windowSettings: null as HTMLDialogElement | null,
+    artists: null as HTMLDialogElement | null,
   });
 
   let snippetToast = $state(false);
@@ -86,6 +89,22 @@
   function resetWindowSettings() {
     windowSettings = { ...WINDOW_SETTINGS_DEFAULTS };
   }
+
+  function isArtistDisabled(user: string) {
+    return (prefs.config.disabledArtists ?? []).includes(user);
+  }
+  function setArtistEnabled(user: string, enabled: boolean) {
+    const disabled = new Set<string>(prefs.config.disabledArtists ?? []);
+    if (enabled) disabled.delete(user);
+    else disabled.add(user);
+    prefs.config.disabledArtists = [...disabled];
+  }
+  function enableAllArtists() {
+    prefs.config.disabledArtists = [];
+  }
+  $effect(() => {
+    setDisabledArtists(prefs.config.disabledArtists ?? []);
+  });
   const WINDOW_SETTING_ATTRS = [
     { attr: "data-ws-no-text-color", get: (s: typeof windowSettings) => !s.customTextColors },
     { attr: "data-ws-no-braun-color", get: (s: typeof windowSettings) => !s.braunColor },
@@ -837,10 +856,29 @@
             </select>
           </div>
 
-          <label class="flex items-center justify-between cursor-pointer">
-            <span class="text-sm">Minimal embeds</span>
-            <input type="checkbox" class="toggle toggle-primary toggle-sm" bind:checked={prefs.config.hideTweetMetadata} />
-          </label>
+          <div class="flex items-center justify-between gap-3">
+            <span class="min-w-0 truncate text-sm font-medium">Illustrations</span>
+            <div class="flex items-center gap-2">
+              <div class="flex shrink-0 rounded-full bg-base-100 p-0.5 ring-1 ring-base-content/10">
+                {#each ["default", "minimal", "off"] as style}
+                  <button
+                    class="rounded-full px-3 py-1 text-xs font-semibold transition-colors {prefs.config.illustrationStyle === style ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/50 hover:text-base-content'}"
+                    onclick={() => (prefs.config.illustrationStyle = style)}
+                  >
+                    {style.charAt(0).toUpperCase() + style.slice(1)}
+                  </button>
+                {/each}
+              </div>
+              <button
+                class="shrink-0 rounded-md p-1.5 transition-colors text-base-content/30 hover:text-base-content/70"
+                title="Illustration settings"
+                aria-label="Illustration settings"
+                onclick={() => modals.artists?.showModal()}
+              >
+                <Icon icon="mdi:cog-outline" class="size-4" />
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Readability -->
@@ -911,10 +949,10 @@
           </label>
           <div class="form-control gap-1.5">
             <label class="label-text text-xs font-medium">Scroll Gradient</label>
-            <div class="join w-full">
+            <div class="flex w-full rounded-full bg-base-100 p-0.5 ring-1 ring-base-content/10">
               {#each ["none", "low", "medium", "high"] as level}
                 <button
-                  class="join-item btn btn-xs grow rounded-xl {prefs.config.scrollGradient === level ? 'btn-primary' : 'btn-ghost bg-base-200'}"
+                  class="flex-1 rounded-full px-3 py-1 text-xs font-semibold transition-colors {prefs.config.scrollGradient === level ? 'bg-primary text-primary-content shadow-sm' : 'text-base-content/50 hover:text-base-content'}"
                   onclick={() => (prefs.config.scrollGradient = level)}
                 >
                   {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -1241,6 +1279,43 @@
         {#if textEffectVisible.divider}
           <TextEffectsPreview kind="divider" pad={0} />
         {/if}
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<!-- --- Modal: Illustration Artists --- -->
+<dialog bind:this={modals.artists} class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box bg-base-100 p-0 rounded-t-2xl sm:rounded-box shadow-2xl overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-secondary/5"></div>
+      <div class="relative flex justify-between items-center px-6 py-4 border-b border-base-content/10">
+        <div class="flex items-center gap-2">
+          <Icon icon="mdi:palette-outline" class="size-5 text-primary" />
+          <span class="font-bold text-lg text-primary">Illustrations</span>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn btn-sm btn-ghost text-error rounded-full" onclick={enableAllArtists}>Enable All</button>
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost" aria-label="Close">
+              <Icon icon="mdi:close" class="size-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-y-auto overscroll-contain max-h-[70vh] p-5">
+      <div class="space-y-2">
+        {#each ARTISTS as user}
+          <WindowToggle
+            label={`@${user}`}
+            labels={["Enabled", "Disabled"]}
+            value={!isArtistDisabled(user)}
+            onChange={(enabled) => setArtistEnabled(user, enabled)}
+          />
+        {/each}
       </div>
     </div>
   </div>

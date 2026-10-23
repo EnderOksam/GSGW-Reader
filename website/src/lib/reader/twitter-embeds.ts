@@ -8,19 +8,22 @@ export function replaceTwitterUrls(text: string): string {
   });
 }
 
-function fmtNum(n: string): string {
-  const num = parseInt(n, 10);
-  if (isNaN(num)) return n;
-  if (num >= 1_000_000) return (num / 1_000_000).toFixed(num % 1_000_000 === 0 ? 0 : 1).replace(/\.0$/, "") + "M";
-  if (num >= 1_000) return (num / 1_000).toFixed(num % 1_000 === 0 ? 0 : 1).replace(/\.0$/, "") + "k";
-  return num.toLocaleString();
-}
-
 function escHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 const tweetCache = new Map<string, any>();
+const disabledArtists = new Set<string>();
+
+export function setDisabledArtists(users: string[]): void {
+  disabledArtists.clear();
+  for (const user of users) disabledArtists.add(user.toLowerCase());
+  if (typeof document === "undefined") return;
+  for (const el of document.querySelectorAll<HTMLElement>(".twitter-embed")) {
+    const user = el.dataset.user;
+    if (user) el.hidden = disabledArtists.has(user.toLowerCase());
+  }
+}
 
 export async function hydrateTwitterEmbeds(): Promise<void> {
   const embeds = document.querySelectorAll<HTMLElement>(".twitter-embed");
@@ -29,6 +32,7 @@ export async function hydrateTwitterEmbeds(): Promise<void> {
     const user = el.dataset.user;
     const tweetId = el.dataset.tweetId;
     if (!user || !tweetId) continue;
+    if (disabledArtists.has(user.toLowerCase())) el.hidden = true;
     if (el.querySelector(".twitter-embed-inner")) continue;
     pending.push({ el, user, tweetId, photo: el.dataset.photo });
   }
@@ -44,15 +48,20 @@ export async function hydrateTwitterEmbeds(): Promise<void> {
       }
       const t = tweetCache.get(cacheKey);
       const author = t.author || {};
-      const name = author.name || user;
+      const avatar = author.avatar_url || author.profile_image_url || "";
+      const profileUrl = `https://x.com/${user}`;
       const tweetUrl = `https://x.com/${user}/status/${tweetId}`;
       const photos = t.media?.photos || [];
       const videos = t.media?.video || null;
-      const text = t.text || "";
-      const likes = t.likes !== undefined ? String(t.likes) : "";
-      const retweets = t.retweets !== undefined ? String(t.retweets) : "";
-      const replies = t.replies !== undefined ? String(t.replies) : "";
-      const views = t.views !== undefined ? String(t.views) : "";
+      const photoIndex = photo ? parseInt(photo, 10) - 1 : (!videos && photos.length === 1 ? 0 : -1);
+      const singlePhoto = photoIndex >= 0 ? photos[photoIndex] : null;
+      const hasSinglePhoto = Boolean(singlePhoto?.width && singlePhoto?.height);
+      el.classList.toggle("twitter-embed--single", hasSinglePhoto);
+      if (hasSinglePhoto) {
+        el.style.setProperty("--embed-aspect", String(singlePhoto.width / singlePhoto.height));
+      } else {
+        el.style.removeProperty("--embed-aspect");
+      }
       let mediaHtml = "";
       if (photo) {
         const img = photos[parseInt(photo) - 1];
@@ -67,33 +76,19 @@ export async function hydrateTwitterEmbeds(): Promise<void> {
         ).join("")}</div>`;
       }
       el.innerHTML = `
-        <div class="twitter-embed-inner">
+        <figure class="twitter-embed-inner">
           <div class="twitter-embed-header">
-            <a class="twitter-embed-name" href="${tweetUrl}" target="_blank" rel="noopener noreferrer">${escHtml(name)}</a>
-            <span class="twitter-embed-user">@${user}</span>
-            <svg class="twitter-embed-x-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            <a class="twitter-embed-author" href="${profileUrl}" target="_blank" rel="noopener noreferrer">
+              ${avatar ? `<img class="twitter-embed-avatar" src="${escHtml(avatar)}" alt="" loading="lazy" />` : ""}
+              <span class="twitter-embed-user">@${escHtml(user)}</span>
+            </a>
+            <a class="twitter-embed-x-icon" href="${tweetUrl}" target="_blank" rel="noopener noreferrer" aria-label="View on X">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
           </div>
-          ${text ? `<p class="twitter-embed-text">${escHtml(text)}</p>` : ""}
           ${mediaHtml}
-          <div class="twitter-embed-stats">
-            <span class="twitter-embed-stat" title="Views">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              ${fmtNum(views)}
-            </span>
-            <span class="twitter-embed-stat" title="Replies">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              ${fmtNum(replies)}
-            </span>
-            <span class="twitter-embed-stat" title="Reposts">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-              ${fmtNum(retweets)}
-            </span>
-            <span class="twitter-embed-stat" title="Likes">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              ${fmtNum(likes)}
-            </span>
-          </div>
-        </div>
+          <figcaption class="twitter-embed-caption"><a href="${tweetUrl}" target="_blank" rel="noopener noreferrer">Illustration by @${escHtml(user)} on X</a></figcaption>
+        </figure>
       `;
     } catch {
       el.innerHTML = '<div class="twitter-embed-error">Failed to load tweet</div>';

@@ -38,7 +38,8 @@
       navbarVisible: true,
       navbarSticky: true,
       solidBackground: true,
-      hideTweetMetadata: false,
+      illustrationStyle: "default",
+      disabledArtists: [] as string[],
       scrollGradient: "low",
     });
 
@@ -57,7 +58,14 @@
 
     load() {
       const saved = localStorage.getItem("readerSettings");
-      if (saved) this.config = { ...this.config, ...JSON.parse(saved) };
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (!parsed.illustrationStyle) {
+          parsed.illustrationStyle = parsed.hideTweetMetadata ? "minimal" : "default";
+        }
+        delete parsed.hideTweetMetadata;
+        this.config = { ...this.config, ...parsed };
+      }
       document.documentElement.setAttribute("data-theme", this.config.theme);
     }
 
@@ -74,7 +82,8 @@
         navbarVisible: true,
         navbarSticky: true,
         solidBackground: true,
-        hideTweetMetadata: false,
+        illustrationStyle: "default",
+        disabledArtists: [] as string[],
         scrollGradient: "low",
       };
     }
@@ -325,7 +334,7 @@
 
 <div
   bind:this={mainContainer}
-  data-hide-tweet-meta={prefs.config.hideTweetMetadata}
+  data-illustration-style={prefs.config.illustrationStyle}
   class="min-h-screen w-full text-base-content relative transition-colors duration-200"
   style="
     --chapter-font: {prefs.config.font}, serif; 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import TwitterHover from "$lib/TwitterHover.svelte";
+  import { ARTISTS } from "$lib/artists";
   import { fade } from "svelte/transition";
   import { onMount, onDestroy } from "svelte";
 
@@ -257,7 +258,7 @@
             Illustrations featured on the reader are Twitter embeds, these link back to the original post so show support whenever you can.
           </p>
           <div class="flex flex-wrap gap-3">
-            {#each ["uoongpig", "Katzz_artt", "d_kartonidze", "chiiiiliii", "yjh_ism", "_heydestiny"] as user}
+            {#each ARTISTS as user}
               <div class="bg-[#0d0d0d]/80 px-3 py-1.5 rounded-full border border-[#fb8462]/10">
                 <TwitterHover {user} />
               </div>
