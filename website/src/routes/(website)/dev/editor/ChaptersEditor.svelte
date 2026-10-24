@@ -583,6 +583,30 @@
     downloadBlob(zip as BlobPart, `${translation}-chapters.zip`, "application/zip");
   }
 
+  export function collectDirtyFiles(): { book: string; translation: string; files: { name: string; content: string }[] } {
+    const files: { name: string; content: string }[] = [];
+    if (isSourceTranslation) {
+      for (const file of dirty) {
+        const content = cache.get(file);
+        if (content !== undefined) files.push({ name: file, content });
+      }
+    }
+    return { book: currentBook, translation, files };
+  }
+
+  export function getChapterDiffs(): { name: string; before: string; after: string }[] {
+    const out: { name: string; before: string; after: string }[] = [];
+    if (!isSourceTranslation) return out;
+    for (const file of dirty) {
+      const after = cache.get(file);
+      if (after === undefined) continue;
+      const before = originalContent.get(file) ?? "";
+      out.push({ name: file, before, after });
+    }
+    out.sort((a, b) => a.name.localeCompare(b.name));
+    return out;
+  }
+
   export async function revertCurrentChapter() {
     if (!selected || selected === "sandbox") return;
     cache.delete(selected);
