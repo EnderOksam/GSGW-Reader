@@ -949,7 +949,7 @@ def braun_text_replacer(class_name):
 def padding_window_replacer(match):
     extra_class = match.group(1)
     inner = re.sub(r"\n+", "\n\n", match.group(2))
-    return f"\n{make_window("padding-window", inner, extra_class)}\n"
+    return f'\n{make_window("padding-window", inner, extra_class)}\n'
 
 
 def wiki_window_replacer(match):
