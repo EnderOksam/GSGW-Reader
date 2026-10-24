@@ -21,16 +21,17 @@ export const onRequestGet = async (context: any): Promise<Response> => {
   let sessionCookie: string;
   try {
     const redirectUri = `${url.origin}/api/auth/github/callback`;
-    const accessToken = await exchangeCode(env, code, redirectUri);
+    const { accessToken, scopes } = await exchangeCode(env, code, redirectUri);
     const ghUser = await fetchUser(accessToken);
 
     await run(
       env,
-      `INSERT INTO users (provider, provider_user_id, login, display_name, avatar_url, is_legacy)
-       VALUES ('github', ?, ?, ?, ?, 0)
+      `INSERT INTO users (provider, provider_user_id, login, display_name, avatar_url, is_legacy, access_token, token_scopes)
+       VALUES ('github', ?, ?, ?, ?, 0, ?, ?)
        ON CONFLICT (provider, provider_user_id)
-       DO UPDATE SET login = excluded.login, display_name = excluded.display_name, avatar_url = excluded.avatar_url`,
-      [String(ghUser.id), ghUser.login, displayName(ghUser), avatarUrl(ghUser)]
+       DO UPDATE SET login = excluded.login, display_name = excluded.display_name, avatar_url = excluded.avatar_url,
+         access_token = excluded.access_token, token_scopes = excluded.token_scopes`,
+      [String(ghUser.id), ghUser.login, displayName(ghUser), avatarUrl(ghUser), accessToken, scopes]
     );
 
     const row = await first<{ id: number }>(

@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
   display_name TEXT,
   avatar_url TEXT,
   is_legacy INTEGER NOT NULL DEFAULT 0,
+  access_token TEXT,
+  token_scopes TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   UNIQUE (provider, provider_user_id)
 );

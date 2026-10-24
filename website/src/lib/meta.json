@@ -2,7 +2,71 @@
   "gsgw": {
     "mtl": [
       {
-        "title": "Namhae Branch [Worker Disposal], I",
+        "title": "Unexpected Reunion",
+        "category": "Part 3",
+        "discussion": 767,
+        "index": 392,
+        "section": "Chapter 392",
+        "slug": "392"
+      },
+      {
+        "title": "Beauty Pill, I",
+        "category": "Part 3",
+        "discussion": 768,
+        "index": 393,
+        "section": "Chapter 393",
+        "slug": "393"
+      },
+      {
+        "title": "Beauty Pill, II",
+        "category": "Part 3",
+        "discussion": 769,
+        "index": 394,
+        "section": "Chapter 394",
+        "slug": "394"
+      },
+      {
+        "title": "Purgatory Choir, I",
+        "category": "Part 3",
+        "discussion": 1041,
+        "index": 395,
+        "section": "Chapter 395",
+        "slug": "395"
+      },
+      {
+        "title": "Purgatory Choir, II",
+        "category": "Part 3",
+        "discussion": 1095,
+        "index": 396,
+        "section": "Chapter 396",
+        "slug": "396"
+      },
+      {
+        "title": "Purgatory Choir, III",
+        "category": "Part 3",
+        "discussion": 1042,
+        "index": 397,
+        "section": "Chapter 397",
+        "slug": "397"
+      },
+      {
+        "title": "Purgatory Choir, IV",
+        "category": "Part 3",
+        "discussion": 918,
+        "index": 398,
+        "section": "Chapter 398",
+        "slug": "398"
+      },
+      {
+        "title": "Brief Respite",
+        "category": "Part 3",
+        "discussion": 1044,
+        "index": 399,
+        "section": "Chapter 399",
+        "slug": "399"
+      },
+      {
+        "title": "Chapter 400",
         "category": "Part 3",
         "discussion": 1075,
         "index": 400,
@@ -10,7 +74,7 @@
         "slug": "400"
       },
       {
-        "title": "Namhae Branch [Worker Disposal], II",
+        "title": "Chapter 401",
         "category": "Part 3",
         "discussion": 1076,
         "index": 401,
@@ -18,7 +82,7 @@
         "slug": "401"
       },
       {
-        "title": "Namhae Branch [Worker Disposal], III",
+        "title": "Chapter 402",
         "category": "Part 3",
         "discussion": 1264,
         "index": 402,
@@ -3202,70 +3266,6 @@
         "index": 391,
         "section": "Chapter 391",
         "slug": "391"
-      },
-      {
-        "title": "Unexpected Reunion",
-        "category": "Part 3",
-        "discussion": 0,
-        "index": 392,
-        "section": "Chapter 392",
-        "slug": "392"
-      },
-      {
-        "title": "Beauty Pill, I",
-        "category": "Part 3",
-        "discussion": 0,
-        "index": 393,
-        "section": "Chapter 393",
-        "slug": "393"
-      },
-      {
-        "title": "Beauty Pill, II",
-        "category": "Part 3",
-        "discussion": 0,
-        "index": 394,
-        "section": "Chapter 394",
-        "slug": "394"
-      },
-      {
-        "title": "Purgatory Choir, I",
-        "category": "Part 3",
-        "discussion": 0,
-        "index": 395,
-        "section": "Chapter 395",
-        "slug": "395"
-      },
-      {
-        "title": "Purgatory Choir, II",
-        "category": "Part 3",
-        "discussion": 0,
-        "index": 396,
-        "section": "Chapter 396",
-        "slug": "396"
-      },
-      {
-        "title": "Purgatory Choir, III",
-        "category": "Part 3",
-        "discussion": 0,
-        "index": 397,
-        "section": "Chapter 397",
-        "slug": "397"
-      },
-      {
-        "title": "Purgatory Choir, IV",
-        "category": "Part 3",
-        "discussion": 0,
-        "index": 398,
-        "section": "Chapter 398",
-        "slug": "398"
-      },
-      {
-        "title": "Brief Respite",
-        "category": "Part 3",
-        "discussion": 0,
-        "index": 399,
-        "section": "Chapter 399",
-        "slug": "399"
       }
     ],
     "unformattedtl": []

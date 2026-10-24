@@ -1,6 +1,7 @@
 ﻿<script lang="ts">
   import { browser } from "$app/environment";
   import { page } from "$app/state";
+  import { onMount } from "svelte";
   import Icon from "@iconify/svelte";
   import bookMeta from "$lib/meta.json";
   import { fade } from "svelte/transition";
@@ -10,6 +11,7 @@
   import CharactersEditor from "./CharactersEditor.svelte";
   import UderEditor from "./UderEditor.svelte";
   import { REPO, BRANCH } from "./lib/github-api";
+  import { fetchMe, pushChapters, githubLoginUrl, type MeUser } from "./lib/push-api";
   import { NODE_ICONS, NODE_COLORS, NODE_LABELS, type NodeType } from "./lib/nodes";
 
   type EditorMode = "chapters" | "characters" | "uder";
@@ -164,6 +166,165 @@
   let chapterDirty = $state<Set<string>>(new Set());
   let chapterInput = $state("");
 
+  // GitHub push state
+  let me = $state<MeUser | null>(null);
+  let meReady = $state(false);
+  let showPush = $state(false);
+  let pushTitle = $state("");
+  let pushStatus = $state<"idle" | "sending" | "done" | "error">("idle");
+  let pushStep = $state<"review-list" | "diff">("review-list");
+  let pushError = $state("");
+  let pushPrUrl = $state("");
+  let pushFiles = $state<{ name: string; content: string }[]>([]);
+  let pushDiffs = $state<{ name: string; before: string; after: string }[]>([]);
+  let pushActiveDiff = $state<string | null>(null);
+  let pushBook = $state("");
+  let pushTranslation = $state("");
+
+  function computeDiff(before: string, after: string): { type: "add" | "del" | "same"; text: string }[] {
+    const a = before.replace(/\r\n/g, "\n").split("\n");
+    const b = after.replace(/\r\n/g, "\n").split("\n");
+    const m = a.length;
+    const n = b.length;
+    const dp: number[][] = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (a[i - 1] === b[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+        else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+    const result: { type: "add" | "del" | "same"; text: string }[] = [];
+    let i = m, j = n;
+    const stack: { type: "add" | "del" | "same"; text: string }[] = [];
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && a[i - 1] === b[j - 1]) {
+        stack.push({ type: "same", text: a[i - 1] });
+        i--; j--;
+      } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+        stack.push({ type: "add", text: b[j - 1] });
+        j--;
+      } else if (i > 0) {
+        stack.push({ type: "del", text: a[i - 1] });
+        i--;
+      } else break;
+    }
+    for (let k = stack.length - 1; k >= 0; k--) result.push(stack[k]);
+    return result;
+  }
+
+  function sideDiff(before: string, after: string): { left: { type: "del" | "same" | "empty"; text: string }[]; right: { type: "add" | "same" | "empty"; text: string }[] } {
+    const a = before.replace(/\r\n/g, "\n").split("\n");
+    const b = after.replace(/\r\n/g, "\n").split("\n");
+    const m = a.length;
+    const n = b.length;
+    const dp: number[][] = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (a[i - 1] === b[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+        else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+    const ops: Array<{t:"same"|"del"|"add", a?:string, b?:string}> = [];
+    let i = m, j = n;
+    const stack: Array<{t:"same"|"del"|"add", a?:string, b?:string}> = [];
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && a[i - 1] === b[j - 1]) {
+        stack.push({t:"same", a:a[i-1], b:b[j-1]});
+        i--; j--;
+      } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+        stack.push({t:"add", b:b[j-1]});
+        j--;
+      } else if (i > 0) {
+        stack.push({t:"del", a:a[i-1]});
+        i--;
+      } else break;
+    }
+    for (let k = stack.length - 1; k >= 0; k--) ops.push(stack[k]);
+    const left: { type: "del" | "same" | "empty"; text: string }[] = [];
+    const right: { type: "add" | "same" | "empty"; text: string }[] = [];
+    for (const op of ops) {
+      if (op.t === "same") {
+        left.push({ type: "same", text: op.a ?? "" });
+        right.push({ type: "same", text: op.b ?? "" });
+      } else if (op.t === "del") {
+        left.push({ type: "del", text: op.a ?? "" });
+        right.push({ type: "empty", text: "" });
+      } else if (op.t === "add") {
+        left.push({ type: "empty", text: "" });
+        right.push({ type: "add", text: op.b ?? "" });
+      }
+    }
+    return { left, right };
+  }
+
+  onMount(async () => {
+    try {
+      const res = await fetchMe();
+      me = res.user;
+    } catch {}
+    meReady = true;
+  });
+
+  function loginGitHub() {
+    window.location.href = githubLoginUrl("repo");
+  }
+
+  function openPush() {
+    const collected = chaptersRef?.collectDirtyFiles();
+    pushFiles = collected?.files ?? [];
+    if (!pushFiles.length) return;
+    pushBook = collected!.book;
+    pushTranslation = collected!.translation;
+    const diffs = chaptersRef?.getChapterDiffs() ?? [];
+    pushDiffs = diffs;
+    pushActiveDiff = diffs[0]?.name ?? null;
+    pushTitle = "";
+    pushStatus = "idle";
+    pushStep = "review-list";
+    pushError = "";
+    pushPrUrl = "";
+    showPush = true;
+  }
+
+  function viewDiff(name: string) {
+    pushActiveDiff = name;
+    pushStep = "diff";
+  }
+
+  function backToReview() {
+    pushStep = "review-list";
+  }
+
+  async function submitPush() {
+    if (!me || me.provider !== "github") {
+      loginGitHub();
+      return;
+    }
+    const collected = chaptersRef?.collectDirtyFiles();
+    if (!collected || !collected.files.length) {
+      pushStatus = "error";
+      pushError = "No edited chapters to push";
+      pushStep = "review-list";
+      return;
+    }
+    pushStatus = "sending";
+    pushError = "";
+    try {
+      const res = await pushChapters({
+        book: collected.book,
+        translation: collected.translation,
+        title: pushTitle.trim(),
+        files: collected.files,
+      });
+      pushPrUrl = res.prUrl;
+      pushStatus = "done";
+    } catch (e: any) {
+      pushError = e?.message || "Push failed";
+      pushStatus = "error";
+      pushStep = "review-list";
+    }
+  }
+
   // Characters-bound state (for toolbar disabled states)
   let charExplorerPath = $state<string[]>([]);
   let hasSelectedChar = $state(false);
@@ -251,6 +412,8 @@
         <button onclick={() => chaptersRef?.deleteCurrentChapter()} disabled={!selected || selected === "sandbox" || isSourceTranslation} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:active:scale-100 disabled:cursor-not-allowed" title="Delete chapter"><Icon icon="mdi:delete-outline" class="size-4 sm:size-5" /></button>
         <span class="mx-0.5 w-px h-5 bg-base-content/10"></span>
         <button onclick={() => chaptersRef?.openManageTL()} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5" title="Manage translations"><Icon icon="mdi:translate" class="size-4 sm:size-5" /></button>
+        <span class="mx-0.5 w-px h-5 bg-base-content/10"></span>
+        <button onclick={openPush} disabled={chapterDirty.size === 0 || !isSourceTranslation} class="text-base-content/40 hover:text-base-content active:scale-95 transition-all p-2 rounded-lg hover:bg-base-content/5 disabled:text-base-content/15 disabled:hover:bg-transparent disabled:active:scale-100 disabled:cursor-not-allowed" title="Push changes to GitHub"><Icon icon="mdi:github" class="size-4 sm:size-5" /></button>
         {#if showExport}
           <div data-export-dropdown class="absolute top-full left-0 mt-2 bg-base-200/95 backdrop-blur-xl border border-base-content/10 rounded-xl shadow-2xl shadow-black/20 py-1.5 min-w-52 z-50 overflow-hidden">
             <button onclick={() => { chaptersRef?.exportCurrentChapter(); showExport = false; }} disabled={!selected || selected === "sandbox" || !chapterInput} class="flex items-center gap-2 w-full text-left text-xs px-4 py-2.5 hover:bg-primary/10 text-base-content/70 disabled:text-base-content/20 disabled:cursor-not-allowed transition-colors">Export current chapter</button>
@@ -346,6 +509,24 @@
       </div>
     {/if}
     <div class="flex items-center gap-1.5 sm:gap-2">
+      {#if editorMode === "chapters" && meReady}
+        {#if me?.provider === "github"}
+          <div class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/10 py-1 pl-1.5 pr-2.5 text-xs font-semibold text-success">
+            <Icon icon="mdi:github" class="size-3.5" />
+            Signed in
+          </div>
+        {:else}
+          <button
+            type="button"
+            class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-base-content/20 bg-base-content/5 py-1 pl-1.5 pr-2.5 text-xs font-semibold text-base-content/80 transition-colors hover:bg-base-content/10"
+            title="Sign in with GitHub to push changes"
+            onclick={loginGitHub}
+          >
+            <Icon icon="mdi:github" class="size-3.5" />
+            Sign in
+          </button>
+        {/if}
+      {/if}
       <div class="relative hidden lg:block">
         <button onclick={() => showModeMenu = !showModeMenu} class="text-xs font-mono font-medium px-3 py-1.5 rounded-lg border border-base-content/15 text-base-content/60 hover:text-base-content hover:border-base-content/30 hover:bg-base-content/5 transition-all whitespace-nowrap active:scale-95">
           <span class="capitalize">{EDITOR_MODE_LABELS[editorMode]}</span>
@@ -535,6 +716,182 @@
             Check the GitHub
           </a>
         </div>
+      </div>
+    </div>
+  </div>
+{/if}
+
+{#if showPush}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
+    onclick={() => { if (pushStatus !== "sending") showPush = false; }}
+    onkeydown={(e) => { if (e.key === "Escape" && pushStatus !== "sending") showPush = false; }}
+    role="dialog"
+    tabindex="-1"
+  >
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div
+      class="bg-base-100 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden mx-4"
+      onclick={(e) => e.stopPropagation()}
+      role="group"
+      tabindex="-1"
+    >
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div class="relative flex items-center justify-between px-6 py-4 border-b border-base-content/10">
+          <span class="font-bold text-lg text-primary flex items-center gap-2">
+            <Icon icon="mdi:github" class="size-5" /> Push to GitHub
+          </span>
+          <button class="btn btn-sm btn-circle btn-ghost" onclick={() => showPush = false} aria-label="Close" disabled={pushStatus === "sending"}>
+            <Icon icon="mdi:close" class="size-4" />
+          </button>
+        </div>
+      </div>
+      <div class="p-6 pt-5 space-y-4 overflow-y-auto flex-1">
+        {#if pushStatus === "done"}
+          <div class="space-y-3 text-center">
+            <div class="mx-auto w-12 h-12 rounded-full bg-success/10 flex items-center justify-center">
+              <Icon icon="mdi:check" class="size-6 text-success" />
+            </div>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              Pull request opened. Nothing changes until it's merged on GitHub.
+            </p>
+            <a
+              href={pushPrUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-md w-full rounded-xl bg-base-200/60 border border-base-content/10 text-base-content/60 hover:text-primary hover:border-primary/40 shadow-sm transition-all duration-200 gap-2"
+            >
+              <Icon icon="mdi:github" class="size-4" />
+              View pull request
+            </a>
+            <button class="btn btn-md w-full rounded-xl text-base-content/40 hover:text-base-content/60 hover:bg-base-content/5 transition-colors" onclick={() => showPush = false}>
+              Close
+            </button>
+          </div>
+        {:else if pushStatus === "sending"}
+          <div class="space-y-3 text-center py-10">
+            <Icon icon="mdi:loading" class="size-8 mx-auto text-primary animate-spin" />
+            <p class="text-sm text-base-content/70">Creating fork, committing changes, and opening pull request...</p>
+            <p class="text-xs text-base-content/40">This can take a moment</p>
+          </div>
+        {:else if pushStep === "diff" && pushActiveDiff}
+          {@const diff = pushDiffs.find(d => d.name === pushActiveDiff)}
+          {@const sd = diff ? sideDiff(diff.before, diff.after) : { left: [], right: [] }}
+          <div class="space-y-3">
+            <div class="flex items-center gap-2">
+              <button onclick={backToReview} class="text-xs text-base-content/50 hover:text-base-content/80 flex items-center gap-1">
+                <Icon icon="mdi:arrow-left" class="size-4" /> Back to changes
+              </button>
+              <span class="text-xs font-mono text-base-content/60">{pushActiveDiff}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-0 h-[65vh] min-h-0 rounded-xl border border-base-content/20 overflow-hidden">
+              <div class="flex flex-col min-h-0 border-r border-base-content/20">
+                <div class="px-3 py-1.5 bg-base-200 text-[10px] font-mono uppercase tracking-wider text-base-content/60 flex items-center justify-between border-b border-base-content/20">
+                  <span>Old</span>
+                  <span class="text-error">-{sd.left.filter(l => l.type === 'del').length} removed</span>
+                </div>
+                <div class="flex-1 overflow-auto bg-base-300/40">
+                  {#each sd.left as line, idx}
+                    {#if line.type === "del"}
+                      <div class="flex bg-red-500/25 hover:bg-red-500/35 transition-colors">
+                        <span class="w-10 shrink-0 text-right pr-2 text-[9px] font-mono text-red-400 py-0.5 border-r border-red-500/40">{idx + 1}</span>
+                        <pre class="flex-1 px-2 py-0.5 text-[11px] font-mono leading-relaxed whitespace-pre-wrap break-words text-red-200">{line.text || " "}</pre>
+                      </div>
+                    {:else if line.type === "empty"}
+                      <div class="flex bg-base-300/60">
+                        <span class="w-10 shrink-0 text-right pr-2 text-[9px] font-mono text-base-content/10 py-0.5 border-r border-base-content/10"></span>
+                        <pre class="flex-1 px-2 py-0.5 text-[11px] font-mono leading-relaxed whitespace-pre-wrap break-words text-base-content/10"> </pre>
+                      </div>
+                    {:else}
+                      <div class="flex hover:bg-base-content/5 transition-colors">
+                        <span class="w-10 shrink-0 text-right pr-2 text-[9px] font-mono text-base-content/25 py-0.5 border-r border-base-content/10">{idx + 1}</span>
+                        <pre class="flex-1 px-2 py-0.5 text-[11px] font-mono leading-relaxed whitespace-pre-wrap break-words text-base-content/50">{line.text || " "}</pre>
+                      </div>
+                    {/if}
+                  {/each}
+                </div>
+              </div>
+              <div class="flex flex-col min-h-0">
+                <div class="px-3 py-1.5 bg-base-200 text-[10px] font-mono uppercase tracking-wider text-base-content/60 flex items-center justify-between border-b border-base-content/20">
+                  <span>New</span>
+                  <span class="text-success">+{sd.right.filter(r => r.type === 'add').length} added</span>
+                </div>
+                <div class="flex-1 overflow-auto bg-base-300/40">
+                  {#each sd.right as line, idx}
+                    {#if line.type === "add"}
+                      <div class="flex bg-emerald-500/25 hover:bg-emerald-500/35 transition-colors">
+                        <span class="w-10 shrink-0 text-right pr-2 text-[9px] font-mono text-emerald-400 py-0.5 border-r border-emerald-500/40">{idx + 1}</span>
+                        <pre class="flex-1 px-2 py-0.5 text-[11px] font-mono leading-relaxed whitespace-pre-wrap break-words text-emerald-200">{line.text || " "}</pre>
+                      </div>
+                    {:else if line.type === "empty"}
+                      <div class="flex bg-base-300/60">
+                        <span class="w-10 shrink-0 text-right pr-2 text-[9px] font-mono text-base-content/10 py-0.5 border-r border-base-content/10"></span>
+                        <pre class="flex-1 px-2 py-0.5 text-[11px] font-mono leading-relaxed whitespace-pre-wrap break-words text-base-content/10"> </pre>
+                      </div>
+                    {:else}
+                      <div class="flex hover:bg-base-content/5 transition-colors">
+                        <span class="w-10 shrink-0 text-right pr-2 text-[9px] font-mono text-base-content/25 py-0.5 border-r border-base-content/10">{idx + 1}</span>
+                        <pre class="flex-1 px-2 py-0.5 text-[11px] font-mono leading-relaxed whitespace-pre-wrap break-words text-base-content/70">{line.text || " "}</pre>
+                      </div>
+                    {/if}
+                  {/each}
+                </div>
+              </div>
+            </div>
+          </div>
+        {:else}
+          <div class="space-y-4">
+            <p class="text-xs sm:text-sm text-base-content/55 leading-relaxed">
+              Review your changes before opening a pull request on <code class="px-1 py-0.5 rounded bg-base-content/10 text-[11px] font-mono">EnderOksam/GSGW-Reader</code>.
+            </p>
+            <div class="space-y-2">
+              <span class="text-[10px] font-mono text-base-content/40 font-medium uppercase tracking-wider">{pushDiffs.length} file{pushDiffs.length === 1 ? "" : "s"} changed · {pushBook} / {pushTranslation}</span>
+              <div class="rounded-xl border border-base-content/10 overflow-hidden">
+                {#each pushDiffs as diff}
+                  <div class="flex items-center justify-between px-4 py-2.5 border-b border-base-content/5 last:border-0 hover:bg-base-content/[2%] transition-colors">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <Icon icon="mdi:file-document-outline" class="size-4 text-base-content/40 shrink-0" />
+                      <span class="text-xs font-mono text-base-content/70 truncate">{diff.name}</span>
+                    </div>
+                    <button onclick={() => viewDiff(diff.name)} class="text-xs text-primary/80 hover:text-primary transition-colors">View diff</button>
+                  </div>
+                {/each}
+              </div>
+            </div>
+            <input
+              bind:value={pushTitle}
+              placeholder="pull request title (optional)"
+              disabled={pushStatus === "sending"}
+              class="w-full bg-base-300/60 text-base-content/70 text-xs px-3 py-2 rounded-xl outline-none border border-base-content/10 placeholder:text-base-content/20 focus:border-primary/40 transition-colors disabled:opacity-50"
+            />
+            {#if pushStatus === "error" && pushError}
+              <p class="text-xs text-error/80 leading-relaxed">{pushError}</p>
+              {#if pushError.includes("Sign out")}
+                <a href="/api/auth/logout?returnTo=/dev/editor" class="text-xs text-primary hover:underline">Sign out and sign in again</a>
+              {/if}
+            {/if}
+            <div class="flex gap-2">
+              <button
+                onclick={submitPush}
+                disabled={pushStatus === "sending" || pushDiffs.length === 0}
+                class="flex-1 flex items-center justify-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl bg-primary/15 text-primary hover:bg-primary/25 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Icon icon="mdi:source-pull" class="size-4" />
+                Confirm and push
+              </button>
+              <button
+                onclick={() => showPush = false}
+                disabled={pushStatus === "sending"}
+                class="text-xs px-4 py-2.5 rounded-xl text-base-content/40 hover:text-base-content/60 hover:bg-base-content/5 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        {/if}
       </div>
     </div>
   </div>
