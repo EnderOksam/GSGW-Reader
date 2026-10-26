@@ -171,12 +171,15 @@
   let meReady = $state(false);
   let showPush = $state(false);
   let pushTitle = $state("");
+  let pushDescription = $state("");
   let pushStatus = $state<"idle" | "sending" | "done" | "error">("idle");
+  const pushSending = $derived(pushStatus === "sending");
   let pushStep = $state<"review-list" | "diff">("review-list");
   let pushError = $state("");
   let pushPrUrl = $state("");
   let pushFiles = $state<{ name: string; content: string }[]>([]);
   let pushDiffs = $state<{ name: string; before: string; after: string }[]>([]);
+  let pushSelected = $state<Set<string>>(new Set());
   let pushActiveDiff = $state<string | null>(null);
   let pushBook = $state("");
   let pushTranslation = $state("");
@@ -277,8 +280,10 @@
     pushTranslation = collected!.translation;
     const diffs = chaptersRef?.getChapterDiffs() ?? [];
     pushDiffs = diffs;
+    pushSelected = new Set(pushFiles.map((f) => f.name));
     pushActiveDiff = diffs[0]?.name ?? null;
     pushTitle = "";
+    pushDescription = "";
     pushStatus = "idle";
     pushStep = "review-list";
     pushError = "";
@@ -295,8 +300,20 @@
     pushStep = "review-list";
   }
 
+  function togglePushFile(name: string) {
+    const next = new Set(pushSelected);
+    if (next.has(name)) next.delete(name);
+    else next.add(name);
+    pushSelected = next;
+  }
+
+  function toggleAllPushFiles() {
+    if (pushSelected.size === pushDiffs.length) pushSelected = new Set();
+    else pushSelected = new Set(pushDiffs.map((d) => d.name));
+  }
+
   async function submitPush() {
-    if (!me || me.provider !== "github") {
+    if (!me || me.provider !== "github" || !me.canPush) {
       loginGitHub();
       return;
     }
@@ -307,6 +324,19 @@
       pushStep = "review-list";
       return;
     }
+    const files = collected.files.filter((f) => pushSelected.has(f.name));
+    if (!files.length) {
+      pushStatus = "error";
+      pushError = "No files selected.";
+      pushStep = "review-list";
+      return;
+    }
+    if (files.length > 30) {
+      pushStatus = "error";
+      pushError = "Select at most 30 files.";
+      pushStep = "review-list";
+      return;
+    }
     pushStatus = "sending";
     pushError = "";
     try {
@@ -314,7 +344,8 @@
         book: collected.book,
         translation: collected.translation,
         title: pushTitle.trim(),
-        files: collected.files,
+        description: pushDescription.trim(),
+        files,
       });
       pushPrUrl = res.prUrl;
       pushStatus = "done";
@@ -510,11 +541,21 @@
     {/if}
     <div class="flex items-center gap-1.5 sm:gap-2">
       {#if editorMode === "chapters" && meReady}
-        {#if me?.provider === "github"}
+        {#if me?.provider === "github" && me.canPush}
           <div class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/10 py-1 pl-1.5 pr-2.5 text-xs font-semibold text-success">
             <Icon icon="mdi:github" class="size-3.5" />
             Signed in
           </div>
+        {:else if me?.provider === "github"}
+          <button
+            type="button"
+            class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-warning/40 bg-warning/10 py-1 pl-1.5 pr-2.5 text-xs font-semibold text-warning transition-colors hover:bg-warning/20"
+            title="Grant GitHub repository access to push changes"
+            onclick={loginGitHub}
+          >
+            <Icon icon="mdi:github" class="size-3.5" />
+            Grant access
+          </button>
         {:else}
           <button
             type="button"
@@ -848,14 +889,25 @@
               Review your changes before opening a pull request on <code class="px-1 py-0.5 rounded bg-base-content/10 text-[11px] font-mono">EnderOksam/GSGW-Reader</code>.
             </p>
             <div class="space-y-2">
-              <span class="text-[10px] font-mono text-base-content/40 font-medium uppercase tracking-wider">{pushDiffs.length} file{pushDiffs.length === 1 ? "" : "s"} changed · {pushBook} / {pushTranslation}</span>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] font-mono text-base-content/40 font-medium uppercase tracking-wider">{pushDiffs.length} file{pushDiffs.length === 1 ? "" : "s"} changed · {pushSelected.size} selected · {pushBook} / {pushTranslation}</span>
+                <button onclick={toggleAllPushFiles} class="text-[10px] font-mono text-primary/80 hover:text-primary transition-colors whitespace-nowrap">
+                  {pushSelected.size === pushDiffs.length ? "clear" : "select all"}
+                </button>
+              </div>
               <div class="rounded-xl border border-base-content/10 overflow-hidden">
                 {#each pushDiffs as diff}
                   <div class="flex items-center justify-between px-4 py-2.5 border-b border-base-content/5 last:border-0 hover:bg-base-content/[2%] transition-colors">
-                    <div class="flex items-center gap-2 min-w-0">
+                    <label class="flex items-center gap-2 min-w-0 flex-1 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        class="size-3.5 shrink-0 accent-primary cursor-pointer"
+                        checked={pushSelected.has(diff.name)}
+                        onchange={() => togglePushFile(diff.name)}
+                      />
                       <Icon icon="mdi:file-document-outline" class="size-4 text-base-content/40 shrink-0" />
                       <span class="text-xs font-mono text-base-content/70 truncate">{diff.name}</span>
-                    </div>
+                    </label>
                     <button onclick={() => viewDiff(diff.name)} class="text-xs text-primary/80 hover:text-primary transition-colors">View diff</button>
                   </div>
                 {/each}
@@ -864,9 +916,20 @@
             <input
               bind:value={pushTitle}
               placeholder="pull request title (optional)"
-              disabled={pushStatus === "sending"}
+              disabled={pushSending}
               class="w-full bg-base-300/60 text-base-content/70 text-xs px-3 py-2 rounded-xl outline-none border border-base-content/10 placeholder:text-base-content/20 focus:border-primary/40 transition-colors disabled:opacity-50"
             />
+            <textarea
+              bind:value={pushDescription}
+              placeholder="description (optional)"
+              rows="3"
+              maxlength="2000"
+              disabled={pushSending}
+              class="w-full bg-base-300/60 text-base-content/70 text-xs px-3 py-2 rounded-xl outline-none border border-base-content/10 placeholder:text-base-content/20 focus:border-primary/40 transition-colors disabled:opacity-50 resize-none"
+            ></textarea>
+            {#if pushSelected.size > 30}
+              <p class="text-xs text-error/80 leading-relaxed">Select at most 30 files.</p>
+            {/if}
             {#if pushStatus === "error" && pushError}
               <p class="text-xs text-error/80 leading-relaxed">{pushError}</p>
               {#if pushError.includes("Sign out")}
@@ -876,7 +939,7 @@
             <div class="flex gap-2">
               <button
                 onclick={submitPush}
-                disabled={pushStatus === "sending" || pushDiffs.length === 0}
+                disabled={pushSending || pushSelected.size === 0 || pushSelected.size > 30}
                 class="flex-1 flex items-center justify-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl bg-primary/15 text-primary hover:bg-primary/25 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Icon icon="mdi:source-pull" class="size-4" />
@@ -884,7 +947,7 @@
               </button>
               <button
                 onclick={() => showPush = false}
-                disabled={pushStatus === "sending"}
+                disabled={pushSending}
                 class="text-xs px-4 py-2.5 rounded-xl text-base-content/40 hover:text-base-content/60 hover:bg-base-content/5 transition-colors disabled:opacity-50"
               >
                 Cancel
@@ -1055,19 +1118,19 @@
   }
   :global(.scrollbar-thin) {
     scrollbar-width: thin;
-    scrollbar-color: oklch(var(--bc)/0.08) transparent;
+    scrollbar-color: color-mix(in oklab, var(--color-base-content) 20%, transparent) transparent;
   }
   :global(.scrollbar-thin::-webkit-scrollbar) {
-    width: 4px;
+    width: 6px;
   }
   :global(.scrollbar-thin::-webkit-scrollbar-track) {
     background: transparent;
   }
   :global(.scrollbar-thin::-webkit-scrollbar-thumb) {
-    background: oklch(var(--bc)/0.08);
-    border-radius: 2px;
+    background: color-mix(in oklab, var(--color-base-content) 20%, transparent);
+    border-radius: 3px;
   }
   :global(.scrollbar-thin::-webkit-scrollbar-thumb:hover) {
-    background: oklch(var(--bc)/0.15);
+    background: color-mix(in oklab, var(--color-base-content) 35%, transparent);
   }
 </style>

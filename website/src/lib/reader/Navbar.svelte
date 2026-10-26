@@ -1349,12 +1349,12 @@
       {#if snippetShowDomain || snippetShowChapter}
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 1.25em; padding-top: 0.75em; border-top: 1px solid currentColor; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-size: 11px; letter-spacing: 0.01em; line-height: 1.3;">
           {#if snippetShowDomain}
-            <span style="text-decoration: underline; text-underline-offset: 2px; color: {snippetPrimaryColor}; font-weight: 700;">ireum.pages.dev</span>
+            <span style="text-decoration: underline; text-underline-offset: 2px; color: {snippetPrimaryColor}; font-weight: 700; white-space: nowrap; flex-shrink: 0; word-break: normal; overflow-wrap: normal;">ireum.pages.dev</span>
           {:else}
             <span></span>
           {/if}
           {#if snippetShowChapter}
-            <span style="text-align: right; font-weight: 700;">
+            <span style="text-align: right; font-weight: 700; flex: 1 1 auto; min-width: 0;">
               {#if snippetShowDomain}
                 <span style="margin: 0 0.4em; opacity: 0.4;">/</span>
               {/if}

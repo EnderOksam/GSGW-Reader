@@ -1,6 +1,7 @@
 import { ADMIN_DISCORD_IDS } from "./admins";
 import type { Env, UserRow } from "./db";
 import { first } from "./db";
+import { hasRepoScope } from "./scopes";
 import { readSession } from "./session";
 
 export function isAdmin(user: UserRow | null): boolean {
@@ -14,7 +15,7 @@ export async function currentUser(context: any): Promise<UserRow | null> {
   if (!session) return null;
   const user = await first<UserRow>(
     env,
-    "SELECT id, provider, provider_user_id, login, display_name, avatar_url, is_legacy FROM users WHERE id = ?",
+    "SELECT id, provider, provider_user_id, login, display_name, avatar_url, is_legacy, token_scopes FROM users WHERE id = ?",
     [session.uid]
   );
   return user ?? null;
@@ -30,5 +31,6 @@ export function publicUser(user: UserRow | null) {
     provider: user.provider,
     isLegacy: user.is_legacy === 1,
     isAdmin: isAdmin(user),
+    canPush: user.provider === "github" && hasRepoScope(user.token_scopes),
   };
 }
