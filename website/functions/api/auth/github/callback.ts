@@ -21,8 +21,9 @@ export const onRequestGet = async (context: any): Promise<Response> => {
   let sessionCookie: string;
   try {
     const redirectUri = `${url.origin}/api/auth/github/callback`;
-    const { accessToken, scopes } = await exchangeCode(env, code, redirectUri);
-    const ghUser = await fetchUser(accessToken);
+    const { accessToken, scopes: tokenScopes } = await exchangeCode(env, code, redirectUri);
+    const { user: ghUser, scopes: grantedScopes } = await fetchUser(accessToken);
+    const scopes = grantedScopes.length ? grantedScopes.join(",") : tokenScopes;
 
     await run(
       env,

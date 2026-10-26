@@ -45,6 +45,14 @@
 
   let activeTextarea: HTMLTextAreaElement | null = null;
 
+  const AUTOSAVE_INTERVAL_MS = 5_000;
+  let autosaveTimer: ReturnType<typeof setInterval> | null = null;
+  let chapterLoading = false;
+  let lastAutosavedFile = "";
+  let lastAutosavedInput = "";
+  let chapterListRequestId = 0;
+  let refreshRequestId = 0;
+
   let readerPreviewOpen = $state(false);
   const PREVIEW_PRIORITY_THEMES = ["sunset", "light", "retro", "night", "business", "cupcake", "black"];
   const PREVIEW_ALL_THEMES = [
@@ -208,8 +216,12 @@
   let readerScroll: HTMLElement | null = $state(null);
   let scrollPositions = new Map<string, { md: number; reader: number }>();
 
+  function isSourceTranslationFor(book: string, tl: string): boolean {
+    return (BOOKS.find(b => b.slug === book)?.translations ?? []).includes(tl);
+  }
+
   $effect(() => {
-    isSourceTranslation = (BOOKS.find(b => b.slug === currentBook)?.translations ?? []).includes(translation);
+    isSourceTranslation = isSourceTranslationFor(currentBook, translation);
   });
 
   let body = $derived(preprocessMarkdown(input.replace(/^---[\s\S]*?---\n*/, ""), currentBook));
@@ -247,30 +259,38 @@
   });
 
   async function loadChapterList() {
+    const requestId = ++chapterListRequestId;
+    const book = currentBook;
+    const tl = translation;
+    const source = isSourceTranslationFor(book, tl);
+    isSourceTranslation = source;
     loading = true;
     error = "";
     try {
-      if (isSourceTranslation) {
-        const files = await fetchChapterList(currentBook, translation);
+      if (source) {
+        const files = await fetchChapterList(book, tl);
+        if (requestId !== chapterListRequestId) return;
         chapters = files;
         filtered = files;
         const tmap = new Map<string, string>();
         const imap = new Map<string, string>();
         await Promise.allSettled(files.map(async (f) => {
-          const meta = await fetchChapterPreview(currentBook, translation, f);
+          const meta = await fetchChapterPreview(book, tl, f);
           if (meta.title) tmap.set(f, meta.title);
           if (meta.index) imap.set(f, meta.index);
         }));
+        if (requestId !== chapterListRequestId) return;
         titles = tmap;
         indices = imap;
       } else {
-        const files = loadCustomChapterList(translation);
+        const files = loadCustomChapterList(tl);
+        if (requestId !== chapterListRequestId) return;
         chapters = files;
         filtered = files;
         const tmap = new Map<string, string>();
         const imap = new Map<string, string>();
         for (const f of files) {
-          const content = loadCustomChapterContent(translation, f);
+          const content = loadCustomChapterContent(tl, f);
           if (!content) continue;
           const meta = extractMeta(content);
           if (meta.title) tmap.set(f, meta.title);
@@ -280,11 +300,12 @@
         indices = imap;
       }
     } catch (e: any) {
+      if (requestId !== chapterListRequestId) return;
       error = e.message;
       chapters = [];
       filtered = [];
     } finally {
-      loading = false;
+      if (requestId === chapterListRequestId) loading = false;
     }
   }
 
@@ -297,30 +318,37 @@
   async function loadChapter(file: string) {
     saveCurrent();
     selected = file;
-    if (!isSourceTranslation) {
-      const content = loadCustomChapterContent(translation, file);
-      if (content !== null) {
-        originalContent.set(file, content);
-        input = content;
+    chapterLoading = true;
+    const book = currentBook;
+    const tl = translation;
+    try {
+      if (!isSourceTranslationFor(book, tl)) {
+        const content = loadCustomChapterContent(tl, file);
+        if (content !== null) {
+          originalContent.set(file, content);
+          input = content;
+          requestAnimationFrame(() => restoreScrollPositions(file));
+          return;
+        }
+        input = `// error: chapter "${file}" not found`;
+        return;
+      }
+      const cached = cache.get(file);
+      if (cached !== undefined) {
+        input = cached;
         requestAnimationFrame(() => restoreScrollPositions(file));
         return;
       }
-      input = `// error: chapter "${file}" not found`;
-      return;
-    }
-    const cached = cache.get(file);
-    if (cached !== undefined) {
-      input = cached;
-      requestAnimationFrame(() => restoreScrollPositions(file));
-      return;
-    }
-    try {
-      const text = await fetchChapterFile(currentBook, translation, file);
-      originalContent.set(file, text);
-      input = text;
-      requestAnimationFrame(() => restoreScrollPositions(file));
-    } catch (e: any) {
-      input = `// error loading ${file}: ${e.message}`;
+      try {
+        const text = await fetchChapterFile(book, tl, file);
+        originalContent.set(file, text);
+        input = text;
+        requestAnimationFrame(() => restoreScrollPositions(file));
+      } catch (e: any) {
+        input = `// error loading ${file}: ${e.message}`;
+      }
+    } finally {
+      chapterLoading = false;
     }
   }
 
@@ -334,13 +362,14 @@
       if (!tls.includes(translation)) {
         translation = tls[0] ?? "fantl";
       }
-      refreshChapters();
+      isSourceTranslation = isSourceTranslationFor(currentBook, translation);
+      void refreshChapters();
     }
   });
 
   function handleTranslationChange() {
     saveCurrent();
-    if (!isSourceTranslation && !customTranslations.includes(translation)) {
+    if (!isSourceTranslationFor(currentBook, translation) && !customTranslations.includes(translation)) {
       customTranslations = [...customTranslations, translation];
       saveCustomTranslations(customTranslations);
     }
@@ -395,13 +424,17 @@
   }
 
   async function refreshChapters() {
+    const refreshId = ++refreshRequestId;
     refreshing = true;
     const cached = loadChapterCache();
     cache = cached.cache;
     originalContent = cached.originalContent;
     dirty = cached.dirty;
-    await loadChapterList();
-    refreshing = false;
+    try {
+      await loadChapterList();
+    } finally {
+      if (refreshId === refreshRequestId) refreshing = false;
+    }
   }
 
   export function handleImportZip(e: Event) {
@@ -529,9 +562,20 @@
     customTranslations = loadCustomTranslations();
     loadReaderPreviewDefaults();
     loadChapterList();
+    autosaveTimer = setInterval(autosave, AUTOSAVE_INTERVAL_MS);
+    window.addEventListener("beforeunload", autosave);
+    return () => {
+      if (autosaveTimer) {
+        clearInterval(autosaveTimer);
+        autosaveTimer = null;
+      }
+      window.removeEventListener("beforeunload", autosave);
+    };
   });
 
-  onDestroy(() => { saveCurrent(); });
+  onDestroy(() => {
+    if (!chapterLoading) saveCurrent();
+  });
 
   function saveScrollPositions(file: string) {
     if (!mdScroll || !readerScroll) return;
@@ -558,6 +602,15 @@
       dirty = result.dirty;
       saveChapterCache(cache, originalContent);
     }
+  }
+
+  function autosave() {
+    if (chapterLoading) return;
+    if (!selected || selected === "sandbox" || !input) return;
+    if (selected === lastAutosavedFile && input === lastAutosavedInput) return;
+    saveCurrent();
+    lastAutosavedFile = selected;
+    lastAutosavedInput = input;
   }
 
   export function exportCurrentChapter() {
@@ -945,7 +998,7 @@
           {/if}
         </div>
     <div class="punctuation-editor relative flex-1 min-h-0 overflow-hidden">
-        <textarea use:punctuationDisplay={input} spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="w-full h-full font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+        <textarea use:punctuationDisplay={input} spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="w-full h-full font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 overflow-y-auto scrollbar-thin transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
     </div>
       </div>
     {:else}
@@ -1025,7 +1078,7 @@
       {/if}
     </div>
     <div class="punctuation-editor relative flex-1 min-h-0 overflow-hidden">
-    <textarea use:punctuationDisplay={input} spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="w-full h-full font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
+    <textarea use:punctuationDisplay={input} spellcheck="false" autocapitalize="off" autocomplete="off" bind:value={input} bind:this={mdScroll} onfocus={(e) => activeTextarea = e.currentTarget} placeholder="select a chapter to start editing..." class="w-full h-full font-mono text-sm leading-relaxed p-4 resize-none outline-none rounded-b-xl border-x border-b border-base-content/10 bg-base-300/60 text-base-content/80 placeholder:text-base-content/15 min-h-0 overflow-y-auto scrollbar-thin transition-colors focus:bg-base-300/80 focus:border-primary/20"></textarea>
     </div>
   </div>
   <div class="flex-1 flex flex-col min-h-0 min-w-0">
@@ -1430,7 +1483,6 @@
     position: absolute; inset: 0;
     color: color-mix(in oklab, var(--color-base-content) 80%, transparent); text-align: center;
   }
-
   .chapter-content {
     font-family: var(--chapter-font, 'Alegreya', serif);
     font-size: var(--chapter-size);

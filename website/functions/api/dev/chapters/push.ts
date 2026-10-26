@@ -3,9 +3,11 @@ import type { Env } from "../../../_lib/db";
 import { first } from "../../../_lib/db";
 import { GitHubActionError, proposeChapterChanges, UPSTREAM_OWNER, UPSTREAM_REPO } from "../../../_lib/github";
 import { error, json, readJson } from "../../../_lib/http";
+import { hasRepoScope } from "../../../_lib/scopes";
 
 const MAX_FILES = 30;
 const MAX_CONTENT_BYTES = 500_000;
+const MAX_DESCRIPTION_LENGTH = 2_000;
 const FILENAME_RE = /^\d{4}\.md$/;
 
 const ALLOWED_DIRS: Record<string, Record<string, string>> = {
@@ -21,8 +23,8 @@ interface PushPayloadFile {
 export const onRequestPost = async (context: any): Promise<Response> => {
   const env = context.env as Env;
   const user = await currentUser(context);
-  if (!user) return error("Sign in required", 401);
-  if (user.provider !== "github") return error("Sign in with GitHub to push changes", 403);
+  if (!user) return error("Sign in required.", 401);
+  if (user.provider !== "github") return error("Sign in with GitHub to push changes.", 403);
 
   const tokenRow = await first<{ access_token: string | null; token_scopes: string | null }>(
     env,
@@ -30,16 +32,16 @@ export const onRequestPost = async (context: any): Promise<Response> => {
     [user.id]
   );
   const token = tokenRow?.access_token;
-  if (!token) return error("Sign out, then sign in with GitHub again to grant push access.", 403);
-  const scopes = (tokenRow?.token_scopes ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-  if (scopes.length > 0 && !scopes.includes("repo")) {
-    return error("Your GitHub sign-in is missing repository access. Sign out, then sign in with GitHub again.", 403);
+  if (!token) return error("Sign out and sign in with GitHub again.", 403);
+  if (!hasRepoScope(tokenRow?.token_scopes)) {
+    return error("GitHub needs repository access. Sign out and sign in again.", 403);
   }
 
   const payload = await readJson<{
     book?: string;
     translation?: string;
     title?: string;
+    description?: string;
     files?: PushPayloadFile[];
   }>(context.request);
   if (!payload) return error("Invalid JSON");
@@ -68,17 +70,23 @@ export const onRequestPost = async (context: any): Promise<Response> => {
   }
 
   const title = (payload.title || "").trim().slice(0, 200);
+  const description =
+    typeof payload.description === "string"
+      ? payload.description.trim().slice(0, MAX_DESCRIPTION_LENGTH)
+      : "";
   const prTitle = title || `Update ${cleanFiles.length} chapter${cleanFiles.length === 1 ? "" : "s"}`;
   const fileList = cleanFiles.map((f) => `- \`${f.path}\``).join("\n");
-  const prBody = [
-    `Edited via the ${UPSTREAM_OWNER}/${UPSTREAM_REPO} web editor by @${user.login}.`,
+  const prBodyParts = [`Edited via the ${UPSTREAM_OWNER}/${UPSTREAM_REPO} web editor by @${user.login}.`];
+  if (description) prBodyParts.push("", description);
+  prBodyParts.push(
     "",
     "Chapters changed:",
     fileList,
     "",
     "---",
-    "*This PR was opened automatically. Review the changes before merging.*",
-  ].join("\n");
+    "*This PR was opened automatically. Review the changes before merging.*"
+  );
+  const prBody = prBodyParts.join("\n");
 
   try {
     const result = await proposeChapterChanges({
@@ -86,18 +94,29 @@ export const onRequestPost = async (context: any): Promise<Response> => {
       login: user.login,
       displayName: user.display_name || user.login,
       files: cleanFiles,
-      commitMessage: `${prTitle}\n\nEdited via web editor by ${user.login}`,
+      commitMessage: `${prTitle}\n\n${description ? `${description}\n\n` : ""}Edited via web editor by ${user.login}`,
       prTitle,
       prBody,
     });
     return json({ prUrl: result.prUrl, branch: result.branch });
   } catch (e) {
     if (e instanceof GitHubActionError) {
+      console.error("[push] GitHub request failed", {
+        stage: e.stage,
+        status: e.status,
+        message: e.message,
+        login: user.login,
+        files: cleanFiles.map((f) => f.path),
+      });
       if (e.status === 401 || e.status === 403) {
-        return error("GitHub permission missing or expired. Sign out, then sign in with GitHub again.", 403);
+        return error("GitHub denied access. Sign out and sign in again.", 403);
       }
-      return error(`GitHub: ${e.message}`, 502);
+      if (e.status === 404 || e.status === 504) {
+        return error("Could not prepare your GitHub push. Try again in a minute.", 502);
+      }
+      return error(`GitHub error: ${e.message}`, 502);
     }
-    return error("Push failed, try again", 500);
+    console.error("[push] unexpected failure", e);
+    return error("Push failed. Try again.", 500);
   }
 };

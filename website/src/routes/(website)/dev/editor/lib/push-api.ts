@@ -6,6 +6,7 @@ export interface MeUser {
   provider: string;
   isLegacy: boolean;
   isAdmin: boolean;
+  canPush: boolean;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -40,6 +41,7 @@ export function pushChapters(payload: {
   book: string;
   translation: string;
   title: string;
+  description: string;
   files: PushFile[];
 }): Promise<PushResult> {
   return request("/api/dev/chapters/push", {
