@@ -28,6 +28,7 @@ export interface UserRow {
   display_name: string | null;
   avatar_url: string | null;
   is_legacy: number;
+  token_scopes?: string | null;
 }
 
 export interface CommentRow {
