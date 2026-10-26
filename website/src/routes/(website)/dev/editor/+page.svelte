@@ -1118,19 +1118,19 @@
   }
   :global(.scrollbar-thin) {
     scrollbar-width: thin;
-    scrollbar-color: oklch(var(--bc)/0.08) transparent;
+    scrollbar-color: color-mix(in oklab, var(--color-base-content) 20%, transparent) transparent;
   }
   :global(.scrollbar-thin::-webkit-scrollbar) {
-    width: 4px;
+    width: 6px;
   }
   :global(.scrollbar-thin::-webkit-scrollbar-track) {
     background: transparent;
   }
   :global(.scrollbar-thin::-webkit-scrollbar-thumb) {
-    background: oklch(var(--bc)/0.08);
-    border-radius: 2px;
+    background: color-mix(in oklab, var(--color-base-content) 20%, transparent);
+    border-radius: 3px;
   }
   :global(.scrollbar-thin::-webkit-scrollbar-thumb:hover) {
-    background: oklch(var(--bc)/0.15);
+    background: color-mix(in oklab, var(--color-base-content) 35%, transparent);
   }
 </style>
