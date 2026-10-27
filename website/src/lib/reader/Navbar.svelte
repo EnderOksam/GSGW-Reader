@@ -19,6 +19,7 @@
   import { windowsItems } from "./windows-catalog";
   import { ARTISTS } from "$lib/artists";
   import { setDisabledArtists } from "./twitter-embeds";
+  import { editorChapterHref } from "$lib/editor-link";
 
   // --- Types ---
   interface Chapter {
@@ -30,6 +31,7 @@
   // Using Svelte 5 $props for reactive input
   let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, chaptersForTL = [], currentIndex = 0, currentTL = "", nextInfoDialog = undefined as HTMLDialogElement | undefined } = $props();
   const totalChapters = $derived(chaptersForTL.length);
+  const editorHref = $derived(editorChapterHref(bookSlug, currentTL, currentChapter));
 
   // --- State ---
   // Store dialog references in a reactive object for element binding
@@ -454,6 +456,8 @@
   function tlDir(book: string, tl: string): string {
     if (book === "debut" && tl === "debutplaintxt") return "DebutPlainTxt";
     if (book === "debut" && tl === "debutformatted") return "DebutFormatted";
+    if (book === "debut" && tl === "español") return "Español";
+    if (book === "gsgw" && tl === "mtl") return "MTL";
     return tl;
   }
   // Automatically updates the list whenever searchQuery or selectedTL changes
@@ -994,20 +998,34 @@
         </div>
 
       </a>
-      <a
-        href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{tlDir(bookSlug, navState.selectedTL)}/{(Number(readerState.ch_meta.slug) + (bookSlug === 'debut' ? 0 : 1)).toString().padStart(4, '0')}.md"
-        target="_blank"
-        class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors"
-      >
-        <div class="shrink-0 w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-          <Icon icon="mdi:github" class="size-5 text-secondary" />
-        </div>
-        <div class="min-w-0">
-          <span class="block text-sm font-semibold">Edit on GitHub</span>
-          <span class="block text-xs text-base-content/40 mt-0.5">Make changes to this chapter</span>
-        </div>
-
-      </a>
+      {#if editorHref}
+        <a
+          href={editorHref}
+          class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors"
+        >
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+            <Icon icon="material-symbols:edit-outline-rounded" class="size-5 text-secondary" />
+          </div>
+          <div class="min-w-0">
+            <span class="block text-sm font-semibold">Edit in Web Editor</span>
+            <span class="block text-xs text-base-content/40 mt-0.5">Open this chapter in the built-in editor</span>
+          </div>
+        </a>
+      {:else}
+        <a
+          href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{tlDir(bookSlug, currentTL)}/{(Number(currentChapter) + (bookSlug === 'debut' ? 0 : 1)).toString().padStart(4, '0')}.md"
+          target="_blank"
+          class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors"
+        >
+          <div class="shrink-0 w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+            <Icon icon="mdi:github" class="size-5 text-secondary" />
+          </div>
+          <div class="min-w-0">
+            <span class="block text-sm font-semibold">Edit on GitHub</span>
+            <span class="block text-xs text-base-content/40 mt-0.5">Make changes to this chapter</span>
+          </div>
+        </a>
+      {/if}
     </div>
   </div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
