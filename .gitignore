@@ -163,3 +163,6 @@ misc/discussions.py
 scripts/.DS_Store
 scripts/.discussions_token
 scripts/out/
+
+# Sen testing stuff
+scripts/Testing

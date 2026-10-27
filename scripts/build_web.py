@@ -375,6 +375,9 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$bdt(?!x)(.*?)bdt\$", re.DOTALL), r'<span class="bluedragon">\1</span>'),    
     (re.compile(r"\$lop(.*?)lop\$", re.DOTALL), r'<span class="lop">\1</span>'),
     (re.compile(r"\$smm(.*?)smm\$", re.DOTALL), r'<span class="monastery">\1</span>'),
+    (re.compile(r"\$wnt(.*?)wnt\$", re.DOTALL), r'<span class="wash">\1</span>'),
+    (re.compile(r"\$tst(.*?)tst\$", re.DOTALL), r'<span class="train-station">\1</span>'),
+    (re.compile(r"\$100y(.*?)100y\$", re.DOTALL), r'<span class="joseon-100year">\1</span>'),
 
 ]
 
@@ -704,6 +707,9 @@ def subtle_replacer(match, word_level=False):
     inner = re.sub(r"\$jt(?!x)(.+?)jt\$", r'<span class="judgement">\1</span>', inner)
     inner = re.sub(r"\$lop(.*?)lop\$", r'<span class="lop">\1</span>', inner)
     inner = re.sub(r"\$smm(.*?)smm\$", r'<span class="monastery">\1</span>', inner)
+    inner = re.sub(r"\$wnt(.*?)wnt\$", r'<span class="wash">\1</span>', inner)
+    inner = re.sub(r"\$tst(.*?)tst\$", r'<span class="train-station">\1</span>', inner)
+    inner = re.sub(r"\$100y(.*?)100y\$", r'<span class="joseon-100year">\1</span>', inner)
 
 
     inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
@@ -1119,6 +1125,9 @@ FOOTNOTE_TAG_REPLACEMENTS = [
     (re.compile(r"\$ips(.+?)ips\$", re.DOTALL), r'<span class="ibm-plex-sans">\1</span>'),
     (re.compile(r"\$lop(.*?)lop\$", re.DOTALL), r'<span class="lop">\1</span>'),
     (re.compile(r"\$smm(.*?)smm\$", re.DOTALL), r'<span class="monastery">\1</span>'),
+    (re.compile(r"\$wnt(.*?)wnt\$", re.DOTALL), r'<span class="wash">\1</span>'),
+    (re.compile(r"\$tst(.*?)tst\$", re.DOTALL), r'<span class="train-station">\1</span>'),
+    (re.compile(r"\$100y(.*?)100y\$", re.DOTALL), r'<span class="joseon-100year">\1</span>'),
     (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),
      lambda m: f'<span style="color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL),

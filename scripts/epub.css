@@ -386,6 +386,44 @@
   font-display: swap;
 }
 
+/* --- MapoMaponaru (Washing Note Text) --- */
+
+@font-face {
+  font-family: "MapoMaponaru";
+  src: url("../Fonts/MapoMaponaru.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Nanum Gothic (Train Station Text) --- */
+
+@font-face {
+  font-family: "Nanum Gothic";
+  src: url("../Fonts/NanumGothic-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nanum Gothic";
+  src: url("../Fonts/NanumGothic-ExtraBold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Joseon 100-Year Style (Weathered text) --- */
+
+@font-face {
+  font-family: "Chosun Centennial";
+  src: url("../Fonts/ChosunCentennial.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 .cover-page {
   text-align: center;
   margin: 0;
@@ -1015,6 +1053,18 @@ pre.gauge {
 
 .monastery {
   font-family: 'BMEuljiro10yearslater', serif;
+}
+
+.wash {
+  font-family: 'MapoMaponaru', serif;
+}
+
+.train-station {
+  font-family: 'Nanum Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+.joseon-100year {
+  font-family: 'Chosun Centennial', 'Georgia', serif;
 }
 
 /* Equalize Latin against the body default (Merriweather 400): cap-height

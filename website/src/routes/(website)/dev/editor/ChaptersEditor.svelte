@@ -768,6 +768,9 @@
     { syntax: "$bdt text bdt$", text: "Blue Dragon text", cls: "bluedragon", expandable: true },
     { syntax: "$lop text lop$", text: "Lover of Paradise text", cls: "lop", expandable: true },
     { syntax: "$smm text smm$", text: "Monastery text", cls: "monastery", expandable: true },
+    { syntax: "$wnt text wnt$", text: "Washing Note Text", cls: "wash", expandable: true },
+    { syntax: "$tst text tst$", text: "Train Station Text", cls: "train-station", expandable: true },
+    { syntax: "$100y text 100y$", text: "Weathered text", cls: "joseon-100year", expandable: true },
 
     { syntax: "$gps text gps$", text: "retro stencil text", cls: "tenada", expandable: true },
     { syntax: "$tf text tf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },
