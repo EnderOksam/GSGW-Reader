@@ -1226,6 +1226,18 @@ body:not(.snippet-preview) .reader-container pre.gauge {
   font-family: 'BMEuljiro10yearslater', serif;
 }
 
+.wash {
+  font-family: 'MapoMaponaru', serif;
+}
+
+.train-station {
+  font-family: 'Nanum Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+.joseon-100year {
+  font-family: 'Chosun Centennial', 'Georgia', serif;
+}
+
 /*
  * These faces have unusually tall capitals relative to their lowercase forms.
  * Match the default Alegreya cap height (0.658em) rather than the shared

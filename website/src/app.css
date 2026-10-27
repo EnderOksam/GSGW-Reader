@@ -761,3 +761,41 @@ body {
   font-style: normal;
   font-display: swap;
 }
+
+/* --- MapoMaponaru (Washing Note Text) --- */
+
+@font-face {
+  font-family: "MapoMaponaru";
+  src: url("/fonts/MapoMaponaru.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Nanum Gothic (Train Station Text) --- */
+
+@font-face {
+  font-family: "Nanum Gothic";
+  src: url("/fonts/NanumGothic-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nanum Gothic";
+  src: url("/fonts/NanumGothic-ExtraBold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Joseon 100-Year Style (Weathered text) --- */
+
+@font-face {
+  font-family: "Chosun Centennial";
+  src: url("/fonts/ChosunCentennial.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
