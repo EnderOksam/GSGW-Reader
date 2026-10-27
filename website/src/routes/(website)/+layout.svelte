@@ -14,7 +14,12 @@
 
   let path = $derived(page.url.pathname.replace(/\/$/, "") || "/");
   let isHomePage = $derived(path === "/");
-  let isEditorPage = $derived(path === "/dev/editor" || path.startsWith("/dev/editor/"));
+  let isEditorPage = $derived(
+    path === "/dev/editor" ||
+      path.startsWith("/dev/editor/") ||
+      path === "/edit" ||
+      path.startsWith("/edit/"),
+  );
   let isUderReadPage = $derived(path.startsWith("/read/uder/"));
 
   let bgCanvas: HTMLCanvasElement;

@@ -24,6 +24,7 @@
     dirty = $bindable<Set<string>>(new Set()),
     input = $bindable(""),
     isSourceTranslation = $bindable(true),
+    initialChapter = null as string | null,
   } = $props();
 
   let customTranslations = $state<string[]>([]);
@@ -562,6 +563,7 @@
     customTranslations = loadCustomTranslations();
     loadReaderPreviewDefaults();
     loadChapterList();
+    if (initialChapter) void loadChapter(initialChapter);
     autosaveTimer = setInterval(autosave, AUTOSAVE_INTERVAL_MS);
     window.addEventListener("beforeunload", autosave);
     return () => {
