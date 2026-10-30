@@ -62,24 +62,25 @@ export async function hydrateTwitterEmbeds(): Promise<void> {
       } else {
         el.style.removeProperty("--embed-aspect");
       }
+      // Twitter's image CDN rejects hotlinked requests that include our referrer.
       let mediaHtml = "";
       if (photo) {
         const img = photos[parseInt(photo) - 1];
-        if (img) mediaHtml = `<img class="twitter-embed-image" src="${img.url}" alt="" loading="lazy" />`;
+        if (img) mediaHtml = `<img class="twitter-embed-image" src="${img.url}" alt="" loading="lazy" referrerpolicy="no-referrer" />`;
       } else if (videos) {
         mediaHtml = `<video class="twitter-embed-video" src="${videos.url}" controls playsinline preload="metadata"></video>`;
       } else if (photos.length === 1) {
-        mediaHtml = `<img class="twitter-embed-image" src="${photos[0].url}" alt="" loading="lazy" />`;
+        mediaHtml = `<img class="twitter-embed-image" src="${photos[0].url}" alt="" loading="lazy" referrerpolicy="no-referrer" />`;
       } else if (photos.length > 1) {
         mediaHtml = `<div class="twitter-embed-grid">${photos.map((p: any) =>
-          `<img class="twitter-embed-image" src="${p.url}" alt="" loading="lazy" />`
+          `<img class="twitter-embed-image" src="${p.url}" alt="" loading="lazy" referrerpolicy="no-referrer" />`
         ).join("")}</div>`;
       }
       el.innerHTML = `
         <figure class="twitter-embed-inner">
           <div class="twitter-embed-header">
             <a class="twitter-embed-author" href="${profileUrl}" target="_blank" rel="noopener noreferrer">
-              ${avatar ? `<img class="twitter-embed-avatar" src="${escHtml(avatar)}" alt="" loading="lazy" />` : ""}
+              ${avatar ? `<img class="twitter-embed-avatar" src="${escHtml(avatar)}" alt="" loading="lazy" referrerpolicy="no-referrer" />` : ""}
               <span class="twitter-embed-user">@${escHtml(user)}</span>
             </a>
             <a class="twitter-embed-x-icon" href="${tweetUrl}" target="_blank" rel="noopener noreferrer" aria-label="View on X">
