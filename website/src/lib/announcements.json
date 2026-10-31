@@ -2,6 +2,28 @@
   "announcements": [
     {
       "title": "<@&1518774394757845132>",
+      "date": "2026-10-31",
+      "short": "@GSGW Releases\n\n- **Manhwa:** Chapter 42\n\n[Read GSGW](https://ireum.pages.dev/book/manwha/)\n\nOther:\n\n- **Character ID Illustration:** Added new ID Manhwa illustration for J3",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "GSGW Releases"
+      ],
+      "messageId": "1565905113426690276",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1565905113426690276",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Ghost Story, Gotta Work",
+          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
+          "url": "https://ireum.pages.dev/book/manwha/",
+          "image": null,
+          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/webtoon-cover.BSrTBnQr.webp"
+        }
+      ]
+    },
+    {
+      "title": "<@&1518774394757845132>",
       "date": "2026-10-27",
       "short": "@GSGW Releases\n\n- **PART 3:** Chapters 400–407 moved to FANTL\n-# Additional edits: Chapters 372–407 by 𝐋𝐞𝐢 (me)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)",
       "long": "",
@@ -35,14 +57,14 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563426409127485520",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6ae18a4e&is=6ae038ce&hm=e1e71189c63238d448f226889c34cd1d33fe0a2845fcad93bf6971169bef46ed&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6ae6278e&is=6ae4d60e&hm=2b97db1fd32898fbbc557a0a0a80aeab2147761934699b42f7c32b325fcc3863&",
           "filename": "image.png",
           "contentType": "image/webp",
           "width": 632,
           "height": 680
         },
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6ae18a4e&is=6ae038ce&hm=a0cfdb33ef3ac508e0895a0ef7802b81e884c2cf8ea74fc1708756ceb163716d&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6ae6278e&is=6ae4d60e&hm=2953f8e0e363748961f91bf3463f073418a68b3e7c9ebb623331f4b032800fac&",
           "filename": "image.png",
           "contentType": "image/png",
           "width": 1680,
@@ -64,7 +86,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563183717181161552",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6ae15108&is=6adfff88&hm=4a2222905c55900984767ceb3dca2fb739dcf6d7a9185c14e0c4dd5b2f48105d&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6ae69708&is=6ae54588&hm=675883b1671ac95e47be26f7d9087762a7d91a71ad1cad073d7cff1d77a02100&",
           "filename": "IMG_7407.png",
           "contentType": "image/png",
           "width": 1170,
@@ -100,7 +122,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1560578630189449246",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6ae1ba1b&is=6ae0689b&hm=6c3719c4aba543f718bb925e4390cf500a4b49eec4378f1830c0bb62d5d1c03b&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6ae6575b&is=6ae505db&hm=cdc4c7fd2be995d959244f0e98aa6cd98bd752767c5b2424ec570405fc94b50b&",
           "filename": "IMG_1647.jpg",
           "contentType": "image/jpeg",
           "width": 1282,
@@ -130,7 +152,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1559030228226019328",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6ae15e0b&is=6ae00c8b&hm=c88e4300473b08b3d458a96285a9e84323c64e78060d860331238b50816f5787&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6ae6a40b&is=6ae5528b&hm=e561fe0c74e89d8f5eb5ef1c21a1bd5b53897f87cc91a6533eedd5d9be1caa8e&",
           "filename": "IMG_1591.png",
           "contentType": "image/png",
           "width": 1012,
@@ -226,7 +248,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555093524490493954",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6ae18c34&is=6ae03ab4&hm=5272ded54ab02a650fae4719fab99e316d11b06fac6aa37cc188b4a51617e880&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6ae62974&is=6ae4d7f4&hm=2b2a17687f09873b93dc7f945ec7c7a93cc416a26fb22532d2c5ace5b8da826d&",
           "filename": "IMG_1421.png",
           "contentType": "image/jpeg",
           "width": 1668,
@@ -321,21 +343,6 @@
           "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
         }
       ]
-    },
-    {
-      "title": "<@&1518774394757845132>",
-      "date": "2026-09-04",
-      "short": "@GSGW Releases\n- **PART 1** Earlier Chapters edited by Sen (up to ch 184)\n- **PART 2** Chapters 314-323 formatted by Seirios, destiny, and me (𝐋𝐞𝐢)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n@DoD Releases\n- DOD Chapters 344-365 formatted by me (𝐋𝐞𝐢)\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOthers:\n- Alt Text Feature Available: You can now choose your preferred translation for certain words!\n-# You can find it under Settings -> Alt Text -> Pick your preferences",
-      "long": "",
-      "author": "𝐋𝐞𝐢",
-      "tags": [
-        "DoD Releases",
-        "GSGW Releases"
-      ],
-      "messageId": "1545418648796012605",
-      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1545418648796012605",
-      "attachments": [],
-      "embeds": []
     }
   ]
 }
