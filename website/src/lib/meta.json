@@ -1,71 +1,6 @@
 {
   "gsgw": {
-    "mtl": [
-      {
-        "title": "Namhae Branch [Worker Disposal], I",
-        "category": "Part 3",
-        "discussion": 1075,
-        "index": 400,
-        "section": "Chapter 400",
-        "slug": "400"
-      },
-      {
-        "title": "Namhae Branch [Worker Disposal], II",
-        "category": "Part 3",
-        "discussion": 1076,
-        "index": 401,
-        "section": "Chapter 401",
-        "slug": "401"
-      },
-      {
-        "title": "Namhae Branch [Worker Disposal], III",
-        "category": "Part 3",
-        "discussion": 1264,
-        "index": 402,
-        "section": "Chapter 402",
-        "slug": "402"
-      },
-      {
-        "title": "Namhae Branch [Worker Disposal], IV",
-        "category": "Part 3",
-        "discussion": 1285,
-        "index": 403,
-        "section": "Chapter 403",
-        "slug": "403"
-      },
-      {
-        "title": "Namhae Branch [Worker Disposal], V",
-        "category": "Part 3",
-        "discussion": 1287,
-        "index": 404,
-        "section": "Chapter 404",
-        "slug": "404"
-      },
-      {
-        "title": "[Fear Cleaner], I",
-        "category": "Part 3",
-        "discussion": 1199,
-        "index": 405,
-        "section": "Chapter 405",
-        "slug": "405"
-      },
-      {
-        "title": "[Fear Cleaner], II",
-        "category": "Part 3",
-        "discussion": 1343,
-        "index": 406,
-        "section": "Chapter 406",
-        "slug": "406"
-      },
-      {
-        "title": "[Fear Cleaner, III]",
-        "category": "Part 3",
-        "discussion": 1247,
-        "index": 407,
-        "section": "Chapter 407",
-        "slug": "407"
-      }
-    ],
+    "mtl": [],
     "fantl": [
       {
         "title": "Synopsis",
@@ -2396,7 +2331,7 @@
         "slug": "290"
       },
       {
-        "title": "Egg Mood Lamp, I",
+        "title": "Eggacy Mood Lamp, I",
         "category": "Part 2",
         "discussion": 1290,
         "index": 291,
@@ -2404,7 +2339,7 @@
         "slug": "291"
       },
       {
-        "title": "Egg Mood Lamp, II",
+        "title": "Eggacy Mood Lamp, II",
         "category": "Part 2",
         "discussion": 1303,
         "index": 292,
@@ -3266,6 +3201,70 @@
         "index": 399,
         "section": "Chapter 399",
         "slug": "399"
+      },
+      {
+        "title": "Namhae Branch [Worker Disposal], I",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 400,
+        "section": "Chapter 400",
+        "slug": "400"
+      },
+      {
+        "title": "Namhae Branch [Worker Disposal], II",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 401,
+        "section": "Chapter 401",
+        "slug": "401"
+      },
+      {
+        "title": "Namhae Branch [Worker Disposal], III",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 402,
+        "section": "Chapter 402",
+        "slug": "402"
+      },
+      {
+        "title": "Namhae Branch [Worker Disposal], IV",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 403,
+        "section": "Chapter 403",
+        "slug": "403"
+      },
+      {
+        "title": "Namhae Branch [Worker Disposal], V",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 404,
+        "section": "Chapter 404",
+        "slug": "404"
+      },
+      {
+        "title": "[Fear Cleaner], I",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 405,
+        "section": "Chapter 405",
+        "slug": "405"
+      },
+      {
+        "title": "[Fear Cleaner], II",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 406,
+        "section": "Chapter 406",
+        "slug": "406"
+      },
+      {
+        "title": "[Fear Cleaner, III]",
+        "category": "Part 3",
+        "discussion": 0,
+        "index": 407,
+        "section": "Chapter 407",
+        "slug": "407"
       }
     ],
     "unformattedtl": []

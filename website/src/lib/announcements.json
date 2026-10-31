@@ -2,6 +2,28 @@
   "announcements": [
     {
       "title": "<@&1518774394757845132>",
+      "date": "2026-10-27",
+      "short": "@GSGW Releases\n\n- **PART 3:** Chapters 400–407 moved to FANTL\n-# Additional edits: Chapters 372–407 by 𝐋𝐞𝐢 (me)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)",
+      "long": "",
+      "author": "𝐋𝐞𝐢",
+      "tags": [
+        "GSGW Releases"
+      ],
+      "messageId": "1564581130160701551",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1564581130160701551",
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
+          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
+          "url": "https://ireum.pages.dev/book/gsgw/",
+          "image": null,
+          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
+        }
+      ]
+    },
+    {
+      "title": "<@&1518774394757845132>",
       "date": "2026-10-24",
       "short": "@GSGW Releases\n\n- **PART 3:** Chapters 392–399 moved to FANTL\n-# Additional edits by Tarragona and 𝐋𝐞𝐢 (me)\n- **Manhwa:** Chapters 40–41\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n**Other Updates by Ender Oksam, Sen and 𝐋𝐞𝐢**\n\n- **Twitter (X) Illustrations Toggles:** Added a toggle to customize Twitter (X) illustrations while reading, with options for **default**, **minimal**, and **off**.\n-# New illustrations have been added to multiple chapters (52, 53, 54, 233, 240, 313, 332, 389, 391).\n- **Window Settings Preview:** You can now preview how your window settings affect different window and text styles, including styled and plaintext variants.\n- **Character ID Illustrations:** Added new ID Manhwa illustrations for Jaekwan and Choi, and updated J3's ID to the new official novel illustration.\n- **New Defaults:** Libron is now the default font, and Ireum Pages is the default theme. Alegreya remains available in the font dropdown, along with more themes to choose from.\n\n-# You can customize these options in the website settings.",
       "long": "",
@@ -13,14 +35,14 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563426409127485520",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6add95ce&is=6adc444e&hm=eb1af8712194fb763779a4d050d4e7a6407f3105ae191d1af7ec66b0135e8293&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6ae18a4e&is=6ae038ce&hm=e1e71189c63238d448f226889c34cd1d33fe0a2845fcad93bf6971169bef46ed&",
           "filename": "image.png",
           "contentType": "image/webp",
           "width": 632,
           "height": 680
         },
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6add95ce&is=6adc444e&hm=877b4bccc2f3094c758ec63239ab94c776b3455d9eb6f1fbfe57d5e55cf60743&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6ae18a4e&is=6ae038ce&hm=a0cfdb33ef3ac508e0895a0ef7802b81e884c2cf8ea74fc1708756ceb163716d&",
           "filename": "image.png",
           "contentType": "image/png",
           "width": 1680,
@@ -42,7 +64,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563183717181161552",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6add5c88&is=6adc0b08&hm=8bb0ca438618db8bffe6d050ce4a3cbf042eeee3eab935a356ce436825968259&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6ae15108&is=6adfff88&hm=4a2222905c55900984767ceb3dca2fb739dcf6d7a9185c14e0c4dd5b2f48105d&",
           "filename": "IMG_7407.png",
           "contentType": "image/png",
           "width": 1170,
@@ -78,7 +100,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1560578630189449246",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6add1cdb&is=6adbcb5b&hm=6dc20e6c9a20ba707ada21a3a84d9be6a3845a51fa096bbe70d814378ec62061&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6ae1ba1b&is=6ae0689b&hm=6c3719c4aba543f718bb925e4390cf500a4b49eec4378f1830c0bb62d5d1c03b&",
           "filename": "IMG_1647.jpg",
           "contentType": "image/jpeg",
           "width": 1282,
@@ -108,7 +130,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1559030228226019328",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6add698b&is=6adc180b&hm=2ee872164341f6e286867adfce39e29c8eb303b8642cd6beece2d669b0488ea0&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6ae15e0b&is=6ae00c8b&hm=c88e4300473b08b3d458a96285a9e84323c64e78060d860331238b50816f5787&",
           "filename": "IMG_1591.png",
           "contentType": "image/png",
           "width": 1012,
@@ -204,7 +226,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555093524490493954",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6adceef4&is=6adb9d74&hm=f181fd1474ec03f797844f5db86e48be2e13ac79c5a819be1a25d93e159e3376&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6ae18c34&is=6ae03ab4&hm=5272ded54ab02a650fae4719fab99e316d11b06fac6aa37cc188b4a51617e880&",
           "filename": "IMG_1421.png",
           "contentType": "image/jpeg",
           "width": 1668,
@@ -312,21 +334,6 @@
       ],
       "messageId": "1545418648796012605",
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1545418648796012605",
-      "attachments": [],
-      "embeds": []
-    },
-    {
-      "title": "<@&1518774394757845132>",
-      "date": "2026-08-29",
-      "short": "@GSGW Releases\n- **PART 1** Earlier Chapters edited by Sen (up to ch 178)\n- **PART 2** Chapters 304-313 formatted by Seirios and me (𝐋𝐞𝐢)\n- **Manhwa** Chapter 33\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n@DoD Releases\n- DOD Chapters 325-343 formatted by me (𝐋𝐞𝐢)\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOthers:\n- New Fonts Available\n- Text-Wrap: Pretty Applied to the Website\n- Randomized Shake Animations Improvements\n- New ID Illustrations for Lee Jaheon, ||Braun|| (Good Friend), and Jin Nasol",
-      "long": "",
-      "author": "𝐋𝐞𝐢",
-      "tags": [
-        "DoD Releases",
-        "GSGW Releases"
-      ],
-      "messageId": "1543187373544833195",
-      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1543187373544833195",
       "attachments": [],
       "embeds": []
     }

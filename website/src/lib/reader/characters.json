@@ -200,10 +200,10 @@
   {
     "id": "J3",
     "name": "J3",
-    "hasManwha": false,
-    "hasManwhaImage": false,
+    "hasManwha": true,
+    "hasManwhaImage": true,
     "hasWebnovelImage": true,
-    "manwhaImage": null,
+    "manwhaImage": "J3Manhwa.webp",
     "webnovelImage": "J3Webnovel.webp",
     "firstAppearance": 32,
     "birthday": "Oct 10",
