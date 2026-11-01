@@ -71,7 +71,7 @@
   let snippetCopied = $state(false);
   let snippetPrimaryColor = $state("oklch(var(--p))");
 
-  const WINDOW_SETTINGS_DEFAULTS = { customTextColors: true, braunColor: false, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, windowGutter: -32, textGutter: 0 };
+  const WINDOW_SETTINGS_DEFAULTS = { customTextColors: true, braunColor: false, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, scareScrollLock: true, windowGutter: -32, textGutter: 0 };
   const TEXT_GUTTER_MIN = -68;
   const WINDOW_GUTTER_MIN = -50;
   function loadWindowSettings(): typeof WINDOW_SETTINGS_DEFAULTS {
@@ -118,6 +118,7 @@
     { attr: "data-ws-no-anim", get: (s: typeof windowSettings) => !s.animatedText },
     { attr: "data-ws-no-bold-large", get: (s: typeof windowSettings) => !s.boldLarge },
     { attr: "data-ws-hr-stars", get: (s: typeof windowSettings) => s.hrStars },
+    { attr: "data-ws-no-scare-lock", get: (s: typeof windowSettings) => !s.scareScrollLock },
   ] as const;
   $effect(() => {
     if (browser) {
@@ -1297,6 +1298,12 @@
         {#if textEffectVisible.divider}
           <TextEffectsPreview kind="divider" pad={0} />
         {/if}
+        <WindowToggle
+          label="Scare page scroll lock"
+          labels={["On", "Off"]}
+          value={windowSettings.scareScrollLock}
+          onChange={(v) => (windowSettings.scareScrollLock = v)}
+        />
       </div>
     </div>
   </div>

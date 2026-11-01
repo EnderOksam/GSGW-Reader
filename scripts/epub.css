@@ -2280,26 +2280,24 @@ body .smoke-text.smoke-text b {
   margin: 0 0 0.75rem;
 }
 
-.footnotes-section ol {
-  margin: 0;
-  padding-left: 1.75em;
+.footnote {
+  margin-bottom: 0.75em;
+  padding-left: 0.25em;
   font-size: 0.85em;
   line-height: 1.6;
   color: #666 !important;
   -webkit-text-fill-color: #666 !important;
 }
 
-.footnotes-section li {
-  margin-bottom: 0.75em;
-  padding-left: 0.25em;
-  scroll-margin-top: 40vh;
-}
-
-.footnotes-section li:last-child {
+.footnote:last-child {
   margin-bottom: 0;
 }
 
-.footnotes-section li strong {
+.footnote p {
+  margin: 0;
+}
+
+.fn-label {
   font-weight: 600;
   color: #6366f1 !important;
   -webkit-text-fill-color: #6366f1 !important;

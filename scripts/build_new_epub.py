@@ -1975,8 +1975,8 @@ def convert_chapter(content, ctx):
         key = f"\x00FN{len(fn_placeholders)}\x00"
         footnotes[num] = tip_html
         fn_placeholders[key] = (
-            f'<a href="#fn-{num}" class="fn-ref" id="fn-ref-{num}">'
-            f'[{num}]</a>'
+            f'<a href="#fn-{num}" class="fn-ref" id="fn-ref-{num}" '
+            f'epub:type="noteref" role="doc-noteref">[{num}]</a>'
         )
         return key
 
@@ -2126,8 +2126,20 @@ def convert_chapter(content, ctx):
     if footnotes:
         lines = []
         for num in sorted(footnotes):
-            lines.append(f'<li value="{num}" id="fn-{num}">{footnotes[num]} <a href="#fn-ref-{num}" class="fn-back" aria-label="Back to reference {num} in text">&#x21A9;</a></li>')
-        footnotes_html = '<div class="footnotes-section">\n<hr class="footnotes-divider" />\n<p class="footnotes-title">Footnotes</p>\n<ol>\n' + '\n'.join(lines) + '\n</ol>\n</div>\n'
+            lines.append(
+                f'<aside class="footnote" id="fn-{num}" '
+                f'epub:type="footnote" role="doc-footnote">'
+                f'<p><span class="fn-label">[{num}]</span> '
+                f'{footnotes[num]}</p></aside>'
+            )
+        footnotes_html = (
+            '<section class="footnotes-section" epub:type="endnotes" '
+            'role="doc-endnotes">\n'
+            '<hr class="footnotes-divider" />\n'
+            '<p class="footnotes-title">Footnotes</p>\n'
+            + '\n'.join(lines)
+            + '\n</section>\n'
+        )
 
     try:
         proc = subprocess.run(
@@ -2313,7 +2325,8 @@ def xhtml_page(title: str, body: str) -> str:
     return (
         '<?xml version="1.0" encoding="utf-8"?>\n'
         '<!DOCTYPE html>\n'
-        '<html xmlns="http://www.w3.org/1999/xhtml">'
+        '<html xmlns="http://www.w3.org/1999/xhtml" '
+        'xmlns:epub="http://www.idpf.org/2007/ops">'
         f"<head><title>{escape_text(title)}</title>"
         '<link href="../Styles/stylesheet.css" type="text/css" rel="stylesheet" />'
         f"</head><body>{body}</body></html>\n"

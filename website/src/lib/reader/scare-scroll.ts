@@ -1,3 +1,16 @@
+function scrollLockDisabled(): boolean {
+  if (typeof document !== "undefined" && document.documentElement?.hasAttribute?.("data-ws-no-scare-lock")) {
+    return true;
+  }
+  try {
+    if (typeof localStorage === "undefined") return false;
+    const saved = localStorage.getItem("windowSettings");
+    return saved ? JSON.parse(saved).scareScrollLock === false : false;
+  } catch {
+    return false;
+  }
+}
+
 export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
   const isWindow = scrollEl === window;
 
@@ -156,12 +169,14 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
     endLock();
 
     // Block continuing wheel/touch input during arrival as well as the pause.
-    scrollArriving = true;
-    const target = snapToCenter(win);
-    const session = ++lockSession;
-    lockWhenSettled(target, session);
-    window.addEventListener("click", onClickCancel, { passive: true });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    if (!scrollLockDisabled()) {
+      scrollArriving = true;
+      const target = snapToCenter(win);
+      const session = ++lockSession;
+      lockWhenSettled(target, session);
+      window.addEventListener("click", onClickCancel, { passive: true });
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+    }
 
     // Releasing the scroll lock must never cancel a triggered scare's reveal.
     // Track each timer separately in case several scares enter together.
