@@ -6,4 +6,5 @@ export const ARTISTS = [
   "yjh_ism",
   "_heydestiny",
   "milkdrawer_",
+  "milkydeath",
 ];

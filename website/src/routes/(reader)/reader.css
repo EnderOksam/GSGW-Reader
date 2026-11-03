@@ -2087,6 +2087,14 @@ body .reader-container .alert-window.alert-window
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
   }
+
+  .reader-container .scare-page .paper-boat img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .scare-zone[data-preview] {
