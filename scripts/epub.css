@@ -2297,11 +2297,12 @@ body .smoke-text.smoke-text b {
   margin: 0;
 }
 
-.fn-label {
+a.fn-label {
   font-weight: 600;
   color: #6366f1 !important;
   -webkit-text-fill-color: #6366f1 !important;
   margin-right: 0.3em;
+  text-decoration: none;
 }
 
 .fn-back {

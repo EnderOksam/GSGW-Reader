@@ -794,6 +794,8 @@ def escape_markdown_except_bold(text):
     text = re.sub(r'<[a-zA-Z][^>]*>.*?</[a-zA-Z][^>]*>', save_html, text, flags=re.DOTALL)
     text = re.sub(r'<[a-zA-Z][^>]*/>', save_html, text)
 
+    text = re.sub(r'!\[[^\]]*\]\([^)]*\)', save_html, text)
+
     text = re.sub(r'(?<!\\)\[', r'\\[', text)
     text = re.sub(r'(?<!\\)\]', r'\\]', text)
 
@@ -2129,7 +2131,9 @@ def convert_chapter(content, ctx):
             lines.append(
                 f'<aside class="footnote" id="fn-{num}" '
                 f'epub:type="footnote" role="doc-footnote">'
-                f'<p><span class="fn-label">[{num}]</span> '
+                f'<p><a href="#fn-ref-{num}" class="fn-label" '
+                f'epub:type="backlink" role="doc-backlink" '
+                f'aria-label="Back to reference {num} in text">[{num}]</a> '
                 f'{footnotes[num]}</p></aside>'
             )
         footnotes_html = (
