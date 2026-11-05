@@ -1442,7 +1442,7 @@
         </label>
       </div>
       <div class="flex-1 overflow-y-auto scrollbar-thin bg-base-300/60">
-        <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: {previewFont}, serif; --chapter-size: {previewFontSize}px; --chapter-weight: {previewWeight}; --chapter-lh: {previewLineHeight}; --chapter-indent: 0; --chapter-align: {previewAlign}; --chapter-hyphens: none;">
+        <article class="reader-container chapter-content prose prose-lg md:prose-xl max-w-none wrap-break-word" style="--chapter-font: {previewFont}, serif; --chapter-strike-width: {previewFont === 'Libron' ? '0.2ex' : '2px'}; --chapter-strike-gap: {previewFont === 'Libron' ? '0.3ex' : '16%'}; --chapter-size: {previewFontSize}px; --chapter-weight: {previewWeight}; --chapter-lh: {previewLineHeight}; --chapter-indent: 0; --chapter-align: {previewAlign}; --chapter-hyphens: none;">
         {#if previewHtml}{@html previewHtml}{:else}<p class="text-base-content/40 text-center">select a chapter to preview</p>{/if}
         </article>
       </div>

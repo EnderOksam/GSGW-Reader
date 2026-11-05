@@ -1067,8 +1067,8 @@ pre.gauge {
   font-family: 'Chosun Centennial', 'Georgia', serif;
 }
 
-/* Equalize Latin against the body default (Merriweather 400): cap-height
-   0.743, x-height 0.5555. Body/reading fonts normalize by x-height so lines
+/* Equalize Latin against the body default (Libron 400): cap-height
+   0.7085, x-height 0.5315. Body/reading fonts normalize by x-height so lines
    of lowercase text match the default's reading size; display, effect,
    handwriting and mono fonts normalize by cap-height so their uppercase
    (which dominates their look) matches the default. Hangul is untouched. */
@@ -1090,7 +1090,7 @@ pre.gauge {
 .ssm2,
 .mts2,
 .hlm {
-  font-size-adjust: cap-height 0.743;
+  font-size-adjust: cap-height 0.7085;
 }
 
 .lato,
@@ -1101,7 +1101,7 @@ pre.gauge {
 .nanum-barun-gothic,
 .noto-sans,
 .ibm-plex-sans {
-  font-size-adjust: ex-height 0.5555;
+  font-size-adjust: ex-height 0.5315;
 }
 
 
@@ -1407,6 +1407,8 @@ body .smoke-text.smoke-text b {
   color: #98afd5 !important;
   -webkit-text-fill-color: #98afd5 !important;
   font-family: "Noto Sans";
+  text-align: inherit;
+  font-weight: 600;
 }
 
 .wiki-window::before,
@@ -1464,6 +1466,8 @@ body .smoke-text.smoke-text b {
   color: #98afd5 !important;
   -webkit-text-fill-color: #98afd5 !important;
   font-family: "Noto Sans";
+  text-align: inherit;
+  font-weight: 600;
 }
 .followup-window {
   background-color: #090f27 !important;
@@ -1473,6 +1477,8 @@ body .smoke-text.smoke-text b {
   color: #98afd5 !important;
   -webkit-text-fill-color: #98afd5 !important;
   font-family: "Noto Sans";
+  text-align: inherit;
+  font-weight: 600;
 }
 .note-window {
   border: 0 !important;
@@ -1881,8 +1887,10 @@ body .smoke-text.smoke-text b {
 
   /*
    * No clip-path (it stops the box from splitting across pages).
-   * The paper is painted as plain rectangles, leaving the top-right
+   * The paper is painted as overlapping rectangles, leaving the top-right
    * 36px x 36px square unpainted, so the page shows through there.
+   * The left panel spans the full height: two strips meeting at 36px can
+   * leave a hairline seam when EPUB readers round their painted sizes.
    * Rectangles are sliced normally when the box breaks across pages.
    */
   border: 0 !important;
@@ -1894,7 +1902,7 @@ body .smoke-text.smoke-text b {
   background-image:
     linear-gradient(#aaa, #aaa),   /* top edge line                       */
     linear-gradient(#aaa, #aaa),   /* right edge line (below the corner)  */
-    linear-gradient(#fff, #fff),   /* top strip (stops before the corner) */
+    linear-gradient(#fff, #fff),   /* full-height left panel              */
     linear-gradient(#fff, #fff)    /* body (starts below the corner)      */
     !important;
   background-repeat: no-repeat;
@@ -1903,7 +1911,7 @@ body .smoke-text.smoke-text b {
   background-size:
     calc(100% - 36px) 1px,
     1px calc(100% - 36px),
-    calc(100% - 36px) 36px,
+    calc(100% - 36px) 100%,
     100% calc(100% - 36px);
   background-position:
     left top,

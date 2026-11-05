@@ -335,6 +335,8 @@
   class="min-h-screen w-full text-base-content relative transition-colors duration-200"
   style="
     --chapter-font: {prefs.config.font}, serif; 
+    --chapter-strike-width: {prefs.config.font === 'Libron' ? '0.2ex' : '2px'};
+    --chapter-strike-gap: {prefs.config.font === 'Libron' ? '0.3ex' : '16%'};
     --chapter-size: {prefs.config.fontSize}px; 
     --chapter-weight: {prefs.config.fontWeight};
     --chapter-lh: {prefs.config.lineHeight};
