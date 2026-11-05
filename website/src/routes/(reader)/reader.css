@@ -7,13 +7,13 @@
 
 /*
  * Keep font swaps optically consistent when they appear in the same line.
- * The value is Alegreya's x-height (0.462em), our default reading face.
+ * The value is Libron's x-height (0.5315em), our default reading face.
  * `font-size-adjust` scales each descendant font to that same x-height while
  * preserving intentional emphasis supplied by classes such as .text-large.
  */
 .reader-container,
 .chapter-content {
-  font-size-adjust: 0.462;
+  font-size-adjust: 0.5315;
 }
 
 .reader-container strong {
@@ -39,15 +39,17 @@
 
   background-repeat: no-repeat;
 
+  /* Libron's strokes and gaps scale with its x-height, keeping the lines
+     separate at smaller sizes. Other fonts retain their original values. */
   background-size:
-    100% 2px,
-    100% 2px,
-    100% 2px;
+    100% var(--chapter-strike-width, 2px),
+    100% var(--chapter-strike-width, 2px),
+    100% var(--chapter-strike-width, 2px);
 
   background-position:
-    0 34%,
+    0 calc(50% - var(--chapter-strike-gap, 16%)),
     0 50%,
-    0 66%;
+    0 calc(50% + var(--chapter-strike-gap, 16%));
 }
 
 img {
@@ -1554,6 +1556,13 @@ body .reader-container .debut-alert.debut-alert::before {
 }
 body .reader-container .debut-alert.debut-alert p {
   color: oklch(0.95 0 0);
+}
+
+/* Typography assigns theme colors directly to formatted text. Inherit the
+   window color instead; explicit author color classes and inline colors win. */
+body .reader-container :where(.debut-window, .debut-alert)
+  :where(a, strong, b, em, i, li, h1, h2, h3, h4, h5, h6, code, blockquote) {
+  color: inherit;
 }
 
 body .reader-container .debut-achievement {

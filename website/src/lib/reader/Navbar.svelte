@@ -281,10 +281,14 @@
       snippetPreviewEl.style.hyphens = cs.hyphens;
       const chapterSize = cs.getPropertyValue("--chapter-size").trim();
       const chapterFont = cs.getPropertyValue("--chapter-font").trim();
+      const chapterStrikeWidth = cs.getPropertyValue("--chapter-strike-width").trim();
+      const chapterStrikeGap = cs.getPropertyValue("--chapter-strike-gap").trim();
       const chapterWeight = cs.getPropertyValue("--chapter-weight").trim();
       const chapterLh = cs.getPropertyValue("--chapter-lh").trim();
       if (chapterSize) snippetPreviewEl.style.setProperty("--chapter-size", chapterSize);
       if (chapterFont) snippetPreviewEl.style.setProperty("--chapter-font", chapterFont);
+      if (chapterStrikeWidth) snippetPreviewEl.style.setProperty("--chapter-strike-width", chapterStrikeWidth);
+      if (chapterStrikeGap) snippetPreviewEl.style.setProperty("--chapter-strike-gap", chapterStrikeGap);
       if (chapterWeight) snippetPreviewEl.style.setProperty("--chapter-weight", chapterWeight);
       if (chapterLh) snippetPreviewEl.style.setProperty("--chapter-lh", chapterLh);
 

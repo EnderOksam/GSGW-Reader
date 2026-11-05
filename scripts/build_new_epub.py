@@ -2706,7 +2706,9 @@ def build_chapter_items(
     Scare pages become isolated, full-viewport files interleaved between the
     surrounding story parts in strict spine order. Only the story segment
     that begins the chapter (part1, or the plain chapter file when there are
-    no scare pages) is exposed to the Table of Contents.
+    no scare pages) is exposed to the Table of Contents. Subsequent files
+    get a hidden chapter heading so Episteme can label them correctly without
+    adding extra navigation entries.
     """
     segments = split_pagebreaks(chapter.content)
     has_scares = any(segment.is_scare for segment in segments)
@@ -2731,6 +2733,15 @@ def build_chapter_items(
             suffix = f"part{story_count}" if has_scares else None
 
         in_toc = not items
+        if not in_toc:
+            # Episteme ignores <title> and falls back to a spine-based chapter
+            # number when neither an NCX label nor a heading is available.
+            # Its title parser reads hidden headings; its renderer skips them.
+            body = (
+                '<h1 class="epub-chapter-label" hidden="hidden" '
+                'aria-hidden="true" style="display: none;">'
+                + escape_text(chapter.title) + "</h1>\n" + body
+            )
 
         items.append(
             EpubItem(
