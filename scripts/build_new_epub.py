@@ -2331,7 +2331,7 @@ def xhtml_page(title: str, body: str) -> str:
         '<!DOCTYPE html>\n'
         '<html xmlns="http://www.w3.org/1999/xhtml" '
         'xmlns:epub="http://www.idpf.org/2007/ops">'
-        f"<head><title>{escape_text(title)}</title>"
+        f'<head><meta charset="utf-8" /><title>{escape_text(title)}</title>'
         '<link href="../Styles/stylesheet.css" type="text/css" rel="stylesheet" />'
         f"</head><body>{body}</body></html>\n"
     )
@@ -2348,7 +2348,7 @@ def nav_xhtml(book_title: str, items: list[EpubItem]) -> str:
         '<!DOCTYPE html>\n'
         '<html xmlns="http://www.w3.org/1999/xhtml" '
         'xmlns:epub="http://www.idpf.org/2007/ops">'
-        f"<head><title>{escape_text(book_title)} Table of Contents</title>"
+        f'<head><meta charset="utf-8" /><title>{escape_text(book_title)} Table of Contents</title>'
         '<link href="Styles/stylesheet.css" type="text/css" rel="stylesheet" />'
         "</head><body>"
         '<nav epub:type="toc" id="toc"><h1>Table of Contents</h1>'
@@ -2400,64 +2400,6 @@ def content_opf(
                 f'<item href="{escape_attr(asset.href)}" id="image{idx:04d}" '
                 f'media-type="{escape_attr(asset.media_type)}"/>'
             )
-
-    FONT_FILES = [
-        ("Fonts/Libron-Regular.woff2", "font-libron-regular", "font/woff2"),
-        ("Fonts/Libron-Italic.woff2", "font-libron-italic", "font/woff2"),
-        ("Fonts/Libron-Bold.woff2", "font-libron-bold", "font/woff2"),
-        ("Fonts/Libron-BoldItalic.woff2", "font-libron-bold-italic", "font/woff2"),
-        ("Fonts/ComicNeue-Regular.woff2", "font-comic-neue-regular", "font/woff2"),
-        ("Fonts/ComicNeue-Bold.woff2", "font-comic-neue-bold", "font/woff2"),
-        ("Fonts/Caveat-Variable.woff2", "font-caveat", "font/woff2"),
-        ("Fonts/Lato-Regular.woff2", "font-lato-regular", "font/woff2"),
-        ("Fonts/Lato-Bold.woff2", "font-lato-bold", "font/woff2"),
-        ("Fonts/Lato-Italic.woff2", "font-lato-italic", "font/woff2"),
-        ("Fonts/Lato-BoldItalic.woff2", "font-lato-bold-italic", "font/woff2"),
-        ("Fonts/GabiaCheongyeon.woff2", "font-GabiaCheongyeon", "font/woff2"),
-        ("Fonts/GowunBatang-Regular.woff2", "font-gowun-batang-regular", "font/woff2"),
-        ("Fonts/GowunBatang-Bold.woff2", "font-gowun-batang-bold", "font/woff2"),
-        ("Fonts/PauloBittencourt-Regular.ttf", "font-paulo-bittencourt-regular", "font/sfnt"),
-        ("Fonts/PauloBittencourt-Bold.ttf", "font-paulo-bittencourt-bold", "font/sfnt"),
-        ("Fonts/NanumBarunGothicUltraLight.woff2", "font-nanum-barun-gothic-ultralight", "font/woff2"),
-        ("Fonts/NanumBarunGothicLight.woff2", "font-nanum-barun-gothic-light", "font/woff2"),
-        ("Fonts/NanumBarunGothic.woff2", "font-nanum-barun-gothic", "font/woff2"),
-        ("Fonts/NanumBarunGothicBold.woff2", "font-nanum-barun-gothic-bold", "font/woff2"),
-        ("Fonts/ChungjuKimSaeng.ttf", "font-chungju-kimsaeng", "font/sfnt"),
-        ("Fonts/VCR_OSD_MONO_1.001.ttf", "font-vcr-osd-mono", "font/sfnt"),
-        ("Fonts/GabiaMaeumgyeol.woff2", "font-gabia-maeumgyeol", "font/woff2"),
-        ("Fonts/NotoSans-Variable.woff2", "font-noto-sans", "font/woff2"),
-        ("Fonts/NotoEmoji-Variable.ttf", "font-noto-emoji", "font/sfnt"),
-        ("Fonts/KCCAnChangho.woff2", "font-kcc-an-changho", "font/woff2"),
-        ("Fonts/Diphylleia-Variable.woff2", "font-diphylleia", "font/woff2"),
-        ("Fonts/Macho.woff2", "font-macho", "font/woff2"),
-        ("Fonts/IBMPlexSans-VariableFont_wdth,wght.ttf", "font-ibm-plex-sans", "font/sfnt"),
-        ("Fonts/IBMPlexSans-Italic-VariableFont_wdth,wght.ttf", "font-ibm-plex-sans-italic", "font/sfnt"),
-        ("Fonts/Tenada.ttf", "font-tenada", "font/sfnt"),
-        ("Fonts/BMKkubulim.woff2", "font-bm-kubulim", "font/woff2"),
-        ("Fonts/MBC1961.woff2", "font-mbc-1961", "font/woff2"),
-        ("Fonts/Danjo-bold-Regular.woff2", "font-danjo-bold-regular", "font/woff2"),
-        ("Fonts/SF-Mike.woff2", "font-sf-mike", "font/woff2"),
-        ("Fonts/KimjungchulScript-Light.woff2", "font-kimjungchulscript-light", "font/woff2"),
-        ("Fonts/Miraena-mu.woff2", "font-miraena-mu", "font/woff2"),
-        ("Fonts/Jeongseon Arirang.woff2", "font-jeongseon-arirang", "font/woff2"),
-        ("Fonts/incheongyoyugsimin.woff2", "font-incheongyoyugsimin", "font/woff2"),
-        ("Fonts/Hakgyoansim_NalgaeR.woff2", "font-hakgyoansim_nalgaer", "font/woff2"),
-        ("Fonts/KCCImkwontaek.woff2", "font-kccimkwontaek.woff2", "font/woff2"),
-        ("Fonts/DungGeunMo.woff2", "font-dunggeunmo.woff2", "font/woff2"),
-        ("Fonts/Hakgyoansim Byeolbichhaneul OTF B.woff2", "font-hakgyoansim-byeolbichhaneul", "font/woff2"),
-        ("Fonts/KCC-Sonkeechung.woff2", "font-kcc-sonkeechung", "font/woff2"),
-        ("Fonts/MapoFlowerIsland.woff2", "font-mapo-flower-island", "font/woff2"),
-        ("Fonts/BMEuljiro10yearslater.woff2", "font-bm-euljiro-10-years-later", "font/woff2"),
-        ("Fonts/MapoMaponaru.woff2", "font-mapo-maponaru", "font/woff2"),
-        ("Fonts/NanumGothic-Regular.woff2", "font-nanum-gothic-regular", "font/woff2"),
-        ("Fonts/ChosunCentennial.woff2", "font-chosun-centennial", "font/woff2"),
-        ("Fonts/NanumGothic-ExtraBold.woff2", "font-nanum-gothic-extrabold", "font/woff2"),
-
-    ]
-    for href, fid, media in FONT_FILES:
-        manifest_items.append(
-            f'<item href="{escape_attr(href)}" id="{fid}" media-type="{media}"/>'
-        )
 
     spine_items = []
     if cover_item:
@@ -2534,6 +2476,141 @@ def container_xml() -> str:
     )
 
 
+def prepare_embedded_fonts(css: str, codepoints: set[int]) -> tuple[str, list[EpubAsset]]:
+    """Embed static fonts with the book's characters and OpenType features."""
+    try:
+        from fontTools import subset
+        from fontTools.ttLib import TTFont
+        from fontTools.varLib.instancer import instantiateVariableFont
+    except ImportError as exc:
+        raise RuntimeError("EPUB font conversion requires fonttools and brotli.") from exc
+
+    converted_dir = OUTPUT_DIR / "converted_fonts"
+    converted_dir.mkdir(parents=True, exist_ok=True)
+    fonts: dict[str, EpubAsset] = {}
+    character_key = hashlib.sha256(
+        ",".join(str(value) for value in sorted(codepoints)).encode("ascii")
+    ).hexdigest()[:16]
+
+    def convert_face(match: re.Match) -> str:
+        face = match.group(0)
+        source = re.search(r'url\([\'"]?([^\)\'\"]+)', face)
+        if not source:
+            return face
+        name = Path(urllib.parse.unquote(source.group(1))).name
+        src = FONTS_DIR / name
+        with TTFont(src) as font:
+            axes = {axis.axisTag: axis.defaultValue for axis in font["fvar"].axes} if "fvar" in font else {}
+            weights = re.search(r"font-weight:\s*(\d+)\s+(\d+)\s*;", face)
+            if weights and "wght" in axes:
+                axes["wght"] = max(int(weights[1]), min(int(weights[2]), axes["wght"]))
+            suffix = ".otf" if "CFF " in font or "CFF2" in font else ".ttf"
+            axis_suffix = "".join(f"-{tag}{value:g}" for tag, value in sorted(axes.items()))
+            may_subset = not (font["OS/2"].fsType & 0x0100)
+            subset_suffix = f"-subset{character_key}" if may_subset else ""
+            output_name = src.stem + axis_suffix + subset_suffix + suffix
+            dst = converted_dir / output_name
+            if not dst.exists() or dst.stat().st_mtime_ns < src.stat().st_mtime_ns:
+                if axes:
+                    instantiateVariableFont(font, axes, inplace=True)
+                if may_subset:
+                    options = subset.Options()
+                    options.layout_features = ["*"]
+                    options.name_IDs = ["*"]
+                    options.name_languages = ["*"]
+                    options.glyph_names = True
+                    options.notdef_outline = True
+                    options.recommended_glyphs = True
+                    options.legacy_kern = True
+                    subsetter = subset.Subsetter(options=options)
+                    subsetter.populate(unicodes=codepoints)
+                    subsetter.subset(font)
+                font.flavor = None
+                font.save(dst)
+            if weights:
+                face = face[:weights.start()] + f'font-weight: {axes.get("wght", 400):g};' + face[weights.end():]
+        font_format = "opentype" if suffix == ".otf" else "truetype"
+        face = re.sub(r'url\([^)]*\)(?:\s*format\([^)]*\))?',
+                      lambda _: f'url("../Fonts/{output_name}") format("{font_format}")', face)
+        fonts[output_name] = EpubAsset(dst, f"Fonts/{output_name}", "font/otf" if suffix == ".otf" else "font/ttf")
+        return face
+
+    css = re.sub(r"@font-face\s*\{[^}]*\}", convert_face, css)
+    return css, list(fonts.values())
+
+
+class _EpubEffectSizer(HTMLParser):
+    """Keep gradual letter sizing without Moon+'s em compounding problem.
+
+    Resolve enclosing inline scales into each letter's explicit rem size.
+    Preserve all text and nested emphasis.
+    """
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self.out: list[str] = []
+        self.size_stack: list[float] = [1.0]
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = dict(attrs)
+        classes = attributes.get("class", "") or ""
+        size = self.size_stack[-1]
+        relative_size = re.search(r"font-size:\s*([\d.]+)(rem|em)\b", attributes.get("style", "") or "")
+        if relative_size:
+            size = float(relative_size[1]) * (size if relative_size[2] == "em" else 1)
+        if tag not in XHTML_VOID_ELEMENTS:
+            self.size_stack.append(size)
+        if tag == "span":
+            is_letter = bool({"grow-char", "shrink-char"}.intersection(classes.split()))
+            if is_letter:
+                # Bake the enclosing inline scale into each root-relative size.
+                # These letters no longer depend on inherited/sibling em sizes.
+                self.out.append(f'<span style="font-size:{size:.3f}rem;">')
+                return
+            if "text-grow" in classes.split():
+                # The original wrapper is inline-block; a plain inline span
+                # lets a long effect wrap naturally on narrow screens.
+                self.out.append("<span>")
+                return
+        self.out.append(self.get_starttag_text())
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag not in XHTML_VOID_ELEMENTS:
+            self.size_stack.pop()
+        self.out.append(f"</{tag}>")
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.out.append(self.get_starttag_text())
+
+    def handle_data(self, data: str) -> None:
+        self.out.append(data)
+
+    def handle_entityref(self, name: str) -> None:
+        self.out.append(f"&{name};")
+
+    def handle_charref(self, name: str) -> None:
+        self.out.append(f"&#{name};")
+
+    def handle_comment(self, data: str) -> None:
+        self.out.append(f"<!--{data}-->")
+
+
+def section_body(body: str) -> str:
+    """End each spine section with a paragraph-based forced page break.
+
+    Moon+ can join adjacent spine files and ignore break-before on wrappers.
+    A nonempty paragraph with break-after also separates scare continuations.
+    """
+    parser = _EpubEffectSizer()
+    parser.feed(to_xhtml(body))
+    parser.close()
+    return "".join(parser.out) + (
+        '\n<p class="epub-section-end" aria-hidden="true" '
+        'style="page-break-after: always; break-after: page; '
+        'margin: 0; padding: 0; font-size: 1px; line-height: 1px;">'
+        '&#x200B;</p>'
+    )
+
+
 def write_epub(
     epub_path: Path,
     book_title: str,
@@ -2544,11 +2621,21 @@ def write_epub(
     cover_asset: EpubAsset | None = None,
     identifier_override: str | None = None,
 ) -> None:
-    css = CSS_PATH.read_text(encoding="utf-8")
+    # Include generated footnotes, hidden labels, and entity-encoded characters.
+    # Keep common ASCII available for reader-generated labels as well.
+    css_source = CSS_PATH.read_text(encoding="utf-8")
+    text = book_title + css_source + "".join(item.body for item in items)
+    if cover_item:
+        text += cover_item.body
+    codepoints = {ord(char) for char in html.unescape(text)} | set(range(32, 127)) | set(range(0x2000, 0x2070))
+    # CSS-generated content can use hexadecimal escapes instead of literals.
+    codepoints.update(int(value, 16) for value in re.findall(r"\\([0-9a-fA-F]{1,6})", css_source)
+                      if int(value, 16) <= 0x10FFFF)
+    css, embedded_fonts = prepare_embedded_fonts(css_source, codepoints)
     modified = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     identifier = identifier_override or metadata_text(metadata.get("identifier"), "")
     identifier = valid_identifier(identifier, book_title)
-    asset_list = sorted(assets.values(), key=lambda asset: asset.href)
+    asset_list = sorted([*assets.values(), *embedded_fonts], key=lambda asset: asset.href)
 
     epub_path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(epub_path, "w") as zf:
@@ -2561,7 +2648,8 @@ def write_epub(
 
         write_text("META-INF/container.xml", container_xml())
         write_text("OEBPS/Styles/stylesheet.css", css)
-        write_text("OEBPS/content.opf", content_opf(book_title, metadata, items, asset_list, modified, cover_asset, cover_item))
+        package_metadata = {**metadata, "identifier": identifier}
+        write_text("OEBPS/content.opf", content_opf(book_title, package_metadata, items, asset_list, modified, cover_asset, cover_item))
         write_text("OEBPS/toc.ncx", toc_ncx(book_title, identifier, items))
         write_text("OEBPS/nav.xhtml", nav_xhtml(book_title, items))
 
@@ -2569,62 +2657,11 @@ def write_epub(
             write_text(f"OEBPS/{cover_item.href}", xhtml_page(cover_item.title, cover_item.body))
 
         for item in items:
-            write_text(f"OEBPS/{item.href}", xhtml_page(item.title, item.body))
+            body = section_body(item.body)
+            write_text(f"OEBPS/{item.href}", xhtml_page(item.title, body))
 
         for asset in asset_list:
             zf.write(asset.source_path, f"OEBPS/{asset.href}", compress_type=zipfile.ZIP_DEFLATED)
-
-        _write_epub_fonts(zf)
-
-
-def _write_epub_fonts(zf: zipfile.ZipFile) -> None:
-    font_names = [
-        "Libron-Regular.woff2",
-        "Libron-Italic.woff2",
-        "Libron-Bold.woff2",
-        "Libron-BoldItalic.woff2",
-        "BMKkubulim.woff2",
-        "BMEuljiro10yearslater.woff2",
-        "MapoMaponaru.woff2",
-        "NanumGothic-Regular.woff2",
-        "ChosunCentennial.woff2",
-        "NanumGothic-ExtraBold.woff2",
-        "Caveat-Variable.woff2",
-        "ChungjuKimSaeng.ttf",
-        "ComicNeue-Bold.woff2", "ComicNeue-Regular.woff2",
-        "CrimsonPro-Italic-Variable.woff2", "CrimsonPro-Variable.woff2",
-        "Danjo-bold-Regular.woff2",
-        "Diphylleia-Variable.woff2",
-        "DungGeunMo.woff2",
-        "EBGaramond-Italic-Variable.woff2", "EBGaramond-Variable.woff2",
-        "GabiaMaeumgyeol.woff2",
-        "GowunBatang-Bold.woff2", "GowunBatang-Regular.woff2",
-        "Hakgyoansim Byeolbichhaneul OTF B.woff2",
-        "Hakgyoansim_NalgaeR.woff2",
-        "IBMPlexSans-Italic-VariableFont_wdth,wght.ttf", "IBMPlexSans-VariableFont_wdth,wght.ttf",
-        "incheongyoyugsimin.woff2",
-        "Jeongseon Arirang.woff2",
-        "KCC-Sonkeechung.woff2",
-        "KimjungchulScript-Light.woff2",
-        "KCCAnChangho.woff2",
-        "KCCImkwontaek.woff2",
-        "Lato-Bold.woff2", "Lato-BoldItalic.woff2", "Lato-Italic.woff2", "Lato-Regular.woff2",
-        "MBC1961.woff2",
-        "Macho.woff2",
-        "MapoFlowerIsland.woff2",
-        "Miraena-mu.woff2",
-        "NanumBarunGothic.woff2", "NanumBarunGothicBold.woff2", "NanumBarunGothicLight.woff2", "NanumBarunGothicUltraLight.woff2",
-        "NotoEmoji-Variable.ttf", "NotoSans-Variable.woff2",
-        "PauloBittencourt-Bold.ttf", "PauloBittencourt-Regular.ttf",
-        "SF-Mike.woff2",
-        "Tenada.ttf",
-        "VCR_OSD_MONO_1.001.ttf",
-    
-    ]
-    for font_name in font_names:
-        src = FONTS_DIR / font_name
-        if src.exists():
-            zf.write(src, f"OEBPS/Fonts/{font_name}", compress_type=zipfile.ZIP_DEFLATED)
 
 
 

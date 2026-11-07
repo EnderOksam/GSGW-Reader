@@ -36,7 +36,7 @@
 
 @font-face {
   font-family: "Crimson Pro";
-  src: url("/Fonts/CrimsonPro-Variable.woff2") format("woff2");
+  src: url("../Fonts/CrimsonPro-Variable.woff2") format("woff2");
   font-weight: 500 700;
   font-style: normal;
   font-display: swap;
@@ -44,7 +44,7 @@
 
 @font-face {
   font-family: "Crimson Pro";
-  src: url("/Fonts/CrimsonPro-Italic-Variable.woff2") format("woff2");
+  src: url("../Fonts/CrimsonPro-Italic-Variable.woff2") format("woff2");
   font-weight: 500 700;
   font-style: italic;
   font-display: swap;
@@ -437,13 +437,12 @@
   display: block;
 }
 
-/* Container setup for vertical scroll-snapping engines */
+/* Preserve the viewport sizing used by existing reader layouts. */
 html,
 body.scrolling-container {
   margin: 0;
   padding: 0;
   height: 100%;
-  scroll-snap-type: y mandatory;
 }
 
 /*
@@ -451,7 +450,7 @@ body.scrolling-container {
  *
  * Paginated readers honour the forced page breaks; scrolling readers that
  * ignore page-break CSS still isolate each scare page in its own 100vh
- * "screen", with scroll-snap-align providing catch-a-snatch snapping.
+ * "screen". No scroll snapping: mandatory snapping can trap the preview.
  */
 .epub-pagebreak {
   /* Paginated Fallback */
@@ -469,7 +468,6 @@ body.scrolling-container {
   max-width: 100%;
   min-height: 100vh;       /* 100% of screen height */
   overflow: hidden;        /* Clip anything that escapes the viewport box */
-  scroll-snap-align: start; /* Forces scroll engines to snap-flick to this view */
 }
 
 .epub-pagebreak-center {
@@ -506,7 +504,6 @@ body.scrolling-container {
   height: 100%;            /* %-height fallback (html/body are 100%) */
   min-height: 100vh;       /* vh fallback + scrolling-mode "screen" height */
   overflow: hidden;        /* Clip anything that escapes the viewport box */
-  scroll-snap-align: start; /* Forces scroll engines to snap-flick to this view */
 }
 
 .epub-pagebreak-content {
@@ -531,6 +528,15 @@ body.scrolling-container {
 
 
 
+
+.epub-section-end {
+  page-break-after: always;
+  break-after: page;
+  margin: 0;
+  padding: 0;
+  font-size: 1px;
+  line-height: 1px;
+}
 
 :root {
   color-scheme: light dark;
