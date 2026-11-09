@@ -1016,10 +1016,11 @@
             <span class="block text-xs text-base-content/40 mt-0.5">Open this chapter in the built-in editor</span>
           </div>
         </a>
-      {:else}
+      {/if}
         <a
           href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/{bookSlug}/{tlDir(bookSlug, currentTL)}/{(Number(currentChapter) + (bookSlug === 'debut' ? 0 : 1)).toString().padStart(4, '0')}.md"
           target="_blank"
+          rel="noopener noreferrer"
           class="group flex items-center gap-4 p-4 rounded-2xl border border-base-content/5 bg-base-200/30 hover:bg-base-200/60 transition-colors"
         >
           <div class="shrink-0 w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
@@ -1030,7 +1031,6 @@
             <span class="block text-xs text-base-content/40 mt-0.5">Make changes to this chapter</span>
           </div>
         </a>
-      {/if}
     </div>
   </div>
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
