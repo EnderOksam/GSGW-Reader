@@ -1088,8 +1088,9 @@ body:not(.snippet-preview) .reader-container pre.gauge {
 
 .contaminated {
   font-family: 'Hakgyoansim_NalgaeR', 'Comic Neue', 'Comic Sans MS', 'Comic Sans', cursive;
+  /* Size this face independently; its metrics make x-height adjustment unreliable. */
   font-size-adjust: none;
-  font-size: 1em;
+  font-size: 1.15em;
   vertical-align: .08em;
 }
 
