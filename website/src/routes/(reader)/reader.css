@@ -2124,16 +2124,20 @@ body .reader-container .alert-window.alert-window
   transform: none;
 }
 
-/* Author color tags must beat the fixed colors that window styles paint onto
-   strong/b/em/i. Those rules use !important, so an author tag written as
+/* Author color tags, including Braun dialogue, must beat prose bold colors and
+   the fixed colors that window styles paint onto strong/b/em/i. Those rules
+   use !important, so an author tag written as
    `#r**bold r#` (color wrapping the bold) rendered white inside system, black
    and sticky windows. Inheriting from the color span restores the tag color
    while leaving plain `**bold**` inside those windows untouched.
    `[style*="color:"]` covers the hex tags (`#hx(#ffffff)…hx#`), which emit an
    inline color rather than a class. `:not([class^="text-"])` keeps a bold run
-   that carries its own color class from being forced back to its parent's. */
+   that carries its own color class from being forced back to its parent's.
+   Braun colors also need to survive emphasis inside font-size (#^...^#) spans. */
 body .reader-container
   :is(
+    .braun-doll-text,
+    .braun-tv-text,
     .text-red,
     .text-blue,
     .text-yellow,
@@ -2149,3 +2153,4 @@ body .reader-container
   :is(strong, b, em, i):not([class^="text-"]) {
   color: inherit !important;
 }
+
