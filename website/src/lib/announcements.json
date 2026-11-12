@@ -1,11 +1,25 @@
 {
   "announcements": [
     {
+      "title": "<@&1518776921771606188>",
+      "date": "2026-11-12",
+      "short": "#* Deep Proofreading Status *#\n(Second-pass review of completed TLs)\n\nPart 1 (1 - 208)\n* TL Check ✨Complete✨\n\nPart 2 (209 - 371)\n* Formatting up to Chapter 268 checked\n* TL up to Chapter 319 checked\n\nPart 3 (372 - present)\n* Additional checks pending (needs Editor to check formatting against raw)",
+      "long": "",
+      "author": "senyen",
+      "tags": [
+        "Announcements"
+      ],
+      "messageId": "1570336814886158357",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1570336814886158357",
+      "attachments": [],
+      "embeds": []
+    },
+    {
       "title": "<@&1518774394757845132>",
       "date": "2026-10-31",
       "short": "@GSGW Releases\n\n- **Manhwa:** Chapter 42\n\n[Read GSGW](https://ireum.pages.dev/book/manwha/)\n\nOther:\n\n- **Character ID Illustration:** Added new ID Manhwa illustration for J3",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "GSGW Releases"
       ],
@@ -25,9 +39,9 @@
     {
       "title": "<@&1518774394757845132>",
       "date": "2026-10-27",
-      "short": "@GSGW Releases\n\n- **PART 3:** Chapters 400–407 moved to FANTL\n-# Additional edits: Chapters 372–407 by 𝐋𝐞𝐢 (me)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)",
+      "short": "@GSGW Releases\n\n- **PART 3:** Chapters 400–407 moved to FANTL\n-# Additional edits: Chapters 372–407 by Lei (me)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "GSGW Releases"
       ],
@@ -47,9 +61,9 @@
     {
       "title": "<@&1518774394757845132>",
       "date": "2026-10-24",
-      "short": "@GSGW Releases\n\n- **PART 3:** Chapters 392–399 moved to FANTL\n-# Additional edits by Tarragona and 𝐋𝐞𝐢 (me)\n- **Manhwa:** Chapters 40–41\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n**Other Updates by Ender Oksam, Sen and 𝐋𝐞𝐢**\n\n- **Twitter (X) Illustrations Toggles:** Added a toggle to customize Twitter (X) illustrations while reading, with options for **default**, **minimal**, and **off**.\n-# New illustrations have been added to multiple chapters (52, 53, 54, 233, 240, 313, 332, 389, 391).\n- **Window Settings Preview:** You can now preview how your window settings affect different window and text styles, including styled and plaintext variants.\n- **Character ID Illustrations:** Added new ID Manhwa illustrations for Jaekwan and Choi, and updated J3's ID to the new official novel illustration.\n- **New Defaults:** Libron is now the default font, and Ireum Pages is the default theme. Alegreya remains available in the font dropdown, along with more themes to choose from.\n\n-# You can customize these options in the website settings.",
+      "short": "@GSGW Releases\n\n- **PART 3:** Chapters 392–399 moved to FANTL\n-# Additional edits by Tarragona and Lei (me)\n- **Manhwa:** Chapters 40–41\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n**Other Updates by Ender Oksam, Sen and Lei**\n\n- **Twitter (X) Illustrations Toggles:** Added a toggle to customize Twitter (X) illustrations while reading, with options for **default**, **minimal**, and **off**.\n-# New illustrations have been added to multiple chapters (52, 53, 54, 233, 240, 313, 332, 389, 391).\n- **Window Settings Preview:** You can now preview how your window settings affect different window and text styles, including styled and plaintext variants.\n- **Character ID Illustrations:** Added new ID Manhwa illustrations for Jaekwan and Choi, and updated J3's ID to the new official novel illustration.\n- **New Defaults:** Libron is now the default font, and Ireum Pages is the default theme. Alegreya remains available in the font dropdown, along with more themes to choose from.\n\n-# You can customize these options in the website settings.",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "GSGW Releases"
       ],
@@ -57,14 +71,14 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563426409127485520",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6ae6278e&is=6ae4d60e&hm=2b97db1fd32898fbbc557a0a0a80aeab2147761934699b42f7c32b325fcc3863&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6af6a24e&is=6af550ce&hm=3e82b29b6fe46dcaa5dfb4e977225e08f302adc530fd93d4fb2f94b717e5d07b&",
           "filename": "image.png",
           "contentType": "image/webp",
           "width": 632,
           "height": 680
         },
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6ae6278e&is=6ae4d60e&hm=2953f8e0e363748961f91bf3463f073418a68b3e7c9ebb623331f4b032800fac&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6af6a24e&is=6af550ce&hm=1f30a22c31565486cbf5a2f863446d168a790d9db0fc0983d44df79b57be3c91&",
           "filename": "image.png",
           "contentType": "image/png",
           "width": 1680,
@@ -78,7 +92,7 @@
       "date": "2026-10-23",
       "short": "#* 📢 Manhwa Season 1 Ending Notice *#\nThe GSGW manhwa will conclude Season 1 with Episode 44, releasing on November 14 (November 13 at 10 PM KST).\n\nThe manhwa will then go on a short hiatus to prepare for Season 2. The return date for Season 2 will be announced at a later date!\n\n-# image from Moon_Angel",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "Announcements"
       ],
@@ -86,7 +100,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563183717181161552",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6ae69708&is=6ae54588&hm=675883b1671ac95e47be26f7d9087762a7d91a71ad1cad073d7cff1d77a02100&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6af66908&is=6af51788&hm=d8d7d2a097c2dc2f2eaff29e5746554cc050741f9702dbd4b5f70de47474e6ab&",
           "filename": "IMG_7407.png",
           "contentType": "image/png",
           "width": 1170,
@@ -114,7 +128,7 @@
       "date": "2026-10-16",
       "short": "#* GSGW Update *#\nAuthor Baek Deok-su has shared a new update regarding their health and the series’ return!\n\nThe author has successfully undergone surgery and is currently recovering. They are now able to carry out daily activities with minimal difficulty and **intend to resume serialization as soon as possible.**\n\nAdditionally, **KW Books has released an early preview of the J3 illustration**, which was originally scheduled to be revealed at a later date!\n\nhttps://x.com/kwbooksofficial/status/2110943822419276215?s=61\n\nWishing the author a smooth and full recovery! ❤️",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "Announcements"
       ],
@@ -122,7 +136,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1560578630189449246",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6ae6575b&is=6ae505db&hm=cdc4c7fd2be995d959244f0e98aa6cd98bd752767c5b2424ec570405fc94b50b&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6af6295b&is=6af4d7db&hm=7608d0af4d962c89535ab9f7013956198c4d545be53e5eed0387ff2e69f774d8&",
           "filename": "IMG_1647.jpg",
           "contentType": "image/jpeg",
           "width": 1282,
@@ -142,9 +156,9 @@
     {
       "title": "<@&1518774394757845132>",
       "date": "2026-10-12",
-      "short": "@GSGW Releases\n\n- **PART 3:** Chapters 382–391 moved to FANTL\n-# Additional edits by 𝐋𝐞𝐢 (me)\n- **Manhwa:** Chapters 38–39\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOther Updates by Ender Oksam\n\n- **Margin Settings:** Text and window side margins can now be customized using Default and Compact presets or adjusted manually with sliders to suit your reading preferences.\n- **New Font Option:** Libron is now available in the font dropdown. If well received, it may become the default font. Alegreya will still remain available in the font list.\n\nPerformance Optimizations\n\nA few changes have been made in an attempt to improve website performance and reduce resource usage:\n\n- **Background Images:** Compressed and converted to WebP, reducing file sizes from 2.4 MB to approximately 174 KB (over 90% smaller) for faster loading times.\n- **Shader Quality:** Reduced shader quality and frame rate to improve performance, with minimal noticeable visual difference due to the background blur.\n- **Text Animations:** CSS text animations now pause when outside the visible viewport, preventing unnecessary animations from consuming resources.\n- **Scare Pages:** Scare pages no longer dim the entire page. Dimming is now limited to the margins, helping prevent lag spikes caused by full-page dimming combined with animated text.\n\n-# See the attached image for where to find Margin Settings (Settings -> Window Settings).",
+      "short": "@GSGW Releases\n\n- **PART 3:** Chapters 382–391 moved to FANTL\n-# Additional edits by Lei (me)\n- **Manhwa:** Chapters 38–39\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOther Updates by Ender Oksam\n\n- **Margin Settings:** Text and window side margins can now be customized using Default and Compact presets or adjusted manually with sliders to suit your reading preferences.\n- **New Font Option:** Libron is now available in the font dropdown. If well received, it may become the default font. Alegreya will still remain available in the font list.\n\nPerformance Optimizations\n\nA few changes have been made in an attempt to improve website performance and reduce resource usage:\n\n- **Background Images:** Compressed and converted to WebP, reducing file sizes from 2.4 MB to approximately 174 KB (over 90% smaller) for faster loading times.\n- **Shader Quality:** Reduced shader quality and frame rate to improve performance, with minimal noticeable visual difference due to the background blur.\n- **Text Animations:** CSS text animations now pause when outside the visible viewport, preventing unnecessary animations from consuming resources.\n- **Scare Pages:** Scare pages no longer dim the entire page. Dimming is now limited to the margins, helping prevent lag spikes caused by full-page dimming combined with animated text.\n\n-# See the attached image for where to find Margin Settings (Settings -> Window Settings).",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "GSGW Releases"
       ],
@@ -152,7 +166,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1559030228226019328",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6ae6a40b&is=6ae5528b&hm=e561fe0c74e89d8f5eb5ef1c21a1bd5b53897f87cc91a6533eedd5d9be1caa8e&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6af6760b&is=6af5248b&hm=7cc53e2732d93aa845fd3614417a2967c2a6245d5172cd04dc1d3c0b270061ab&",
           "filename": "IMG_1591.png",
           "contentType": "image/png",
           "width": 1012,
@@ -172,9 +186,9 @@
     {
       "title": "<@&1523884481780650104>",
       "date": "2026-10-04",
-      "short": "@DoD Releases\n\n- DOD Chapters 366-375 edited and formatted by 𝐋𝐞𝐢 (me)\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOthers (By: Sen and Ender Oksam)\n- Homepage Updates: Improved readability and consistent color styling.\n- Snippet Updates: ⁠text-faded⁠ styling now appears directly in snippets.\n- Brighter Faded Text Toggle: Added a new setting so you can easily toggle for brighter faded text.",
+      "short": "@DoD Releases\n\n- DOD Chapters 366-375 edited and formatted by Lei (me)\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOthers (By: Sen and Ender Oksam)\n- Homepage Updates: Improved readability and consistent color styling.\n- Snippet Updates: ⁠text-faded⁠ styling now appears directly in snippets.\n- Brighter Faded Text Toggle: Added a new setting so you can easily toggle for brighter faded text.",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "DoD Releases"
       ],
@@ -194,9 +208,9 @@
     {
       "title": "<@&1518774394757845132>",
       "date": "2026-10-03",
-      "short": "@GSGW Releases\n\n- **PART 3** Chapters 372-381 moved to FANTL\n-# additional edit by 𝐋𝐞𝐢 (me)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)",
+      "short": "@GSGW Releases\n\n- **PART 3** Chapters 372-381 moved to FANTL\n-# additional edit by Lei (me)\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "GSGW Releases"
       ],
@@ -240,7 +254,7 @@
       "date": "2026-10-01",
       "short": "All Part 2 formatted chapters are now reflected in the EPUB! Part 2 EPUB WIP → Formatted 🎉\n-# The scheduled EPUB release (1st and 15th of every month).\n\nMinor note: We sometimes release an EPUB outside the regular schedule when fixing issues or adding new EPUB features. Feel free to check the date on the site to see when the EPUB was last updated.\n-# In case there’s a new edit of a chapter under part 1-2, it’ll be reflected in the next EPUB release.",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "Announcements"
       ],
@@ -248,7 +262,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555093524490493954",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6ae62974&is=6ae4d7f4&hm=2b2a17687f09873b93dc7f945ec7c7a93cc416a26fb22532d2c5ace5b8da826d&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6af6a434&is=6af552b4&hm=850bd36fa522301506b225eee641e7037f771350b398e671dfe3ac64b92c2e1e&",
           "filename": "IMG_1421.png",
           "contentType": "image/jpeg",
           "width": 1668,
@@ -274,9 +288,9 @@
     {
       "title": "<@&1518774394757845132>",
       "date": "2026-09-26",
-      "short": "@GSGW Releases\n- **PART 2** Chapters 352-371 formatted by Tarragona and 𝐋𝐞𝐢 (me)\n- **Manhwa** Chapter 37\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n> Part 2 is finally done!\n-# Some parts may still be proofread and re-edited in the future!\n\nOthers:\n- Added Yellow Dragon as Alt Text\n- Added Bold Text Enlargement and Divider Type under Window Settings",
+      "short": "@GSGW Releases\n- **PART 2** Chapters 352-371 formatted by Tarragona and Lei (me)\n- **Manhwa** Chapter 37\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n> Part 2 is finally done!\n-# Some parts may still be proofread and re-edited in the future!\n\nOthers:\n- Added Yellow Dragon as Alt Text\n- Added Bold Text Enlargement and Divider Type under Window Settings",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "GSGW Releases"
       ],
@@ -296,9 +310,9 @@
     {
       "title": "<@&1518774394757845132>",
       "date": "2026-09-19",
-      "short": "@GSGW Releases\n- **PART 2** Chapters 336-351 formatted by Tarragona and 𝐋𝐞𝐢 (me)\n- **Manhwa** Chapter 36\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOther Developments by Sen\n* Window styling can be applied via pressing the button on the web editor.\n* EPUB now has the scrolling text animation.\n* Fixed some styling in EPUB.\n* Made an English ver. of the original cover (see Synopsis).\n* Glitch subtle, glitch heavy, shake-per-char, wave up animation can break by word if you add the correct syntax (See [Format Layout guide](https://docs.google.com/document/d/15nmxzglbrf-I9IWltWwt9eknZKQj8qgIrh1fglFN08M/edit?usp=sharing) for syntax).\n* New Character ID for Baek Seokju",
+      "short": "@GSGW Releases\n- **PART 2** Chapters 336-351 formatted by Tarragona and Lei (me)\n- **Manhwa** Chapter 36\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOther Developments by Sen\n* Window styling can be applied via pressing the button on the web editor.\n* EPUB now has the scrolling text animation.\n* Fixed some styling in EPUB.\n* Made an English ver. of the original cover (see Synopsis).\n* Glitch subtle, glitch heavy, shake-per-char, wave up animation can break by word if you add the correct syntax (See [Format Layout guide](https://docs.google.com/document/d/15nmxzglbrf-I9IWltWwt9eknZKQj8qgIrh1fglFN08M/edit?usp=sharing) for syntax).\n* New Character ID for Baek Seokju",
       "long": "",
-      "author": "𝐋𝐞𝐢",
+      "author": "Lei",
       "tags": [
         "GSGW Releases"
       ],
@@ -319,28 +333,6 @@
           "url": "https://docs.google.com/document/d/15nmxzglbrf-I9IWltWwt9eknZKQj8qgIrh1fglFN08M/edit?usp=sharing",
           "image": null,
           "thumbnail": "https://lh7-us.googleusercontent.com/docs/AHkbwyJfx3j6wp6mqQFXJWBKY6bT7typRUqGxcnCK76Sw3LLASeEWuEp2FTi6gdQhwHozUOB1R3nIfz1xZXHyQPrHRMBCY8_OvKZ0woZmk42ZX05Hq1r0cc=w1200-h630-p"
-        }
-      ]
-    },
-    {
-      "title": "<@&1518774394757845132>",
-      "date": "2026-09-14",
-      "short": "@GSGW Releases\n- **PART 1** Editing complete! by Sen (me)\nNow going through a 2nd round of intensive proofreading~\n- **PART 2** Chapters 324-335 formatted by Seirios and 𝐋𝐞𝐢\n- **Manhwa** Chapters 34-35\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOthers:\n* New fonts & text effects available\n* Various bug fixes\n* UnfinishedTL renamed ➡️ UnformattedTL for clarity",
-      "long": "",
-      "author": "senyen",
-      "tags": [
-        "GSGW Releases"
-      ],
-      "messageId": "1548949506618302484",
-      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1548949506618302484",
-      "attachments": [],
-      "embeds": [
-        {
-          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
-          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
-          "url": "https://ireum.pages.dev/book/gsgw/",
-          "image": null,
-          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
         }
       ]
     }
