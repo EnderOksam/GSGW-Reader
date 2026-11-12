@@ -773,6 +773,7 @@
     { syntax: "$wnt text wnt$", text: "Washing Note Text", cls: "wash", expandable: true },
     { syntax: "$tst text tst$", text: "Train Station Text", cls: "train-station", expandable: true },
     { syntax: "$100y text 100y$", text: "Weathered text", cls: "joseon-100year", expandable: true },
+    { syntax: "$hsb text hsb$", text: "Ocean palace + Casino signs", cls: "twinklecasino", expandable: true },
 
     { syntax: "$gps text gps$", text: "retro stencil text", cls: "tenada", expandable: true },
     { syntax: "$tf text tf$", text: "brush modern", cls: "chungju-kimsaeng", expandable: true },

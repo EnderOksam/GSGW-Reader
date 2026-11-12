@@ -1241,6 +1241,10 @@ body:not(.snippet-preview) .reader-container pre.gauge {
   font-family: 'Chosun Centennial', 'Georgia', serif;
 }
 
+.twinklecasino {
+  font-family: 'HS Bombaram', 'Georgia', serif;
+}
+
 /*
  * These faces have unusually tall capitals relative to their lowercase forms.
  * Match the default Alegreya cap height (0.658em) rather than the shared

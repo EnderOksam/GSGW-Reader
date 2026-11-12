@@ -424,6 +424,16 @@
   font-display: swap;
 }
 
+/* --- HS Bombaram (Ocean palace + Casino signs) --- */
+
+@font-face {
+  font-family: "HS Bombaram";
+  src: url("../Fonts/HSBombaram3.0_Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 .cover-page {
   text-align: center;
   margin: 0;
@@ -1071,6 +1081,10 @@ pre.gauge {
 
 .joseon-100year {
   font-family: 'Chosun Centennial', 'Georgia', serif;
+}
+
+.twinklecasino {
+  font-family: 'HS Bombaram', 'Georgia', serif;
 }
 
 /* Equalize Latin against the body default (Libron 400): cap-height

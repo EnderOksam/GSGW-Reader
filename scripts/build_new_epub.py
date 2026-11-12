@@ -769,6 +769,7 @@ SIMPLE_REPLACEMENTS = [
     (re.compile(r"\$wnt(.*?)wnt\$", re.DOTALL), r'<span class="wash">\1</span>'),
     (re.compile(r"\$tst(.*?)tst\$", re.DOTALL), r'<span class="train-station">\1</span>'),
     (re.compile(r"\$100y(.*?)100y\$", re.DOTALL), r'<span class="joseon-100year">\1</span>'),
+    (re.compile(r"\$hsb(.*?)hsb\$", re.DOTALL), r'<span class="twinklecasino">\1</span>'),
 
 
     (re.compile(r"\$wo(.*?)wo\$", re.DOTALL), r'<span class="outline-white">\1</span>'),
@@ -1130,6 +1131,7 @@ def subtle_replacer(match, word_level=False):
     inner = re.sub(r"\$wnt(.*?)wnt\$", r'<span class="wash">\1</span>', inner)
     inner = re.sub(r"\$tst(.*?)tst\$", r'<span class="train-station">\1</span>', inner)
     inner = re.sub(r"\$100y(.*?)100y\$", r'<span class="joseon-100year">\1</span>', inner)
+    inner = re.sub(r"\$hsb(.*?)hsb\$", r'<span class="twinklecasino">\1</span>', inner)
 
     inner = re.sub(r"#r(.+?)r#", r'<span class="text-red">\1</span>', inner)
     inner = re.sub(r"#b(.+?)b#", r'<span class="text-blue">\1</span>', inner)
@@ -1527,6 +1529,7 @@ FOOTNOTE_TAG_REPLACEMENTS = [
     (re.compile(r"\$wnt(.*?)wnt\$", re.DOTALL), r'<span class="wash">\1</span>'),
     (re.compile(r"\$tst(.*?)tst\$", re.DOTALL), r'<span class="train-station">\1</span>'),
     (re.compile(r"\$100y(.*?)100y\$", re.DOTALL), r'<span class="joseon-100year">\1</span>'),
+    (re.compile(r"\$hsb(.*?)hsb\$", re.DOTALL), r'<span class="twinklecasino">\1</span>'),
     (re.compile(r"#hx\(([^)]+)\)(.*?)hx#", re.DOTALL),
      lambda m: f'<span style="color:{m.group(1)};-webkit-text-fill-color:{m.group(1)}">{m.group(2)}</span>'),
     (re.compile(r"\$hxo\(([^)]+)\)(.*?)hxo#", re.DOTALL),
