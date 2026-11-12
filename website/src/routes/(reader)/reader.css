@@ -1152,6 +1152,7 @@ body:not(.snippet-preview) .reader-container pre.gauge {
 
 .macho {
   font-family: 'Macho', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  font-size: 1.1em;
 }
 
 .ibm-plex-sans {
