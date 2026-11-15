@@ -34,7 +34,7 @@
       label: "Styled",
       badge: "Recommended",
       description:
-        "Full window artwork with images in their original format. Best for modern e-readers and apps like Apple Books, Episteme, and Calibre.",
+        "Full window styling with images in their original format. Best for modern e-readers.",
     },
     {
       id: "legacy",
