@@ -26,10 +26,18 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y pandoc
 
       - name: Build GSGW EPUBs
-        run: python scripts/build_new_epub.py --book gsgw --part part1 && python scripts/build_new_epub.py --book gsgw --part part2 && python scripts/build_new_epub.py --book gsgw --part part3
+        run: |
+          for part in part1 part2 part3; do
+            python scripts/build_new_epub.py --book gsgw --part "$part"
+          done
+          python scripts/build_new_epub.py --book gsgw --complete
 
       - name: Build Debut EPUBs
-        run: python scripts/build_new_epub.py --book debut --part part1 && python scripts/build_new_epub.py --book debut --part part2 && python scripts/build_new_epub.py --book debut --part part3 && python scripts/build_new_epub.py --book debut --part part4
+        run: |
+          for part in part1 part2 part3 part4; do
+            python scripts/build_new_epub.py --book debut --part "$part"
+          done
+          python scripts/build_new_epub.py --book debut --complete
 
       - name: Rotate releases
         run: |

@@ -33,6 +33,7 @@ REPO_ROOT = SCRIPT_DIR.parent
 CHAPTERS_ROOT = REPO_ROOT / "chapters"
 IMAGES_ROOT = REPO_ROOT / "images"
 CSS_PATH = SCRIPT_DIR / "epub.css"
+LEGACY_CSS_PATH = SCRIPT_DIR / "epub-legacy.css"
 FONTS_DIR = REPO_ROOT / "website" / "static" / "fonts"
 
 OUTPUT_DIR = SCRIPT_DIR / "epub"
@@ -64,10 +65,12 @@ PART_DEFS: dict[str, list[dict[str, Any]]] = {
 
 VARIANTS: dict[str, list[dict[str, str]]] = {
     "gsgw": [
-        {"id": "plaintext", "label": "PlainText"},
+        {"id": "styled", "label": "Styled"},
+        {"id": "legacy", "label": "Legacy"},
     ],
     "debut": [
-        {"id": "plaintext", "label": "PlainText"},
+        {"id": "styled", "label": "Styled"},
+        {"id": "legacy", "label": "Legacy"},
     ],
 }
 
@@ -118,6 +121,7 @@ class RenderContext:
     asset_names: set[str]
     tweet_cache: dict[str, Any]
     fetch_twitter: bool
+    variant: str = "styled"
 
 
 @dataclass
@@ -392,18 +396,54 @@ def media_type_for(path: Path) -> str:
     }.get(suffix, "application/octet-stream")
 
 
-def convert_to_png(source_path: Path, output_dir: Path) -> Path | None:
-    """Convert an image to PNG (a core EPUB media type). Returns the PNG path, or None on failure."""
+LEGACY_JPEG_QUALITY = 85
+LEGACY_JPEG_BACKGROUND = (255, 255, 255)
+
+
+def convert_to_jpeg(source_path: Path, output_dir: Path) -> Path | None:
+    """Convert an image to JPEG for the legacy edition.
+
+    JPEG is a core EPUB media type with the widest e-reader support. It has no
+    alpha channel, so transparency is flattened onto a white background.
+    Returns the JPEG path, or None on failure.
+    """
     if Image is None:
         return None
     try:
         output_dir.mkdir(parents=True, exist_ok=True)
-        output_path = output_dir / f"{source_path.stem}.png"
+        output_path = output_dir / f"{source_path.stem}.jpg"
         with Image.open(source_path) as img:
-            img.save(output_path, "PNG", optimize=True)
+            has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+            if has_alpha:
+                rgba = img.convert("RGBA")
+                background = Image.new("RGB", rgba.size, LEGACY_JPEG_BACKGROUND)
+                background.paste(rgba, mask=rgba.split()[-1])
+                flattened = background
+            else:
+                flattened = img.convert("RGB")
+            flattened.save(
+                output_path,
+                "JPEG",
+                quality=LEGACY_JPEG_QUALITY,
+                optimize=True,
+                progressive=True,
+            )
         return output_path if output_path.exists() and output_path.stat().st_size > 0 else None
     except Exception:
         return None
+
+
+def prepare_image_for_variant(source_path: Path, variant: str) -> Path:
+    """Return the asset path to embed for a variant.
+
+    Styled keeps the source image as-is (WebP included). Legacy converts every
+    raster image to JPEG for broad e-reader support.
+    """
+    if variant == "legacy":
+        converted = convert_to_jpeg(source_path, OUTPUT_DIR / "legacy_images")
+        if converted:
+            return converted
+    return source_path
 
 
 COVER_IMAGE_EXTS = [".webp", ".png", ".jpg", ".jpeg"]
@@ -420,17 +460,21 @@ def resolve_cover_image(book_id: str, part_id: str | None = None) -> Path | None
     return next((path for path in candidates if path.exists()), None)
 
 
-def build_cover(book_id: str, part_id: str | None = None) -> tuple[EpubAsset | None, EpubItem | None]:
+def build_cover(
+    book_id: str,
+    part_id: str | None = None,
+    variant: str = "styled",
+) -> tuple[EpubAsset | None, EpubItem | None]:
     image_path = resolve_cover_image(book_id, part_id)
     if not image_path:
         return None, None
 
-    png_path = convert_to_png(image_path, OUTPUT_DIR / "cover_images") or image_path
-    cover_name = unique_asset_name(png_path, png_path.name, set())
+    cover_path = prepare_image_for_variant(image_path, variant)
+    cover_name = unique_asset_name(cover_path, cover_path.name, set())
     cover_asset = EpubAsset(
-        source_path=png_path,
+        source_path=cover_path,
         href=f"Images/{cover_name}",
-        media_type=media_type_for(png_path),
+        media_type=media_type_for(cover_path),
     )
     cover_body = (
         '<div class="cover-page">'
@@ -919,8 +963,8 @@ def _twitter_image_html_impl(username: str, tweet_id: str, photo_index: int, ctx
             print(f"      Warning: failed to fetch tweet {tweet_id}: {exc}")
 
     if webp_path.exists():
-        png_path = convert_to_png(webp_path, TWITTER_IMG_DIR / "png") or webp_path
-        asset = register_asset(ctx, png_path, f"twitter_{cache_key}.png" if png_path.suffix.lower() == ".png" else f"twitter_{cache_key}{png_path.suffix}")
+        image_path = prepare_image_for_variant(webp_path, ctx.variant)
+        asset = register_asset(ctx, image_path, f"twitter_{cache_key}{image_path.suffix}")
         display_name = screen_name or username
         alt = f"Illustration by @{display_name} on X"
         alt_attr = escape_attr(alt)
@@ -1819,15 +1863,21 @@ def replace_comment_windows(text, replacer):
 
 
 # MAIN CONVERTER
-def scroll_replacer(match, direction):
+def scroll_replacer(match, direction, variant="styled"):
     inner = match.group(1)
     inner = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", inner)
-    # EPUB emits the legacy <marquee> element: WebKit/Blink readers (Apple
-    # Books, epub.js, Episteme WebView) still run its native scrolling, while
-    # limited native engines (Episteme's Compose renderer) treat it as inert
-    # text - a single static centered line, with no duplicated sizer/track
-    # copies left to stack on top of each other. The website (build_web.py)
-    # keeps the CSS-keyframe marquee.
+    # Legacy readers choke on the native scrolling (jumpy/overflowing
+    # marquee), so the legacy edition emits the text as a single static
+    # centered line instead - same fallback appearance limited engines
+    # already show, just without the marquee element.
+    if variant == "legacy":
+        return f'<p style="text-align:center">{inner}</p>'
+    # Styled EPUB emits the legacy <marquee> element: WebKit/Blink readers
+    # (Apple Books, epub.js, Episteme WebView) still run its native scrolling,
+    # while limited native engines (Episteme's Compose renderer) treat it as
+    # inert text - a single static centered line, with no duplicated
+    # sizer/track copies left to stack on top of each other. The website
+    # (build_web.py) keeps the CSS-keyframe marquee.
     marquee_dir = "left" if direction == "left" else "right"
     return (
         f'<p style="text-align:center">'
@@ -2059,8 +2109,8 @@ def convert_chapter(content, ctx):
 
     content = HEX_AURORA_UP_STATIC_RE.sub(hex_aurora_up_static_replacer, content)
 
-    content = SCROLL_LEFT_RE.sub(lambda m: scroll_replacer(m, "left"), content)
-    content = SCROLL_RIGHT_RE.sub(lambda m: scroll_replacer(m, "right"), content)
+    content = SCROLL_LEFT_RE.sub(lambda m: scroll_replacer(m, "left", ctx.variant), content)
+    content = SCROLL_RIGHT_RE.sub(lambda m: scroll_replacer(m, "right", ctx.variant), content)
 
     for key, val in img_placeholders.items():
         content = content.replace(key, val)
@@ -2176,6 +2226,8 @@ def convert_chapter(content, ctx):
     )
     html_out = process_html_images(html_out, ctx)
     html_out = process_twitter_embeds(html_out, ctx)
+    if ctx.variant == "legacy":
+        html_out = mark_legacy_employee_card(html_out)
 
     html_out = re.sub(
         r'class="(text-(?:red|blue|yellow|magenta|green|orange|light-purple|cyan))"',
@@ -2188,6 +2240,22 @@ def convert_chapter(content, ctx):
 
 
 # IMAGE PROCESSING
+def mark_legacy_employee_card(html_content: str) -> str:
+    """Tag the comment window holding Chapter 1's employee ID card.
+
+    The legacy edition replaces that card's image with plain centered text, so
+    the enclosing alert-window needs a class for the stylesheet to target.
+    """
+    marker_index = html_content.find("legacy-employee-id")
+    if marker_index == -1:
+        return html_content
+    open_index = html_content.rfind('class="alert-window', 0, marker_index)
+    if open_index == -1:
+        return html_content
+    insertion = open_index + len('class="alert-window')
+    return html_content[:insertion] + " legacy-employee-card" + html_content[insertion:]
+
+
 def process_html_images(html_content: str, ctx: RenderContext) -> str:
 
     def replacer(match):
@@ -2209,10 +2277,10 @@ def process_html_images(html_content: str, ctx: RenderContext) -> str:
             print(f"      Warning: image not found for {ctx.chapter_path.name}: {original_src}")
             return full_tag
 
-        if image_path.suffix.lower() == ".webp":
-            png_path = convert_to_png(image_path, OUTPUT_DIR / "converted_images")
-            if png_path:
-                image_path = png_path
+        if ctx.variant == "legacy" and image_path.stem == "ch1_1":
+            return '<span class="legacy-employee-id" aria-hidden="true"></span>'
+
+        image_path = prepare_image_for_variant(image_path, ctx.variant)
 
         asset = register_asset(ctx, image_path)
 
@@ -2626,10 +2694,13 @@ def write_epub(
     cover_item: EpubItem | None = None,
     cover_asset: EpubAsset | None = None,
     identifier_override: str | None = None,
+    variant: str = "styled",
 ) -> None:
     # Include generated footnotes, hidden labels, and entity-encoded characters.
     # Keep common ASCII available for reader-generated labels as well.
     css_source = CSS_PATH.read_text(encoding="utf-8")
+    if variant == "legacy" and LEGACY_CSS_PATH.exists():
+        css_source += "\n" + LEGACY_CSS_PATH.read_text(encoding="utf-8")
     text = book_title + css_source + "".join(item.body for item in items)
     if cover_item:
         text += cover_item.body
@@ -2876,40 +2947,68 @@ def build_book(args: argparse.Namespace) -> list[Path]:
         chapters = [chapters[args.chapter - 1]]
         print(f"  Building chapter {args.chapter}: {chapters[0].title}")
 
-    tweet_cache = load_tweet_cache()
-    fetch_twitter = not args.no_fetch_twitter
-
-    for variant in variants:
-        variant_label = variant["label"]
-        print(f"\nBuilding {variant_label} variant...")
-
+    targets: list[dict[str, Any]] = []
+    if args.complete:
+        targets.append(
+            {
+                "id": "complete",
+                "label": "Complete",
+                "range": f"{len(chapters)} chapters",
+                "chapters": chapters,
+                "cover_part_id": None,
+            }
+        )
+    else:
         for part_def in part_defs:
             part_chapters = [c for c in chapters if chapter_in_part(c, part_def)]
             if not part_chapters:
                 print(f"  {part_def['label']}: no chapters, skipping")
                 continue
+            targets.append(
+                {
+                    "id": part_def["id"],
+                    "label": part_def["label"],
+                    "range": part_def["range"],
+                    "chapters": part_chapters,
+                    "cover_part_id": part_def["id"],
+                }
+            )
 
-            print(f"  {part_def['label']} ({part_def['range']}): {len(part_chapters)} chapters")
+    if not targets:
+        print("No build targets found")
+        return []
+
+    tweet_cache = load_tweet_cache()
+    fetch_twitter = not args.no_fetch_twitter
+
+    for variant in variants:
+        variant_id = variant["id"]
+        variant_label = variant["label"]
+        print(f"\nBuilding {variant_label} variant...")
+
+        for target in targets:
+            target_chapters = target["chapters"]
+            print(f"  {target['label']} ({target['range']}): {len(target_chapters)} chapters")
 
             full_name = sanitize_filename(book_title)
-            output_name = f"{full_name} - {part_def['label']} [{variant_label}]"
+            output_name = f"{full_name} - {target['label']} [{variant_label}]"
             output_name = re.sub(r'[ ,]', '.', output_name).replace('[', '').replace(']', '')
             output_name = re.sub(r'\.+', '.', output_name) + '.epub'
             epub_path = OUTPUT_DIR / output_name
 
-            display_title = f"{book_title} - {part_def['label']}"
+            display_title = f"{book_title} - {target['label']}"
             base_identifier = metadata_text(master_meta.get("identifier"), "")
-            epub_identifier = part_identifier(base_identifier or book_title, part_def["id"])
+            epub_identifier = part_identifier(base_identifier or book_title, target["id"])
 
             assets: dict[Path, EpubAsset] = {}
             asset_names: set[str] = set()
 
-            cover_asset, cover_item = build_cover(book_id, part_def["id"])
+            cover_asset, cover_item = build_cover(book_id, target["cover_part_id"], variant_id)
             if cover_asset:
                 asset_names.add(Path(cover_asset.href).name)
                 assets[cover_asset.source_path] = cover_asset
 
-            info_ctx = RenderContext(book_id, metadata_path, assets, asset_names, tweet_cache, fetch_twitter)
+            info_ctx = RenderContext(book_id, metadata_path, assets, asset_names, tweet_cache, fetch_twitter, variant_id)
             info_body, info_footnotes = convert_chapter(master_content, info_ctx)
             if info_footnotes:
                 info_body += "\n" + info_footnotes
@@ -2923,16 +3022,16 @@ def build_book(args: argparse.Namespace) -> list[Path]:
                 )
             ]
 
-            for position, chapter in enumerate(part_chapters, start=1):
-                print(f"    [{position}/{len(part_chapters)}] {chapter.title}")
-                ctx = RenderContext(book_id, chapter.path, assets, asset_names, tweet_cache, fetch_twitter)
+            for position, chapter in enumerate(target_chapters, start=1):
+                print(f"    [{position}/{len(target_chapters)}] {chapter.title}")
+                ctx = RenderContext(book_id, chapter.path, assets, asset_names, tweet_cache, fetch_twitter, variant_id)
                 chapter_items = build_chapter_items(position, chapter, ctx)
                 for item in chapter_items:
                     if not item.in_toc:
                         print(f"      split -> {item.href}")
                 items.extend(chapter_items)
 
-            write_epub(epub_path, display_title, master_meta, items, assets, cover_item, cover_asset, epub_identifier)
+            write_epub(epub_path, display_title, master_meta, items, assets, cover_item, cover_asset, epub_identifier, variant_id)
 
             print(f"    Done -> {epub_path}")
             built.append(epub_path)
@@ -2945,8 +3044,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build per-part EPUBs from chapter markdown using the build_web.py formatting pipeline.")
     parser.add_argument("--book", default="gsgw", help="Book folder under chapters/ to build.")
     parser.add_argument("--limit", type=int, help="Build only the first N chapters total, useful for testing.")
-    parser.add_argument("--variant", help="Build only this variant (e.g. plaintext, windows).")
+    parser.add_argument("--variant", help="Build only this variant (styled, legacy).")
     parser.add_argument("--part", help="Build only this part (e.g. part1, part2).")
+    parser.add_argument("--complete", action="store_true", help="Build a single all-chapters edition instead of per-part editions.")
     parser.add_argument("--chapter", type=int, help="Build only this chapter number (1-based index within the book).")
     parser.add_argument("--no-fetch-twitter", action="store_true", help="Use cached Twitter WebPs only; leave missing tweet images as links.")
     parser.add_argument("--testpage", action="store_true", help="Build a single EPUB from epub_testpage.md to preview formatting.")

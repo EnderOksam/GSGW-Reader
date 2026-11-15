@@ -71,7 +71,7 @@
   let snippetCopied = $state(false);
   let snippetPrimaryColor = $state("oklch(var(--p))");
 
-  const WINDOW_SETTINGS_DEFAULTS = { customTextColors: true, braunColor: false, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, boldLarge: true, hrStars: false, scareScrollLock: true, windowGutter: -32, textGutter: 0 };
+  const WINDOW_SETTINGS_DEFAULTS = { customTextColors: true, braunColor: false, brightGrayText: false, dmbDerStyle: true, paperStyle: true, animatedText: true, miscStyle: true, crtStyle: true, debutStyle: true, boldLarge: true, hrStars: false, scareScrollLock: true, windowGutter: -32, textGutter: 0 };
   const TEXT_GUTTER_MIN = -68;
   const WINDOW_GUTTER_MIN = -50;
   function loadWindowSettings(): typeof WINDOW_SETTINGS_DEFAULTS {
@@ -115,6 +115,7 @@
     { attr: "data-ws-paper-plaintext", get: (s: typeof windowSettings) => !s.paperStyle },
     { attr: "data-ws-misc-plaintext", get: (s: typeof windowSettings) => !s.miscStyle },
     { attr: "data-ws-crt-plaintext", get: (s: typeof windowSettings) => !s.crtStyle },
+    { attr: "data-ws-debut-plaintext", get: (s: typeof windowSettings) => !s.debutStyle },
     { attr: "data-ws-no-anim", get: (s: typeof windowSettings) => !s.animatedText },
     { attr: "data-ws-no-bold-large", get: (s: typeof windowSettings) => !s.boldLarge },
     { attr: "data-ws-hr-stars", get: (s: typeof windowSettings) => s.hrStars },
@@ -139,6 +140,7 @@
   const PAPER_WINDOWS = ["!-...-!", "!$...$!", "!pb...pb!"];
   const CRT_WINDOWS = ["![...]!", "+=...=+"];
   const MISC_WINDOWS = ["+~...~+", "★:...:★", "★$...$★"];
+  const DEBUT_WINDOWS = ["★-...-★", "★!...!★", "★=...=★", "}text}", "{text{", "}[!]text}", "{[!]text{"];
   const windowPad = $derived(Math.max(0, -windowSettings.windowGutter) + 24);
   const textPad = $derived(Math.max(0, -windowSettings.textGutter) + 24);
 
@@ -147,6 +149,7 @@
     paper: false,
     crt: false,
     misc: false,
+    debut: false,
   });
   const textEffectVisible: Record<string, boolean> = $state({
     colors: false,
@@ -1205,6 +1208,19 @@
         />
         {#if winGroupVisible.misc}
           {#each MISC_WINDOWS as key}
+            <WindowSample label={winBySyntax[key].name} cls={winBySyntax[key].cls} html={winBySyntax[key].html} pad={windowPad} />
+          {/each}
+        {/if}
+        <WindowToggle
+          label="Debut windows"
+          labels={["Styled", "Plaintext"]}
+          value={windowSettings.debutStyle}
+          onChange={(v) => (windowSettings.debutStyle = v)}
+          previewShown={winGroupVisible.debut}
+          onEyeClick={() => (winGroupVisible.debut = !winGroupVisible.debut)}
+        />
+        {#if winGroupVisible.debut}
+          {#each DEBUT_WINDOWS as key}
             <WindowSample label={winBySyntax[key].name} cls={winBySyntax[key].cls} html={winBySyntax[key].html} pad={windowPad} />
           {/each}
         {/if}

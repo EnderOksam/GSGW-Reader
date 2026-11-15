@@ -1160,6 +1160,134 @@
   transition: none;
 }
 
+/* --- Debut windows: bare bold text --- */
+[data-ws-debut-plaintext] .reader-container .debut-window.debut-window,
+[data-ws-debut-plaintext] .reader-container .debut-alert.debut-alert,
+[data-ws-debut-plaintext] .reader-container .debut-achievement.debut-achievement {
+  position: static;
+  width: auto;
+  max-width: none;
+  margin: 3rem auto;
+  padding: 0;
+  text-align: inherit;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: inherit;
+  font-weight: bold;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  overflow: visible;
+}
+
+[data-ws-debut-plaintext] .reader-container .debut-window.debut-window::before,
+[data-ws-debut-plaintext] .reader-container .debut-window.debut-window::after,
+[data-ws-debut-plaintext] .reader-container .debut-alert.debut-alert::before,
+[data-ws-debut-plaintext] .reader-container .debut-alert.debut-alert::after,
+[data-ws-debut-plaintext] .reader-container .debut-achievement.debut-achievement::before,
+[data-ws-debut-plaintext] .reader-container .debut-achievement.debut-achievement::after {
+  display: none;
+  content: none;
+}
+
+/* Titles and labels collapse to bold lines. */
+[data-ws-debut-plaintext] .reader-container .debut-window.debut-window .debut-window-title,
+[data-ws-debut-plaintext] .reader-container .debut-window.debut-window .debut-window-label,
+[data-ws-debut-plaintext] .reader-container .debut-achievement.debut-achievement .debut-achievement-title {
+  position: static;
+  display: block;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  font: inherit;
+  font-weight: bold;
+  letter-spacing: normal;
+  text-align: inherit;
+  text-transform: none;
+  white-space: normal;
+  transform: none;
+}
+
+/* Achievement list becomes plain bold. */
+[data-ws-debut-plaintext] .reader-container .debut-achievement.debut-achievement .debut-achievement-list {
+  display: block;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  font-size: inherit;
+  text-align: inherit;
+}
+
+[data-ws-debut-plaintext] .reader-container .debut-achievement.debut-achievement .debut-achievement-list-item {
+  padding: 0;
+}
+
+[data-ws-debut-plaintext] .reader-container .debut-achievement.debut-achievement .debut-achievement-list-divider {
+  display: none;
+}
+
+/* Regular content inherits the reader's font and alignment, just bold. */
+[data-ws-debut-plaintext] .reader-container :is(.debut-window.debut-window, .debut-alert.debut-alert, .debut-achievement.debut-achievement) :is(p, a, strong, b, em, i, li, h1, h2, h3, h4, h5, h6, code, blockquote) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  font-family: inherit;
+  font-weight: bold;
+  text-align: inherit;
+}
+
+/* Centered text inside a debut window follows the
+   window's alignment instead of forcing center */
+[data-ws-debut-plaintext] .reader-container :is(.debut-window.debut-window, .debut-alert.debut-alert, .debut-achievement.debut-achievement) :is(.text-large-centered, .align-center) {
+  text-align: inherit;
+}
+
+/* Inline sub chips render as plain bold text. */
+[data-ws-debut-plaintext] .reader-container .debut-achievement-sub,
+[data-ws-debut-plaintext] .reader-container .debut-achievement-sub-left,
+[data-ws-debut-plaintext] .reader-container .debut-achievement-sub-right,
+[data-ws-debut-plaintext] .reader-container .alert-sub,
+[data-ws-debut-plaintext] .reader-container .alert-sub-left,
+[data-ws-debut-plaintext] .reader-container .alert-sub-right {
+  position: static;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: none;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  font: inherit;
+  font-weight: bold;
+}
+
+[data-ws-debut-plaintext] .reader-container .debut-achievement-sub-left::before,
+[data-ws-debut-plaintext] .reader-container .debut-achievement-sub-left::after,
+[data-ws-debut-plaintext] .reader-container .debut-achievement-sub-right::before,
+[data-ws-debut-plaintext] .reader-container .debut-achievement-sub-right::after,
+[data-ws-debut-plaintext] .reader-container .alert-sub-left::before,
+[data-ws-debut-plaintext] .reader-container .alert-sub-left::after,
+[data-ws-debut-plaintext] .reader-container .alert-sub-right::before,
+[data-ws-debut-plaintext] .reader-container .alert-sub-right::after {
+  display: none;
+  content: none;
+}
+
 [data-ws-crt-plaintext] .reader-container .braun-screen {
   background: oklch(0 0 0);
   border: 0;
