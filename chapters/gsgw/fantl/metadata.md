@@ -48,7 +48,7 @@ Read the latest version online or download the latest EPUB from our website at <
 
 This chapter is ignored by the website and is included exclusively in the EPUB for credits and other additional information. 
 
-This is the **Styled EPUB** edition, which uses custom formatting for colored text, message windows, and other visual elements. If your current EPUB reader does not display the formatting correctly, we recommend using a reader that fully supports EPUB3 files.
+This is the **Styled EPUB** edition, which uses custom formatting for colored text, windows, and other visual elements. If your current EPUB reader does not display the formatting correctly, we recommend using a reader that fully supports EPUB3 files.
 
 #r this line should show up as red text r#
 
