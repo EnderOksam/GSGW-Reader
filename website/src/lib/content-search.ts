@@ -4,6 +4,7 @@ export interface Chapter {
   category?: string;
   index?: number;
   thumb?: string | null;
+  illustration?: boolean;
 }
 
 export interface ContentMatch {

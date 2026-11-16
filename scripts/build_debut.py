@@ -567,6 +567,9 @@ def build_pages(slug_filter=None):
             if slug_filter is not None and slug != slug_filter:
                 continue
 
+            if bw.TWITTER_URL_RE.search(post.content):
+                post.metadata["illustration"] = True
+
             meta_list.append(post.metadata)
 
             out_dir = OUTPUT_ROOT / str(bookID) / str(metaTl) / str(slug)

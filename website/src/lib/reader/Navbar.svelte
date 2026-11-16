@@ -17,6 +17,7 @@
   import WindowSample from "./WindowSample.svelte";
   import TextEffectsPreview from "./TextEffectsPreview.svelte";
   import { windowsItems } from "./windows-catalog";
+  import IllustrationIcon from "./IllustrationIcon.svelte";
   import { ARTISTS } from "$lib/artists";
   import { setDisabledArtists } from "./twitter-embeds";
   import { editorChapterHref } from "$lib/editor-link";
@@ -25,6 +26,7 @@
   interface Chapter {
     title: string;
     slug: string | number;
+    illustration?: boolean;
   }
 
   // --- Props ---
@@ -781,6 +783,9 @@
             {ch.slug}
           </span>
           <span class="truncate text-base {isActive ? 'text-primary' : 'text-base-content/70'}">{ch.title}</span>
+          {#if (bookSlug === "gsgw" || bookSlug === "debut") && ch.illustration}
+            <IllustrationIcon class="size-4 shrink-0 {isActive ? 'text-primary' : 'text-base-content/70'}" />
+          {/if}
           {#if isActive}
             <Icon icon="mdi:play-circle" class="size-4 shrink-0 text-primary/50" />
           {/if}

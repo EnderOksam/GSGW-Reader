@@ -12,6 +12,7 @@
   import imgGsgwBanner from "$lib/assets/web-gsgw-banner.jpg";
   import book_meta from "$lib/meta.json";
   import { getTLInfo } from "$lib/reader/tl-info";
+  import IllustrationIcon from "$lib/reader/IllustrationIcon.svelte";
   import { searchChapterContent, renderSnippet, storeSnippetTarget } from "$lib/content-search";
   import type { Chapter, ContentMatch } from "$lib/content-search";
 
@@ -953,6 +954,9 @@
                 <div class="flex flex-col min-w-0 grow">
                   <span class="text-sm md:text-base font-bold truncate transition-colors {isCurr ? 'text-accent' : ''} group-hover/card:text-accent flex items-center gap-2">
                     {ch.title}
+                    {#if (bookSlug === "gsgw" || bookSlug === "debut") && ch.illustration}
+                      <IllustrationIcon class="size-4 shrink-0" />
+                    {/if}
                     {#if ch.category}
                       <span class="ml-auto badge badge-xs badge-ghost font-mono tracking-wider opacity-70">
                         {ch.category}

@@ -48,7 +48,8 @@
         "discussion": 224,
         "index": 5,
         "section": "Chapter 5",
-        "slug": "5"
+        "slug": "5",
+        "illustration": true
       },
       {
         "title": "Inprocessing, II",
@@ -56,7 +57,8 @@
         "discussion": 225,
         "index": 6,
         "section": "Chapter 6",
-        "slug": "6"
+        "slug": "6",
+        "illustration": true
       },
       {
         "title": "[Make a Choice], I",
@@ -88,7 +90,8 @@
         "discussion": 229,
         "index": 10,
         "section": "Chapter 10",
-        "slug": "10"
+        "slug": "10",
+        "illustration": true
       },
       {
         "title": "[Chorus of the Sacrificial Lambs], II",
@@ -304,7 +307,8 @@
         "discussion": 82,
         "index": 37,
         "section": "Chapter 37",
-        "slug": "37"
+        "slug": "37",
+        "illustration": true
       },
       {
         "title": "[Sangun-nim], VI",
@@ -368,7 +372,8 @@
         "discussion": 89,
         "index": 45,
         "section": "Chapter 45",
-        "slug": "45"
+        "slug": "45",
+        "illustration": true
       },
       {
         "title": "[Manor of the Blind], VII",
@@ -424,7 +429,8 @@
         "discussion": 96,
         "index": 52,
         "section": "Chapter 52",
-        "slug": "52"
+        "slug": "52",
+        "illustration": true
       },
       {
         "title": "[And Then There Was One], III",
@@ -432,7 +438,8 @@
         "discussion": 97,
         "index": 53,
         "section": "Chapter 53",
-        "slug": "53"
+        "slug": "53",
+        "illustration": true
       },
       {
         "title": "[And Then There Was One], IV",
@@ -440,7 +447,8 @@
         "discussion": 293,
         "index": 54,
         "section": "Chapter 54",
-        "slug": "54"
+        "slug": "54",
+        "illustration": true
       },
       {
         "title": "[And Then There Was One], V",
@@ -656,7 +664,8 @@
         "discussion": 64,
         "index": 81,
         "section": "Chapter 81",
-        "slug": "81"
+        "slug": "81",
+        "illustration": true
       },
       {
         "title": "A-grade Essence",
@@ -912,7 +921,8 @@
         "discussion": 214,
         "index": 113,
         "section": "Chapter 113",
-        "slug": "113"
+        "slug": "113",
+        "illustration": true
       },
       {
         "title": "[Tamra Express Disaster], IV",
@@ -936,7 +946,8 @@
         "discussion": 157,
         "index": 116,
         "section": "Chapter 116",
-        "slug": "116"
+        "slug": "116",
+        "illustration": true
       },
       {
         "title": "[Tamra Express Disaster], VII",
@@ -1120,7 +1131,8 @@
         "discussion": 179,
         "index": 139,
         "section": "Chapter 139",
-        "slug": "139"
+        "slug": "139",
+        "illustration": true
       },
       {
         "title": "[Looky Mart], VIII",
@@ -1672,7 +1684,8 @@
         "discussion": 151,
         "index": 208,
         "section": "Chapter 208",
-        "slug": "208"
+        "slug": "208",
+        "illustration": true
       },
       {
         "title": "New Employee Orientation",
@@ -1712,7 +1725,8 @@
         "discussion": 474,
         "index": 213,
         "section": "Chapter 213",
-        "slug": 213
+        "slug": 213,
+        "illustration": true
       },
       {
         "title": "[Echoes of Rainwater], I",
@@ -1872,7 +1886,8 @@
         "discussion": 761,
         "index": 233,
         "section": "Chapter 233",
-        "slug": "233"
+        "slug": "233",
+        "illustration": true
       },
       {
         "title": "Happy Ending Sect, I",
@@ -1928,7 +1943,8 @@
         "discussion": 772,
         "index": 240,
         "section": "Chapter 240",
-        "slug": "240"
+        "slug": "240",
+        "illustration": true
       },
       {
         "title": "[Ascetic in the Box], IV",
@@ -2512,7 +2528,8 @@
         "discussion": 645,
         "index": 313,
         "section": "Chapter 313",
-        "slug": "313"
+        "slug": "313",
+        "illustration": true
       },
       {
         "title": "Sekwang Station [Morning Station], III",
@@ -2664,7 +2681,8 @@
         "discussion": 664,
         "index": 332,
         "section": "Chapter 332",
-        "slug": "332"
+        "slug": "332",
+        "illustration": true
       },
       {
         "title": "Hanbit Department Store, II",
@@ -3120,7 +3138,8 @@
         "discussion": 0,
         "index": 389,
         "section": "Chapter 389",
-        "slug": "389"
+        "slug": "389",
+        "illustration": true
       },
       {
         "title": "Containment Breach, V",
@@ -3136,7 +3155,8 @@
         "discussion": 0,
         "index": 391,
         "section": "Chapter 391",
-        "slug": "391"
+        "slug": "391",
+        "illustration": true
       },
       {
         "title": "Unexpected Reunion",

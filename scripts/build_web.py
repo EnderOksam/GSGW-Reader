@@ -1882,6 +1882,9 @@ def main():
                 correct_discussion = get_discussion_number(discussion_map, bookID, bookTL, slug)
                 post.metadata["discussion"] = correct_discussion
 
+                if TWITTER_URL_RE.search(post.content):
+                    post.metadata["illustration"] = True
+
                 meta_map[bookID][bookTL].append(post.metadata)
 
                 out_dir = (
