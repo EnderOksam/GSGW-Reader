@@ -3925,7 +3925,8 @@
         "category": "Part 1",
         "index": 20,
         "section": "Chapter 21",
-        "slug": "21"
+        "slug": "21",
+        "illustration": true
       },
       {
         "title": "EP 3-5 Broadcast, I",
@@ -3939,14 +3940,16 @@
         "category": "Part 1",
         "index": 22,
         "section": "Chapter 23",
-        "slug": "23"
+        "slug": "23",
+        "illustration": true
       },
       {
         "title": "EP 3-5 Broadcast, III",
         "category": "Part 1",
         "index": 23,
         "section": "Chapter 24",
-        "slug": "24"
+        "slug": "24",
+        "illustration": true
       },
       {
         "title": "EP 3-5 Broadcast, IV",
@@ -4170,7 +4173,8 @@
         "category": "Part 1",
         "index": 55,
         "section": "The Accusation, I",
-        "slug": "56"
+        "slug": "56",
+        "illustration": true
       },
       {
         "title": "The Accusation, II",
@@ -4226,7 +4230,8 @@
         "category": "Part 1",
         "index": 63,
         "section": "Chapter 64",
-        "slug": "64"
+        "slug": "64",
+        "illustration": true
       },
       {
         "title": "The First Album, I",
@@ -4275,7 +4280,8 @@
         "category": "Part 1",
         "index": 70,
         "section": "Chapter 71",
-        "slug": "71"
+        "slug": "71",
+        "illustration": true
       },
       {
         "title": "\u27e8Magical Boys\u27e9, I",
@@ -4485,7 +4491,8 @@
         "category": "Part 1",
         "index": 100,
         "section": "Chapter 101",
-        "slug": "101"
+        "slug": "101",
+        "illustration": true
       },
       {
         "title": "Unwelcome Offer",
@@ -4611,14 +4618,16 @@
         "category": "Part 1",
         "index": 118,
         "section": "Chapter 119",
-        "slug": "119"
+        "slug": "119",
+        "illustration": true
       },
       {
         "title": "KBC Song Festival, II",
         "category": "Part 1",
         "index": 119,
         "section": "Chapter 120",
-        "slug": "120"
+        "slug": "120",
+        "illustration": true
       },
       {
         "title": "Chicken Soup for the Soul",
@@ -4702,7 +4711,8 @@
         "category": "Part 1",
         "index": 131,
         "section": "Chapter 132",
-        "slug": "132"
+        "slug": "132",
+        "illustration": true
       },
       {
         "title": "Concert After-Party",
@@ -4880,63 +4890,64 @@
         "slug": "157"
       },
       {
-        "title": "Chapter 158",
+        "title": "The Composer's Gambit",
         "category": "Part 2",
         "index": 157,
         "section": "Chapter 158",
-        "slug": "158"
+        "slug": "158",
+        "illustration": true
       },
       {
-        "title": "Chapter 159",
+        "title": "TeSTAR Takes Japan",
         "category": "Part 2",
         "index": 158,
         "section": "Chapter 159",
         "slug": "159"
       },
       {
-        "title": "Chapter 160",
+        "title": "The Sejins', I",
         "category": "Part 2",
         "index": 159,
         "section": "Chapter 160",
         "slug": "160"
       },
       {
-        "title": "Chapter 161",
+        "title": "The Sejins', II",
         "category": "Part 2",
         "index": 160,
         "section": "Chapter 161",
         "slug": "161"
       },
       {
-        "title": "Chapter 162",
+        "title": "The Sejins', III",
         "category": "Part 2",
         "index": 161,
         "section": "Chapter 162",
         "slug": "162"
       },
       {
-        "title": "Chapter 163",
+        "title": "The Sejins', IV",
         "category": "Part 2",
         "index": 162,
         "section": "Chapter 163",
         "slug": "163"
       },
       {
-        "title": "Chapter 164",
+        "title": "The Sejins', V",
         "category": "Part 2",
         "index": 163,
         "section": "Chapter 164",
         "slug": "164"
       },
       {
-        "title": "Chapter 165",
+        "title": "Idol Inc.'s Bait",
         "category": "Part 2",
         "index": 164,
         "section": "Chapter 165",
         "slug": "165"
       },
       {
-        "title": "Chapter 166",
+        "title": "Calculated Countermove",
         "category": "Part 2",
         "index": 165,
         "section": "Chapter 166",
@@ -5003,7 +5014,8 @@
         "category": "Part 2",
         "index": 174,
         "section": "Chapter 175",
-        "slug": "175"
+        "slug": "175",
+        "illustration": true
       },
       {
         "title": "Chapter 176",
@@ -5052,7 +5064,8 @@
         "category": "Part 2",
         "index": 181,
         "section": "Chapter 182",
-        "slug": "182"
+        "slug": "182",
+        "illustration": true
       },
       {
         "title": "Chapter 183",
@@ -5129,7 +5142,8 @@
         "category": "Part 2",
         "index": 192,
         "section": "Chapter 193",
-        "slug": "193"
+        "slug": "193",
+        "illustration": true
       },
       {
         "title": "Chapter 194",
@@ -5220,7 +5234,8 @@
         "category": "Part 2",
         "index": 205,
         "section": "Chapter 206",
-        "slug": "206"
+        "slug": "206",
+        "illustration": true
       },
       {
         "title": "Chapter 207",
@@ -5304,7 +5319,8 @@
         "category": "Part 2",
         "index": 217,
         "section": "Chapter 218",
-        "slug": "218"
+        "slug": "218",
+        "illustration": true
       },
       {
         "title": "Chapter 219",
@@ -5360,7 +5376,8 @@
         "category": "Part 2",
         "index": 225,
         "section": "Chapter 226",
-        "slug": "226"
+        "slug": "226",
+        "illustration": true
       },
       {
         "title": "Chapter 227",
@@ -5486,7 +5503,8 @@
         "category": "Part 2",
         "index": 243,
         "section": "Chapter 244",
-        "slug": "244"
+        "slug": "244",
+        "illustration": true
       },
       {
         "title": "Chapter 245",
@@ -5878,7 +5896,8 @@
         "category": "Part 2",
         "index": 299,
         "section": "Chapter 300",
-        "slug": "300"
+        "slug": "300",
+        "illustration": true
       },
       {
         "title": "\u27e8T-Holic's Show Business\u27e9, I",
@@ -8297,7 +8316,8 @@
         "category": "Part 1",
         "index": -1,
         "section": "Pr\u00f3logo",
-        "slug": "0"
+        "slug": "0",
+        "illustration": true
       },
       {
         "title": "Debuta o Muere, I",

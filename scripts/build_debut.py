@@ -64,6 +64,11 @@ DEBUT_ACHIEVE_RE = re.compile(r"★=\n(.*?)\n=★", re.DOTALL)
 SMS_WINDOW_RE = re.compile(r"★:\n([\s\S]*?)\n:★", re.DOTALL)
 COMMENT_WINDOW_RE = re.compile(r"★\$\n([\s\S]*?)\n\$★", re.DOTALL)
 
+STATIC_ILLUSTRATION_RE = re.compile(
+    r'!\[[^\n]*\]\([^\n)]*\.(?:webp|jpe?g|png|gif|avif)(?:\s+"[^"]*")?\)',
+    re.IGNORECASE,
+)
+
 
 # =========================================================
 # STAR WINDOW REPLACERS
@@ -567,7 +572,7 @@ def build_pages(slug_filter=None):
             if slug_filter is not None and slug != slug_filter:
                 continue
 
-            if bw.TWITTER_URL_RE.search(post.content):
+            if bw.TWITTER_URL_RE.search(post.content) or STATIC_ILLUSTRATION_RE.search(post.content):
                 post.metadata["illustration"] = True
 
             meta_list.append(post.metadata)
