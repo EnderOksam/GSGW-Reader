@@ -2756,7 +2756,7 @@ def load_all_chapters(chapter_dirs: list[Path], limit: int | None = None) -> lis
     chapters: list[Chapter] = []
     total_files = 0
     for dir_path in chapter_dirs:
-        chapter_files = sorted(path for path in dir_path.glob("*.md") if path.name != "metadata.md")
+        chapter_files = sorted(path for path in dir_path.glob("*.md") if path.name not in {"metadata.md", "legacy-metadata.md"})
         remaining = None
         if limit is not None:
             remaining = limit - total_files
@@ -2914,7 +2914,9 @@ def build_book(args: argparse.Namespace) -> list[Path]:
         print(f"No metadata.md found in {chapter_dirs[0]}")
         return []
 
-    master_meta, master_content = load_markdown(metadata_path)
+    legacy_metadata_path = chapter_dirs[0] / "legacy-metadata.md"
+
+    master_meta, _ = load_markdown(metadata_path)
     book_title = metadata_text(master_meta.get("title"), book_id)
     part_defs = PART_DEFS.get(book_id, [])
     variants = VARIANTS.get(book_id, [])
@@ -2932,7 +2934,6 @@ def build_book(args: argparse.Namespace) -> list[Path]:
 
     today = dt.date.today()
     pretty_date = f"{today:%B} {today.day}, {today:%Y}"
-    master_content = master_content.replace("{{DATE}}", pretty_date)
 
     built: list[Path] = []
 
@@ -2986,6 +2987,12 @@ def build_book(args: argparse.Namespace) -> list[Path]:
         variant_label = variant["label"]
         print(f"\nBuilding {variant_label} variant...")
 
+        variant_metadata_path = metadata_path
+        if variant_id == "legacy" and legacy_metadata_path.exists():
+            variant_metadata_path = legacy_metadata_path
+        variant_meta, variant_content = load_markdown(variant_metadata_path)
+        variant_content = variant_content.replace("{{DATE}}", pretty_date)
+
         for target in targets:
             target_chapters = target["chapters"]
             print(f"  {target['label']} ({target['range']}): {len(target_chapters)} chapters")
@@ -2997,7 +3004,7 @@ def build_book(args: argparse.Namespace) -> list[Path]:
             epub_path = OUTPUT_DIR / output_name
 
             display_title = f"{book_title} - {target['label']}"
-            base_identifier = metadata_text(master_meta.get("identifier"), "")
+            base_identifier = metadata_text(variant_meta.get("identifier"), "")
             epub_identifier = part_identifier(base_identifier or book_title, target["id"])
 
             assets: dict[Path, EpubAsset] = {}
@@ -3008,8 +3015,8 @@ def build_book(args: argparse.Namespace) -> list[Path]:
                 asset_names.add(Path(cover_asset.href).name)
                 assets[cover_asset.source_path] = cover_asset
 
-            info_ctx = RenderContext(book_id, metadata_path, assets, asset_names, tweet_cache, fetch_twitter, variant_id)
-            info_body, info_footnotes = convert_chapter(master_content, info_ctx)
+            info_ctx = RenderContext(book_id, variant_metadata_path, assets, asset_names, tweet_cache, fetch_twitter, variant_id)
+            info_body, info_footnotes = convert_chapter(variant_content, info_ctx)
             if info_footnotes:
                 info_body += "\n" + info_footnotes
 
@@ -3031,7 +3038,7 @@ def build_book(args: argparse.Namespace) -> list[Path]:
                         print(f"      split -> {item.href}")
                 items.extend(chapter_items)
 
-            write_epub(epub_path, display_title, master_meta, items, assets, cover_item, cover_asset, epub_identifier, variant_id)
+            write_epub(epub_path, display_title, variant_meta, items, assets, cover_item, cover_asset, epub_identifier, variant_id)
 
             print(f"    Done -> {epub_path}")
             built.append(epub_path)
