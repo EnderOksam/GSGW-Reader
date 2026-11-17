@@ -568,7 +568,8 @@
         "discussion": 112,
         "index": 69,
         "section": "Chapter 69",
-        "slug": "69"
+        "slug": "69",
+        "illustration": true
       },
       {
         "title": "Discount",
@@ -1636,7 +1637,8 @@
         "discussion": 256,
         "index": 202,
         "section": "Chapter 202",
-        "slug": "202"
+        "slug": "202",
+        "illustration": true
       },
       {
         "title": "[Glass Prison], II",
@@ -2778,7 +2780,8 @@
         "discussion": 756,
         "index": 344,
         "section": "Chapter 344",
-        "slug": "344"
+        "slug": "344",
+        "illustration": true
       },
       {
         "title": "Sekwang Special City Disaster, XI",
@@ -2818,7 +2821,8 @@
         "discussion": 1036,
         "index": 349,
         "section": "Chapter 349",
-        "slug": "349"
+        "slug": "349",
+        "illustration": true
       },
       {
         "title": "Sekwang Sealing Ritual, IV",
@@ -2850,7 +2854,8 @@
         "discussion": 1015,
         "index": 353,
         "section": "Chapter 353",
-        "slug": "353"
+        "slug": "353",
+        "illustration": true
       },
       {
         "title": "Sekwang Sealing Ritual, VIII",
