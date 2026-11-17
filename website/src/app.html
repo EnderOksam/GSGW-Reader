@@ -9,6 +9,12 @@
     <script>
       (function() {
         try {
+          var path = location.pathname;
+          var themed =
+            path.indexOf("/read/") === 0 ||
+            path.indexOf("/dev/editor") === 0 ||
+            path.indexOf("/edit") === 0;
+          if (!themed) return;
           var saved = localStorage.getItem("readerSettings");
           if (saved) {
             var parsed = JSON.parse(saved);

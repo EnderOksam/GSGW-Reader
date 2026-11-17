@@ -21,6 +21,7 @@
       path.startsWith("/edit/"),
   );
   let isUderReadPage = $derived(path.startsWith("/read/uder/"));
+  let isThemedPage = $derived(isEditorPage || isUderReadPage);
 
   let bgCanvas: HTMLCanvasElement;
   let bgShader: BackgroundShader | null = null;
@@ -96,7 +97,10 @@
 
   $effect(() => {
     const _ = page.url.href;
-    document.documentElement.setAttribute("data-theme", getCachedTheme());
+    document.documentElement.setAttribute(
+      "data-theme",
+      isThemedPage ? getCachedTheme() : "sunset",
+    );
   });
 
   $effect(() => {
