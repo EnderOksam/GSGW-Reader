@@ -529,16 +529,16 @@
           </div>
           <div class="space-y-2">
             <div>
-              <span class="font-semibold text-white">PocketBook / BookFusion</span>
-              <p class="text-xs text-base-content/60">I don't personally use these on iOS, but both are solid EPUB reader options. PocketBook has been recommended by Lei and Destiny from the Discord, while BookFusion is considered the better option overall, though the free version is limited to a maximum of 10 books.</p>
+              <span class="font-semibold text-white">Apple Books</span>
+              <p class="text-xs text-base-content/60">Works well. Dark Mode has minor issues that we've fixed to the best of our ability, but overall, it's a solid choice.</p>
             </div>
             <div>
               <span class="font-semibold text-white">Suwatte</span>
-              <p class="text-xs text-base-content/60">Lei really likes this one. It's a comic reader app for iOS that now also supports EPUB/PDF files. Since it's available through TestFlight, you'll need to opt in to access it.</p>
+              <p class="text-xs text-base-content/60">Lei really likes this one. It’s an iOS reader for manga, comics, and novels, with EPUB/PDF support. Available on the App Store in the US and Canada, or worldwide via TestFlight. For access, visit https://www.suwatte.app/</p>
             </div>
-            <div class="opacity-50">
-              <span class="font-semibold text-white">Apple Books</span>
-              <p class="text-xs text-base-content/60">Apple Books works as well, but enabling Dark Mode may interfere with the EPUB's CSS styling, which can affect the intended text formatting and overall appearance.</p>
+            <div>
+              <span class="font-semibold text-white">PocketBook / BookFusion</span>
+              <p class="text-xs text-base-content/60">PocketBook has been recommended by Lei and Destiny on Discord, while BookFusion is considered the better option overall, though the free version is limited to a maximum of 10 books.</p>
             </div>
           </div>
         </div>
