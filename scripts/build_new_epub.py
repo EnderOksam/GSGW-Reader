@@ -15,10 +15,13 @@ import urllib.parse
 import urllib.request
 import uuid
 import zipfile
-from dataclasses import dataclass
+
+from dataclasses import dataclass, replace
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
+
+import epub_legacy
 
 try:
     from PIL import Image
@@ -33,7 +36,7 @@ REPO_ROOT = SCRIPT_DIR.parent
 CHAPTERS_ROOT = REPO_ROOT / "chapters"
 IMAGES_ROOT = REPO_ROOT / "images"
 CSS_PATH = SCRIPT_DIR / "epub.css"
-LEGACY_CSS_PATH = SCRIPT_DIR / "epub-legacy.css"
+LEGACY_CSS_PATH = SCRIPT_DIR / "epub-legacy.css"  # Retained by the original, Styled-only writer.
 FONTS_DIR = REPO_ROOT / "website" / "static" / "fonts"
 
 OUTPUT_DIR = SCRIPT_DIR / "epub"
@@ -41,6 +44,7 @@ TWITTER_IMG_DIR = OUTPUT_DIR / "twitter_images"
 TWEET_CACHE_PATH = TWITTER_IMG_DIR / "cache.json"
 
 TESTPAGE_PATH = SCRIPT_DIR / "epub_testpage.md"
+LEGACY_TESTPAGE_PATH = SCRIPT_DIR / "Testing" / "legacy_testpage.md"
 
 EPUB_SOURCE_URL = "https://ireum.pages.dev"
 
@@ -2685,7 +2689,7 @@ def section_body(body: str) -> str:
     )
 
 
-def write_epub(
+def _write_styled_epub(
     epub_path: Path,
     book_title: str,
     metadata: dict[str, Any],
@@ -2739,6 +2743,32 @@ def write_epub(
 
         for asset in asset_list:
             zf.write(asset.source_path, f"OEBPS/{asset.href}", compress_type=zipfile.ZIP_DEFLATED)
+
+
+
+def write_epub(
+    epub_path: Path,
+    book_title: str,
+    metadata: dict[str, Any],
+    items: list[EpubItem],
+    assets: dict[Path, EpubAsset],
+    cover_item: EpubItem | None = None,
+    cover_asset: EpubAsset | None = None,
+    identifier_override: str | None = None,
+    variant: str = "styled",
+    *,
+    legacy_layout: epub_legacy.LegacyLayout | None = None,
+) -> None:
+    """Dispatch to separate edition writers; Styled retains its original writer."""
+    arguments = (epub_path, book_title, metadata, items, assets, cover_item,
+                 cover_asset, identifier_override)
+    if variant == "legacy":
+        epub_legacy.write_epub(sys.modules[__name__], *arguments,
+                              variant="legacy", legacy_layout=legacy_layout)
+    elif variant == "styled" and legacy_layout is None:
+        _write_styled_epub(*arguments)
+    else:
+        raise ValueError("Legacy formatting can only be used with variant=legacy")
 
 
 
@@ -2814,6 +2844,7 @@ def build_chapter_items(
     position: int,
     chapter: Chapter,
     ctx: RenderContext,
+    split_scares: bool = True,
 ) -> list[EpubItem]:
     """Convert one chapter (with or without scare-page splits) into items.
 
@@ -2823,11 +2854,16 @@ def build_chapter_items(
     no scare pages) is exposed to the Table of Contents. Subsequent files
     get a hidden chapter heading so Episteme can label them correctly without
     adding extra navigation entries.
+
+    The Legacy variant passes split_scares=False: it joins these converted
+    segments into one chapter file, namespaces their local anchors, and uses
+    CSS 2 page breaks around the scare wrappers instead of extra spine items.
     """
     segments = split_pagebreaks(chapter.content)
     has_scares = any(segment.is_scare for segment in segments)
 
     items: list[EpubItem] = []
+    segment_notes: list[str] = []
     story_count = 0
     for segment in segments:
         # Skip empty story gaps so no blank page is emitted.
@@ -2835,8 +2871,12 @@ def build_chapter_items(
             continue
 
         body, footnotes_html = convert_chapter(segment.content, ctx)
-        if footnotes_html:
+        if not split_scares:
+            body = epub_legacy.register_remaining_images(sys.modules[__name__], body, ctx)
+            footnotes_html = epub_legacy.register_remaining_images(sys.modules[__name__], footnotes_html, ctx)
+        if footnotes_html and split_scares:
             body += "\n" + footnotes_html
+        segment_notes.append(footnotes_html)
 
         if segment.is_scare:
             suffix = f"scare_{segment.index}"
@@ -2847,7 +2887,7 @@ def build_chapter_items(
             suffix = f"part{story_count}" if has_scares else None
 
         in_toc = not items
-        if not in_toc:
+        if not in_toc and split_scares:
             # Episteme ignores <title> and falls back to a spine-based chapter
             # number when neither an NCX label nor a heading is available.
             # Its title parser reads hidden headings; its renderer skips them.
@@ -2866,26 +2906,79 @@ def build_chapter_items(
                 in_toc=in_toc,
             )
         )
+    if not split_scares and items:
+        # Keep chapter navigation intact without making every scare a spine
+        # entry. Namespace segment-local anchors before joining footnotes and
+        # repeated headings in a single XHTML document.
+        bodies = []
+        chapter_notes = []
+        for index, item in enumerate(items):
+            body = item.body
+            notes = segment_notes[index]
+            identifiers = set(re.findall(r'\bid="([^"]+)"', body + notes))
+            for identifier in identifiers:
+                renamed = f"segment-{index + 1}-{identifier}"
+                body = body.replace(f'id="{identifier}"', f'id="{renamed}"')
+                body = body.replace(f'href="#{identifier}"', f'href="#{renamed}"')
+                notes = notes.replace(f'id="{identifier}"', f'id="{renamed}"')
+                notes = notes.replace(f'href="#{identifier}"', f'href="#{renamed}"')
+            bodies.append(body)
+            chapter_notes.extend(re.findall(r'<aside\b.*?</aside>', notes, re.S))
+        joined = "\n".join(bodies)
+        if chapter_notes:
+            joined += ('\n<section class="footnotes-section" epub:type="endnotes" role="doc-endnotes">'
+                       '<hr class="footnotes-divider" /><p class="footnotes-title">Footnotes</p>'
+                       + "\n".join(chapter_notes) + '</section>')
+        reserved = set(re.findall(r'\bid="([^"]+)"', joined))
+        seen = set()
+
+        def unique_anchor(match: re.Match) -> str:
+            identifier = match[1]
+            if identifier not in seen:
+                seen.add(identifier)
+                return match[0]
+            # Repeated references to one footnote keep their own unique
+            # anchors; its backlink still targets the first occurrence.
+            number = 2
+            while f"{identifier}-repeat-{number}" in reserved:
+                number += 1
+            identifier = f"{identifier}-repeat-{number}"
+            reserved.add(identifier)
+            return f'id="{identifier}"'
+
+        joined = re.sub(r'\bid="([^"]+)"', unique_anchor, joined)
+        return [EpubItem(chapter_item_id(position, chapter, None),
+                         chapter_item_href(position, chapter, None), chapter.title,
+                         joined)]
     return items
 
 
 # BUILD
+def legacy_layout_from_args(args: argparse.Namespace, variant: str) -> epub_legacy.LegacyLayout | None:
+    if variant != "legacy":
+        return None
+    return epub_legacy.LegacyLayout(args.legacy_page_width, args.legacy_page_height, args.legacy_font_size)
+
+
 def build_testpage(args: argparse.Namespace) -> list[Path]:
     """Build a single EPUB from epub_testpage.md to preview formatting."""
-    if not TESTPAGE_PATH.exists():
-        print(f"Test page not found: {TESTPAGE_PATH}")
+    variant = args.variant or "styled"
+    legacy_layout = legacy_layout_from_args(args, variant)
+    testpage_path = LEGACY_TESTPAGE_PATH if legacy_layout else TESTPAGE_PATH
+    if not testpage_path.exists():
+        print(f"Test page not found: {testpage_path}")
         return []
 
-    metadata, content = load_markdown(TESTPAGE_PATH)
-    book_title = "Formatting Test Page"
+    metadata, content = load_markdown(testpage_path)
+    book_title = "Legacy Formatting Check" if legacy_layout else "Formatting Test Page"
     chapter = Chapter(
-        path=TESTPAGE_PATH, metadata=metadata, content=content,
+        path=testpage_path, metadata=metadata, content=content,
         title=book_title, index=0, slug="testpage",
     )
 
     print(f"\nBuilding formatting test page...")
 
-    epub_path = OUTPUT_DIR / "Formatting.Test.Page.epub"
+    epub_path = OUTPUT_DIR / ("Formatting.Test.Page.Legacy.epub" if legacy_layout else "Formatting.Test.Page.epub")
 
     assets: dict[Path, EpubAsset] = {}
     asset_names: set[str] = set()
@@ -2893,10 +2986,10 @@ def build_testpage(args: argparse.Namespace) -> list[Path]:
     tweet_cache = load_tweet_cache()
     fetch_twitter = not args.no_fetch_twitter
 
-    ctx = RenderContext("gsgw", TESTPAGE_PATH, assets, asset_names, tweet_cache, fetch_twitter)
-    items = build_chapter_items(1, chapter, ctx)
+    ctx = RenderContext("gsgw", testpage_path, assets, asset_names, tweet_cache, fetch_twitter)
+    items = build_chapter_items(1, chapter, ctx, split_scares=not bool(legacy_layout))
 
-    write_epub(epub_path, book_title, metadata, items, assets)
+    write_epub(epub_path, book_title, metadata, items, assets, variant=variant, legacy_layout=legacy_layout)
 
     save_tweet_cache(tweet_cache)
     return [epub_path]
@@ -2985,6 +3078,7 @@ def build_book(args: argparse.Namespace) -> list[Path]:
     for variant in variants:
         variant_id = variant["id"]
         variant_label = variant["label"]
+        legacy_layout = legacy_layout_from_args(args, variant_id)
         print(f"\nBuilding {variant_label} variant...")
 
         variant_metadata_path = metadata_path
@@ -3004,8 +3098,12 @@ def build_book(args: argparse.Namespace) -> list[Path]:
             epub_path = OUTPUT_DIR / output_name
 
             display_title = f"{book_title} - {target['label']}"
+            if legacy_layout:
+                display_title += " (Legacy)"
             base_identifier = metadata_text(variant_meta.get("identifier"), "")
             epub_identifier = part_identifier(base_identifier or book_title, target["id"])
+            if legacy_layout:
+                epub_identifier = part_identifier(epub_identifier, "legacy")
 
             assets: dict[Path, EpubAsset] = {}
             asset_names: set[str] = set()
@@ -3032,13 +3130,13 @@ def build_book(args: argparse.Namespace) -> list[Path]:
             for position, chapter in enumerate(target_chapters, start=1):
                 print(f"    [{position}/{len(target_chapters)}] {chapter.title}")
                 ctx = RenderContext(book_id, chapter.path, assets, asset_names, tweet_cache, fetch_twitter, variant_id)
-                chapter_items = build_chapter_items(position, chapter, ctx)
+                chapter_items = build_chapter_items(position, chapter, ctx, split_scares=not bool(legacy_layout))
                 for item in chapter_items:
                     if not item.in_toc:
                         print(f"      split -> {item.href}")
                 items.extend(chapter_items)
 
-            write_epub(epub_path, display_title, variant_meta, items, assets, cover_item, cover_asset, epub_identifier, variant_id)
+            write_epub(epub_path, display_title, variant_meta, items, assets, cover_item, cover_asset, epub_identifier, variant_id, legacy_layout=legacy_layout)
 
             print(f"    Done -> {epub_path}")
             built.append(epub_path)
@@ -3051,13 +3149,20 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build per-part EPUBs from chapter markdown using the build_web.py formatting pipeline.")
     parser.add_argument("--book", default="gsgw", help="Book folder under chapters/ to build.")
     parser.add_argument("--limit", type=int, help="Build only the first N chapters total, useful for testing.")
-    parser.add_argument("--variant", help="Build only this variant (styled, legacy).")
-    parser.add_argument("--part", help="Build only this part (e.g. part1, part2).")
-    parser.add_argument("--complete", action="store_true", help="Build a single all-chapters edition instead of per-part editions.")
+    parser.add_argument("--variant", choices=("styled", "legacy"), help="Build only Styled or Legacy (default: both).")
+    parser.add_argument("--legacy-font-size", type=float, default=18, help="Estimated Legacy reading size in pixels (default: 18).")
+    parser.add_argument("--legacy-page-width", type=int, default=540, help="Legacy usable page width in pixels (default: 540).")
+    parser.add_argument("--legacy-page-height", type=int, default=700, help="Legacy usable page height in pixels (default: 700).")
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--part", help="Build only this part (e.g. part1, part2).")
+    selection.add_argument("--complete", action="store_true", help="Build a single all-chapters edition instead of per-part editions.")
     parser.add_argument("--chapter", type=int, help="Build only this chapter number (1-based index within the book).")
     parser.add_argument("--no-fetch-twitter", action="store_true", help="Use cached Twitter WebPs only; leave missing tweet images as links.")
     parser.add_argument("--testpage", action="store_true", help="Build a single EPUB from epub_testpage.md to preview formatting.")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if not (8 <= args.legacy_font_size <= 48 and 100 <= args.legacy_page_width <= 540 and 100 <= args.legacy_page_height <= 750):
+        parser.error("Legacy calibration requires font size 8–48, page width 100–540, and page height 100–750.")
+    return args
 
 
 def main() -> None:
