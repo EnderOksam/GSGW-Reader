@@ -23,12 +23,95 @@ if TYPE_CHECKING:
     from build_new_epub import EpubAsset, EpubItem
 
 
-def information_text(content: str) -> str:
-    """Adapt the information page only for the Legacy edition."""
-    content = re.sub(r"^!\[\]\((?:wikiwindow|smswindow|commentwindow|debutwindow)_epub\.webp\)\s*$", "", content, flags=re.M)
-    content = re.sub(r"This EPUB also uses some custom formatting\..*?EPUB3 files\.",
-                     "This legacy EPUB uses embedded fonts and authored alignment. Enable publisher defaults in your reader. Window examples below use plain text markers.", content, flags=re.S)
-    return re.sub(r"Compare the following windows.*?\(window image may not be the same size as rendered window\)\.", "", content, flags=re.S)
+JPEG_QUALITY = 85
+JPEG_BACKGROUND = (255, 255, 255)
+JPEG_SOURCE_EXTS = {".webp", ".png", ".gif", ".bmp", ".tif", ".tiff", ".jpg", ".jpeg"}
+
+
+def convert_to_jpeg(source_path: Path, output_dir: Path) -> Path | None:
+    """Convert a raster image to JPEG for Legacy's final packaging.
+
+    JPEG is a core EPUB media type with the widest e-reader support. It has no
+    alpha channel, so transparency is flattened onto a white background.
+    Returns the JPEG path, or None on failure.
+    """
+    try:
+        from PIL import Image
+    except ImportError:
+        return None
+    try:
+        with Image.open(source_path) as img:
+            if img.format == "JPEG" and img.mode in ("RGB", "L") and source_path.suffix.lower() in {".jpg", ".jpeg"}:
+                return source_path
+            digest = hashlib.sha256(source_path.read_bytes() +
+                                    f"jpeg-v1:{JPEG_QUALITY}:{JPEG_BACKGROUND}".encode()).hexdigest()[:20]
+            output_dir.mkdir(parents=True, exist_ok=True)
+            output_path = output_dir / f"{source_path.stem}-{digest}.jpg"
+            if output_path.exists() and output_path.stat().st_size:
+                return output_path
+            has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+            if has_alpha:
+                rgba = img.convert("RGBA")
+                background = Image.new("RGB", rgba.size, JPEG_BACKGROUND)
+                background.paste(rgba, mask=rgba.split()[-1])
+                flattened = background
+            else:
+                flattened = img.convert("RGB")
+            flattened.save(
+                output_path,
+                "JPEG",
+                quality=JPEG_QUALITY,
+                optimize=True,
+                progressive=True,
+            )
+        return output_path if output_path.exists() and output_path.stat().st_size > 0 else None
+    except (OSError, ValueError):
+        return None
+
+
+def prepare_jpeg_images(
+    items: list[EpubItem],
+    assets: dict[Path, EpubAsset],
+    cover_item: EpubItem | None = None,
+    cover_asset: EpubAsset | None = None,
+    *,
+    output_dir: Path,
+) -> tuple[list[EpubItem], dict[Path, EpubAsset], EpubItem | None, EpubAsset | None]:
+    """Encode final Legacy illustrations once, keeping glyph PNGs lossless.
+
+    Source conversion preserves originals so Legacy resizing, centering and
+    credit composition happen before this Legacy-only packaging step.
+    """
+    converted_assets: dict[Path, EpubAsset] = {}
+    replacements: dict[str, str] = {}
+    for asset in assets.values():
+        source = asset.source_path
+        converted = asset
+        if source.suffix.lower() in JPEG_SOURCE_EXTS and not source.name.startswith("glyph-"):
+            path = convert_to_jpeg(source, output_dir / "jpeg_images")
+            if path is None:
+                raise RuntimeError(f"Cannot convert EPUB image to JPEG: {source}")
+            converted = replace(asset, source_path=path, href=asset.href if path == source else f"Images/{path.name}", media_type="image/jpeg")
+        previous = converted_assets.get(converted.source_path)
+        if previous:
+            converted = previous
+        converted_assets[converted.source_path] = converted
+        replacements[f"../{asset.href}"] = f"../{converted.href}"
+        if cover_asset and asset.href == cover_asset.href:
+            cover_asset = converted
+
+    def rewrite(item: EpubItem) -> EpubItem:
+        def attribute(match: re.Match) -> str:
+            value = html.unescape(match.group(3))
+            target = replacements.get(value)
+            if target is None:
+                return match.group(0)
+            return f'{match.group(1)}{match.group(2)}{html.escape(target, quote=True)}{match.group(2)}'
+
+        body = re.sub(r'''(\b(?:src|href)\s*=\s*)(["'])(.*?)\2''', attribute, item.body, flags=re.I | re.S)
+        return replace(item, body=body)
+
+    return [rewrite(item) for item in items], converted_assets, rewrite(cover_item) if cover_item else None, cover_asset
 
 
 def register_remaining_images(builder: Any, body: str, ctx: Any) -> str:
@@ -59,12 +142,17 @@ class LegacyLayout:
     line_height: float = 1.5
 
 
+DEBUT_WINDOWS = {"debut-window", "debut-alert", "debut-achievement"}
+DEBUT_LABELS = {"debut-window-title", "debut-window-label", "debut-achievement-title"}
+DEBUT_CHIPS = {
+    "debut-achievement-sub", "debut-achievement-sub-left", "debut-achievement-sub-right",
+    "alert-sub", "alert-sub-left", "alert-sub-right",
+}
 TEXT_WINDOWS = {
     "wiki-window", "record-window", "plain-window", "followup-window",
     "system-window", "note-window", "sticky-window", "black-window",
     "braun-screen", "sms-window", "alert-window", "paper-boat",
-    "debut-window", "debut-alert", "debut-achievement",
-}
+} | DEBUT_WINDOWS
 SPACED_BLOCKS = TEXT_WINDOWS | {"padding-window", "braun-tv-text", "braun-doll-text", "bare-window", "nook-horizontal-break"}
 RULED_WINDOWS = {"wiki-window", "record-window"}
 # CSS 2 approximations of the website's styled windows. The four DMB window
@@ -680,6 +768,48 @@ def set_style(element: ET.Element, **props: str) -> None:
     element.set("style", (style + "; " if style else "") + additions + ";")
 
 
+def plaintext_debut_windows(root: ET.Element) -> None:
+    """Restore the former Legacy stylesheet's plain, bold Debut windows.
+
+    Bake overrides into XHTML so font selection and old readers see the same
+    result. Decorative dividers disappear; authored text and blank lines stay.
+    """
+    regular_tags = {"p", "a", "strong", "b", "em", "i", "li", "h1", "h2", "h3", "h4", "h5", "h6", "code", "blockquote"}
+
+    def visit(node: ET.Element, active: bool = False) -> None:
+        cls = classes(node)
+        active = active or bool(cls & DEBUT_WINDOWS)
+        if active:
+            if cls & {"text-large-centered", "align-center"}:
+                set_style(node, text_align="inherit !important")
+            if cls & DEBUT_WINDOWS or node.tag in regular_tags or cls & (DEBUT_LABELS | DEBUT_CHIPS | {"debut-achievement-list"}):
+                set_style(node, font_family="inherit", font_weight="bold !important", text_align="inherit !important")
+            if cls & DEBUT_LABELS:
+                set_style(node, display="block", font_size="1em !important", font_style="inherit",
+                          text_transform="none !important", letter_spacing="normal", white_space="normal",
+                          margin="0", padding="0")
+            if cls & DEBUT_CHIPS:
+                set_style(node, display="inline", font_size="1em !important", font_style="inherit", margin="0", padding="0")
+            if "debut-achievement-list" in cls:
+                set_style(node, display="block", font_size="1em !important", margin="0", padding="0")
+            if "debut-achievement-list-item" in cls:
+                set_style(node, padding="0")
+        for child in list(node):
+            if active and "debut-achievement-list-divider" in classes(child):
+                # Keep any following prose/whitespace when removing decoration.
+                index = list(node).index(child)
+                if index:
+                    previous = node[index - 1]
+                    previous.tail = (previous.tail or "") + (child.tail or "")
+                else:
+                    node.text = (node.text or "") + (child.tail or "")
+                node.remove(child)
+            else:
+                visit(child, active)
+
+    visit(root)
+
+
 def _estimate_height(element: ET.Element, layout: LegacyLayout, scales: dict[str, float]) -> float:
     """Approximate reflow, including inline sizes, hard breaks, and bitmaps.
 
@@ -943,25 +1073,29 @@ def transform_body(body: str, layout: LegacyLayout, image_sizes: dict[str, tuple
                         fragment.set("style", "margin: 0 !important; padding: 0 !important; font-size: 0.5em !important; line-height: 1;")
             set_style(node, margin="0", padding="0")
 
-    def align(node: ET.Element, inherited: str | None = None) -> None:
+    plaintext_debut_windows(root)
+
+    def align(node: ET.Element, inherited: str | None = None, in_debut: bool = False) -> None:
         cls = classes(node)
+        in_debut = in_debut or bool(cls & DEBUT_WINDOWS)
         for name in cls & BOX_WINDOWS.keys():
             inherited = BOX_WINDOWS[name]["text-align"]
-        direction = next((direction for direction in ("left", "right", "center")
+        directions = ("left", "right") if in_debut else ("left", "right", "center")
+        direction = next((direction for direction in directions
                           if cls & {f"align-{direction}", f"mono-{direction}", f"sms-{direction}"}), inherited)
         inline = re.search(r"text-align:\s*(left|right|center|justify)", node.get("style", ""))
         if inline:
             direction = inline[1]
-        if "text-large-centered" in cls:
+        if "text-large-centered" in cls and not in_debut:
             direction = "center"
         # A lone aligned span also needs alignment on its containing paragraph.
         if node.tag == "p" and len(node) == 1 and not (node.text or "").strip() and not (node[0].tail or "").strip():
             child_cls = classes(node[0])
-            direction = next((d for d in ("left", "right", "center") if child_cls & {f"align-{d}", f"mono-{d}"}), direction)
+            direction = next((d for d in directions if child_cls & {f"align-{d}", f"mono-{d}"}), direction)
         if direction and (node.tag in BLOCKS or cls & {"align-left", "align-right", "align-center", "mono-left", "mono-right", "mono-center"}):
             set_style(node, text_align=f"{direction} !important", text_indent="0")
         for child in node:
-            align(child, direction)
+            align(child, direction, in_debut)
 
     align(root)
     for node in root.iter():
@@ -1285,6 +1419,7 @@ def write_epub(
         if catalog.missing:
             missing = ', '.join((f'{char!r} U+{ord(char):04X}' for char in sorted(catalog.missing)))
             raise RuntimeError(f'No embedded Legacy font covers these original characters: {missing}')
+    items, assets, cover_item, cover_asset = prepare_jpeg_images(items, assets, cover_item, cover_asset, output_dir=builder.OUTPUT_DIR)
     modified = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
     identifier = identifier_override or builder.metadata_text(metadata.get('identifier'), '')
     identifier = builder.valid_identifier(identifier, book_title)

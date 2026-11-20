@@ -4,9 +4,19 @@
 
 The builder offers `--variant styled` and `--variant legacy`. Omitting
 `--variant` builds both, as in the original Styled/Legacy release pipeline.
-The Styled renderer and `epub.css` retain their original behavior and assets.
+The Styled renderer and `epub.css` retain their original formatting behavior.
 Only Legacy runs the transformations in `epub_legacy.py` and
-`epub_legacy_fonts.py`; the former `epub-legacy.css` is no longer loaded.
+`epub_legacy_fonts.py`; the obsolete `epub-legacy.css` has been removed.
+Source conversion retains original images for both editions. Styled embeds those
+original assets, including WebP. Legacy's final packaging step converts
+illustrations and covers to JPEG, after resizing,
+centering and credit composition. Existing compatible JPEGs are reused without
+recompression, and content-based cache names prevent collisions between books.
+Legacy's tiny Unicode glyph images remain lossless PNGs; vectors stay unchanged.
+JPEG conversion and asset rewriting live in `epub_legacy.py`; Styled never calls
+them. Debut windows retain the old Legacy plaintext presentation: bold text,
+titles and labels at the surrounding size, inline sublabels, inherited alignment,
+and no decorative achievement dividers.
 
 ## Legacy edition
 
@@ -23,7 +33,7 @@ The diagnostic is `scripts/epub/Formatting.Test.Page.Legacy.epub`.
 It tests fonts, alignment, wiki/record borders, comments, short/long scares, and
 a full-page illustration through the same pipeline. `--complete`,
 `--limit`, and `--chapter` also work with Legacy. `--variant styled` retains
-EPUB 3, original image assets, the original fonts and scare-page splitting.
+EPUB 3, original image assets and dimensions, the original fonts and scare-page splitting.
 
 The profile follows the screen dimensions, pixel margin guidance, PNG/JPEG
 support, and embedded-font support in the
@@ -32,8 +42,8 @@ It uses a 540 × 700px usable area: 30px side/top margins, 20px bottom margin,
 and an additional allowance for reader chrome. The following are build-time
 adaptations, pending testing on the actual device:
 
-- Bitmaps, including covers and cached tweet illustrations, are converted to
-  grayscale PNG, composited onto white, and reduced without changing aspect
+- Bitmaps, including covers and cached tweet illustrations, use grayscale PNG
+  intermediates, composited onto white and reduced without changing aspect
   ratio or upscaling. Page images are at most 540px wide; all stored bitmaps,
   including inline Unicode glyph images, are at most 600px wide. Both XHTML attributes and inline pixel dimensions record
   the display size. Smaller authored pixel/percentage widths are mapped to the
