@@ -421,7 +421,7 @@
     </div>
   {/if}
 
-  {#if bookSlug === "gsgw"}
+  {#if bookSlug === "gsgw" || bookSlug === "debut"}
     <button
       onclick={() => readerState.refPanelOpen = !readerState.refPanelOpen}
       class="group fixed right-0 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center size-9 rounded-l-xl bg-base-100/90 backdrop-blur-md shadow-lg shadow-base-content/10 border border-base-content/15 border-r-0 cursor-pointer hover:bg-base-100 hover:shadow-xl hover:border-primary/30 transition-all duration-200"
