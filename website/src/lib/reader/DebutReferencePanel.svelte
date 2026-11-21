@@ -291,6 +291,9 @@
           {@const displayedName = activeAlt?.name ?? character.name}
           {@const displayedBirthday = activeAlt?.birthday ?? character.birthday}
           {@const displayedMbti = activeAlt?.mbti ?? character.mbti}
+          {@const groupName = typeof character.group === "string" ? character.group.trim() : ""}
+          {@const groupRole = typeof character.groupRole === "string" ? character.groupRole.trim() : ""}
+          {@const groupRoleText = groupName && groupRole ? `${groupName} · ${groupRole}` : "—"}
           {@const manwhaImage = activeAlt?.manwhaImage ?? character.manwhaImage}
           {@const webnovelImage = activeAlt?.webnovelImage ?? character.webnovelImage}
           {@const preferredImageMode = imageModes[character.id] ?? (activeAlt ? "webnovel" : "manwha")}
@@ -302,15 +305,15 @@
             class="debut-id-card"
             class:debut-id-card-dark={darkCards}
             class:debut-id-photo-controls-open={photoControlsOpen[character.id]}
-            style={cardStyle(character.id, character.group)}
+            style={cardStyle(character.id, groupName)}
             aria-label={'ID card for ' + displayedName}
           >
             <div
               class="debut-id-rail"
-              class:debut-id-rail-testar={character.group === "TeSTAR" && character.groupRole === "Member"}
-              class:debut-id-rail-vtic={character.group === "VTIC"}
+              class:debut-id-rail-testar={groupName === "TeSTAR" && groupRole === "Member"}
+              class:debut-id-rail-vtic={groupName === "VTIC"}
             >
-              <span>DEBUT OR DIE / {character.group}</span>
+              <span>{groupName ? `DEBUT OR DIE / ${groupName}` : "DEBUT OR DIE"}</span>
             </div>
 
             <div class="debut-id-photo-area">
@@ -350,9 +353,9 @@
                   <span>NAME</span>
                   <strong role="heading" aria-level="3">{displayedName}</strong>
                 </div>
-                {#if character.group === "TeSTAR" && character.groupRole === "Member"}
+                {#if groupName === "TeSTAR" && groupRole === "Member"}
                   <img class="debut-id-faction-logo" src="/assets/testar-logo.png" alt="TeSTAR" />
-                {:else if character.group === "VTIC"}
+                {:else if groupName === "VTIC"}
                   <img class="debut-id-faction-logo" src="/assets/vtic-logo.png" alt="VTIC" />
                 {:else}
                   <img class="debut-id-faction-logo" src="/assets/dod-logo.png" alt="Debut or Die" />
@@ -392,7 +395,7 @@
               <div class="debut-id-footer">
                 <div class="debut-id-role">
                   <span>GROUP / ROLE</span>
-                  <strong>{character.group} · {character.groupRole}</strong>
+                  <strong>{groupRoleText}</strong>
                 </div>
                 <div class="debut-id-first-appearance">
                   <span>FIRST APPEARANCE</span>
