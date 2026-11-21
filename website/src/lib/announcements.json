@@ -1,6 +1,37 @@
 {
   "announcements": [
     {
+      "title": "<@&1518774394757845132>",
+      "date": "2026-11-17",
+      "short": "@GSGW Releases\n- **GSGW Manhwa:** Chapters 43–44\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\n@DoD Releases\n- **DOD:** Chapters 1-166 has been re-edited by Lei (me), checked against the official translation, with additional illustrations added.\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOther Updates by Ender Oksam\n- **Styled and Legacy EPUBs:** Introduced two EPUB versions: Styled and Legacy, giving readers more options for their preferred reading experience.\n- **New Download Page UI:** Redesigned the download page for easier navigation and access to available formats.\n- **EPUB Download Options:** You can now download EPUBs by individual part or as a complete novel.\n- **Smaller EPUB Files:** Improved EPUB optimization and reduced file sizes to save storage space.\n- **Scare Page Scroll Lock:** Added a setting to customize the display of scare pages while reading (on or off).\n-# When disabled, scare pages still appear, but without the scroll lock. You can customize these options in the window settings.\n- **Chapter Illustration Indicators:** Added small icons next to chapters featuring twitter illustrations for GSGW and static/twitter illustrations for DOD.\n- **New Artist Illustrations:** New illustrations have been added to multiple chapters.\n-# Ch 69, 202, 344, 349, and 353.",
+      "long": "",
+      "author": "Lei",
+      "tags": [
+        "DoD Releases",
+        "Announcements",
+        "GSGW Releases"
+      ],
+      "messageId": "1572110283600568430",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1572110283600568430",
+      "attachments": [
+        {
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1572110282614902814/image.png?ex=6afd2d4b&is=6afbdbcb&hm=afcea4c361466d78142384a1d8adfa2f164a2c4f7176dae7f3a9a57a542040a3&",
+          "filename": "image.png",
+          "contentType": "image/png",
+          "width": 2388,
+          "height": 2178
+        },
+        {
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1572110283156099082/image.png?ex=6afd2d4b&is=6afbdbcb&hm=3b03276a88f2bc1036a5be83a04801bdd0143302ded266c0b4c15f7803842628&",
+          "filename": "image.png",
+          "contentType": "image/png",
+          "width": 2388,
+          "height": 2140
+        }
+      ],
+      "embeds": []
+    },
+    {
       "title": "<@&1518776921771606188>",
       "date": "2026-11-12",
       "short": "#* Deep Proofreading Status *#\n(Second-pass review of completed TLs)\n\nPart 1 (1 - 208)\n* TL Check ✨Complete✨\n\nPart 2 (209 - 371)\n* Formatting up to Chapter 268 checked\n* TL up to Chapter 319 checked\n\nPart 3 (372 - present)\n* Additional checks pending (needs Editor to check formatting against raw)",
@@ -71,14 +102,14 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563426409127485520",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6af6a24e&is=6af550ce&hm=3e82b29b6fe46dcaa5dfb4e977225e08f302adc530fd93d4fb2f94b717e5d07b&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6afd39ce&is=6afbe84e&hm=3150c2be97d7a0a41cdfaa5139f1ca915373d63ee92e0ef9b38bf98109841451&",
           "filename": "image.png",
           "contentType": "image/webp",
           "width": 632,
           "height": 680
         },
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6af6a24e&is=6af550ce&hm=1f30a22c31565486cbf5a2f863446d168a790d9db0fc0983d44df79b57be3c91&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6afd39ce&is=6afbe84e&hm=c046720a1e94161dd6e2ee8c52ef9c3fc08f3cb471f70ce80533cb8a548c6aab&",
           "filename": "image.png",
           "contentType": "image/png",
           "width": 1680,
@@ -100,7 +131,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563183717181161552",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6af66908&is=6af51788&hm=d8d7d2a097c2dc2f2eaff29e5746554cc050741f9702dbd4b5f70de47474e6ab&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6afd0088&is=6afbaf08&hm=a45150c6ff68b90522d4e2ff01ed325b718062ec6deed15a75ae9459a28374f3&",
           "filename": "IMG_7407.png",
           "contentType": "image/png",
           "width": 1170,
@@ -136,7 +167,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1560578630189449246",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6af6295b&is=6af4d7db&hm=7608d0af4d962c89535ab9f7013956198c4d545be53e5eed0387ff2e69f774d8&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6afd699b&is=6afc181b&hm=4ea19d4d27d39f8590c683e9e0d1b4041957bfe0914abb2d81661831a2dae488&",
           "filename": "IMG_1647.jpg",
           "contentType": "image/jpeg",
           "width": 1282,
@@ -166,7 +197,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1559030228226019328",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6af6760b&is=6af5248b&hm=7cc53e2732d93aa845fd3614417a2967c2a6245d5172cd04dc1d3c0b270061ab&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6afd0d8b&is=6afbbc0b&hm=06e754ad1df74aa9b069f4a94609e525ec5e724bb879be623f50293bb3e064e4&",
           "filename": "IMG_1591.png",
           "contentType": "image/png",
           "width": 1012,
@@ -262,7 +293,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555093524490493954",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6af6a434&is=6af552b4&hm=850bd36fa522301506b225eee641e7037f771350b398e671dfe3ac64b92c2e1e&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6afd3bb4&is=6afbea34&hm=0a20ab611fd63792bf7f3468f08a28a6ea2f99ee9f65794e97306fdffe1ca0b6&",
           "filename": "IMG_1421.png",
           "contentType": "image/jpeg",
           "width": 1668,
@@ -304,35 +335,6 @@
           "url": "https://ireum.pages.dev/book/gsgw/",
           "image": null,
           "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
-        }
-      ]
-    },
-    {
-      "title": "<@&1518774394757845132>",
-      "date": "2026-09-19",
-      "short": "@GSGW Releases\n- **PART 2** Chapters 336-351 formatted by Tarragona and Lei (me)\n- **Manhwa** Chapter 36\n\n[Read GSGW](https://ireum.pages.dev/book/gsgw/)\n\nOther Developments by Sen\n* Window styling can be applied via pressing the button on the web editor.\n* EPUB now has the scrolling text animation.\n* Fixed some styling in EPUB.\n* Made an English ver. of the original cover (see Synopsis).\n* Glitch subtle, glitch heavy, shake-per-char, wave up animation can break by word if you add the correct syntax (See [Format Layout guide](https://docs.google.com/document/d/15nmxzglbrf-I9IWltWwt9eknZKQj8qgIrh1fglFN08M/edit?usp=sharing) for syntax).\n* New Character ID for Baek Seokju",
-      "long": "",
-      "author": "Lei",
-      "tags": [
-        "GSGW Releases"
-      ],
-      "messageId": "1550758821717217331",
-      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1550758821717217331",
-      "attachments": [],
-      "embeds": [
-        {
-          "title": "Got Dropped into a Ghost Story, Still Gotta Work",
-          "description": "A pop-up event for some 'modern fantasy' media… I loved so much that I even took a precious day off work to attend.\n\nOn that day, I ended up transmigrating as a character in that very fantasy world.",
-          "url": "https://ireum.pages.dev/book/gsgw/",
-          "image": null,
-          "thumbnail": "https://ireum.pages.dev/_app/immutable/assets/web-gsgw-banner.C9MvcotB.jpg"
-        },
-        {
-          "title": "Format Layouts - ireum.dev.pages",
-          "description": "Format Layouts General Text ※ Note : author actually rarely uses italics in general text, bold text is reserved mostly for wiki entries, document text, certain Yogwae text, and shouting dialogue which all appear infrequently. > However, editors may do at their discretion for clarity. Please make ...",
-          "url": "https://docs.google.com/document/d/15nmxzglbrf-I9IWltWwt9eknZKQj8qgIrh1fglFN08M/edit?usp=sharing",
-          "image": null,
-          "thumbnail": "https://lh7-us.googleusercontent.com/docs/AHkbwyJfx3j6wp6mqQFXJWBKY6bT7typRUqGxcnCK76Sw3LLASeEWuEp2FTi6gdQhwHozUOB1R3nIfz1xZXHyQPrHRMBCY8_OvKZ0woZmk42ZX05Hq1r0cc=w1200-h630-p"
         }
       ]
     }
