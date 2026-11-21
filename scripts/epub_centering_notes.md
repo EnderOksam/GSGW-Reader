@@ -20,7 +20,7 @@ and no decorative achievement dividers.
 
 ## Legacy edition
 
-Legacy now uses the EPUB 2 formatting calibrated for the 600 × 800 Nook Simple Touch:
+Legacy uses EPUB 2 formatting calibrated for 600 × 800 readers:
 
 ```sh
 python3 scripts/build_new_epub.py --book gsgw --part part1 --variant legacy --no-fetch-twitter
@@ -35,10 +35,7 @@ a full-page illustration through the same pipeline. `--complete`,
 `--limit`, and `--chapter` also work with Legacy. `--variant styled` retains
 EPUB 3, original image assets and dimensions, the original fonts and scare-page splitting.
 
-The profile follows the screen dimensions, pixel margin guidance, PNG/JPEG
-support, and embedded-font support in the
-[Nook EPUB formatting guide](https://www.nook.com/services/cms/doc/nookpress/us/en_us/faq/formatting-guidelines-epub.html).
-It uses a 540 × 700px usable area: 30px side/top margins, 20px bottom margin,
+The Legacy profile uses a 540 × 700px usable area: 30px side/top margins, 20px bottom margin,
 and an additional allowance for reader chrome. The following are build-time
 adaptations, pending testing on the actual device:
 
@@ -49,7 +46,7 @@ adaptations, pending testing on the actual device:
   the display size. Smaller authored pixel/percentage widths are mapped to the
   screen and baked into the bitmap files as well as the XHTML dimensions.
 - The Chapter 1 picture `ch1_1.webp` (also referred to as `0001_1`) uses half
-  its normal Nook size: 270 × 270px rather than 540 × 540px, centered within a 540px-wide bitmap
+  its normal Legacy size: 270 × 270px rather than 540 × 540px, centered within a 540px-wide bitmap
   column. Every illustration receives horizontal bitmap padding to center it
   within its available column, so placement does not rely on CSS margins. The source artwork
   and standard edition are unchanged.
@@ -92,7 +89,10 @@ adaptations, pending testing on the actual device:
   rather than selectable text. No letter or symbol is approximated by ASCII.
   The build fails with a list of characters if no bundled font covers them.
   Additional open-licensed fallback fonts and their licenses are in
-  [`legacy_fonts/`](legacy_fonts/).
+  `legacy_fonts/`. Run `python3 scripts/epub_legacy.py` to regenerate the
+  supplemental subsets, or add `--check` to check every release chapter offline
+  without creating EPUB archives. Font sources are pinned and cached under
+  `scripts/epub/legacy_font_sources/`; commit the resulting font files.
 - Only `bare-window`, `braun-screen`, and `black-window` retain box styling.
   Bare/black boxes have one line of internal vertical padding (`1.5em`,
   matching the text line-height). Braun uses 2em text, two internal lines
@@ -104,7 +104,7 @@ adaptations, pending testing on the actual device:
 - Authored text colors are restored. Opacity is baked into each run's RGB ink
   rather than relying on reader opacity support. Left/right fades become
   character runs with progressively blended colors; supplementary glyph
-  bitmaps use the same foreground/background colors. The Nook maps these to
+  bitmaps use the same foreground/background colors. The Legacy maps these to
   gray levels. For e-ink, ink channels are darkened to 65%, with luminance capped
   at 112 on light backgrounds; hues and a useful gray range remain. Directional left/right fades retain their v7 range and white endpoint,
   bypassing this darkening. Black and Braun boxes force pure white text and supplementary glyphs, ignoring authored
@@ -114,7 +114,7 @@ adaptations, pending testing on the actual device:
   fallback glyphs. Existing 300/400 faces are used when they match. Missing
   500/800 weights are baked as static TrueType outlines using
   [FreeType outline emboldening](https://freetype.org/freetype2/docs/reference/ft2-outline_processing.html#ft_outline_emboldenxy),
-  retaining normal face aliases so the Nook need not synthesize a weight.
+  retaining normal face aliases so the Legacy need not synthesize a weight.
 - Leading `<br />` runs are anchored with nonbreaking spaces, so old RMSDK
   cannot discard their empty first lines. Numbered lists inside wiki/record/
   plain/follow-up windows become explicit numbered paragraphs; consecutive
@@ -131,7 +131,7 @@ adaptations, pending testing on the actual device:
   the surrounding text size.
 - Explicit alignment is applied directly to paragraphs and inherited by their
   descendants, with nested explicit alignment taking precedence. Enable
-  **publisher defaults** in the Nook's text settings to test fonts/alignment.
+  **publisher defaults** in the Legacy's text settings to test fonts/alignment.
   Reader overrides can still take precedence over book formatting.
 - Scares share their chapter's spine file. CSS 2 `page-break-before/after:
   always` isolates the scare within that file; blank lines only place its
@@ -160,7 +160,7 @@ adaptations, pending testing on the actual device:
   reduced to reserve room for the credit. This applies inside and outside
   scares. Linked credits retain live XHTML in a break-avoiding figure, with
   image height reduced by the estimated caption height first.
-  Authored percentage widths use the available Nook column.
+  Authored percentage widths use the available Legacy column.
   Authored pixel widths scale from the website reader's 800px baseline:
   `400px` becomes `270px` on a 540px column. Existing smaller source bitmaps are
   never enlarged. Scare-image canvases apply this sizing before centering.
@@ -180,10 +180,10 @@ Scare centering is approximate in a reflowable book. The default estimate assume
 python3 scripts/build_new_epub.py --testpage --variant legacy --legacy-font-size 22 --legacy-page-height 680 --no-fetch-twitter
 ```
 
-`--legacy-font-size` changes the spacing estimate, not the Nook's reading setting.
+`--legacy-font-size` changes the spacing estimate, not the Legacy's reading setting.
 `--legacy-page-height` and `--legacy-page-width` also change bitmap bounds. Increasing
 the estimated font size or reducing usable height generally produces fewer
-leading blank lines. Test at the same Nook text size you use for reading.
+leading blank lines. Test at the same Legacy text size you use for reading.
 
 Run compatibility regression checks with:
 
@@ -207,10 +207,10 @@ for device testing in the diagnostic book.
 | All other windows | Plaintext presentation; retain typography, markers and spacing, without box borders or backgrounds. |
 
 Bare/black boxes have one line of padding inside; Braun has two. All three
-have one blank line outside. The original test box was successful on the Nook; the revised spacing
+have one blank line outside. The original test box was successful on the Legacy; the revised spacing
 and other changes remain available for device testing.
 
-Builds are local only. Do not transfer them to the Nook without a new explicit
+Builds are local only. Do not transfer them to the Legacy without a new explicit
 request from the user.
 
 ## Gradual sizing and pagination
