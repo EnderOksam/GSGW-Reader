@@ -391,7 +391,7 @@ def build_debut_characters():
 
         character_id = info.get("id", derive_id(folder.name))
         manwha_image = resolve_debut_image(
-            info, "manwhaImage", f"{character_id}Manwha",
+            info, "manwhaImage", f"{character_id}Manhwa",
         )
         webnovel_image = resolve_debut_image(
             info, "webnovelImage", f"{character_id}Webnovel",
@@ -413,7 +413,7 @@ def build_debut_characters():
             alt_id = alt.get("id", "alt")
             alt_parts = re.findall(r"[a-zA-Z0-9]+", alt_id)
             alt_label = "".join(part[:1].upper() + part[1:] for part in alt_parts) if alt_id != "alt" else ""
-            manwha_convention = f"{character_id}ManwhaAlt{alt_label}" if alt_label else f"{character_id}ManwhaAlt"
+            manwha_convention = f"{character_id}ManhwaAlt{alt_label}" if alt_label else f"{character_id}ManhwaAlt"
             webnovel_convention = f"{character_id}WebnovelAlt{alt_label}" if alt_label else f"{character_id}WebnovelAlt"
             alts.append({
                 "id": alt_id,
