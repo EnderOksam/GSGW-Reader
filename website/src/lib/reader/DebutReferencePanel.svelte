@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { browser } from "$app/environment";
+  import { onMount } from "svelte";
   import { readerState } from "$lib/reader.svelte";
   import { debutCharacters } from "$lib/reader/debut-characters";
 
@@ -46,12 +47,12 @@
     }
   }
 
-  const savedSettings = loadSettings();
-  let showAllCharacters = $state(savedSettings.showAllCharacters);
-  let darkCards = $state(savedSettings.darkCards);
-  let groupColors = $state(savedSettings.groupColors);
-  let selectedFaction = $state<DebutFaction>(savedSettings.selectedFaction);
-  let imageModes = $state<Record<string, DebutIllustrationMode>>(savedSettings.imageModes);
+  let showAllCharacters = $state(false);
+  let darkCards = $state(false);
+  let groupColors = $state(defaultGroupColors());
+  let selectedFaction = $state<DebutFaction>("TeSTAR");
+  let imageModes = $state<Record<string, DebutIllustrationMode>>({});
+  let settingsLoaded = $state(false);
   let settingsDialog = $state<HTMLDialogElement | null>(null);
   let colorsDialog = $state<HTMLDialogElement | null>(null);
   let altStates = $state<Record<string, string | null>>({});
@@ -65,8 +66,18 @@
   let hueRect = $state<DOMRect | null>(null);
   let dragging = $state(false);
 
+  onMount(() => {
+    const savedSettings = loadSettings();
+    showAllCharacters = savedSettings.showAllCharacters;
+    darkCards = savedSettings.darkCards;
+    groupColors = savedSettings.groupColors;
+    selectedFaction = savedSettings.selectedFaction;
+    imageModes = savedSettings.imageModes;
+    settingsLoaded = true;
+  });
+
   $effect(() => {
-    if (browser) {
+    if (settingsLoaded) {
       localStorage.setItem("debutReferenceSettings", JSON.stringify({ showAllCharacters, darkCards, groupColors, selectedFaction, imageModes }));
     }
   });
