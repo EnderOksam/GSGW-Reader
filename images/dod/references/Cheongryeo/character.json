@@ -1,10 +1,12 @@
 {
   "id": "Cheongryeo",
-  "name": "Cheongryeo",
+  "name": "Shin Jaehyeon (Cheongryeo)",
   "birthday": "November 27",
   "mbti": "ISTJ",
   "group": "VTIC",
   "groupRole": "Member",
   "firstNovelChapter": 49,
-  "sortOrder": 7
+  "sortOrder": 7,
+  "manwhaImage": "CheongryeoManwha.webp",
+  "webnovelImage": "CheongryeoWebnovel.webp"
 }

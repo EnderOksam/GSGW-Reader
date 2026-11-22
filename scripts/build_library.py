@@ -377,9 +377,12 @@ def build_debut_characters():
                 print(f"  Missing image for {folder.name}: {image_name}")
                 return None
 
-        def resolve_debut_image(filename, convention):
-            if filename:
-                return copy_debut_image(filename)
+        def resolve_debut_image(entry, field, convention):
+            # An explicit null disables this portrait instead of guessing a file.
+            if field in entry:
+                return copy_debut_image(entry[field])
+            if field == "manwhaImage" and "image" in entry:
+                return copy_debut_image(entry["image"])
             for suffix in DEBUT_IMAGE_SUFFIXES:
                 candidate = f"{convention}{suffix}"
                 if (folder / candidate).is_file():
@@ -388,12 +391,10 @@ def build_debut_characters():
 
         character_id = info.get("id", derive_id(folder.name))
         manwha_image = resolve_debut_image(
-            info.get("manwhaImage") or info.get("image"),
-            f"{character_id}Manwha",
+            info, "manwhaImage", f"{character_id}Manwha",
         )
         webnovel_image = resolve_debut_image(
-            info.get("webnovelImage"),
-            f"{character_id}Webnovel",
+            info, "webnovelImage", f"{character_id}Webnovel",
         )
 
         chapter = info.get("firstNovelChapter")
@@ -419,8 +420,9 @@ def build_debut_characters():
                 "name": alt.get("name", info.get("name", folder.name)),
                 "birthday": alt.get("birthday"),
                 "mbti": alt.get("mbti"),
-                "manwhaImage": resolve_debut_image(alt.get("manwhaImage") or alt.get("image"), manwha_convention),
-                "webnovelImage": resolve_debut_image(alt.get("webnovelImage"), webnovel_convention),
+                "firstNovelChapter": alt.get("firstNovelChapter"),
+                "manwhaImage": resolve_debut_image(alt, "manwhaImage", manwha_convention),
+                "webnovelImage": resolve_debut_image(alt, "webnovelImage", webnovel_convention),
             })
 
         characters.append({
@@ -428,7 +430,7 @@ def build_debut_characters():
             "sortOrder": info.get("sortOrder", 9999),
             "name": info.get("name", folder.name),
             "birthday": info.get("birthday", "Not confirmed"),
-            "mbti": info.get("mbti", "Not confirmed"),
+            "mbti": info.get("mbti") or "\u2014",
             "group": info.get("group", "TeSTAR"),
             "groupRole": info.get("groupRole", "Member"),
             "firstNovelChapter": chapter,
@@ -453,6 +455,7 @@ def build_debut_characters():
   name: string;
   birthday?: string | null;
   mbti?: string | null;
+  firstNovelChapter?: number | null;
   manwhaImage: string | null;
   webnovelImage: string | null;
 }

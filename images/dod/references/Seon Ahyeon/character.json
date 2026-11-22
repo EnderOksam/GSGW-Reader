@@ -6,6 +6,7 @@
   "group": "TeSTAR",
   "groupRole": "Member",
   "firstNovelChapter": 5,
-  "sortOrder": 3,
-  "manwhaImage": "SeonAhyeonManwha.webp"
+  "sortOrder": 2,
+  "manwhaImage": "SeonAhyeonManwha.webp",
+  "webnovelImage": "SeonAhyeonWebnovel.webp"
 }

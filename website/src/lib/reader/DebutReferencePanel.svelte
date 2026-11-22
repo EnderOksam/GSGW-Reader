@@ -207,12 +207,15 @@
     photoControlsOpen[characterId] = !photoControlsOpen[characterId];
   }
 
+  function availableAlts(character: (typeof debutCharacters)[number]) {
+    return character.alts.filter((alt) => showAllCharacters || alt.firstNovelChapter == null || alt.firstNovelChapter <= currentChapter);
+  }
+
   function cycleAlt(character: (typeof debutCharacters)[number]) {
-    if (character.alts.length === 0) return;
+    const alts = availableAlts(character);
     const activeId = altStates[character.id] ?? null;
-    const activeIndex = character.alts.findIndex((alt) => alt.id === activeId);
-    const nextIndex = activeIndex + 1;
-    altStates[character.id] = nextIndex >= character.alts.length ? null : character.alts[nextIndex].id;
+    const activeIndex = alts.findIndex((alt) => alt.id === activeId);
+    altStates[character.id] = alts[activeIndex + 1]?.id ?? null;
   }
 
   const factionCharacters = $derived(debutCharacters.filter((character) => {
@@ -287,20 +290,23 @@
     {:else}
       <div class="flex flex-col gap-8">
         {#each visibleCharacters as character}
-          {@const activeAlt = character.alts.find((alt) => alt.id === altStates[character.id]) ?? null}
+          {@const alts = availableAlts(character)}
+          {@const activeAlt = alts.find((alt) => alt.id === altStates[character.id]) ?? null}
+          {@const nextAlt = alts[alts.findIndex((alt) => alt.id === activeAlt?.id) + 1] ?? null}
+          {@const displayedChapter = activeAlt?.firstNovelChapter ?? character.firstNovelChapter}
           {@const displayedName = activeAlt?.name ?? character.name}
           {@const displayedBirthday = activeAlt?.birthday ?? character.birthday}
-          {@const displayedMbti = activeAlt?.mbti ?? character.mbti}
+          {@const displayedMbti = (activeAlt ? activeAlt.mbti : character.mbti)?.trim() || "—"}
           {@const groupName = typeof character.group === "string" ? character.group.trim() : ""}
           {@const groupRole = typeof character.groupRole === "string" ? character.groupRole.trim() : ""}
-          {@const groupRoleText = groupName && groupRole ? `${groupName} · ${groupRole}` : "—"}
-          {@const manwhaImage = activeAlt?.manwhaImage ?? character.manwhaImage}
-          {@const webnovelImage = activeAlt?.webnovelImage ?? character.webnovelImage}
+          {@const groupRoleText = [groupName, groupRole].filter(Boolean).join(" · ") || "—"}
+          {@const manwhaImage = activeAlt ? activeAlt.manwhaImage : character.manwhaImage}
+          {@const webnovelImage = activeAlt ? activeAlt.webnovelImage : character.webnovelImage}
           {@const preferredImageMode = imageModes[character.id] ?? (activeAlt ? "webnovel" : "manwha")}
           {@const imageMode = preferredImageMode === "manwha" && manwhaImage ? "manwha" : preferredImageMode === "webnovel" && webnovelImage ? "webnovel" : manwhaImage ? "manwha" : "webnovel"}
           {@const displayedImage = imageMode === "manwha" ? manwhaImage : webnovelImage}
           {@const hasIllustrations = Boolean(manwhaImage || webnovelImage)}
-          {@const hasPhotoControls = character.alts.length > 0 || hasIllustrations}
+          {@const hasPhotoControls = alts.length > 0 || hasIllustrations}
           <article
             class="debut-id-card"
             class:debut-id-card-dark={darkCards}
@@ -333,12 +339,12 @@
                     <Icon icon="material-symbols:person-outline-rounded" class="debut-image-icon size-14" aria-hidden="true" />
                   {/if}
                 </button>
-                {#if character.alts.length > 0}
+                {#if alts.length > 0}
                   <button
                     type="button"
                     class="debut-id-alt-button"
                     onclick={() => cycleAlt(character)}
-                    aria-label={'Switch to ' + (activeAlt ? character.name : character.alts[0].name)}
+                    aria-label={'Switch to ' + (nextAlt?.name ?? character.name)}
                   >
                     <Icon icon="material-symbols:sync-alt-rounded" class="size-4" />
                   </button>
@@ -399,7 +405,7 @@
                 </div>
                 <div class="debut-id-first-appearance">
                   <span>FIRST APPEARANCE</span>
-                  <strong>{character.firstNovelChapter === null ? "—" : `Ch. ${character.firstNovelChapter}`}</strong>
+                  <strong>{displayedChapter === null ? "—" : `Ch. ${displayedChapter}`}</strong>
                 </div>
               </div>
             </div>
