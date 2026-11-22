@@ -945,7 +945,7 @@
     .debut-id-image-modes {
       position: absolute;
       z-index: 4;
-      bottom: 1.03rem;
+      bottom: 1.5rem;
       left: calc(1.35rem + 0.4rem);
       width: calc(max(5.8rem, 34%) - 0.7rem);
       min-height: 0;
@@ -1003,6 +1003,25 @@
 
     .debut-id-name-row {
       padding-right: 1.55rem;
+    }
+
+    .debut-id-name strong,
+    .debut-id-meta strong,
+    .debut-id-role strong {
+      overflow-wrap: normal;
+    }
+
+    .debut-id-role {
+      min-width: min-content;
+    }
+
+    .debut-id-first-appearance {
+      max-width: 4.5rem;
+      flex-shrink: 1;
+    }
+
+    .debut-id-first-appearance span {
+      white-space: normal;
     }
 
     .debut-id-first-appearance strong {
