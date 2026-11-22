@@ -21,11 +21,11 @@ const ANIMATED_SELECTOR = [
 
 let animationVisibilityObserver: IntersectionObserver | null = null;
 
-export function observeAnimationVisibility(): void {
+export function observeAnimationVisibility(): (() => void) | undefined {
   if (typeof IntersectionObserver === "undefined") return;
 
   animationVisibilityObserver?.disconnect();
-  animationVisibilityObserver = new IntersectionObserver(
+  const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         const el = entry.target as HTMLElement;
@@ -35,6 +35,7 @@ export function observeAnimationVisibility(): void {
     },
     { rootMargin: "250px 0px" },
   );
+  animationVisibilityObserver = observer;
 
   document
     .querySelectorAll("article.reader-container")
@@ -47,8 +48,13 @@ export function observeAnimationVisibility(): void {
         if (target !== el) el.removeAttribute("data-anim-off");
         targets.add(target);
       });
-      for (const target of targets) animationVisibilityObserver!.observe(target);
+      for (const target of targets) observer.observe(target);
     });
+
+  return () => {
+    observer.disconnect();
+    if (animationVisibilityObserver === observer) animationVisibilityObserver = null;
+  };
 }
 
 // Per-character animation effects rely on randomized (negative) animation-delays

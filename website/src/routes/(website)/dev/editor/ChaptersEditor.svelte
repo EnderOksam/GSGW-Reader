@@ -9,7 +9,7 @@
   import { REPO, BRANCH, BOOKS, tlDir, fetchChapterList, fetchChapterFile, fetchChapterPreview, extractMeta } from "./lib/github-api";
   import { loadCache as loadChapterCache, saveCache as saveChapterCache, saveChapterEdit } from "./lib/chapter-cache";
   import { hydrateTwitterEmbeds } from "$lib/reader/twitter-embeds";
-  import { randomizeAnimationDelays } from "$lib/reader/randomize-animations";
+  import { randomizeAnimationDelays, observeAnimationVisibility } from "$lib/reader/randomize-animations";
   import { initFootnoteTooltips } from "$lib/reader/footnote-tooltips";
   import { initScareScroll } from "$lib/reader/scare-scroll";
   import { loadCustomTranslations, saveCustomTranslations, loadCustomChapterList, loadCustomChapterContent, saveCustomChapter, deleteCustomChapter, renameCustomTranslation, deleteCustomTranslation } from "./lib/custom-translations";
@@ -527,10 +527,14 @@
   });
 
   // Match the reader: per-char animations need randomized animation-delays, or
-  // every character animates in sync. Re-run whenever the preview html changes.
+  // every character animates in sync. Refresh visibility tracking after content
+  // changes and when mobile/fullscreen previews mount; disconnect on teardown.
   $effect(() => {
+    rightTab;
+    readerPreviewOpen;
     if (previewHtml) {
       randomizeAnimationDelays();
+      return observeAnimationVisibility();
     }
   });
 
