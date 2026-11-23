@@ -1,0 +1,23 @@
+{
+  "id": "ParkMoondae",
+  "name": "Park Moondae",
+  "birthday": "December 15",
+  "mbti": "INTJ",
+  "group": "TeSTAR",
+  "groupRole": "Member",
+  "firstNovelChapter": 1,
+  "sortOrder": 0,
+  "manwhaImage": "ParkMoondaeManhwa.webp",
+  "webnovelImage": "ParkMoondaeWebnovel.webp",
+  "alts": [
+    {
+      "id": "Ryu-Gunwoo",
+      "name": "Ryu Gunwoo (Original Identity)",
+      "birthday": "December 8",
+      "mbti": "INTJ",
+      "firstNovelChapter": 1,
+      "manwhaImage": "Ryu-GunwooManhwa.webp",
+      "webnovelImage": null
+    }
+  ]
+}

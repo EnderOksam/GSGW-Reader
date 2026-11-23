@@ -1,0 +1,23 @@
+{
+  "id": "Keundal",
+  "name": "Keundal (Park Moondae)",
+  "birthday": "December 15",
+  "mbti": null,
+  "group": "",
+  "groupRole": "Major Supporting Character",
+  "firstNovelChapter": 252,
+  "sortOrder": 8,
+  "manwhaImage": "Original-Park-MoondaeManhwa.webp",
+  "webnovelImage": null,
+  "alts": [
+    {
+      "id": "RyuGunwoo",
+      "name": "Keundal (Ryu Gunwoo's Body)",
+      "birthday": "December 8",
+      "mbti": null,
+      "firstNovelChapter": 323,
+      "manwhaImage": null,
+      "webnovelImage": "KeundalWebnovel.webp"
+    }
+  ]
+}

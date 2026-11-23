@@ -16,6 +16,11 @@ REFERENCES_DIR = REPO_ROOT / "images" / "gsgw" / "references"
 STATIC_DIR = REPO_ROOT / "website" / "static" / "characters"
 OUTPUT_PATH = REPO_ROOT / "website" / "src" / "lib" / "reader" / "characters.json"
 
+DEBUT_REFERENCES_DIR = REPO_ROOT / "images" / "dod" / "references"
+DEBUT_STATIC_DIR = REPO_ROOT / "website" / "static" / "debut-characters"
+DEBUT_OUTPUT_PATH = REPO_ROOT / "website" / "src" / "lib" / "reader" / "debut-characters.ts"
+DEBUT_IMAGE_SUFFIXES = (".webp", ".png", ".jpg", ".jpeg")
+
 UNKNOWN = "\u25a0\u25a0"
 
 
@@ -331,10 +336,160 @@ def build_characters():
     return characters
 
 
+def build_debut_characters():
+    """Build the Debut or Die reference list from one folder per character."""
+    if not DEBUT_REFERENCES_DIR.exists():
+        print(f"Debut references directory not found: {DEBUT_REFERENCES_DIR}")
+        return
+
+    DEBUT_STATIC_DIR.mkdir(parents=True, exist_ok=True)
+    characters = []
+    copied_files = set()
+
+    folders = sorted(
+        (folder for folder in DEBUT_REFERENCES_DIR.iterdir() if folder.is_dir()),
+        key=lambda folder: folder.name.casefold(),
+    )
+
+    for folder in folders:
+        info_path = folder / "character.json"
+        if not info_path.exists():
+            print(f"Skipping {folder.name}: no character.json")
+            continue
+
+        try:
+            info = json.loads(info_path.read_text(encoding="utf-8-sig"))
+        except json.JSONDecodeError as error:
+            print(f"Skipping {folder.name}: invalid character.json ({error})")
+            continue
+
+        def copy_debut_image(filename):
+            if not filename:
+                return None
+            image_name = Path(filename).name
+            image_path = folder / image_name
+            if image_path.is_file() and image_path.suffix.lower() in DEBUT_IMAGE_SUFFIXES:
+                destination = DEBUT_STATIC_DIR / image_name
+                shutil.copy2(str(image_path), str(destination))
+                copied_files.add(image_name)
+                return f"/debut-characters/{image_name}"
+            else:
+                print(f"  Missing image for {folder.name}: {image_name}")
+                return None
+
+        def resolve_debut_image(entry, field, convention):
+            # An explicit null disables this portrait instead of guessing a file.
+            if field in entry:
+                return copy_debut_image(entry[field])
+            if field == "manwhaImage" and "image" in entry:
+                return copy_debut_image(entry["image"])
+            for suffix in DEBUT_IMAGE_SUFFIXES:
+                candidate = f"{convention}{suffix}"
+                if (folder / candidate).is_file():
+                    return copy_debut_image(candidate)
+            return None
+
+        character_id = info.get("id", derive_id(folder.name))
+        manwha_image = resolve_debut_image(
+            info, "manwhaImage", f"{character_id}Manhwa",
+        )
+        webnovel_image = resolve_debut_image(
+            info, "webnovelImage", f"{character_id}Webnovel",
+        )
+
+        chapter = info.get("firstNovelChapter")
+        if isinstance(chapter, str):
+            try:
+                chapter = int(chapter)
+            except ValueError:
+                chapter = None
+        if not isinstance(chapter, int):
+            chapter = None
+
+        alts = []
+        for alt in info.get("alts", []):
+            if not isinstance(alt, dict):
+                continue
+            alt_id = alt.get("id", "alt")
+            alt_parts = re.findall(r"[a-zA-Z0-9]+", alt_id)
+            alt_label = "".join(part[:1].upper() + part[1:] for part in alt_parts) if alt_id != "alt" else ""
+            manwha_convention = f"{character_id}ManhwaAlt{alt_label}" if alt_label else f"{character_id}ManhwaAlt"
+            webnovel_convention = f"{character_id}WebnovelAlt{alt_label}" if alt_label else f"{character_id}WebnovelAlt"
+            alts.append({
+                "id": alt_id,
+                "name": alt.get("name", info.get("name", folder.name)),
+                "birthday": alt.get("birthday"),
+                "mbti": alt.get("mbti"),
+                "firstNovelChapter": alt.get("firstNovelChapter"),
+                "manwhaImage": resolve_debut_image(alt, "manwhaImage", manwha_convention),
+                "webnovelImage": resolve_debut_image(alt, "webnovelImage", webnovel_convention),
+            })
+
+        characters.append({
+            "id": character_id,
+            "sortOrder": info.get("sortOrder", 9999),
+            "name": info.get("name", folder.name),
+            "birthday": info.get("birthday", "Not confirmed"),
+            "mbti": info.get("mbti") or "\u2014",
+            "group": info.get("group", "TeSTAR"),
+            "groupRole": info.get("groupRole", "Member"),
+            "firstNovelChapter": chapter,
+            "manwhaImage": manwha_image,
+            "webnovelImage": webnovel_image,
+            "alts": alts,
+        })
+
+    for image_path in DEBUT_STATIC_DIR.iterdir():
+        if image_path.is_file() and image_path.suffix.lower() in DEBUT_IMAGE_SUFFIXES and image_path.name not in copied_files:
+            image_path.unlink()
+            print(f"  Removed stale Debut portrait: {image_path.name}")
+
+    characters.sort(key=lambda character: (character["sortOrder"], character["name"].casefold()))
+    output_characters = [
+        {key: value for key, value in character.items() if key != "sortOrder"}
+        for character in characters
+    ]
+
+    interface = """export interface DebutCharacterAlt {
+  id: string;
+  name: string;
+  birthday?: string | null;
+  mbti?: string | null;
+  firstNovelChapter?: number | null;
+  manwhaImage: string | null;
+  webnovelImage: string | null;
+}
+
+export interface DebutCharacter {
+  id: string;
+  name: string;
+  birthday: string;
+  mbti: string;
+  group: string;
+  groupRole: string;
+  firstNovelChapter: number | null;
+  manwhaImage: string | null;
+  webnovelImage: string | null;
+  alts: DebutCharacterAlt[];
+}
+
+export const debutCharacters: DebutCharacter[] = [
+"""
+    entries = "\n".join(
+        "  " + json.dumps(character, ensure_ascii=False) + ","
+        for character in output_characters
+    )
+    DEBUT_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DEBUT_OUTPUT_PATH.write_text(interface + entries + "\n];\n", encoding="utf-8")
+    print(f"Generated {len(output_characters)} Debut characters: {DEBUT_OUTPUT_PATH}")
+    return output_characters
+
+
 def main():
     build_alttext()
     build_announcements()
     build_characters()
+    build_debut_characters()
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Explicit font selection and original Unicode glyphs for old Nook readers."""
+"""Explicit font selection and original Unicode glyphs for older Legacy readers."""
 
 from __future__ import annotations
 
@@ -170,8 +170,8 @@ class FontCatalog:
             italic = bool(re.search(r"font-style:\s*(?:italic|oblique)", body))
             file_name = Path(re.search(r'url\([\'"]?([^\)\'\"]+)', body)[1]).name
             source_asset = by_name[file_name]
-            digest = hashlib.sha256(source_asset.source_path.read_bytes() + f"nook-face-v2:{family}:{weight}:{italic}".encode()).hexdigest()[:20]
-            alias = "Nook" + digest
+            digest = hashlib.sha256(source_asset.source_path.read_bytes() + f"legacy-face-v2:{family}:{weight}:{italic}".encode()).hexdigest()[:20]
+            alias = "Legacy" + digest
             target = cache / f"{alias}.ttf"
             with TTFont(source_asset.source_path) as font:
                 points = set(font.getBestCmap() or {})
@@ -215,7 +215,7 @@ class FontCatalog:
 
 
     def heavier_face(self, source: Face, weight: int) -> Face:
-        alias = "Nook" + hashlib.sha256(f"{source.alias}:weight-v1:{weight}".encode()).hexdigest()[:20]
+        alias = "Legacy" + hashlib.sha256(f"{source.alias}:weight-v1:{weight}".encode()).hexdigest()[:20]
         existing = next((face for face in self.faces if face.alias == alias), None)
         if existing:
             return existing
@@ -243,7 +243,7 @@ class FontCatalog:
         from fontTools.pens.transformPen import TransformPen
         from fontTools.pens.ttGlyphPen import TTGlyphPen
 
-        alias = "Nook" + hashlib.sha256((source.alias + ":oblique-v1").encode()).hexdigest()[:20]
+        alias = "Legacy" + hashlib.sha256((source.alias + ":oblique-v1").encode()).hexdigest()[:20]
         existing = next((face for face in self.faces if face.alias == alias), None)
         if existing is not None:
             return existing
@@ -282,8 +282,8 @@ class FontCatalog:
             return preferred
         key = char, preferred.family, preferred.weight, preferred.italic
         if key not in self._fallback_cache:
-            priorities = {"Nanum Barun Gothic": 0, "GSGW Nook CJK": 1, "Noto Sans": 2,
-                          "GSGW Nook Math": 3, "GSGW Nook Symbols": 4, "Noto Emoji": 5}
+            priorities = {"Nanum Barun Gothic": 0, "GSGW Legacy CJK": 1, "Noto Sans": 2,
+                          "GSGW Legacy Math": 3, "GSGW Legacy Symbols": 4, "Noto Emoji": 5}
             candidates = [face for face in self.faces if ord(char) in face.codepoints]
             donor = min(candidates, key=lambda face: (face.family != preferred.family, priorities.get(face.family, 10), abs(face.weight - preferred.weight), face.italic != preferred.italic)) if candidates else None
             if donor and donor.family == "Nanum Barun Gothic" and donor.alias in self._source_aliases:
@@ -323,7 +323,7 @@ class FontCatalog:
             self.glyph_assets[path] = f"Images/{path.name}"
             self._image_cache[key] = (path, width, height, bottom)
         path, width, height, bottom = self._image_cache[key]
-        return ET.Element("img", {"class": "nook-glyph", "src": "../" + self.glyph_assets[path],
+        return ET.Element("img", {"class": "legacy-glyph", "src": "../" + self.glyph_assets[path],
             "alt": text, "title": text, "width": str(max(1, round(width / 4))), "height": str(max(1, round(height / 4))),
             "style": f"display: inline !important; margin: 0 !important; padding: 0 !important; width: {width / 72:.4f}em; height: {height / 72:.4f}em; vertical-align: {-bottom / 72:.4f}em;"})
 
@@ -399,7 +399,7 @@ class FontCatalog:
                 if raster and all(ord(c) in donor.codepoints for c in text):
                     yield self.glyph_image(text, donor, cache, background, foreground)
                 elif donor.alias != face.alias:
-                    span = ET.Element("span", {"class": "nook-unicode", "style": f'font-family: "{donor.alias}" !important; font-weight: normal !important; font-style: normal !important; color: {color_hex(foreground)} !important;'})
+                    span = ET.Element("span", {"class": "legacy-unicode", "style": f'font-family: "{donor.alias}" !important; font-weight: normal !important; font-style: normal !important; color: {color_hex(foreground)} !important;'})
                     span.text = text
                     yield span
                 else:
@@ -443,7 +443,7 @@ class FontCatalog:
                         color = tuple(round(original_ink[i] * alpha + background[i] * (1 - alpha)) for i in range(3))
                         for part in parts(char, face, background, color):
                             if isinstance(part, str):
-                                span = ET.SubElement(node, "span", {"class": "nook-fade-char", "style": f"color: {color_hex(color)} !important;"})
+                                span = ET.SubElement(node, "span", {"class": "legacy-fade-char", "style": f"color: {color_hex(color)} !important;"})
                                 span.text = part
                             else:
                                 node.append(part)

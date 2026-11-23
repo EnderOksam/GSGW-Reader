@@ -5,6 +5,7 @@
   import { toCanvas } from "html-to-image";
   import { readerState } from "$lib/reader.svelte";
   import ReferencePanel from "./ReferencePanel.svelte";
+  import DebutReferencePanel from "./DebutReferencePanel.svelte";
   import readerCss from "../../routes/(reader)/reader.css?inline";
   import readerWindowsCss from "./reader-windows.css?raw";
   import { searchChapterContent, renderSnippet as renderSearchSnippet, storeSnippetTarget } from "$lib/content-search";
@@ -726,8 +727,12 @@
   </button>
 {/if}
 
-<!-- --- World Setting Side Panel (GSGW only) --- -->
-<ReferencePanel {currentChapter} />
+<!-- --- Book-specific reference panels --- -->
+{#if bookSlug === "gsgw"}
+  <ReferencePanel {currentChapter} />
+{:else if bookSlug === "debut"}
+  <DebutReferencePanel {currentChapter} />
+{/if}
 
 <!-- --- Modal: Table of Contents --- -->
 <dialog bind:this={modals.chapter} class="modal modal-bottom sm:modal-middle">
