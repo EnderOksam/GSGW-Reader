@@ -218,6 +218,39 @@
     photoControlsOpen[characterId] = !photoControlsOpen[characterId];
   }
 
+  function closeNicknames() {
+    document.querySelector<HTMLElement>(".debut-nickname-popover:popover-open")?.hidePopover();
+  }
+
+  function positionNicknames(trigger: HTMLElement, popoverId: string) {
+    requestAnimationFrame(() => {
+      const popover = document.getElementById(popoverId);
+      if (!popover?.matches(":popover-open")) return;
+      const anchor = trigger.getBoundingClientRect();
+      const panel = trigger.closest("aside")!.getBoundingClientRect();
+      const padding = 12;
+      const gap = 10;
+      const leftEdge = Math.max(0, panel.left) + padding;
+      const rightEdge = Math.min(window.innerWidth, panel.right) - padding;
+      const topEdge = Math.max(0, panel.top) + padding;
+      const bottomEdge = Math.min(window.innerHeight, panel.bottom) - padding;
+      popover.style.maxWidth = `${rightEdge - leftEdge}px`;
+      popover.style.maxHeight = `${bottomEdge - topEdge}px`;
+      const { width, height } = popover.getBoundingClientRect();
+      const left = Math.max(leftEdge, Math.min(anchor.left + (anchor.width - width) / 2, rightEdge - width));
+      const below = bottomEdge - anchor.bottom;
+      const top = below >= height + gap || below >= anchor.top - topEdge
+        ? anchor.bottom + gap
+        : anchor.top - height - gap;
+      popover.style.left = `${left}px`;
+      popover.style.top = `${Math.max(topEdge, Math.min(top, bottomEdge - height))}px`;
+    });
+  }
+
+  $effect(() => {
+    if (!readerState.refPanelOpen) closeNicknames();
+  });
+
   function availableAlts(character: (typeof debutCharacters)[number]) {
     return character.alts.filter((alt) => showAllCharacters || alt.firstNovelChapter == null || alt.firstNovelChapter <= currentChapter);
   }
@@ -255,6 +288,7 @@
   class:translate-x-full={!readerState.refPanelOpen}
   style="overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;scroll-padding-top:6.5rem"
   aria-label="Debut or Die reference panel"
+  onscroll={closeNicknames}
 >
   <div class="sticky top-0 z-30 border-b border-base-content/10 relative bg-base-100">
     <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none"></div>
@@ -306,6 +340,8 @@
           {@const nextAlt = alts[alts.findIndex((alt) => alt.id === activeAlt?.id) + 1] ?? null}
           {@const displayedChapter = activeAlt?.firstNovelChapter ?? character.firstNovelChapter}
           {@const displayedName = activeAlt?.name ?? character.name}
+          {@const nicknames = (activeAlt ? activeAlt.nicknames : character.nicknames) ?? []}
+          {@const nicknamePopoverId = `debut-nicknames-${character.id}`}
           {@const displayedBirthday = activeAlt?.birthday ?? character.birthday}
           {@const displayedMbti = (activeAlt ? activeAlt.mbti : character.mbti)?.trim() || "—"}
           {@const groupName = typeof character.group === "string" ? character.group.trim() : ""}
@@ -368,7 +404,20 @@
               <div class="debut-id-name-row">
                 <div class="debut-id-name">
                   <span>NAME</span>
-                  <strong role="heading" aria-level="3">{displayedName}</strong>
+                  <strong role="heading" aria-level="3">
+                    {#if nicknames.length > 0}
+                      <button
+                        type="button"
+                        class="debut-nickname-trigger"
+                        popovertarget={nicknamePopoverId}
+                        aria-haspopup="dialog"
+                        title="View nicknames"
+                        onclick={(event) => positionNicknames(event.currentTarget, nicknamePopoverId)}
+                      >{displayedName}</button>
+                    {:else}
+                      {displayedName}
+                    {/if}
+                  </strong>
                 </div>
                 {#if groupName === "TeSTAR" && groupRole === "Member"}
                   <img class="debut-id-faction-logo" src="/assets/testar-logo.png" alt="TeSTAR" />
@@ -421,6 +470,31 @@
               </div>
             </div>
           </article>
+          {#if nicknames.length > 0}
+            <div
+              id={nicknamePopoverId}
+              class="debut-nickname-popover"
+              class:debut-nickname-popover-dark={darkCards}
+              popover="auto"
+              role="dialog"
+              aria-labelledby={`${nicknamePopoverId}-title`}
+            >
+              <div class="debut-nickname-header">
+                <div>
+                  <span>Also known as</span>
+                  <strong id={`${nicknamePopoverId}-title`}>{displayedName}</strong>
+                </div>
+                <button type="button" popovertarget={nicknamePopoverId} popovertargetaction="hide" aria-label="Close nicknames">
+                  <Icon icon="material-symbols:close-rounded" class="size-4" aria-hidden="true" />
+                </button>
+              </div>
+              <ul class="debut-nickname-list">
+                {#each nicknames as nickname}
+                  <li>{nickname}</li>
+                {/each}
+              </ul>
+            </div>
+          {/if}
         {/each}
         {#if !showAllCharacters && factionCharacters.some((character) => character.firstNovelChapter === null || character.firstNovelChapter > currentChapter)}
           <div class="debut-discovery-card">
@@ -558,9 +632,118 @@
   <form method="dialog" class="modal-backdrop"><button>close</button></form>
 </dialog>
 
-<svelte:window onmousemove={onGlobalMove} onmouseup={onGlobalUp} ontouchmove={onGlobalMove} ontouchend={onGlobalUp} />
+<svelte:window onmousemove={onGlobalMove} onmouseup={onGlobalUp} ontouchmove={onGlobalMove} ontouchend={onGlobalUp} onresize={closeNicknames} />
 
 <style>
+  .debut-nickname-trigger {
+    margin: 0;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    text-underline-offset: 0.2em;
+  }
+
+  .debut-nickname-trigger:hover {
+    text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
+  }
+
+  .debut-nickname-trigger:focus-visible {
+    outline: 2px solid #9a78c5;
+    outline-offset: 4px;
+    border-radius: 0.15rem;
+  }
+
+  .debut-nickname-popover {
+    position: fixed;
+    inset: auto;
+    box-sizing: border-box;
+    width: min(20rem, calc(100vw - 24px));
+    max-height: min(24rem, calc(100dvh - 24px));
+    margin: 0;
+    overflow-y: auto;
+    border: 1px solid color-mix(in srgb, #9a78c5 35%, var(--color-base-100, #fff));
+    border-radius: 1rem;
+    padding: 1.125rem;
+    background: var(--color-base-100, #fff);
+    color: var(--color-base-content, #202938);
+    font-family: system-ui, sans-serif;
+    box-shadow: 0 12px 40px rgba(34, 25, 51, 0.2), 0 2px 8px rgba(34, 25, 51, 0.06);
+  }
+
+  .debut-nickname-popover-dark {
+    background: #202332;
+    color: #f0f1f7;
+  }
+
+  .debut-nickname-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .debut-nickname-header > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .debut-nickname-header span {
+    color: #9a78c5;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .debut-nickname-header strong {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .debut-nickname-header button {
+    display: grid;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: color-mix(in srgb, currentColor 6%, transparent);
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .debut-nickname-header button:hover {
+    background: color-mix(in srgb, #9a78c5 20%, transparent);
+  }
+
+  .debut-nickname-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .debut-nickname-list li {
+    max-width: 100%;
+    border: 1px solid color-mix(in srgb, #9a78c5 20%, transparent);
+    border-radius: 0.65rem;
+    padding: 0.35rem 0.65rem;
+    background: color-mix(in srgb, #9a78c5 9%, transparent);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
   .debut-id-card {
     position: relative;
     display: grid;

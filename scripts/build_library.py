@@ -418,6 +418,7 @@ def build_debut_characters():
             alts.append({
                 "id": alt_id,
                 "name": alt.get("name", info.get("name", folder.name)),
+                **({"nicknames": alt["nicknames"]} if alt.get("nicknames") else {}),
                 "birthday": alt.get("birthday"),
                 "mbti": alt.get("mbti"),
                 "firstNovelChapter": alt.get("firstNovelChapter"),
@@ -429,6 +430,7 @@ def build_debut_characters():
             "id": character_id,
             "sortOrder": info.get("sortOrder", 9999),
             "name": info.get("name", folder.name),
+            **({"nicknames": info["nicknames"]} if info.get("nicknames") else {}),
             "birthday": info.get("birthday", "Not confirmed"),
             "mbti": info.get("mbti") or "\u2014",
             "group": info.get("group", "TeSTAR"),
@@ -453,6 +455,7 @@ def build_debut_characters():
     interface = """export interface DebutCharacterAlt {
   id: string;
   name: string;
+  nicknames?: string[];
   birthday?: string | null;
   mbti?: string | null;
   firstNovelChapter?: number | null;
@@ -463,6 +466,7 @@ def build_debut_characters():
 export interface DebutCharacter {
   id: string;
   name: string;
+  nicknames?: string[];
   birthday: string;
   mbti: string;
   group: string;
