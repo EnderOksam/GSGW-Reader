@@ -473,26 +473,36 @@
           {#if nicknames.length > 0}
             <div
               id={nicknamePopoverId}
-              class="debut-nickname-popover"
-              class:debut-nickname-popover-dark={darkCards}
+              class="debut-nickname-popover bg-base-100/95 text-base-content backdrop-blur-xl border border-base-content/10 rounded-box shadow-2xl"
               popover="auto"
               role="dialog"
               aria-labelledby={`${nicknamePopoverId}-title`}
             >
-              <div class="debut-nickname-header">
-                <div>
-                  <span>Also known as</span>
-                  <strong id={`${nicknamePopoverId}-title`}>{displayedName}</strong>
+              <div class="debut-nickname-header relative border-b border-base-content/10">
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/5"></div>
+                <div class="relative flex items-center justify-between gap-3 px-4 py-3.5">
+                  <div class="flex min-w-0 items-center gap-2.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <Icon icon="material-symbols:person-outline-rounded" class="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <div class="min-w-0">
+                      <span class="block text-[0.625rem] font-bold uppercase tracking-widest text-base-content/40">Also known as</span>
+                      <strong id={`${nicknamePopoverId}-title`} class="block truncate text-sm font-bold text-primary">{displayedName}</strong>
+                    </div>
+                  </div>
+                  <div class="flex shrink-0 items-center gap-2">
+                    <span class="text-[10px] font-mono text-base-content/30">{nicknames.length} {nicknames.length === 1 ? 'alias' : 'aliases'}</span>
+                    <button type="button" class="btn btn-ghost btn-sm btn-circle" popovertarget={nicknamePopoverId} popovertargetaction="hide" aria-label="Close nicknames">
+                      <Icon icon="mdi:close" class="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </div>
                 </div>
-                <button type="button" popovertarget={nicknamePopoverId} popovertargetaction="hide" aria-label="Close nicknames">
-                  <Icon icon="material-symbols:close-rounded" class="size-4" aria-hidden="true" />
-                </button>
               </div>
-              <ul class="debut-nickname-list">
+              <div class="debut-nickname-list space-y-0.5 p-2" role="list">
                 {#each nicknames as nickname}
-                  <li>{nickname}</li>
+                  <div class="rounded-xl px-3 py-2.5 text-sm leading-snug text-base-content/70 transition-colors hover:bg-base-200/60 hover:text-base-content" role="listitem">{nickname}</div>
                 {/each}
-              </ul>
+              </div>
             </div>
           {/if}
         {/each}
@@ -653,7 +663,7 @@
   }
 
   .debut-nickname-trigger:focus-visible {
-    outline: 2px solid #9a78c5;
+    outline: 2px solid var(--color-primary);
     outline-offset: 4px;
     border-radius: 0.15rem;
   }
@@ -662,85 +672,14 @@
     position: fixed;
     inset: auto;
     box-sizing: border-box;
-    width: min(20rem, calc(100vw - 24px));
+    width: min(22rem, calc(100vw - 24px));
     max-height: min(24rem, calc(100dvh - 24px));
     margin: 0;
     overflow-y: auto;
-    border: 1px solid color-mix(in srgb, #9a78c5 35%, var(--color-base-100, #fff));
-    border-radius: 1rem;
-    padding: 1.125rem;
-    background: var(--color-base-100, #fff);
-    color: var(--color-base-content, #202938);
-    font-family: system-ui, sans-serif;
-    box-shadow: 0 12px 40px rgba(34, 25, 51, 0.2), 0 2px 8px rgba(34, 25, 51, 0.06);
+    overscroll-behavior: contain;
   }
 
-  .debut-nickname-popover-dark {
-    background: #202332;
-    color: #f0f1f7;
-  }
-
-  .debut-nickname-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 0.85rem;
-  }
-
-  .debut-nickname-header > div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-
-  .debut-nickname-header span {
-    color: #9a78c5;
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .debut-nickname-header strong {
-    font-size: 0.9rem;
-    line-height: 1.3;
-  }
-
-  .debut-nickname-header button {
-    display: grid;
-    width: 1.75rem;
-    height: 1.75rem;
-    flex-shrink: 0;
-    place-items: center;
-    border: 0;
-    border-radius: 50%;
-    background: color-mix(in srgb, currentColor 6%, transparent);
-    color: inherit;
-    cursor: pointer;
-  }
-
-  .debut-nickname-header button:hover {
-    background: color-mix(in srgb, #9a78c5 20%, transparent);
-  }
-
-  .debut-nickname-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .debut-nickname-list li {
-    max-width: 100%;
-    border: 1px solid color-mix(in srgb, #9a78c5 20%, transparent);
-    border-radius: 0.65rem;
-    padding: 0.35rem 0.65rem;
-    background: color-mix(in srgb, #9a78c5 9%, transparent);
-    font-size: 0.75rem;
-    line-height: 1.5;
+  .debut-nickname-list > div {
     overflow-wrap: anywhere;
   }
 
