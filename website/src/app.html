@@ -9,11 +9,13 @@
     <script>
       (function() {
         try {
-          var path = location.pathname;
+          var path = location.pathname.replace(/\/$/, "");
           var themed =
             path.indexOf("/read/") === 0 ||
             path.indexOf("/dev/editor") === 0 ||
-            path.indexOf("/edit") === 0;
+            path.indexOf("/edit") === 0 ||
+            path === "/book/gsgw" ||
+            path === "/book/debut";
           if (!themed) return;
           var saved = localStorage.getItem("readerSettings");
           if (saved) {

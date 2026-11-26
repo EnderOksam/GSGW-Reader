@@ -21,7 +21,12 @@
       path.startsWith("/edit/"),
   );
   let isUderReadPage = $derived(path.startsWith("/read/uder/"));
-  let isThemedPage = $derived(isEditorPage || isUderReadPage);
+  let isThemedBookPage = $derived(
+    path === "/book/gsgw" || path === "/book/debut",
+  );
+  let isThemedPage = $derived(
+    isEditorPage || isUderReadPage || isThemedBookPage,
+  );
 
   let bgCanvas: HTMLCanvasElement;
   let bgShader: BackgroundShader | null = null;
