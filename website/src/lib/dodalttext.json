@@ -41,12 +41,13 @@
       ]
     },
     {
-      "name": "Sinoh",
+      "name": "Sino",
       "description": "Oh Yunshin",
       "searches": [
-        "Sinoh"
+        "Sino"
       ],
       "options": [
+        "Sinoh",
         "Shino"
       ]
     },

@@ -18,8 +18,8 @@ Keundal -> Big Moon
 Jaehyeon -> Jaehyun
 (Shin Jaehyeon)
 
-## Sinoh
-Sinoh -> Shino
+## Sino
+Sino -> Sinoh, Shino
 (Oh Yunshin)
 
 ## Yunshin
