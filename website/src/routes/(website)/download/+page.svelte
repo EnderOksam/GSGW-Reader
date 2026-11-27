@@ -54,7 +54,7 @@
   const debutParts: Part[] = [
     { id: "part1", label: "Part 1", range: "Chapters 1–147", status: "Formatted" },
     { id: "part2", label: "Part 2", range: "Chapters 148–364", status: "Formatted" },
-    { id: "part3", label: "Part 3", range: "Chapters 365–451", status: "Unformatted" },
+    { id: "part3", label: "Part 3", range: "Chapters 365–451", status: "WIP" },
     { id: "part4", label: "Part 4", range: "Chapters 452–644", status: "Unformatted" },
     { id: "complete", label: "Complete", range: "All 644 chapters", status: "Semi Formatted" },
   ];
@@ -120,7 +120,7 @@
     if (status === "Formatted") return "text-green-300";
     if (status === "Ongoing") return "text-yellow-300";
     if (status === "Semi Formatted") return "text-amber-300";
-    if (status === "Unformatted") return "text-orange-300";
+    if (status === "Unformatted" || status === "WIP") return "text-orange-300";
     return "text-base-content/40";
   }
 
