@@ -11,16 +11,6 @@
       ]
     },
     {
-      "name": "Keundal",
-      "description": "",
-      "searches": [
-        "Keundal"
-      ],
-      "options": [
-        "Big Moon"
-      ]
-    },
-    {
       "name": "Chungwoo",
       "description": "Ryu Chungwoo",
       "searches": [
@@ -28,6 +18,16 @@
       ],
       "options": [
         "Cheongwoo"
+      ]
+    },
+    {
+      "name": "Keundal",
+      "description": "",
+      "searches": [
+        "Keundal"
+      ],
+      "options": [
+        "Big Moon"
       ]
     },
     {

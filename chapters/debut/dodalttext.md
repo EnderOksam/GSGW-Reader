@@ -7,12 +7,12 @@
 Keun -> Big
 (Keun Sejin)
 
-## Keundal
-Keundal -> Big Moon
-
 ## Chungwoo
 Chungwoo -> Cheongwoo
 (Ryu Chungwoo)
+
+## Keundal
+Keundal -> Big Moon
 
 ## Jaehyeon
 Jaehyeon -> Jaehyun
