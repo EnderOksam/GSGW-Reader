@@ -10,6 +10,10 @@ Keun -> Big
 ## Keundal
 Keundal -> Big Moon
 
+## Chungwoo
+Chungwoo -> Cheongwoo
+(Ryu Chungwoo)
+
 ## Jaehyeon
 Jaehyeon -> Jaehyun
 (Shin Jaehyeon)
@@ -21,10 +25,6 @@ Sinoh -> Shino
 ## Yunshin
 Yunshin -> Yoonshin, Yoonsin
 (Oh Yunshin)
-
-## Chungwoo
-Chungwoo -> Cheongwoo
-(Ryu Chungwoo)
 
 ## Hubae
 Hubae -> Hoobae

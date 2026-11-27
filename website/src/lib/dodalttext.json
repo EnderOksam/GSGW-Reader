@@ -21,6 +21,16 @@
       ]
     },
     {
+      "name": "Chungwoo",
+      "description": "Ryu Chungwoo",
+      "searches": [
+        "Chungwoo"
+      ],
+      "options": [
+        "Cheongwoo"
+      ]
+    },
+    {
       "name": "Jaehyeon",
       "description": "Shin Jaehyeon",
       "searches": [
@@ -49,16 +59,6 @@
       "options": [
         "Yoonshin",
         "Yoonsin"
-      ]
-    },
-    {
-      "name": "Chungwoo",
-      "description": "Ryu Chungwoo",
-      "searches": [
-        "Chungwoo"
-      ],
-      "options": [
-        "Cheongwoo"
       ]
     },
     {
