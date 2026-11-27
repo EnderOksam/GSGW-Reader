@@ -18,6 +18,7 @@
   import { getTLInfo } from "$lib/reader/tl-info";
   import alttextData from "$lib/alttext.json";
   import { storePristine, resetPristine, applyAltText, clearAltText } from "$lib/reader/alttext";
+  import { applyDebutAltText } from "$lib/reader/dodalttext";
   import { randomizeAnimationDelays, observeAnimationVisibility } from "$lib/reader/randomize-animations";
 
 
@@ -200,6 +201,18 @@
     }, 50);
   });
 
+  $effect(() => {
+    if (!browser || bookSlug !== "debut") return;
+    const chapterPath = page.url.pathname;
+    const selections = readerState.debutAltTextSelections;
+    const timer = setTimeout(() => {
+      if (page.url.pathname !== chapterPath) return;
+      const article = document.querySelector("article.reader-container") as HTMLElement | null;
+      if (article) applyDebutAltText(article, selections);
+    }, 50);
+    return () => clearTimeout(timer);
+  });
+
   onMount(async () => {
     if (browser) {
       const lastRead = JSON.parse(localStorage.getItem("lastRead") || "{} ");
@@ -212,6 +225,13 @@
       if (savedSelections) {
         try {
           readerState.altTextSelections = JSON.parse(savedSelections);
+        } catch {}
+      }
+
+      const savedDebutSelections = localStorage.getItem("debutAltTextSelections");
+      if (savedDebutSelections) {
+        try {
+          readerState.debutAltTextSelections = JSON.parse(savedDebutSelections);
         } catch {}
       }
     }

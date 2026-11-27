@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.resolve()))
 
 import build_web as bw
+import build_library
 
 
 
@@ -622,6 +623,13 @@ def build_pages(slug_filter=None):
 # MAIN
 # =========================================================
 
+def build_debut_alttext():
+    data = build_library.parse_alttext_md(REPO_ROOT / "chapters/debut/dodalttext.md")
+    output_path = REPO_ROOT / "website/src/lib/dodalttext.json"
+    output_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"Debut alt text config written: {output_path} ({len(data['variants'])} variants)")
+
+
 def main():
     import sys
     slug_filter = None
@@ -630,6 +638,7 @@ def main():
             slug_filter = sys.argv[2]
 
     print("=== Debut or Die Build Script ===")
+    build_debut_alttext()
 
     if not TEMPLATE_PATH.exists():
         print(f"Template not found: {TEMPLATE_PATH}")

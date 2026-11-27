@@ -1,0 +1,75 @@
+{
+  "variants": [
+    {
+      "name": "Keun",
+      "description": "Keun Sejin",
+      "searches": [
+        "Keun"
+      ],
+      "options": [
+        "Big"
+      ]
+    },
+    {
+      "name": "Keundal",
+      "description": "",
+      "searches": [
+        "Keundal"
+      ],
+      "options": [
+        "Big Moon"
+      ]
+    },
+    {
+      "name": "Jaehyeon",
+      "description": "Shin Jaehyeon",
+      "searches": [
+        "Jaehyeon"
+      ],
+      "options": [
+        "Jaehyun"
+      ]
+    },
+    {
+      "name": "Sinoh",
+      "description": "Oh Yunshin",
+      "searches": [
+        "Sinoh"
+      ],
+      "options": [
+        "Shino"
+      ]
+    },
+    {
+      "name": "Yunshin",
+      "description": "Oh Yunshin",
+      "searches": [
+        "Yunshin"
+      ],
+      "options": [
+        "Yoonshin",
+        "Yoonsin"
+      ]
+    },
+    {
+      "name": "Chungwoo",
+      "description": "Ryu Chungwoo",
+      "searches": [
+        "Chungwoo"
+      ],
+      "options": [
+        "Cheongwoo"
+      ]
+    },
+    {
+      "name": "Hubae",
+      "description": "",
+      "searches": [
+        "Hubae"
+      ],
+      "options": [
+        "Hoobae"
+      ]
+    }
+  ]
+}

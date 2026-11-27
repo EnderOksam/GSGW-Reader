@@ -11,4 +11,5 @@ export const readerState = $state({
   refPanelOpen: false,
   footnotes: "",
   altTextSelections: {} as Record<string, string>,
+  debutAltTextSelections: {} as Record<string, string>,
 });
