@@ -1,4 +1,6 @@
-export const ALLOWED_REACTIONS = ["👍", "❤️", "😂", "🎉", "😮", "😢", "🔥", "👀", "🚀", "👎"];
+// Please don't remove emojis from ALLOWED_REACTIONS: that requires cleaning D1, so ask me directly first.
+// Adding emojis is fine just don't break this line.
+export const ALLOWED_REACTIONS = ["👍", "❤️", "😂", "🎉", "😮", "😢", "🔥", "👀", "🚀", "👎", "😭", "🙏", "💯", "🤔"];
 export const ALLOWED_REACTION_SET = new Set(ALLOWED_REACTIONS);
 
 export interface ReactionAgg {
