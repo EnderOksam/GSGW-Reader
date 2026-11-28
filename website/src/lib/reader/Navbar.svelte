@@ -12,7 +12,8 @@
   import type { ContentMatch } from "$lib/content-search";
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
-  import alttextData from "$lib/alttext.json";
+  import gsgwAltTextData from "$lib/alttext.json";
+  import debutAltTextData from "$lib/dodalttext.json";
   import WindowToggle from "./WindowToggle.svelte";
   import MarginToggle from "./MarginToggle.svelte";
   import WindowSample from "./WindowSample.svelte";
@@ -35,6 +36,9 @@
   let { prefs, bookSlug, bookData, navState = $bindable(), currentChapter = 0, chaptersForTL = [], currentIndex = 0, currentTL = "", nextInfoDialog = undefined as HTMLDialogElement | undefined } = $props();
   const totalChapters = $derived(chaptersForTL.length);
   const editorHref = $derived(editorChapterHref(bookSlug, currentTL, currentChapter));
+  const alttextData = $derived(bookSlug === "debut" ? debutAltTextData : gsgwAltTextData);
+  const alttextFile = $derived(bookSlug === "debut" ? "dodalttext.md" : "alttext.md");
+  const alttextSelections = $derived(bookSlug === "debut" ? readerState.debutAltTextSelections : readerState.altTextSelections);
 
   // --- State ---
   // Store dialog references in a reactive object for element binding
@@ -941,7 +945,7 @@
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            {#if bookSlug === "gsgw" && alttextData.variants.length > 0}
+            {#if (bookSlug === "gsgw" || bookSlug === "debut") && alttextData.variants.length > 0}
               <button class="btn btn-outline btn-primary btn-sm rounded-xl gap-2" onclick={() => { modals.settings?.close(); modals.altText?.showModal(); }}>
                 <Icon icon="material-symbols:translate" class="size-4" /> Alt Text
               </button>
@@ -1061,7 +1065,7 @@
         </div>
         <div class="flex items-center gap-2">
           <a
-            href="https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/gsgw/alttext.md"
+            href={`https://github.com/EnderOksam/GSGW-Reader/blob/main/chapters/${bookSlug}/${alttextFile}`}
             target="_blank"
             class="btn btn-ghost btn-xs rounded-lg gap-1 text-base-content/40 hover:text-primary"
           >
@@ -1085,14 +1089,14 @@
               <Icon icon="material-symbols:translate" class="size-7 text-base-content/20" />
             </div>
             <p class="text-sm font-medium text-base-content/50 mb-1">No variants yet</p>
-            <p class="text-xs text-base-content/30">Add word replacements in chapters/gsgw/alttext.md</p>
+            <p class="text-xs text-base-content/30">Add word replacements in chapters/{bookSlug}/{alttextFile}</p>
           </div>
         {:else}
           <p class="text-[11px] text-base-content/40 leading-relaxed">Some words differ across translations. Pick your preferred version for each group.</p>
 
           <div class="space-y-3">
             {#each alttextData.variants as variant}
-              {@const selected = readerState.altTextSelections[variant.name]}
+              {@const selected = alttextSelections[variant.name]}
               <div class="group rounded-xl border transition-colors {selected ? 'bg-primary/5 border-primary/20' : 'bg-base-200/30 border-base-content/5 hover:border-base-content/10'}">
                 <div class="p-3.5 space-y-2.5">
                   <div class="flex items-center gap-2">
@@ -1111,14 +1115,19 @@
                       <button
                         class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all {isActive ? 'bg-primary text-primary-content shadow-sm shadow-primary/20' : 'bg-base-200/60 text-base-content/60 hover:bg-base-200 hover:text-base-content/80'}"
                         onclick={() => {
-                          const sel = { ...readerState.altTextSelections };
+                          const sel = { ...alttextSelections };
                           if (isActive) {
                             delete sel[variant.name];
                           } else {
                             sel[variant.name] = option;
                           }
-                          readerState.altTextSelections = sel;
-                          if (browser) localStorage.setItem("altTextSelections", JSON.stringify(sel));
+                          if (bookSlug === "debut") {
+                            readerState.debutAltTextSelections = sel;
+                            if (browser) localStorage.setItem("debutAltTextSelections", JSON.stringify(sel));
+                          } else {
+                            readerState.altTextSelections = sel;
+                            if (browser) localStorage.setItem("altTextSelections", JSON.stringify(sel));
+                          }
                         }}
                       >
                         {option}

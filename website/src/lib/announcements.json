@@ -2,8 +2,38 @@
   "announcements": [
     {
       "title": "<@&1523884481780650104>",
+      "date": "2026-11-28",
+      "short": "@DoD Releases\n\n* **DOD:** Chapters 167–375 have been re-edited by Lei (me) and checked against the official translation, with additional illustrations added.\n\n* **DOD Part 3:** Chapters 376–394 have been edited and formatted by me!\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\n**Other Updates by Ender Oksam and Lei**\n\n* **DOD Aliases/Nicknames** — Added character aliases and nicknames to make it easier to identify characters referred to by different names throughout the novel.\n-# Simply click on a character’s name to view their aliases and nicknames!\n\n* **DOD Alt Text** — You can now switch between different translation variants based on your personal preferences, allowing for a more customizable reading experience!\n-# You can access this feature through the website’s settings. If you’d like to suggest additional translation variants, just let me know!\n\nHappy reading! (˶ᵔ ᵕ ᵔ˶)♡",
+      "long": "",
+      "author": "Lei",
+      "tags": [
+        "DoD Releases",
+        "Announcements"
+      ],
+      "messageId": "1576070130641932499",
+      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1576070130641932499",
+      "attachments": [
+        {
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1576070129446555728/image.png?ex=6b0b9530&is=6b0a43b0&hm=95eaedc85e81ed086290575f14181d43623d8a6d1cc93db8eb60b15e8d56f226&",
+          "filename": "image.png",
+          "contentType": "image/png",
+          "width": 615,
+          "height": 895
+        },
+        {
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1576070129886699550/image.png?ex=6b0b9530&is=6b0a43b0&hm=5805b69748701757003a0cd1ebca6a7c7f5a981ad8eecac7c616a964192088b1&",
+          "filename": "image.png",
+          "contentType": "image/png",
+          "width": 630,
+          "height": 710
+        }
+      ],
+      "embeds": []
+    },
+    {
+      "title": "<@&1523884481780650104>",
       "date": "2026-11-24",
-      "short": "@DoD Releases\n- **DOD:** Chapters 167–244 have been re-edited by Lei (me).\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOther Updates by Ender Oksam\n- **DOD Character IDs:** Debut or Die Character IDs are now available! Feel free to check them out.",
+      "short": "@DoD Releases\n- **DOD:** Chapters 167–244 have been re-edited by Lei (me), checked against the official translation.\n\n[Read DOD](https://ireum.pages.dev/book/debut/)\n\nOther Updates by Ender Oksam\n- **DOD Character IDs:** Debut or Die Character IDs are now available! Feel free to check them out.",
       "long": "",
       "author": "Lei",
       "tags": [
@@ -13,7 +43,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1574646666059841556",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1574646665644871871/image.png?ex=6b06677c&is=6b0515fc&hm=502f14b7462d650d6efd0a558741f7ec445b658ee23ff6d192ac8d42be4d33bb&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1574646665644871871/image.png?ex=6b0b04bc&is=6b09b33c&hm=b3e2bb868bcc8be6959660e8eafc6f1523cbcac51384b3f305e6db81ebd5e537&",
           "filename": "image.png",
           "contentType": "image/webp",
           "width": 1915,
@@ -37,14 +67,14 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1572110283600568430",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1572110282614902814/image.png?ex=6b0667cb&is=6b05164b&hm=eea0a78bfba2be566cf2b802fe39783b2407215c8966e0de31894938a34e0b40&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1572110282614902814/image.png?ex=6b0b050b&is=6b09b38b&hm=b06a8dc344cd7d30ac160e7df280cf5ae5bc5b496783a3100573a3980d933365&",
           "filename": "image.png",
           "contentType": "image/png",
           "width": 2388,
           "height": 2178
         },
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1572110283156099082/image.png?ex=6b0667cb&is=6b05164b&hm=baa3fcb1f5cd8fa9aac65bf1e9691a707392646b5780096a7c6276e5660a4c34&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1572110283156099082/image.png?ex=6b0b050b&is=6b09b38b&hm=93e86fe8d7fe69ffa91f19c745ec0dae0c55f28a92e0fea0b72c76bf28ff5fa7&",
           "filename": "image.png",
           "contentType": "image/png",
           "width": 2388,
@@ -124,14 +154,14 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563426409127485520",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6b05cb8e&is=6b047a0e&hm=5a8e0db86eaabbfde88f8900d5cf60c337f2d3957e5181817a37d31ee73034ca&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408137621524/image.png?ex=6b0b118e&is=6b09c00e&hm=670c85f2f7f6a2dfab9fafe995e8ea3d63ab70dd778957575e0309c504b57d3a&",
           "filename": "image.png",
           "contentType": "image/webp",
           "width": 632,
           "height": 680
         },
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6b05cb8e&is=6b047a0e&hm=a15a532125bb14aafd9b0572771b39c18680d3ce91f0b3080936a8acf675653f&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563426408557056050/image.png?ex=6b0b118e&is=6b09c00e&hm=751c08ad0e28da0bc2d4c10071d6842ac221c0691cab3df720b893ef605a3680&",
           "filename": "image.png",
           "contentType": "image/png",
           "width": 1680,
@@ -153,7 +183,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1563183717181161552",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6b063b08&is=6b04e988&hm=c1fe0630cc3b8a1ba82c8814bd080d8c5bd4096689616c1dcd82af0fe26bff00&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1563183716396699758/IMG_7407.png?ex=6b0b8108&is=6b0a2f88&hm=6cf69e4103af92e59b1da4f7372ffb4a7e29577179ca9f8dbf10db936f9a1d24&",
           "filename": "IMG_7407.png",
           "contentType": "image/png",
           "width": 1170,
@@ -189,7 +219,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1560578630189449246",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6b05fb5b&is=6b04a9db&hm=28d294c43cdc2781b6c80acfa672944a32d72ef09f4519d7a1a0cab433432df8&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1560578629874753556/IMG_1647.jpg?ex=6b0b415b&is=6b09efdb&hm=b5176e3f540ae1ba7f7b7b98ec3600c5bb0a5e9b382e3978db2f3f23a763542c&",
           "filename": "IMG_1647.jpg",
           "contentType": "image/jpeg",
           "width": 1282,
@@ -219,7 +249,7 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1559030228226019328",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6b06480b&is=6b04f68b&hm=446b68a01b3c83042a769d9ab38661409251e5558f6ba99485aa416437d78b44&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1559030227764781126/IMG_1591.png?ex=6b0b8e0b&is=6b0a3c8b&hm=5bdb74c67ad2ad1baef0f118369a30f6168a341601e03fc035c34c8fe02348dd&",
           "filename": "IMG_1591.png",
           "contentType": "image/png",
           "width": 1012,
@@ -315,27 +345,13 @@
       "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1555093524490493954",
       "attachments": [
         {
-          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6b05cd74&is=6b047bf4&hm=2e19361d6f43603b2283286ae7fe78448423be5192d18bd715dc05f214723373&",
+          "url": "https://cdn.discordapp.com/attachments/1502485142520729660/1555093523320279070/IMG_1421.png?backend=b2&ex=6b0b1374&is=6b09c1f4&hm=b320c2fab3e66f399e7a6c3922210c20893122f81b7fd39748f297c356ac91b6&",
           "filename": "IMG_1421.png",
           "contentType": "image/jpeg",
           "width": 1668,
           "height": 2124
         }
       ],
-      "embeds": []
-    },
-    {
-      "title": "<@&1518776921771606188>",
-      "date": "2026-09-28",
-      "short": "Current Status of Chapters\n\n**Part 1**\n* Copy editing + Formatting ✅\n* Formatting + TL check against original ✅\n* Deep proofreading underway\n\n**Part 2**\n* Copy editing + Formatting ✅\n* Needs formatting checked against original\n* Needs TL checked against original\n\n**Part 3**\n* Copy editing + Formatting ✅\n* Needs formatting checked against original (add in fonts + new styling developed since originally TLed)\n\n※ Format checking covers the following as necessary:\n* Line breaks\n* Text styling\n* Custom fonts\n* Scare page(s)\n\nAnyone with access to the app version of the novel and is willing to learn our formatting syntax is greatly encouraged to help out 🙏",
-      "long": "",
-      "author": "senyen",
-      "tags": [
-        "Announcements"
-      ],
-      "messageId": "1554065363937796157",
-      "discordUrl": "https://discord.com/channels/1502484309460647976/1502485142520729660/1554065363937796157",
-      "attachments": [],
       "embeds": []
     }
   ]
