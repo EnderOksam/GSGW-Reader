@@ -247,7 +247,7 @@
               Epub Downloads
             </h1>
             <p class="text-base-content/50 max-w-lg mx-auto text-sm md:text-base leading-relaxed">
-              Download the complete fan translation for offline reading on your e-reader, tablet, or phone. updated automatically every two weeks
+              Download the complete fan translation for offline reading on your e-reader, tablet, or phone. Updated automatically every two weeks.
             </p>
           </header>
 
