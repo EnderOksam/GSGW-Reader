@@ -4,6 +4,7 @@
   import { page } from "$app/state";
   import book_meta from "$lib/meta.json";
   import * as api from "$lib/reader/comments-api";
+  import Avatar from "$lib/reader/Avatar.svelte";
 
   interface Totals {
     comments: number;
@@ -71,16 +72,28 @@
       titleMap.set(`read/${book}/${tl}/${e.slug}`, label || String(e.slug));
     }
   }
-  for (const tl of ["mtl", "fantl", "unformattedtl"]) indexEntries("gsgw", tl, meta["gsgw"]?.[tl]);
+  for (const e of meta["gsgw"]?.fantl ?? []) {
+    const label = [e.section, e.title].filter(Boolean).join(" · ") || String(e.slug);
+    titleMap.set(`read/gsgw/${e.slug}`, label);
+    for (const tl of ["fantl", "mtl", "unformattedtl", "unfinishedtl"]) {
+      titleMap.set(`read/gsgw/${tl}/${e.slug}`, label);
+    }
+  }
   for (const tl of Object.keys(meta["manwha"] ?? {})) indexEntries("manwha", tl, meta["manwha"][tl]);
   for (const tl of Object.keys(meta["debut"] ?? {})) indexEntries("debut", tl, meta["debut"][tl]);
   for (const r of meta["uder"]?.records ?? []) titleMap.set(`read/uder/${r.slug}`, r.title);
 
+  function canonicalChapter(chapter: string): string {
+    const match = chapter.match(/^read\/gsgw\/(\d+)$/);
+    if (!match) return chapter;
+    return `read/gsgw/fantl/${match[1]}`;
+  }
+
   function titleOf(chapter: string): string {
-    return titleMap.get(chapter) ?? chapter;
+    return titleMap.get(chapter) ?? titleMap.get(canonicalChapter(chapter)) ?? chapter;
   }
   function chapterHref(chapter: string): string {
-    return "/" + chapter.split("/").map(encodeURIComponent).join("/");
+    return "/" + canonicalChapter(chapter).split("/").map(encodeURIComponent).join("/");
   }
   function fmtDate(value: string | null): string {
     if (!value) return "";
@@ -107,6 +120,13 @@
   let threadError = $state("");
   let me = $state<api.Me | null>(null);
   let meReady = $state(false);
+  let meAvatarBroken = $state(false);
+
+  function handleMeAvatarBroken() {
+    if (meAvatarBroken) return;
+    meAvatarBroken = true;
+    window.location.href = api.logoutUrl(page.url.pathname);
+  }
 
   async function load() {
     loading = true;
@@ -243,11 +263,7 @@
 
     {#if me}
       <div class="flex items-center gap-2 rounded-full border border-base-content/10 bg-base-100 py-1 pl-1 pr-1.5 shadow-sm">
-        {#if me.avatarUrl}
-          <img src={me.avatarUrl} alt="" class="size-6 shrink-0 rounded-full object-cover ring-1 ring-base-content/10" />
-        {:else}
-          <div class="size-6 shrink-0 rounded-full bg-base-content/10"></div>
-        {/if}
+        <Avatar src={me.avatarUrl} alt="" class="shrink-0 ring-1 ring-base-content/10" size={1.5} loading="eager" onbroken={handleMeAvatarBroken} />
         <span class="hidden max-w-[9rem] truncate text-xs font-semibold leading-none text-base-content/90 sm:inline">{me.displayName}</span>
         <button
           type="button"
@@ -400,7 +416,7 @@
                 >
                   <div class="flex items-center gap-2">
                     {#if c.author.avatarUrl}
-                      <img src={c.author.avatarUrl} alt="" class="cmt-avatar" />
+                      <Avatar src={c.author.avatarUrl} alt="" size={1.5} />
                     {:else}
                       <div class="cmt-avatar grid place-items-center bg-base-content/10 text-[10px] font-bold">
                         {(c.author.displayName || "?")[0]}
@@ -562,7 +578,7 @@
               <div class="rounded-xl border border-base-content/10 bg-base-200/50 p-3">
                 <div class="flex items-center gap-2">
                   {#if root.author.avatarUrl}
-                    <img src={root.author.avatarUrl} alt="" class="cmt-avatar" />
+                    <Avatar src={root.author.avatarUrl} alt="" size={1.5} />
                   {:else}
                     <div class="cmt-avatar grid place-items-center bg-base-content/10 text-[10px] font-bold">
                       {(root.author.displayName || "?")[0]}
@@ -605,7 +621,7 @@
                       <div>
                         <div class="flex items-center gap-2">
                           {#if reply.author.avatarUrl}
-                            <img src={reply.author.avatarUrl} alt="" class="cmt-avatar sm" />
+                            <Avatar src={reply.author.avatarUrl} alt="" size={1.125} />
                           {:else}
                             <div class="cmt-avatar sm grid place-items-center bg-base-content/10 text-[9px] font-bold">
                               {(reply.author.displayName || "?")[0]}

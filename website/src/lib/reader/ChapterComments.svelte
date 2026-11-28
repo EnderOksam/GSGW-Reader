@@ -3,9 +3,11 @@
   import Icon from "@iconify/svelte";
   import { page } from "$app/state";
   import { renderMarkdown } from "./markdown-lite";
+  import Avatar from "./Avatar.svelte";
   import CommentComposer from "./CommentComposer.svelte";
   import * as api from "./comments-api";
   import type { Comment } from "./comments-api";
+  import { ALLOWED_REACTIONS as EMOJIS } from "../../../functions/_lib/reactions";
 
   let {
     chapter,
@@ -13,8 +15,6 @@
     me = $bindable<api.Me | null>(null),
     meReady = $bindable(false),
   }: { chapter: string; count?: number; me?: api.Me | null; meReady?: boolean } = $props();
-
-  const EMOJIS = ["👍", "❤️", "😂", "🎉", "😮", "😢", "🔥", "👀", "🚀", "👎"];
 
   let comments = $state<Comment[]>([]);
   let chapterReactions = $state<api.Reaction[]>([]);
@@ -342,11 +342,7 @@
 
 {#if me}
   <div class="mb-5 flex gap-2.5 sm:gap-3">
-    {#if me.avatarUrl}
-      <img src={me.avatarUrl} alt="" class="cmt-avatar hidden ring-2 ring-base-content/10 sm:block" />
-    {:else}
-      <div class="hidden size-9 shrink-0 rounded-full bg-base-content/10 sm:block"></div>
-    {/if}
+    <Avatar src={me.avatarUrl} alt="" class="hidden ring-2 ring-base-content/10 sm:block" loading="eager" />
     <div class="min-w-0 flex-1">
       <CommentComposer placeholder="Write a comment…" submitLabel="Comment" onSubmit={postNew} />
     </div>
@@ -451,11 +447,7 @@
 
 {#snippet commentItem(comment: Comment, compact = false)}
   <div class="flex gap-2.5 sm:gap-3">
-    {#if comment.author.avatarUrl}
-      <img src={comment.author.avatarUrl} alt="" class="cmt-avatar {compact ? 'cmt-avatar-sm' : ''} ring-1 ring-base-content/10" loading="lazy" />
-    {:else}
-      <div class="cmt-avatar {compact ? 'cmt-avatar-sm' : ''} bg-base-content/10"></div>
-    {/if}
+    <Avatar src={comment.author.avatarUrl} alt="" class="ring-1 ring-base-content/10" size={compact ? 1.75 : 2.25} />
     <div class="min-w-0 flex-1">
       <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
         <span class="text-sm font-semibold text-base-content">{comment.author.displayName}</span>
@@ -552,20 +544,6 @@
     100% {
       background-color: transparent;
     }
-  }
-  .cmt-avatar {
-    width: 2.25rem;
-    height: 2.25rem;
-    min-width: 2.25rem;
-    margin: 0;
-    object-fit: cover;
-    border-radius: 9999px;
-    flex-shrink: 0;
-  }
-  .cmt-avatar-sm {
-    width: 1.75rem;
-    height: 1.75rem;
-    min-width: 1.75rem;
   }
   .md :global(p) {
     margin: 0 0 0.5rem;

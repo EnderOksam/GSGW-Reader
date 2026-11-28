@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { page } from "$app/state";
+  import Avatar from "./Avatar.svelte";
   import ChapterComments from "./ChapterComments.svelte";
   import * as api from "./comments-api";
 
@@ -9,8 +10,15 @@
   let count = $state(0);
   let me = $state<api.Me | null>(null);
   let meReady = $state(false);
+  let meAvatarBroken = $state(false);
 
   const returnTo = $derived(page.url.pathname);
+
+  function handleMeAvatarBroken() {
+    if (meAvatarBroken) return;
+    meAvatarBroken = true;
+    window.location.href = api.logoutUrl(returnTo);
+  }
 </script>
 
 <div
@@ -27,11 +35,14 @@
       <div
         class="ml-auto flex items-center gap-2 rounded-full border border-base-content/10 bg-base-100 py-1 pl-1 pr-1.5 shadow-sm transition-colors hover:border-base-content/20"
       >
-        {#if me.avatarUrl}
-          <img src={me.avatarUrl} alt="" class="me-avatar ring-1 ring-base-content/10" />
-        {:else}
-          <div class="me-avatar bg-base-content/10"></div>
-        {/if}
+        <Avatar
+          src={me.avatarUrl}
+          alt=""
+          class="ring-1 ring-base-content/10"
+          size={1.5}
+          loading="eager"
+          onbroken={handleMeAvatarBroken}
+        />
         <span
           class="max-w-[11rem] truncate text-xs font-semibold leading-none text-base-content/90"
           >{me.displayName}</span
@@ -73,13 +84,3 @@
     <ChapterComments {chapter} bind:count bind:me bind:meReady />
   </div>
 </div>
-
-<style>
-  .me-avatar {
-    width: 1.5rem;
-    height: 1.5rem;
-    flex: none;
-    border-radius: 9999px;
-    object-fit: cover;
-  }
-</style>
