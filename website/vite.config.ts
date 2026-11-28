@@ -22,6 +22,9 @@ const API_TARGET = process.env.VITE_API_TARGET ?? "https://ireum.pages.dev";
 
 export default defineConfig({
   server: {
+    fs: {
+      allow: [path.resolve(__dirname, "functions")],
+    },
     proxy: {
       "/api": {
         target: API_TARGET,

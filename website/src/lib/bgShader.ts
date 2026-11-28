@@ -145,6 +145,8 @@ void main() {
 
 const MAX_TEXTURE = 1600;
 const MAX_DPR = 1;
+const TARGET_FRAME_MS = 33;
+const SLOW_FRAME_MS = 45;
 
 export class BackgroundShader {
   private canvas: HTMLCanvasElement;
@@ -164,10 +166,18 @@ export class BackgroundShader {
   private running = false;
   private disposed = false;
   private texReady = false;
+  private textureUrl = "";
+  private textureLoadId = 0;
+  private frozen = false;
+  private slowFrames = 0;
+  private contextLost = false;
   private observer: ResizeObserver | null = null;
 
   constructor(canvas: HTMLCanvasElement, imageUrl: string) {
     this.canvas = canvas;
+    this.textureUrl = imageUrl;
+    this.canvas.addEventListener("webglcontextlost", this.handleContextLost);
+    this.canvas.addEventListener("webglcontextrestored", this.handleContextRestored);
     if (!this.initGl()) return;
     this.prepareTexture(imageUrl);
     this.observer = new ResizeObserver(() => this.resize());
@@ -179,6 +189,29 @@ export class BackgroundShader {
   private handleVisibility = (): void => {
     if (document.hidden) this.stop();
     else this.start();
+  };
+
+  private handleContextLost = (event: Event): void => {
+    event.preventDefault();
+    this.contextLost = true;
+    this.stop();
+    this.texReady = false;
+    this.gl = null;
+    this.program = null;
+    this.texture = null;
+    this.uTime = null;
+    this.uRes = null;
+    this.uTexSize = null;
+    this.uTexStrength = null;
+  };
+
+  private handleContextRestored = (): void => {
+    if (this.disposed) return;
+    this.contextLost = false;
+    if (!this.initGl()) return;
+    this.resize();
+    this.prepareTexture(this.textureUrl);
+    if (!this.frozen && !document.hidden) this.start();
   };
 
   private initGl(): boolean {
@@ -252,9 +285,13 @@ export class BackgroundShader {
   }
 
   private prepareTexture(imageUrl: string): void {
+    this.textureUrl = imageUrl;
+    const loadId = ++this.textureLoadId;
     const img = new Image();
     img.decoding = "async";
-    img.onload = () => this.upload(img);
+    img.onload = () => {
+      if (loadId === this.textureLoadId && !this.disposed) this.upload(img);
+    };
     img.src = imageUrl;
   }
 
@@ -278,6 +315,14 @@ export class BackgroundShader {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, off);
     if (this.uTexSize) gl.uniform2f(this.uTexSize, w, h);
     this.texReady = true;
+    if (this.frozen) this.draw(this.lastFrame || performance.now());
+  }
+
+  private draw(now: number): void {
+    const gl = this.gl;
+    if (!gl || !this.program || !this.texReady) return;
+    if (this.uTime) gl.uniform1f(this.uTime, (this.elapsed + (now - this.runStart)) / 1000);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
   private resize(): void {
@@ -286,19 +331,23 @@ export class BackgroundShader {
     const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     const w = Math.max(1, Math.round(this.canvas.clientWidth * dpr));
     const h = Math.max(1, Math.round(this.canvas.clientHeight * dpr));
-    if (this.canvas.width !== w || this.canvas.height !== h) {
+    const changed = this.canvas.width !== w || this.canvas.height !== h;
+    if (changed) {
       this.canvas.width = w;
       this.canvas.height = h;
     }
     gl.viewport(0, 0, w, h);
     if (this.uRes) gl.uniform2f(this.uRes, w, h);
+    if (changed && this.frozen) this.draw(this.lastFrame || performance.now());
   }
 
   start(): void {
-    if (this.running || !this.gl || !this.program || this.disposed) return;
+    if (this.frozen || this.contextLost || this.running || !this.gl || !this.program || this.disposed) return;
     if (document.hidden) return;
     this.running = true;
     this.runStart = performance.now();
+    this.lastFrame = 0;
+    this.slowFrames = 0;
     this.rafId = requestAnimationFrame(this.frame);
   }
 
@@ -311,20 +360,27 @@ export class BackgroundShader {
   }
 
   swapTexture(imageUrl: string): void {
+    if (imageUrl === this.textureUrl) return;
     this.texReady = false;
     this.prepareTexture(imageUrl);
   }
 
   private frame = (now: number): void => {
-    if (!this.running || this.disposed) return;
-    if (!document.hidden && this.texReady && now - this.lastFrame >= 33) {
-      this.lastFrame = now;
-      this.resize();
-      const gl = this.gl;
-      if (gl && this.program) {
-        if (this.uTime) gl.uniform1f(this.uTime, (this.elapsed + (now - this.runStart)) / 1000);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+    if (!this.running || this.disposed || this.contextLost) return;
+    const delta = now - this.lastFrame;
+    if (this.lastFrame && delta > SLOW_FRAME_MS) {
+      this.slowFrames += 1;
+      if (this.slowFrames >= 2) {
+        this.frozen = true;
+        this.stop();
+        return;
       }
+    } else {
+      this.slowFrames = 0;
+    }
+    if (!document.hidden && this.texReady && delta >= TARGET_FRAME_MS) {
+      this.lastFrame = now;
+      this.draw(now);
     }
     this.rafId = requestAnimationFrame(this.frame);
   };
@@ -340,6 +396,8 @@ export class BackgroundShader {
     this.disposed = true;
     this.stop();
     document.removeEventListener("visibilitychange", this.handleVisibility);
+    this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
+    this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
     this.observer?.disconnect();
     const gl = this.gl;
     if (gl) {

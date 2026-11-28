@@ -19,12 +19,25 @@ const ANIMATED_SELECTOR = [
   ".hex-outline",
 ].join(",");
 
+const EFFECT_CONTAINER_SELECTOR = [
+  ".scare-window",
+  ".transition-text",
+  ".scroll-wrap",
+  "p",
+  "li",
+  "blockquote",
+].join(",");
+
 let animationVisibilityObserver: IntersectionObserver | null = null;
+let observedEffectContainers: Element[] = [];
 
 export function observeAnimationVisibility(): (() => void) | undefined {
   if (typeof IntersectionObserver === "undefined") return;
 
   animationVisibilityObserver?.disconnect();
+  for (const el of observedEffectContainers) el.removeAttribute("data-anim-off");
+  observedEffectContainers = [];
+
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
@@ -41,18 +54,20 @@ export function observeAnimationVisibility(): (() => void) | undefined {
     .querySelectorAll("article.reader-container")
     .forEach((article) => {
       const targets = new Set<Element>();
-      article.querySelectorAll(`${ANIMATED_SELECTOR},.scare-window`).forEach((el) => {
-        // Use the stable wrapper for scares rather than the transformed text
-        // inside. Its descendants share one visibility state after reveal.
-        const target = el.closest(".scare-window") ?? el;
+      article.querySelectorAll(ANIMATED_SELECTOR).forEach((el) => {
+        const target = el.closest(EFFECT_CONTAINER_SELECTOR) ?? el;
         if (target !== el) el.removeAttribute("data-anim-off");
         targets.add(target);
       });
+      article.querySelectorAll(".scare-window").forEach((el) => targets.add(el));
+      observedEffectContainers.push(...targets);
       for (const target of targets) observer.observe(target);
     });
 
   return () => {
     observer.disconnect();
+    for (const el of observedEffectContainers) el.removeAttribute("data-anim-off");
+    observedEffectContainers = [];
     if (animationVisibilityObserver === observer) animationVisibilityObserver = null;
   };
 }

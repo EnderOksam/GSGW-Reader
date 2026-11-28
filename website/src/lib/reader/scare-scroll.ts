@@ -11,7 +11,7 @@ function scrollLockDisabled(): boolean {
   }
 }
 
-export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
+export function initScareScroll(scrollEl: Window | HTMLElement, root?: Element | Document): () => void {
   const isWindow = scrollEl === window;
 
   if (!isWindow) {
@@ -30,6 +30,8 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
 
     return () => previewObserver.disconnect();
   }
+
+  const scope = root ?? document.body;
 
   const LOCK_DURATION = 800;
   const REVEAL_DELAY = 180;
@@ -202,12 +204,16 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
   );
 
   const getWindows = (): HTMLElement[] =>
-    Array.from(document.querySelectorAll<HTMLElement>(".scare-window"));
+    Array.from(scope.querySelectorAll<HTMLElement>(".scare-window"));
+
+  const observedWindows = new WeakSet<HTMLElement>();
 
   const observeWindows = () => {
     for (const win of getWindows()) {
+      if (observedWindows.has(win)) continue;
       const zone = win.closest<HTMLElement>(".scare-zone");
       if (zone && !triggered.has(zone)) {
+        observedWindows.add(win);
         observer.observe(win);
       }
     }
@@ -215,7 +221,7 @@ export function initScareScroll(scrollEl: Window | HTMLElement): () => void {
 
   observeWindows();
   const domObserver = new MutationObserver(observeWindows);
-  domObserver.observe(document.body, { childList: true, subtree: true });
+  domObserver.observe(scope, { childList: true, subtree: true });
 
   return () => {
     observer.disconnect();

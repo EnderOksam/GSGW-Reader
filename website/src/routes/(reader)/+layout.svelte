@@ -237,13 +237,20 @@
     }
   });
 
+  let scrollFrame: number | null = null;
+
   onDestroy(() => {
     if (browser) {
       window.removeEventListener("scroll", handleScroll);
+      if (scrollFrame !== null) {
+        cancelAnimationFrame(scrollFrame);
+        scrollFrame = null;
+        updateScroll();
+      }
     }
   });
 
-  function handleScroll() {
+  function updateScroll() {
     const scrollTop = window.scrollY;
     if (mainEl) {
       const mainHeight = mainEl.offsetHeight;
@@ -261,6 +268,14 @@
         timestamp: Date.now(),
       }),
     );
+  }
+
+  function handleScroll() {
+    if (scrollFrame !== null) return;
+    scrollFrame = requestAnimationFrame(() => {
+      scrollFrame = null;
+      updateScroll();
+    });
   }
 
   function toggleFullscreen() {

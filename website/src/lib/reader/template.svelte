@@ -73,7 +73,8 @@
   });
 
   $effect(() => {
-    return initScareScroll(window);
+    const article = document.querySelector("article.reader-container");
+    return initScareScroll(window, article ?? undefined);
   });
 
 </script>

@@ -788,11 +788,25 @@ body .reader-container .smoke-text :is(strong, b) {
 }
 
 [data-anim-off],
-[data-anim-off] *,
+[data-anim-off] :is(
+  .shake, .wave-up,
+  .glitch-text, .glitch-subtle, .glitch-d, .char,
+  .aurora-text, .hex-aurora, .hex-aurora-up,
+  .hex-preview, .gold-text, .silver-text, .sparkle-text, .moon-text,
+  .scroll-track, .transition-item,
+  .black-window, .braun-screen, .search-highlight,
+  .scare-page, .scare-page *
+),
 [data-anim-off]::before,
 [data-anim-off]::after,
-[data-anim-off] *::before,
-[data-anim-off] *::after {
+[data-anim-off] :is(
+  .glitch-d, .gold-text, .silver-text, .sparkle-text, .moon-text,
+  .braun-screen, .scare-page, .scare-page *
+)::before,
+[data-anim-off] :is(
+  .glitch-d, .gold-text, .silver-text, .sparkle-text, .moon-text,
+  .braun-screen, .scare-page, .scare-page *
+)::after {
   animation-play-state: paused !important;
 }
 
